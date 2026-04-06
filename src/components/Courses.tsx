@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const courses = [
   {
-    img: "/course1.jpg",
+    img: "/about1.png",
     price: "$30",
     category: "Business",
     title: "Business Innovation And Development",
@@ -15,7 +15,7 @@ const courses = [
     badgeColor: "bg-blue-500",
   },
   {
-    img: "/course2.jpg",
+    img: "/hero.png",
     price: "Free",
     category: "Networking",
     title: "Fundamentals of Network And Domains",
@@ -26,7 +26,7 @@ const courses = [
     badgeColor: "bg-orange-400",
   },
   {
-    img: "/course3.jpg",
+    img: "/start.png",
     price: "$35",
     category: "Designing",
     title: "Creative Graphic Design with Adobe Suite",
@@ -104,59 +104,88 @@ const Courses = () => {
                   height={250}
                   className="rounded-xl w-full h-[200px] object-cover"
                 />
+    {/* PRICE BADGE */}
+    <div className={`absolute bottom-4 left-4 ${course.badgeColor} text-white text-sm px-4 py-2 rounded-full shadow-md`}>
+      {course.price}
+    </div>
+  </div>
 
-                {/* PRICE */}
-                <div className={`absolute bottom-4 left-4 ${course.badgeColor} text-white text-sm px-4 py-2 rounded-full shadow`}>
-                  {course.price}
-                </div>
-              </div>
+  {/* CATEGORY */}
+  <span className="text-xs px-3 py-1 rounded-full bg-white shadow text-gray-600 inline-block mb-3">
+    {course.category}
+  </span>
 
-              {/* CATEGORY */}
-              <span className="text-xs px-3 py-1 rounded-full bg-white shadow text-gray-600">
-                {course.category}
-              </span>
+  {/* TITLE */}
+  <h3 className="text-lg font-semibold text-gray-900 leading-snug mb-2">
+    {course.title}
+  </h3>
 
-              {/* TITLE */}
-              <h3 className="mt-3 text-lg font-semibold text-gray-900 leading-snug">
-                {course.title}
-              </h3>
+  {/* RATING */}
+  <div className="flex items-center gap-2 text-sm mb-4">
+    <div className="text-orange-500">★★★★★</div>
+    <span className="text-gray-500">(4.5/3 Ratings)</span>
+  </div>
 
-              {/* RATING */}
-              <p className="text-orange-500 text-sm mt-2">
-                ★★★★★ <span className="text-gray-500">(4.5/3 Ratings)</span>
-              </p>
+  {/* INSTRUCTOR */}
+  <div className="flex items-center gap-3 mb-4">
+    <Image
+      src="/person.png"
+      alt="user"
+      width={40}
+      height={40}
+      style={{ width: "40px", height: "40px" }}
+      className="rounded-full object-cover"
+    />
+    <div>
+      <p className="text-sm font-medium text-gray-900">
+        {course.instructor}
+      </p>
+      <p className="text-xs text-gray-500">Instructor</p>
+    </div>
+  </div>
 
-              {/* INSTRUCTOR */}
-              <div className="flex items-center gap-3 mt-4">
-                <Image
-                  src="/avatar.jpg"
-                  alt="user"
-                  width={40}
-                  height={40}
-                  className="rounded-full"
-                />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">
-                    {course.instructor}
-                  </p>
-                  <p className="text-xs text-gray-500">Instructor</p>
-                </div>
-              </div>
+  {/* DIVIDER */}
+  <div className="border-t border-gray-200 my-4"></div>
 
-              {/* LINE */}
-              <div className="border-t border-gray-200 my-4"></div>
+  {/* FOOTER (LESSONS + STUDENTS) */}
+    
+ <div className="mt-4 relative h-[40px]">
 
-              {/* FOOTER */}
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>📄 {course.lessons}</span>
-                <span>👤 {course.students}</span>
-              </div>
+  {/* FOOTER (DEFAULT) */}
+  <div className="
+    flex justify-between items-center text-sm
+    absolute w-full transition-all duration-300
+    group-hover:opacity-0 group-hover:translate-y-4
+  ">
+    <div className="flex items-center gap-2 text-gray-600">
+      <span className="text-blue-500">📄</span>
+      <span>{course.lessons}</span>
+    </div>
 
-              {/* BUTTON */}
-              <button className="mt-5 bg-green-500 text-white px-5 py-2 rounded-full text-sm transition hover:bg-green-600">
-                ENROL NOW →
-              </button>
-            </div>
+    <div className="flex items-center gap-2 text-gray-600">
+      <span className="text-purple-500">👤</span>
+      <span>{course.students}</span>
+    </div>
+  </div>
+
+  {/* BUTTON (HOVER) */}
+  <div className="
+    absolute w-full flex justify-end
+    opacity-0 translate-y-4
+    transition-all duration-300
+    group-hover:opacity-100 group-hover:translate-y-0
+  ">
+    <button className="bg-green-500 text-white px-6 py-2 rounded-full text-sm hover:bg-green-600">
+      ENROL NOW →
+    </button>
+  </div>
+
+
+  </div>
+
+
+</div>
+
           ))}
 
         </div>
@@ -167,8 +196,9 @@ const Courses = () => {
       <Image
         src="/person.png"
         alt="char"
-        width={120}
+        width={140}
         height={100}
+        style={{ width: "140px", height: "auto" }}
         className="absolute bottom-0 left-0 hidden lg:block animate-float"
       />
 

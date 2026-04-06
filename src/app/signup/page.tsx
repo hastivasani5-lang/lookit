@@ -4,14 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic
+    // Handle signup logic
   };
 
   return (
@@ -107,7 +107,7 @@ export default function LoginPage() {
 
             {/* Heading */}
             <h1 className="text-4xl font-bold text-gray-900 mb-8 text-center">
-              Welcome back
+              Create account
             </h1>
 
             {/* Form */}
@@ -148,13 +148,13 @@ export default function LoginPage() {
                 type="submit"
                 className="w-full bg-lime-500 hover:bg-lime-600 text-gray-900 font-bold py-3 rounded-full transition mt-6"
               >
-                Login
+                Create account
               </button>
             </form>
 
             {/* Divider */}
             <div className="text-center text-gray-500 text-sm my-6">
-              or sign in with
+              or sign up with
             </div>
 
             {/* Social Buttons */}
@@ -170,18 +170,24 @@ export default function LoginPage() {
               </button>
             </div>
 
-            {/* Forgot Password Link */}
-            <div className="text-center mb-6">
-              <Link href="#" className="text-lime-600 hover:text-lime-700 text-sm font-semibold">
-                Forgot password?
+            {/* Terms */}
+            <p className="text-center text-xs text-gray-600 mb-6">
+              By creating an account you agree to EducateX's{" "}
+              <Link href="#" className="text-green-600 hover:underline">
+                Terms of Services
+              </Link>{" "}
+              and{" "}
+              <Link href="#" className="text-green-600 hover:underline">
+                Privacy Policy
               </Link>
-            </div>
+              .
+            </p>
 
-            {/* Signup Link */}
+            {/* Login Link */}
             <div className="text-center">
-              <span className="text-gray-600">Don't have an account? </span>
-              <Link href="/signup" className="text-lime-600 hover:text-lime-700 font-semibold">
-                Sign up
+              <span className="text-gray-600">Have an account? </span>
+              <Link href="/login" className="text-lime-600 hover:text-lime-700 font-semibold">
+                Log in
               </Link>
             </div>
           </div>

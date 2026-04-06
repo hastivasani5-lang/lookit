@@ -1,0 +1,10 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "push-jenil-ui",
+			"type": "shell",
+			"command": "git rev-parse --abbrev-ref HEAD && if [ -f .git/MERGE_HEAD ]; then GIT_EDITOR=true git merge --abort || true; fi && rm -f .git/.MERGE_MSG.swp && git checkout jenil-ui && git add -A && (git commit -m \"Update UI and profile features\" || true) && git pull --rebase origin jenil-ui && git push origin jenil-ui"
+		}
+	]
+}

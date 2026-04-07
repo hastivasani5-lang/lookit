@@ -2,15 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import type { UserRole } from "@/types/auth";
 
 export default function SignupPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const trial = useMemo(() => searchParams.get("trial") === "1", [searchParams]);
   const [role, setRole] = useState<UserRole>("student");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -18,16 +16,6 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [isAllowed, setIsAllowed] = useState(false);
-
-  useEffect(() => {
-    if (!trial) {
-      router.replace("/");
-      return;
-    }
-
-    setIsAllowed(true);
-  }, [router, trial]);
 
   const handleSignup = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -50,20 +38,16 @@ export default function SignupPage() {
       return;
     }
 
-    router.push(`/login?trial=1&registered=1&email=${encodeURIComponent(email)}&role=${role}`);
+    router.push(`/login?registered=1&email=${encodeURIComponent(email)}&role=${role}`);
   };
 
-  if (!isAllowed) {
-    return null;
-  }
-
   return (
-    <main className="fixed inset-0 overflow-hidden bg-[#d9ef9a] p-4 md:p-6">
-      <section className="mx-auto flex h-full w-full max-w-[1440px] flex-col overflow-hidden rounded-[36px] bg-[#b7e18d] shadow-[0_30px_80px_rgba(33,64,35,0.22)] lg:flex-row">
-        <div className="relative flex min-h-[420px] flex-1 items-end justify-center overflow-hidden bg-[linear-gradient(180deg,#d9f1b2_0%,#c3e68f_55%,#8bcc62_100%)] pt-16 lg:min-h-0">
-          <div className="pointer-events-none absolute left-10 top-10 h-14 w-14 rounded-full border-[4px] border-[#304430] bg-white/70 shadow-[0_8px_18px_rgba(49,70,49,0.2)]" />
-          <div className="pointer-events-none absolute bottom-10 right-10 h-48 w-24 rounded-t-[60px] bg-[#eef6d1]/75" />
-          <div className="pointer-events-none absolute left-1/2 top-7 z-20 w-full max-w-[560px] -translate-x-1/2 px-6 text-center text-[#1f3b25] md:top-10">
+    <main className="fixed inset-0 overflow-hidden bg-[#d8f0dc] p-4 md:p-6">
+      <section className="mx-auto flex h-full w-full max-w-[1440px] flex-col overflow-hidden rounded-[36px] bg-[#bfe4c5] shadow-[0_30px_80px_rgba(18,76,54,0.22)] lg:flex-row">
+        <div className="relative flex min-h-[420px] flex-1 items-end justify-center overflow-hidden bg-[linear-gradient(180deg,#daf4df_0%,#c6eccf_55%,#9dddae_100%)] pt-16 lg:min-h-0">
+          <div className="pointer-events-none absolute left-10 top-10 h-14 w-14 rounded-full border-[4px] border-[#195a44] bg-white/70 shadow-[0_8px_18px_rgba(25,90,68,0.2)]" />
+          <div className="pointer-events-none absolute bottom-10 right-10 h-48 w-24 rounded-t-[60px] bg-[#e4f6e8]/80" />
+          <div className="pointer-events-none absolute left-1/2 top-7 z-20 w-full max-w-[560px] -translate-x-1/2 px-6 text-center text-[#124533] md:top-10">
             <h2 className="text-5xl font-extrabold leading-none tracking-tight md:text-7xl">Welcome</h2>
             <p className="mt-1 text-2xl font-semibold leading-tight md:mt-2 md:text-4xl">to the website</p>
           </div>
@@ -102,7 +86,7 @@ export default function SignupPage() {
                   type="button"
                   onClick={() => setRole("student")}
                   className={`rounded-full px-4 py-2.5 text-sm font-semibold transition ${
-                    role === "student" ? "bg-lime-400 text-slate-950 shadow-sm" : "text-slate-500"
+                    role === "student" ? "bg-[#1ec28e] text-white shadow-sm" : "text-slate-500"
                   }`}
                 >
                   Student
@@ -111,7 +95,7 @@ export default function SignupPage() {
                   type="button"
                   onClick={() => setRole("professional")}
                   className={`rounded-full px-4 py-2.5 text-sm font-semibold transition ${
-                    role === "professional" ? "bg-lime-400 text-slate-950 shadow-sm" : "text-slate-500"
+                    role === "professional" ? "bg-[#1ec28e] text-white shadow-sm" : "text-slate-500"
                   }`}
                 >
                   Professional
@@ -124,7 +108,7 @@ export default function SignupPage() {
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   placeholder="Full name"
-                  className="h-14 w-full rounded-full border border-[#e2e6db] px-5 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-lime-400"
+                  className="h-14 w-full rounded-full border border-[#e2e6db] px-5 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
                   autoComplete="name"
                   required
                 />
@@ -134,7 +118,7 @@ export default function SignupPage() {
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder="Email address"
-                  className="h-14 w-full rounded-full border border-[#e2e6db] px-5 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-lime-400"
+                  className="h-14 w-full rounded-full border border-[#e2e6db] px-5 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
                   autoComplete="email"
                   required
                 />
@@ -145,7 +129,7 @@ export default function SignupPage() {
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                     placeholder="Password"
-                    className="h-14 w-full rounded-full border border-[#e2e6db] px-5 pr-12 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-lime-400"
+                    className="h-14 w-full rounded-full border border-[#e2e6db] px-5 pr-12 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
                     autoComplete="new-password"
                     required
                   />
@@ -163,7 +147,7 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex h-14 w-full items-center justify-center rounded-full bg-lime-400 font-semibold text-slate-950 transition hover:bg-lime-500 disabled:cursor-not-allowed disabled:opacity-70"
+                className="flex h-14 w-full items-center justify-center rounded-full bg-[#1ec28e] font-semibold text-white transition hover:bg-[#18ab7d] disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : "Create account"}
               </button>
@@ -171,7 +155,7 @@ export default function SignupPage() {
 
             <p className="mt-8 text-center text-sm text-slate-600">
               Have an account?{" "}
-              <Link href="/login?trial=1" className="font-semibold text-lime-700 transition hover:text-lime-800">
+              <Link href="/login" className="font-semibold text-[#1b8c65] transition hover:text-[#0f6c4b]">
                 Log in
               </Link>
             </p>

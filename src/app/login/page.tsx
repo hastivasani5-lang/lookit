@@ -2,48 +2,52 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import type { UserRole } from "@/types/auth";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const trial = useMemo(() => searchParams.get("trial") === "1", [searchParams]);
-  const registered = useMemo(() => searchParams.get("registered") === "1", [searchParams]);
   const [role, setRole] = useState<UserRole>("student");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [isAllowed, setIsAllowed] = useState(false);
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
-    if (!trial) {
-      router.replace("/signup?trial=1");
+    if (typeof window === "undefined") {
       return;
     }
 
-    const urlEmail = searchParams.get("email");
-    const urlRole = searchParams.get("role");
+    const params = new URLSearchParams(window.location.search);
+    const registered = params.get("registered") === "1";
+    const queryEmail = params.get("email");
+    const queryRole = params.get("role");
+    const authError = params.get("error");
 
-    if (urlEmail) {
-      setEmail(urlEmail);
+    if (queryEmail) {
+      setEmail(queryEmail);
     }
 
-    if (urlRole === "student" || urlRole === "professional") {
-      setRole(urlRole);
+    if (queryRole === "student" || queryRole === "professional") {
+      setRole(queryRole);
     }
 
-    setIsAllowed(true);
-  }, [router, searchParams, trial]);
+    if (registered) {
+      setSuccess("Account created successfully. Please log in.");
+    }
 
-  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
+    if (authError === "register-first") {
+      setError("Please register first before using Google login.");
+    }
+  }, []);
+
+  const handleCredentialsLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
+    setSuccess("");
     setIsSubmitting(true);
 
     const result = await signIn("credentials", {
@@ -51,46 +55,44 @@ export default function LoginPage() {
       password,
       role,
       redirect: false,
-      callbackUrl: "/",
     });
 
     setIsSubmitting(false);
 
     if (!result || result.error) {
-      setError("Check your email, password, or selected role.");
+      setError("Invalid credentials, role mismatch, or account not found. Please register first.");
       return;
     }
 
-    router.push(result.url || "/");
-    router.refresh();
+    window.location.href = role === "professional" ? "/dashboard/teachers" : "/dashboard/students";
   };
 
   const handleGoogleLogin = async () => {
     setError("");
-    await signIn("google", { callbackUrl: "/" });
+    setSuccess("");
+
+    await signIn("google", {
+      callbackUrl: role === "professional" ? "/dashboard/teachers" : "/dashboard/students",
+    });
   };
 
-  if (!isAllowed) {
-    return null;
-  }
-
   return (
-    <main className="fixed inset-0 overflow-hidden bg-[#d9ef9a] p-4 md:p-6">
-      <section className="mx-auto flex h-full w-full max-w-[1440px] flex-col overflow-hidden rounded-[36px] bg-[#b7e18d] shadow-[0_30px_80px_rgba(33,64,35,0.22)] lg:flex-row">
-        <div className="relative flex min-h-[420px] flex-1 items-end justify-center overflow-hidden bg-[linear-gradient(180deg,#d9f1b2_0%,#c3e68f_55%,#8bcc62_100%)] pt-16 lg:min-h-0">
-          <div className="pointer-events-none absolute left-10 top-10 h-14 w-14 rounded-full border-[4px] border-[#304430] bg-white/70 shadow-[0_8px_18px_rgba(49,70,49,0.2)]" />
-          <div className="pointer-events-none absolute bottom-10 right-10 h-48 w-24 rounded-t-[60px] bg-[#eef6d1]/75" />
-          <div className="pointer-events-none absolute left-1/2 top-7 z-20 w-full max-w-[560px] -translate-x-1/2 px-6 text-center text-[#1f3b25] md:top-10">
+    <main className="fixed inset-0 overflow-hidden bg-[#d8f0dc] p-4 md:p-6">
+      <section className="mx-auto flex h-full w-full max-w-[1440px] overflow-hidden rounded-[36px] bg-[#bfe4c5] shadow-[0_30px_80px_rgba(18,76,54,0.22)]">
+        <div className="relative hidden flex-1 items-end justify-center overflow-hidden bg-[linear-gradient(180deg,#daf4df_0%,#c6eccf_55%,#9dddae_100%)] pt-16 lg:flex">
+          <div className="pointer-events-none absolute left-8 top-8 h-14 w-14 rounded-full border-[4px] border-[#195a44] bg-white/70 shadow-[0_8px_18px_rgba(25,90,68,0.2)]" />
+          <div className="pointer-events-none absolute bottom-10 right-10 h-48 w-24 rounded-t-[60px] bg-[#e4f6e8]/80" />
+          <div className="pointer-events-none absolute left-1/2 top-8 z-20 w-full max-w-[560px] -translate-x-1/2 px-6 text-center text-[#124533]">
             <h2 className="text-5xl font-extrabold leading-none tracking-tight md:text-7xl">Welcome</h2>
-            <p className="mt-1 text-2xl font-semibold leading-tight md:mt-2 md:text-4xl">to the website</p>
+            <p className="mt-1 text-2xl font-semibold md:text-4xl">to the website</p>
           </div>
           <div className="relative z-10 h-[90%] w-[92%] max-w-[640px] animate-float-slow">
             <Image
               src="/about1.png"
-              alt="Person reading a book"
+              alt="Learning illustration"
               width={640}
               height={640}
-              className="h-full w-full object-contain object-bottom drop-shadow-[0_18px_30px_rgba(24,64,29,0.2)]"
+              className="h-full w-full object-contain object-bottom drop-shadow-[0_18px_30px_rgba(18,76,54,0.2)]"
               priority
             />
           </div>
@@ -99,33 +101,29 @@ export default function LoginPage() {
         <div className="flex flex-1 items-center justify-center bg-white px-6 py-10 lg:px-10">
           <div className="w-full max-w-[420px] text-center">
             <p className="mx-auto mb-6 flex w-fit items-center gap-2 text-lg font-semibold text-slate-800">
-              <span className="h-3 w-3 rounded-sm bg-lime-500" />
+              <span className="h-3 w-3 rounded-sm bg-[#1ec28e]" />
               EducateX
             </p>
 
-            <h1 className="text-4xl font-semibold leading-[0.96] tracking-tight text-slate-900 md:text-5xl">
-              Log in
-            </h1>
-
-            {registered && (
-              <div className="mt-5 rounded-2xl border border-lime-200 bg-lime-50 px-4 py-3 text-sm text-lime-800">
-                Registration complete. You can log in now.
-              </div>
-            )}
+            <h1 className="text-4xl font-semibold leading-[0.96] tracking-tight text-slate-900 md:text-5xl">Log in</h1>
 
             {error && (
-              <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                {error}
+              <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+            )}
+
+            {success && (
+              <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                {success}
               </div>
             )}
 
-            <form onSubmit={handleLogin} className="mt-7 space-y-4 text-left">
-              <div className="grid grid-cols-2 rounded-full bg-[#f2f5ec] p-1">
+            <form onSubmit={handleCredentialsLogin} className="mt-7 space-y-4 text-left">
+              <div className="grid grid-cols-2 rounded-full bg-[#f1f7f3] p-1">
                 <button
                   type="button"
                   onClick={() => setRole("student")}
                   className={`rounded-full px-4 py-2.5 text-sm font-semibold transition ${
-                    role === "student" ? "bg-lime-400 text-slate-950 shadow-sm" : "text-slate-500"
+                    role === "student" ? "bg-[#1ec28e] text-white shadow-sm" : "text-slate-500"
                   }`}
                 >
                   Student
@@ -134,7 +132,7 @@ export default function LoginPage() {
                   type="button"
                   onClick={() => setRole("professional")}
                   className={`rounded-full px-4 py-2.5 text-sm font-semibold transition ${
-                    role === "professional" ? "bg-lime-400 text-slate-950 shadow-sm" : "text-slate-500"
+                    role === "professional" ? "bg-[#1ec28e] text-white shadow-sm" : "text-slate-500"
                   }`}
                 >
                   Professional
@@ -147,7 +145,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder="Email address"
-                  className="h-14 w-full rounded-full border border-[#e2e6db] px-5 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-lime-400"
+                  className="h-14 w-full rounded-full border border-[#e2e6db] px-5 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
                   autoComplete="email"
                   required
                 />
@@ -158,7 +156,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                     placeholder="Password"
-                    className="h-14 w-full rounded-full border border-[#e2e6db] px-5 pr-12 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-lime-400"
+                    className="h-14 w-full rounded-full border border-[#e2e6db] px-5 pr-12 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
                     autoComplete="current-password"
                     required
                   />
@@ -176,33 +174,28 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex h-14 w-full items-center justify-center rounded-full bg-lime-400 font-semibold text-slate-950 transition hover:bg-lime-500 disabled:cursor-not-allowed disabled:opacity-70"
+                className="flex h-14 w-full items-center justify-center rounded-full bg-[#1ec28e] font-semibold text-white transition hover:bg-[#18ab7d] disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : "Log in"}
               </button>
             </form>
 
-            <div className="my-7 flex items-center gap-3 text-slate-400">
-              <span className="h-px flex-1 bg-slate-200" />
-              <span className="text-xs font-medium uppercase tracking-[0.24em]">or</span>
-              <span className="h-px flex-1 bg-slate-200" />
-            </div>
+            <p className="mt-6 text-sm text-slate-600">or log in with</p>
 
             <button
               type="button"
               onClick={handleGoogleLogin}
-              className="flex h-14 w-full items-center justify-center gap-3 rounded-full border border-[#e2e6db] bg-white font-semibold text-slate-700 transition hover:border-lime-400 hover:text-slate-900"
+              className="mx-auto mt-3 flex h-12 w-12 items-center justify-center rounded-full border border-[#d6eadf] bg-[#f4fbf7] text-lg font-bold text-[#1b6f53] transition hover:bg-[#e9f8f0]"
+              aria-label="Continue with Google"
+              title="Continue with Google"
             >
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#f6f7f2] text-[#DB4437]">
-                G
-              </span>
-              Continue with Google
+              G
             </button>
 
             <p className="mt-8 text-center text-sm text-slate-600">
-              Need an account?{" "}
-              <Link href="/signup?trial=1" className="font-semibold text-lime-700 transition hover:text-lime-800">
-                Register first
+              Don&apos;t have an account?{" "}
+              <Link href="/signup" className="font-semibold text-[#1b8c65] transition hover:text-[#0f6c4b]">
+                Create account
               </Link>
             </p>
           </div>

@@ -53,7 +53,7 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   pages: {
-    signIn: "/login?trial=1",
+    signIn: "/login",
   },
   callbacks: {
     async signIn({ user, account }) {
@@ -67,7 +67,7 @@ export const authOptions: NextAuthOptions = {
 
       const dbUser = await getUserByEmail(user.email);
       if (!dbUser) {
-        return "/login?trial=1&error=register-first";
+        return "/login?error=register-first";
       }
 
       user.id = dbUser.id;

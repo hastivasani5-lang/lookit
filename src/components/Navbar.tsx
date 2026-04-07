@@ -15,19 +15,18 @@ const Navbar = () => {
         <div className="flex items-center gap-2">
           <Image src="/logo.png" alt="logo" width={35} height={35} />
           <h1 className="text-xl md:text-2xl font-bold text-gray-900">
-            Educate<span className="text-[#1ec28e]">X</span>
+            Educate<span className="text-primary">X</span>
           </h1>
         </div>
 
         {/* MENU */}
         <nav className="hidden lg:flex items-center gap-8 text-gray-700 text-sm font-medium">
-          <a href="#" className="hover:text-[#1ec28e] transition">Home</a>
-          <a href="#" className="hover:text-[#1ec28e] transition">About</a>
-          <a href="#" className="hover:text-[#1ec28e] transition">Pages</a>
-          <a href="#" className="hover:text-[#1ec28e] transition">Courses</a>
-          <a href="#" className="hover:text-[#1ec28e] transition">Shop</a>
-          <a href="#" className="hover:text-[#1ec28e] transition">Blog</a>
-          <a href="#" className="hover:text-[#1ec28e] transition">Contact</a>
+          <Link href="/about" className="hover:text-primary transition">About</Link>
+          <Link href="/pages" className="hover:text-primary transition">Pages</Link>
+          <Link href="/courses" className="hover:text-primary transition">Courses</Link>
+          <Link href="/shop" className="hover:text-primary transition">Shop</Link>
+          <Link href="/blog" className="hover:text-primary transition">Blog</Link>
+          <Link href="/contact" className="hover:text-primary transition">Contact</Link>
         </nav>
 
         {/* RIGHT SIDE */}
@@ -43,13 +42,13 @@ const Navbar = () => {
             <ShoppingCart className="w-4 h-4 text-gray-700" />
 
             {/* BADGE */}
-            <span className="absolute -top-1 -right-1 bg-[#1ec28e] text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full">
+            <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full">
               0
             </span>
           </div>
 
           {/* LOGIN BUTTON */}
-          <Link href="/dashboard/login" className="hidden md:flex items-center gap-2 bg-[#1ec28e] hover:bg-[#18ab7d] text-white px-5 py-2 rounded-full text-sm font-medium transition">
+          <Link href="/dashboard/login" className="hidden md:flex items-center gap-2 bg-primary hover:bg-[#18ab7d] text-white px-5 py-2 rounded-full text-sm font-medium transition">
             LOGIN →
           </Link>
 

@@ -45,30 +45,35 @@ const Courses = () => {
       {/* CONTAINER */}
       <div className="max-w-[1150px] mx-auto">
 
-        {/* TOP */}<div className="grid md:grid-cols-2 items-center gap-10 mb-16">
+   <div className="max-w-7xl mx-auto mb-16">
+        
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
 
-  {/* LEFT SIDE */}
-  <div>
-    <div className="flex items-center gap-3 mb-4">
-      <span className="w-2 h-2 bg-[#1ec28e] rounded-full"></span>
-      <p className="text-sm text-gray-500 tracking-wide">
-        OUR COURSES
-      </p>
-    </div>
+          {/* LEFT */}
+          <div className="w-full lg:w-1/2" data-aos="fade-right">
+            
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <span className="w-2 h-2 bg-[#1ec28e] rounded-full"></span>
+              CORE FEATURES
+            </div>
 
-    {/* LINE */}
-    <div className="w-full h-[1px] bg-gray-200"></div>
-  </div>
+            {/* LINE */}
+            <div className="mt-3 w-full h-px bg-gray-300"></div>
 
-  {/* RIGHT SIDE */}
-  <div>
-    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
-      Our Courses – Comprehensive <br />
-      Available all programs
-    </h2>
-  </div>
+          </div>
 
-</div>       
+          {/* RIGHT */}
+          <div className="w-full lg:w-1/2" data-aos="fade-left">
+            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight text-left lg:text-right">
+             Our Courses – Comprehensive <br />
+Available all programs
+            </h2>
+          </div>
+
+        </div>
+
+      </div>
+    
 
         {/* FILTER */}
     <div className="flex flex-wrap justify-center gap-4 mb-12">

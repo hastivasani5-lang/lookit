@@ -7,6 +7,7 @@ import WhyChoose from "@/components/WhyChoose";
 import Courses from "@/components/Courses";
 import FeaturedCourse from "@/components/FeaturedCourse";
 import Instructors from "@/components/Instructors";
+import Testimonials from "@/components/Testimonials";
 
 export default function StudentsPage() {
   return (
@@ -20,6 +21,7 @@ export default function StudentsPage() {
       <WhyChoose />
       <FeaturedCourse />
       <Instructors />
+      <Testimonials />
     </>
   );
 }

@@ -64,6 +64,8 @@ const FeaturedCourse = () => {
             />
           </div>
         </div>
+
+        
       </div>
     </section>
   );

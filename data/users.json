@@ -7,5 +7,35 @@
     "role": "professional",
     "provider": "credentials",
     "createdAt": "2026-04-07T03:44:59.206Z"
+  },
+  {
+    "id": "bd05d10d-3216-4736-9501-54a8f85b2648",
+    "name": "jenil",
+    "email": "jenil@gmail.com",
+    "passwordHash": "$2a$10$tXy4Y/y0Mq3h3YTbEuRj9.PoI./L/wrWyeLAHw.bK9/wpJg7DXH6C",
+    "role": "student",
+    "certificates": [],
+    "reviews": [],
+    "provider": "credentials",
+    "createdAt": "2026-04-07T06:56:45.747Z"
+  },
+  {
+    "id": "b8da2a21-3f10-4131-a1b6-3b3532d52774",
+    "name": "jenil",
+    "email": "jenil12@gmail.com",
+    "passwordHash": "$2a$10$rw4HPdhVpfcSmUaJvrTJEeLwizY.yCiiuIYcvMg/PhDIr6quu4kX.",
+    "role": "professional",
+    "certificates": [
+      "/uploads/certificates/b8da2a21-3f10-4131-a1b6-3b3532d52774-1775546191248-tg4mti.pdf"
+    ],
+    "reviews": [
+      "good"
+    ],
+    "provider": "credentials",
+    "createdAt": "2026-04-07T06:57:54.656Z",
+    "image": "/uploads/b8da2a21-3f10-4131-a1b6-3b3532d52774-1775546191247.png",
+    "specialization": "Web Design",
+    "contactNumber": "+91 0987654321",
+    "location": "vesu VR mall ,surat"
   }
 ]

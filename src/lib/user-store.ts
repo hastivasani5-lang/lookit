@@ -4,6 +4,8 @@ import path from "path";
 import { hash } from "bcryptjs";
 import type { AppUser, UserRole } from "@/types/auth";
 
+import { appendProfessionalNotification } from "@/lib/notifications-store";
+
 const DATA_DIR = path.join(process.cwd(), "data");
 const USERS_FILE = path.join(DATA_DIR, "users.json");
 
@@ -31,6 +33,28 @@ async function readUsers(): Promise<AppUser[]> {
 
 async function writeUsers(users: AppUser[]) {
   await fs.writeFile(USERS_FILE, JSON.stringify(users, null, 2), "utf-8");
+}
+
+function getProfileChangeLabels(currentUser: AppUser, updatedUser: AppUser) {
+  const changedFields: string[] = [];
+
+  if (currentUser.name !== updatedUser.name) changedFields.push("Name updated");
+  if (currentUser.email !== updatedUser.email) changedFields.push("Email updated");
+  if (currentUser.image !== updatedUser.image) changedFields.push("Profile photo updated");
+  if (currentUser.specialization !== updatedUser.specialization) changedFields.push("Specialization updated");
+  if (currentUser.contactNumber !== updatedUser.contactNumber) changedFields.push("Contact number updated");
+  if (currentUser.location !== updatedUser.location) changedFields.push("Location updated");
+  if ((currentUser.certificates ?? []).length !== (updatedUser.certificates ?? []).length) {
+    changedFields.push("Certificates uploaded");
+  }
+  if ((currentUser.reviews ?? []).join("\n") !== (updatedUser.reviews ?? []).join("\n")) {
+    changedFields.push("Profile content updated");
+  }
+  if (currentUser.profileBoostedUntil !== updatedUser.profileBoostedUntil) {
+    changedFields.push("Profile boost renewed");
+  }
+
+  return changedFields;
 }
 
 export async function getUserByEmail(email: string) {
@@ -175,6 +199,26 @@ export async function updateUserProfile(input: {
 
   users[index] = updatedUser;
   await writeUsers(users);
+
+  if (currentUser.role === "professional") {
+    const changedFields = getProfileChangeLabels(currentUser, updatedUser);
+
+    if (changedFields.length > 0) {
+      const summary =
+        changedFields.length === 1
+          ? changedFields[0]
+          : `${changedFields[0]} and ${changedFields.length - 1} more update${changedFields.length - 1 === 1 ? "" : "s"}`;
+
+      await appendProfessionalNotification({
+        professionalId: updatedUser.id,
+        professionalName: updatedUser.name,
+        professionalEmail: updatedUser.email,
+        summary,
+        details: changedFields.join(" · "),
+        changedFields,
+      });
+    }
+  }
 
   return updatedUser;
 }

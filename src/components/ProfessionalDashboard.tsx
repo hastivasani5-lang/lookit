@@ -507,9 +507,9 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     : "https://www.google.com/maps";
 
   return (
-    <main className="min-h-screen bg-[#f3f4fb] p-4 md:p-6 lg:p-8">
-      <div className="mx-auto grid min-h-[calc(100vh-2rem)] max-w-[1600px] grid-cols-1 overflow-hidden rounded-[28px] bg-white shadow-[0_24px_80px_rgba(17,24,39,0.08)] lg:grid-cols-[260px_minmax(0,1fr)]">
-        <aside className="flex flex-col border-b border-slate-200 bg-white px-5 py-6 lg:border-b-0 lg:border-r">
+    <main className="min-h-screen bg-[#f3f4fb] p-4 md:p-6 lg:h-screen lg:overflow-hidden lg:p-8">
+      <div className="mx-auto grid min-h-[calc(100vh-2rem)] max-w-[1600px] grid-cols-1 overflow-hidden rounded-[28px] bg-white shadow-[0_24px_80px_rgba(17,24,39,0.08)] lg:h-[calc(100vh-4rem)] lg:grid-cols-[260px_minmax(0,1fr)]">
+        <aside className="flex flex-col border-b border-slate-200 bg-white px-5 py-6 lg:h-full lg:border-b-0 lg:border-r">
           <div className="flex items-center gap-3 px-2 pb-6">
             <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#1ec28e]/10 text-[#1ec28e]">
               <div className="h-5 w-5 rounded-full border-4 border-current border-r-transparent" />
@@ -559,7 +559,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
           </button>
         </aside>
 
-        <section className="bg-[#f7f8fd] px-4 py-5 md:px-6 lg:px-8">
+        <section className="bg-[#f7f8fd] px-4 py-5 md:px-6 lg:h-full lg:overflow-y-auto lg:px-8">
           <div className="flex flex-col gap-4 rounded-[24px] bg-white px-5 py-4 shadow-sm md:flex-row md:items-center md:justify-between">
             <div>
               <h2 className="text-xl font-semibold text-slate-900">Welcome!</h2>
@@ -887,8 +887,8 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
           ) : (
             <>
               <div className="mt-6 rounded-[24px] bg-white p-5 shadow-sm md:p-6">
-                <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-                  <div className="flex items-center gap-4">
+                <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
+                  <div className="flex items-start gap-4">
                     <Image
                       src={avatarSrc}
                       alt="Professional profile"
@@ -896,9 +896,9 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                       height={92}
                       className="h-20 w-20 rounded-3xl border border-slate-100 object-cover"
                     />
-                    <div>
+                    <div className="min-w-0 max-w-3xl">
                       <p className="text-sm font-medium text-[#1ec28e]">Professional Profile</p>
-                      <h3 className="mt-1 text-2xl font-semibold text-slate-900">{profileName || "Professional User"}</h3>
+                      <h3 className="mt-1 truncate text-2xl font-semibold text-slate-900">{profileName || "Professional User"}</h3>
                       <p className="mt-1 text-sm text-slate-500">{profileEmail}</p>
                       <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
                         <span className="rounded-full bg-[#f7faf8] px-3 py-1 text-slate-600">
@@ -928,7 +928,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 lg:pt-2">
                     <button
                       type="button"
                       onClick={() => setActiveSection("settings")}
@@ -1026,7 +1026,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                   {featuredContent}
                 </div>
 
-                <aside className="rounded-[24px] bg-white p-4 shadow-sm">
+                <aside className="rounded-[24px] bg-white p-4 shadow-sm xl:sticky xl:top-5 xl:self-start">
                   {featuredPage === 2 ? (
                     <>
                       <div className="space-y-3">

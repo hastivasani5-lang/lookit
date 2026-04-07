@@ -49,7 +49,7 @@ const Navbar = () => {
           </div>
 
           {/* LOGIN BUTTON */}
-          <Link href="/dashboard/login" className="hidden md:flex items-center gap-2 bg-[#1ec28e] hover:bg-[#18ab7d] text-white px-5 py-2 rounded-full text-sm font-medium transition">
+          <Link href="/login" className="hidden md:flex items-center gap-2 bg-[#1ec28e] hover:bg-[#18ab7d] text-white px-5 py-2 rounded-full text-sm font-medium transition">
             LOGIN →
           </Link>
 
@@ -57,7 +57,6 @@ const Navbar = () => {
           <Menu className="lg:hidden w-6 h-6 cursor-pointer" />
 
         </div>
-
       </div>
 
     </header>

@@ -6,7 +6,6 @@ import {
   ClipboardList,
   DollarSign,
   FolderTree,
-  GraduationCap,
   Home,
   MoreHorizontal,
   PencilLine,
@@ -383,11 +382,15 @@ export default function AdminPanelView() {
     <main className="min-h-screen bg-[#eef0fb] p-3 sm:p-4 md:p-6">
       <section className="mx-auto grid min-h-[calc(100vh-1.5rem)] w-full max-w-[1450px] overflow-hidden rounded-[28px] bg-white shadow-[0_18px_55px_rgba(15,23,42,0.14)] lg:grid-cols-[250px_minmax(0,1fr)]">
         <aside className="hidden border-r border-slate-100 bg-white px-4 py-5 lg:flex lg:flex-col">
-          <div className="flex items-center gap-2 pb-6">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-[#1ec28e]/10 text-[#1ec28e]">
-              <GraduationCap className="h-4 w-4" />
-            </span>
-            <p className="text-2xl font-bold text-slate-800">Schooli</p>
+          <div className="pb-6">
+            <Image
+              src="/logo.png"
+              alt="Lookit logo"
+              width={160}
+              height={56}
+              priority
+              className="h-10 w-auto object-contain"
+            />
           </div>
 
           <nav className="space-y-1.5">

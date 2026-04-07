@@ -6,6 +6,7 @@ import Marquee from "@/components/Marquee";
 import WhyChoose from "@/components/WhyChoose";
 import Courses from "@/components/Courses";
 import FeaturedCourse from "@/components/FeaturedCourse";
+import Instructors from "@/components/Instructors";
 
 export default function StudentsPage() {
   return (
@@ -18,6 +19,7 @@ export default function StudentsPage() {
       <Courses />
       <WhyChoose />
       <FeaturedCourse />
+      <Instructors />
     </>
   );
 }

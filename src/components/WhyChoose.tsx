@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const WhyChoose = () => {
   return (
-    <section className="py-24 bg-[#eef5f3] relative overflow-hidden px-4 md:px-8 lg:px-16">
+    <section className="py-20 bg-[#eef5f3] relative overflow-hidden px-4 md:px-8 lg:px-16">
 <div className="absolute top-10 right-10 hidden md:block animate-float-slow">
   <Image
     src="/shape.png"
@@ -15,7 +15,7 @@ const WhyChoose = () => {
   />
 </div>
       {/* BACKGROUND GRADIENT */}
-      <div className="absolute right-0 top-0 w-[600px] h-[600px] bg-gradient-to-tr from-green-100 to-transparent rounded-full blur-3xl opacity-50"></div>
+      <div className="absolute right-0 top-0 w-[600px] h-[600px] bg-gradient-to-tr from-[#1ec28e]/12 to-transparent rounded-full blur-3xl opacity-50"></div>
 
       <div className="max-w-[1200px] mx-auto grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
 
@@ -23,7 +23,7 @@ const WhyChoose = () => {
         <div data-aos="fade-right" className="max-w-xl">
 
           <p className="text-xs tracking-widest text-gray-500 flex items-center gap-2 mb-4">
-            <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+            <span className="w-1.5 h-1.5 bg-[#1ec28e] rounded-full"></span>
             WHY CHOOSE US?
           </p>
 
@@ -42,7 +42,7 @@ const WhyChoose = () => {
           <div className="grid grid-cols-2 gap-4 mb-6">
 
             <div className="bg-[#dff3ec] px-4 py-3 rounded-lg flex items-center gap-2 text-sm font-medium">
-              <span className="text-green-600">✔</span>
+              <span className="text-[#1ec28e]">✔</span>
               Course Management
             </div>
 
@@ -64,21 +64,21 @@ const WhyChoose = () => {
           </div>
 
           <p className="text-sm text-gray-500 mb-6 flex items-center gap-2">
-            <span className="text-green-500 text-lg">*</span>
+            <span className="text-[#1ec28e] text-lg">*</span>
             24/7 Hrs Ready to our support team
           </p>
 
           <div className="flex items-center gap-6">
 
-            <button className="bg-green-500 hover:bg-green-600 text-white px-7 py-3 rounded-full text-sm font-medium transition">
+            <button className="bg-[#1ec28e] hover:bg-[#18ab7d] text-white px-7 py-3 rounded-full text-sm font-medium transition">
               GET STARTED →
             </button>
 
             {/* WAVE */}
             <div className="flex flex-col gap-1">
-              <div className="w-12 h-1 bg-green-400 rounded-full"></div>
+              <div className="w-12 h-1 bg-[#1ec28e]/70 rounded-full"></div>
               <div className="w-10 h-1 bg-orange-400 rounded-full"></div>
-              <div className="w-12 h-1 bg-green-400 rounded-full"></div>
+              <div className="w-12 h-1 bg-[#1ec28e]/70 rounded-full"></div>
             </div>
 
           </div>
@@ -104,19 +104,19 @@ const WhyChoose = () => {
           {/* DOTS */}
           <div className="absolute top-16 right-20 grid grid-cols-4 gap-1">
             {Array.from({ length: 12 }).map((_, i) => (
-              <span key={i} className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+              <span key={i} className="w-1.5 h-1.5 bg-[#1ec28e] rounded-full"></span>
             ))}
           </div>
 
           {/* STAR */}
-          <div className="absolute left-10 bottom-24 w-12 h-12 border border-green-400 rounded-full flex items-center justify-center text-green-500 text-xl animate-pulse">
+          <div className="absolute left-10 bottom-24 w-12 h-12 border border-[#1ec28e]/55 rounded-full flex items-center justify-center text-[#1ec28e] text-xl animate-pulse">
             *
           </div>
 
           {/* EXPERIENCE CARD */}
           <div className="absolute right-0 bottom-16 bg-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 animate-float">
 
-            <div className="w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-[#1ec28e] text-white rounded-full flex items-center justify-center">
               ★
             </div>
 

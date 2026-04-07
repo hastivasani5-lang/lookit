@@ -34,7 +34,7 @@ const courses = [
     lessons: "15 Lessons",
     students: "1600 Students",
     color: "bg-[#eef7f3]",
-    badgeColor: "bg-green-500",
+    badgeColor: "bg-[#1ec28e]",
   },
 ];
 
@@ -50,7 +50,7 @@ const Courses = () => {
   {/* LEFT SIDE */}
   <div>
     <div className="flex items-center gap-3 mb-4">
-      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+      <span className="w-2 h-2 bg-[#1ec28e] rounded-full"></span>
       <p className="text-sm text-gray-500 tracking-wide">
         OUR COURSES
       </p>
@@ -77,8 +77,8 @@ const Courses = () => {
       key={i}
       className={`px-5 py-2 rounded-full text-sm font-medium transition ${
         i === 0
-          ? "bg-green-500 text-white"
-          : "bg-gray-100 hover:bg-green-100"
+          ? "bg-[#1ec28e] text-white"
+          : "bg-gray-100 hover:bg-[#1ec28e]/10"
       }`}
     >
       {item}
@@ -133,8 +133,7 @@ const Courses = () => {
       alt="user"
       width={40}
       height={40}
-      style={{ width: "40px", height: "40px" }}
-      className="rounded-full object-cover"
+      className="h-10 w-10 rounded-full object-cover"
     />
     <div>
       <p className="text-sm font-medium text-gray-900">
@@ -175,7 +174,7 @@ const Courses = () => {
     transition-all duration-300
     group-hover:opacity-100 group-hover:translate-y-0
   ">
-    <button className="bg-green-500 text-white px-6 py-2 rounded-full text-sm hover:bg-green-600">
+    <button className="bg-[#1ec28e] text-white px-6 py-2 rounded-full text-sm hover:bg-[#18ab7d]">
       ENROL NOW →
     </button>
   </div>
@@ -198,8 +197,7 @@ const Courses = () => {
         alt="char"
         width={140}
         height={100}
-        style={{ width: "140px", height: "auto" }}
-        className="absolute bottom-0 left-0 hidden lg:block animate-float"
+        className="absolute bottom-0 left-0 hidden h-auto w-[140px] lg:block animate-float"
       />
 
     </section>

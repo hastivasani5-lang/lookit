@@ -40,7 +40,7 @@ const About = () => {
 
             {/* ROTATING CIRCLE */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-[110%] h-[110%] border-2 border-dashed border-green-300 rounded-full animate-spin-slow"></div>
+              <div className="w-[110%] h-[110%] border-2 border-dashed border-[#1ec28e]/40 rounded-full animate-spin-slow"></div>
             </div>
 
          
@@ -53,7 +53,7 @@ const About = () => {
 
           {/* SMALL TITLE */}
           <p className="text-[11px] tracking-widest text-gray-500 flex items-center gap-2 mb-3">
-            <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+            <span className="w-1.5 h-1.5 bg-[#1ec28e] rounded-full"></span>
             ABOUT US
           </p>
 
@@ -75,7 +75,7 @@ const About = () => {
           <div className="flex flex-wrap gap-x-8 gap-y-3 mb-5">
             
             <div className="flex items-center gap-2">
-              <span className="w-4 h-4 flex items-center justify-center rounded-full border border-green-500 text-green-500 text-[10px]">
+              <span className="w-4 h-4 flex items-center justify-center rounded-full border border-[#1ec28e] text-[#1ec28e] text-[10px]">
                 ✔
               </span>
               <p className="text-gray-800 text-sm font-medium">
@@ -84,7 +84,7 @@ const About = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="w-4 h-4 flex items-center justify-center rounded-full border border-green-500 text-green-500 text-[10px]">
+              <span className="w-4 h-4 flex items-center justify-center rounded-full border border-[#1ec28e] text-[#1ec28e] text-[10px]">
                 ✔
               </span>
               <p className="text-gray-800 text-sm font-medium">
@@ -101,7 +101,7 @@ const About = () => {
           <div className="flex flex-col sm:flex-row justify-between gap-6 mb-5">
 
             <div className="flex items-start gap-3">
-              <h3 className="text-3xl font-bold text-green-500">30+</h3>
+              <h3 className="text-3xl font-bold text-[#1ec28e]">30+</h3>
               <p className="text-gray-500 text-xs leading-5">
                 Expert and Professional <br />
                 all Instructor
@@ -109,7 +109,7 @@ const About = () => {
             </div>
 
             <div className="flex items-start gap-3">
-              <h3 className="text-3xl font-bold text-green-500">6k+</h3>
+              <h3 className="text-3xl font-bold text-[#1ec28e]">6k+</h3>
               <p className="text-gray-500 text-xs leading-5">
                 Enrolled Students all <br />
                 Over the World
@@ -122,7 +122,7 @@ const About = () => {
           <div className="border-t border-gray-200 mb-5"></div>
 
           {/* BUTTON */}
-          <button className="bg-green-500 hover:bg-green-600 text-white px-6 py-2.5 rounded-full text-xs font-medium transition">
+          <button className="bg-[#1ec28e] hover:bg-[#18ab7d] text-white px-6 py-2.5 rounded-full text-xs font-medium transition">
             MORE ABOUT →
           </button>
 

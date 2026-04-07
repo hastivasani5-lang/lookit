@@ -15,7 +15,7 @@ const Features = () => {
           <div className="w-full lg:w-1/2" data-aos="fade-right">
             
             <div className="flex items-center gap-2 text-sm text-gray-500">
-              <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+              <span className="w-2 h-2 bg-[#1ec28e] rounded-full"></span>
               CORE FEATURES
             </div>
 
@@ -44,7 +44,7 @@ const Features = () => {
           data-aos="fade-up"
           className="bg-[#e9f5f1] p-8 rounded-3xl hover:shadow-xl transition"
         >
-          <GraduationCap className="w-10 h-10 text-green-500 mb-6" />
+          <GraduationCap className="w-10 h-10 text-[#1ec28e] mb-6" />
           <h3 className="text-xl font-semibold text-gray-900">
             Learning Experiences
           </h3>

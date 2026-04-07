@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #1ec28e;
+}
+
+:root {
+  --primary-color: #1ec28e;
+}
+
 body {
   font-family: sans-serif;
 }

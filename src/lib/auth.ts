@@ -2,7 +2,7 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { compare } from "bcryptjs";
-import { getUserByEmail } from "@/lib/user-store";
+import { getUserByEmail, getUserById } from "@/lib/user-store";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -81,11 +81,15 @@ export const authOptions: NextAuthOptions = {
         token.role = user.role;
       }
 
-      if (token.email && !token.id) {
-        const dbUser = await getUserByEmail(token.email);
+      if (token.id) {
+        const dbUser = await getUserById(token.id);
         if (dbUser) {
-          token.id = dbUser.id;
           token.role = dbUser.role;
+          token.name = dbUser.name;
+          token.email = dbUser.email;
+          token.picture = dbUser.image ?? token.picture;
+          token.location = dbUser.location;
+          token.profileBoostedUntil = dbUser.profileBoostedUntil;
         }
       }
 
@@ -95,6 +99,11 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id ?? "";
         session.user.role = token.role ?? "student";
+        session.user.name = token.name ?? session.user.name;
+        session.user.email = token.email ?? session.user.email;
+        session.user.image = token.picture ?? session.user.image;
+        session.user.location = token.location ?? "";
+        session.user.profileBoostedUntil = token.profileBoostedUntil ?? null;
       }
 
       return session;

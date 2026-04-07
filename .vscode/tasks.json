@@ -5,6 +5,22 @@
 			"label": "push-jenil-ui",
 			"type": "shell",
 			"command": "git rev-parse --abbrev-ref HEAD && if [ -f .git/MERGE_HEAD ]; then GIT_EDITOR=true git merge --abort || true; fi && rm -f .git/.MERGE_MSG.swp && git checkout jenil-ui && git add -A && (git commit -m \"Update UI and profile features\" || true) && git pull --rebase origin jenil-ui && git push origin jenil-ui"
+		},
+		{
+			"label": "merge-push-main",
+			"type": "shell",
+			"command": "git checkout main && git pull origin main && git merge jenil-ui && git push origin main && git status --short --branch"
+		},
+		{
+			"label": "merge-jenil-main-noeditor",
+			"type": "shell",
+			"command": "git checkout main && git pull origin main && rm -f .git/.MERGE_MSG.swp && GIT_EDITOR=true git merge --no-edit jenil-ui && git push origin main && git rev-parse HEAD && git status --short --branch"
+		},
+		{
+			"label": "push-main-latest",
+			"type": "shell",
+			"command": "cd /Users/jenilgadhiya/Desktop/lookit && export GIT_PAGER=cat && git checkout main && git add -A && (git commit -m \"Push latest dashboard updates\" || true) && git pull --rebase origin main && git push origin main && git rev-parse --abbrev-ref HEAD && git rev-parse --short HEAD",
+			"isBackground": false
 		}
 	]
 }

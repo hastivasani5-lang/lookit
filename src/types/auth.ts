@@ -7,6 +7,12 @@ export interface AppUser {
   passwordHash?: string;
   role: UserRole;
   image?: string;
+  specialization?: string;
+  contactNumber?: string;
+  location?: string;
+  certificates?: string[];
+  reviews?: string[];
+  profileBoostedUntil?: string;
   provider: "credentials" | "google";
   createdAt: string;
 }

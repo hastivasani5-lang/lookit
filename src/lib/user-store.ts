@@ -38,6 +38,11 @@ export async function getUserByEmail(email: string) {
   return users.find((user) => user.email.toLowerCase() === email.toLowerCase()) ?? null;
 }
 
+export async function getUserById(id: string) {
+  const users = await readUsers();
+  return users.find((user) => user.id === id) ?? null;
+}
+
 export async function registerUser(input: {
   name: string;
   email: string;
@@ -59,6 +64,12 @@ export async function registerUser(input: {
     email,
     passwordHash,
     role: input.role,
+    specialization: undefined,
+    contactNumber: undefined,
+    location: undefined,
+    certificates: [],
+    reviews: [],
+    profileBoostedUntil: undefined,
     provider: "credentials",
     createdAt: new Date().toISOString(),
   };
@@ -88,6 +99,12 @@ export async function upsertGoogleUser(input: {
     email,
     role: "student",
     image: input.image ?? undefined,
+    specialization: undefined,
+    contactNumber: undefined,
+    location: undefined,
+    certificates: [],
+    reviews: [],
+    profileBoostedUntil: undefined,
     provider: "google",
     createdAt: new Date().toISOString(),
   };
@@ -96,4 +113,68 @@ export async function upsertGoogleUser(input: {
   await writeUsers(users);
 
   return newUser;
+}
+
+export async function updateUserProfile(input: {
+  id: string;
+  name?: string;
+  email?: string;
+  image?: string | null;
+  specialization?: string;
+  contactNumber?: string;
+  location?: string;
+  certificates?: string[];
+  reviews?: string[];
+  profileBoostedUntil?: string | null;
+}) {
+  const users = await readUsers();
+  const index = users.findIndex((user) => user.id === input.id);
+
+  if (index === -1) {
+    throw new Error("User not found.");
+  }
+
+  const currentUser = users[index];
+  const nextEmail = input.email?.trim().toLowerCase() || currentUser.email;
+
+  const emailAlreadyInUse = users.some(
+    (user) => user.id !== input.id && user.email.toLowerCase() === nextEmail,
+  );
+
+  if (emailAlreadyInUse) {
+    throw new Error("This email is already used by another account.");
+  }
+
+  const updatedUser: AppUser = {
+    ...currentUser,
+    name: input.name?.trim() || currentUser.name,
+    email: nextEmail,
+    image: input.image === undefined ? currentUser.image : input.image ?? undefined,
+    specialization:
+      input.specialization === undefined
+        ? currentUser.specialization
+        : input.specialization.trim() || undefined,
+    contactNumber:
+      input.contactNumber === undefined
+        ? currentUser.contactNumber
+        : input.contactNumber.trim() || undefined,
+    location: input.location === undefined ? currentUser.location : input.location.trim() || undefined,
+    certificates:
+      input.certificates && input.certificates.length > 0
+        ? [...(currentUser.certificates ?? []), ...input.certificates]
+        : currentUser.certificates ?? [],
+    reviews:
+      input.reviews === undefined
+        ? currentUser.reviews ?? []
+        : input.reviews.filter((review) => review.trim().length > 0),
+    profileBoostedUntil:
+      input.profileBoostedUntil === undefined
+        ? currentUser.profileBoostedUntil
+        : input.profileBoostedUntil ?? undefined,
+  };
+
+  users[index] = updatedUser;
+  await writeUsers(users);
+
+  return updatedUser;
 }

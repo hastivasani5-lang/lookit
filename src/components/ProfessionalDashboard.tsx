@@ -40,7 +40,27 @@ type ProfessionalDashboardProps = {
   user: ProfessionalUser;
 };
 
-type DashboardSection = "overview" | "upgrade" | "friends" | "groups" | "videos" | "events" | "settings";
+type DashboardSection = "overview" | "add" | "upgrade" | "friends" | "groups" | "videos" | "events" | "settings";
+type AddContentTab = "books" | "videos";
+
+type AddedBook = {
+  id: string;
+  name: string;
+  mrp: string;
+  category: string;
+  fileName: string;
+  sizeLabel: string;
+  url: string;
+  imageUrl: string;
+};
+
+type AddedVideo = {
+  id: string;
+  name: string;
+  sizeLabel: string;
+  url: string;
+  source: "file" | "youtube";
+};
 
 type FeaturedPage = 1 | 2 | 3;
 
@@ -60,6 +80,7 @@ const upgradePlans: Array<{
 
 const sidebarItems: Array<{ label: string; icon: typeof LayoutGrid; section: DashboardSection }> = [
   { label: "Overview", icon: LayoutGrid, section: "overview" },
+  { label: "Add", icon: Upload, section: "add" },
   { label: "Upgrade Profile", icon: CreditCard, section: "upgrade" },
   { label: "Friends", icon: Users, section: "friends" },
   { label: "Groups", icon: MessageSquare, section: "groups" },
@@ -225,6 +246,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [activeSection, setActiveSection] = useState<DashboardSection>("overview");
+  const [addContentTab, setAddContentTab] = useState<AddContentTab>("books");
   const [featuredPage, setFeaturedPage] = useState<FeaturedPage>(1);
   const [profileName, setProfileName] = useState(user.name);
   const [profileEmail, setProfileEmail] = useState(user.email);
@@ -242,6 +264,16 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   const [profileError, setProfileError] = useState("");
   const [upgradePlan, setUpgradePlan] = useState<UpgradePlanKey>("pro");
   const [profileReviewsText, setProfileReviewsText] = useState((user.reviews ?? []).join("\n"));
+  const [addedBooks, setAddedBooks] = useState<AddedBook[]>([]);
+  const [addedVideos, setAddedVideos] = useState<AddedVideo[]>([]);
+  const [bookNameInput, setBookNameInput] = useState("");
+  const [bookMrpInput, setBookMrpInput] = useState("");
+  const [bookCategoryInput, setBookCategoryInput] = useState("");
+  const [bookImageFile, setBookImageFile] = useState<File | null>(null);
+  const [bookImageLinkInput, setBookImageLinkInput] = useState("");
+  const [bookFormError, setBookFormError] = useState("");
+  const [youtubeLinkInput, setYoutubeLinkInput] = useState("");
+  const [youtubeLinkError, setYoutubeLinkError] = useState("");
 
   useEffect(() => {
     setIsMounted(true);
@@ -506,10 +538,181 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(profileLocation)}`
     : "https://www.google.com/maps";
 
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) {
+      return `${bytes} B`;
+    }
+
+    const kb = bytes / 1024;
+    if (kb < 1024) {
+      return `${kb.toFixed(1)} KB`;
+    }
+
+    const mb = kb / 1024;
+    return `${mb.toFixed(1)} MB`;
+  };
+
+  const handleBookUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+    if (files.length === 0) {
+      return;
+    }
+
+    const trimmedBookName = bookNameInput.trim();
+    const trimmedBookMrp = bookMrpInput.trim();
+    const trimmedBookCategory = bookCategoryInput.trim();
+    const parsedMrp = Number(trimmedBookMrp);
+
+    if (!trimmedBookName || !trimmedBookMrp || !trimmedBookCategory) {
+      setBookFormError("Please enter book name, MRP, and category/type before uploading.");
+      event.target.value = "";
+      return;
+    }
+
+    const trimmedBookImageLink = bookImageLinkInput.trim();
+    let resolvedBookImageUrl = "";
+
+    if (bookImageFile) {
+      resolvedBookImageUrl = URL.createObjectURL(bookImageFile);
+    } else if (trimmedBookImageLink) {
+      try {
+        const parsed = new URL(trimmedBookImageLink);
+        if (!parsed.protocol.startsWith("http")) {
+          throw new Error("Invalid protocol");
+        }
+        resolvedBookImageUrl = trimmedBookImageLink;
+      } catch {
+        setBookFormError("Please provide a valid image link.");
+        event.target.value = "";
+        return;
+      }
+    } else {
+      setBookFormError("Please upload a book image file or provide an image link.");
+      event.target.value = "";
+      return;
+    }
+
+    if (!Number.isFinite(parsedMrp) || parsedMrp <= 0) {
+      setBookFormError("Please enter a valid MRP amount.");
+      event.target.value = "";
+      return;
+    }
+
+    setBookFormError("");
+
+    const newBooks = files.map((file, index) => ({
+      id: `book-${Date.now()}-${index}`,
+      name: trimmedBookName,
+      mrp: parsedMrp.toFixed(2),
+      category: trimmedBookCategory,
+      fileName: file.name,
+      sizeLabel: formatFileSize(file.size),
+      url: URL.createObjectURL(file),
+      imageUrl: resolvedBookImageUrl,
+    }));
+
+    setAddedBooks((prev) => [...newBooks, ...prev]);
+    setBookNameInput("");
+    setBookMrpInput("");
+    setBookCategoryInput("");
+    setBookImageFile(null);
+    setBookImageLinkInput("");
+    event.target.value = "";
+  };
+
+  const getYouTubeEmbedUrl = (link: string) => {
+    try {
+      const parsed = new URL(link);
+      if (parsed.hostname.includes("youtu.be")) {
+        const id = parsed.pathname.replace("/", "").trim();
+        return id ? `https://www.youtube.com/embed/${id}` : null;
+      }
+
+      if (parsed.hostname.includes("youtube.com")) {
+        const id = parsed.searchParams.get("v") || "";
+        return id ? `https://www.youtube.com/embed/${id}` : null;
+      }
+
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
+  const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+    if (files.length === 0) {
+      return;
+    }
+
+    const newVideos = files.map((file, index) => ({
+      id: `video-${Date.now()}-${index}`,
+      name: file.name,
+      sizeLabel: formatFileSize(file.size),
+      url: URL.createObjectURL(file),
+      source: "file" as const,
+    }));
+
+    setAddedVideos((prev) => [...newVideos, ...prev]);
+    event.target.value = "";
+  };
+
+  const handleYouTubeAdd = () => {
+    const trimmedLink = youtubeLinkInput.trim();
+    if (!trimmedLink) {
+      setYoutubeLinkError("Please enter a YouTube link.");
+      return;
+    }
+
+    const embedUrl = getYouTubeEmbedUrl(trimmedLink);
+    if (!embedUrl) {
+      setYoutubeLinkError("Please enter a valid YouTube URL.");
+      return;
+    }
+
+    setYoutubeLinkError("");
+    setAddedVideos((prev) => [
+      {
+        id: `yt-${Date.now()}`,
+        name: "YouTube Video",
+        sizeLabel: "YouTube Link",
+        url: embedUrl,
+        source: "youtube",
+      },
+      ...prev,
+    ]);
+    setYoutubeLinkInput("");
+  };
+
+  const handleDeleteBook = (bookId: string) => {
+    setAddedBooks((currentBooks) => {
+      const bookToRemove = currentBooks.find((book) => book.id === bookId);
+      if (bookToRemove?.imageUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(bookToRemove.imageUrl);
+      }
+      if (bookToRemove?.url.startsWith("blob:")) {
+        URL.revokeObjectURL(bookToRemove.url);
+      }
+
+      return currentBooks.filter((book) => book.id !== bookId);
+    });
+  };
+
+  const handleDeleteVideo = (videoId: string) => {
+    setAddedVideos((currentVideos) => {
+      const videoToRemove = currentVideos.find((video) => video.id === videoId);
+      if (videoToRemove?.source === "file" && videoToRemove.url.startsWith("blob:")) {
+        URL.revokeObjectURL(videoToRemove.url);
+      }
+
+      return currentVideos.filter((video) => video.id !== videoId);
+    });
+  };
+
   return (
-    <main className="min-h-screen bg-[#f3f4fb] p-4 md:p-6 lg:p-8">
-      <div className="mx-auto grid min-h-[calc(100vh-2rem)] max-w-[1600px] grid-cols-1 overflow-hidden rounded-[28px] bg-white shadow-[0_24px_80px_rgba(17,24,39,0.08)] lg:grid-cols-[260px_minmax(0,1fr)]">
-        <aside className="flex flex-col border-b border-slate-200 bg-white px-5 py-6 lg:border-b-0 lg:border-r">
+    <main className="h-screen overflow-hidden bg-[#f3f4fb] p-4 md:p-6 lg:p-8">
+      <div className="mx-auto grid h-[calc(100vh-2rem)] max-w-[1600px] grid-cols-1 overflow-hidden rounded-[28px] bg-white shadow-[0_24px_80px_rgba(17,24,39,0.08)] md:h-[calc(100vh-3rem)] lg:h-[calc(100vh-4rem)] lg:grid-cols-[260px_minmax(0,1fr)]">
+        <aside className="flex flex-col border-b border-slate-200 bg-white px-5 py-6 lg:sticky lg:top-0 lg:h-full lg:border-b-0 lg:border-r">
           <div className="flex items-center gap-3 px-2 pb-6">
             <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#1ec28e]/10 text-[#1ec28e]">
               <div className="h-5 w-5 rounded-full border-4 border-current border-r-transparent" />
@@ -559,7 +762,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
           </button>
         </aside>
 
-        <section className="bg-[#f7f8fd] px-4 py-5 md:px-6 lg:px-8">
+  <section className="h-full overflow-y-auto bg-[#f7f8fd] px-4 py-5 md:px-6 lg:px-8">
           <div className="flex flex-col gap-4 rounded-[24px] bg-white px-5 py-4 shadow-sm md:flex-row md:items-center md:justify-between">
             <div>
               <h2 className="text-xl font-semibold text-slate-900">Welcome!</h2>
@@ -582,7 +785,236 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
             </div>
           </div>
 
-          {activeSection === "upgrade" ? (
+          {activeSection === "add" ? (
+            <div className="mt-6 space-y-6">
+              <div className="rounded-[24px] bg-white p-3 shadow-sm">
+                <div className="flex w-full max-w-sm items-center gap-2 rounded-2xl bg-[#f7faf8] p-1">
+                  <button
+                    type="button"
+                    onClick={() => setAddContentTab("books")}
+                    className={`flex-1 rounded-xl px-4 py-2 text-sm font-medium transition ${
+                      addContentTab === "books" ? "bg-[#1ec28e] text-white" : "text-slate-600 hover:bg-white"
+                    }`}
+                  >
+                    Books
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAddContentTab("videos")}
+                    className={`flex-1 rounded-xl px-4 py-2 text-sm font-medium transition ${
+                      addContentTab === "videos" ? "bg-[#1ec28e] text-white" : "text-slate-600 hover:bg-white"
+                    }`}
+                  >
+                    Videos
+                  </button>
+                </div>
+              </div>
+
+              {addContentTab === "books" ? (
+                <>
+                  <div className="rounded-[24px] bg-white p-6 shadow-sm">
+                    <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-900">Add Books</h3>
+                        <p className="text-sm text-slate-500">Enter details and upload book files.</p>
+                      </div>
+                      <BookOpen className="h-5 w-5 text-[#1ec28e]" />
+                    </div>
+
+                    <div className="mt-5 grid gap-3 md:grid-cols-3">
+                      <input
+                        type="text"
+                        value={bookNameInput}
+                        onChange={(event) => setBookNameInput(event.target.value)}
+                        placeholder="Book name"
+                        className="h-11 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
+                      />
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={bookMrpInput}
+                        onChange={(event) => setBookMrpInput(event.target.value)}
+                        placeholder="MRP"
+                        className="h-11 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
+                      />
+                      <input
+                        type="text"
+                        value={bookCategoryInput}
+                        onChange={(event) => setBookCategoryInput(event.target.value)}
+                        placeholder="Category / Type"
+                        className="h-11 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
+                      />
+                    </div>
+
+                    <div className="mt-3 grid gap-3 md:grid-cols-2">
+                      <label className="flex h-11 cursor-pointer items-center justify-between rounded-xl border border-dashed border-slate-300 px-3 text-sm text-slate-600 transition hover:border-[#1ec28e] hover:bg-[#f7faf8]">
+                        <span className="truncate">{bookImageFile ? bookImageFile.name : "Upload book image file"}</span>
+                        <span className="rounded-full bg-[#effaf6] px-2.5 py-1 text-xs font-medium text-[#1ec28e]">Browse</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(event) => setBookImageFile(event.target.files?.[0] ?? null)}
+                        />
+                      </label>
+
+                      <input
+                        type="url"
+                        value={bookImageLinkInput}
+                        onChange={(event) => setBookImageLinkInput(event.target.value)}
+                        placeholder="Or paste Google image link"
+                        className="h-11 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
+                      />
+                    </div>
+
+                    <label className="mt-5 flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-2xl border border-dashed border-slate-300 px-4 text-sm text-slate-600 transition hover:border-[#1ec28e] hover:bg-[#f7faf8]">
+                      <span>Choose books to upload</span>
+                      <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-medium text-[#1ec28e]">Browse</span>
+                      <input
+                        type="file"
+                        multiple
+                        accept=".pdf,.doc,.docx,.ppt,.pptx,.txt"
+                        className="hidden"
+                        onChange={handleBookUpload}
+                      />
+                    </label>
+
+                    {bookFormError && <p className="mt-3 text-xs font-medium text-red-600">{bookFormError}</p>}
+                  </div>
+
+                  <div className="rounded-[24px] bg-white p-6 shadow-sm">
+                    <div className="mb-4 flex items-center justify-between gap-3">
+                      <h4 className="text-base font-semibold text-slate-900">Uploaded Books</h4>
+                      <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-semibold text-[#1ec28e]">
+                        {addedBooks.length}
+                      </span>
+                    </div>
+
+                    {addedBooks.length === 0 ? (
+                      <p className="rounded-2xl bg-[#f7faf8] px-4 py-3 text-sm text-slate-500">No books uploaded yet.</p>
+                    ) : (
+                      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                        {addedBooks.map((book) => (
+                          <article key={book.id} className="overflow-hidden rounded-2xl border border-slate-100 bg-[#f7faf8]">
+                            <img src={book.imageUrl} alt={book.name} className="h-44 w-full object-cover" />
+                            <div className="space-y-2 p-4">
+                              <p className="line-clamp-2 text-sm font-semibold text-slate-900">{book.name}</p>
+                              <p className="text-xs text-slate-500">{book.category}</p>
+                              <p className="text-sm font-semibold text-[#1ec28e]">MRP ₹{book.mrp}</p>
+                              <p className="truncate text-xs text-slate-500">{book.fileName} • {book.sizeLabel}</p>
+                              <div className="flex items-center gap-2 pt-1">
+                                <a
+                                  href={book.url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="inline-flex rounded-full bg-white px-3 py-1.5 text-xs font-medium text-[#1ec28e] transition hover:bg-[#effaf6]"
+                                >
+                                  View Book
+                                </a>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteBook(book.id)}
+                                  className="inline-flex rounded-full bg-[#fff1f1] px-3 py-1.5 text-xs font-medium text-[#cc2a2a] transition hover:bg-[#ffe2e2]"
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            </div>
+                          </article>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="rounded-[24px] bg-white p-6 shadow-sm">
+                    <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-900">Add Videos</h3>
+                        <p className="text-sm text-slate-500">Upload tutorial or course videos.</p>
+                      </div>
+                      <Video className="h-5 w-5 text-[#1ec28e]" />
+                    </div>
+
+                    <label className="mt-5 flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-2xl border border-dashed border-slate-300 px-4 text-sm text-slate-600 transition hover:border-[#1ec28e] hover:bg-[#f7faf8]">
+                      <span>Choose videos to upload</span>
+                      <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-medium text-[#1ec28e]">Browse</span>
+                      <input
+                        type="file"
+                        multiple
+                        accept="video/*"
+                        className="hidden"
+                        onChange={handleVideoUpload}
+                      />
+                    </label>
+
+                    <div className="mt-4 flex gap-2">
+                      <input
+                        type="url"
+                        value={youtubeLinkInput}
+                        onChange={(event) => setYoutubeLinkInput(event.target.value)}
+                        placeholder="Paste YouTube link"
+                        className="h-11 flex-1 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleYouTubeAdd}
+                        className="h-11 rounded-xl bg-[#1ec28e] px-4 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
+                      >
+                        Add Link
+                      </button>
+                    </div>
+
+                    {youtubeLinkError && <p className="mt-3 text-xs font-medium text-red-600">{youtubeLinkError}</p>}
+                  </div>
+
+                  <div className="rounded-[24px] bg-white p-6 shadow-sm">
+                    <div className="mb-4 flex items-center justify-between gap-3">
+                      <h4 className="text-base font-semibold text-slate-900">Uploaded Videos</h4>
+                      <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-semibold text-[#1ec28e]">
+                        {addedVideos.length}
+                      </span>
+                    </div>
+
+                    {addedVideos.length === 0 ? (
+                      <p className="rounded-2xl bg-[#f7faf8] px-4 py-3 text-sm text-slate-500">No videos uploaded yet.</p>
+                    ) : (
+                      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                        {addedVideos.map((video) => (
+                          <article key={video.id} className="overflow-hidden rounded-2xl border border-slate-100 bg-[#f7faf8]">
+                            {video.source === "youtube" ? (
+                              <iframe
+                                className="aspect-video w-full bg-black"
+                                src={video.url}
+                                title={video.name}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                              />
+                            ) : (
+                              <video src={video.url} controls className="aspect-video w-full bg-black" />
+                            )}
+                            <div className="space-y-1 p-4">
+                              <p className="truncate text-sm font-semibold text-slate-900">{video.name}</p>
+                              <p className="text-xs text-slate-500">{video.sizeLabel}</p>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteVideo(video.id)}
+                                className="inline-flex rounded-full bg-[#fff1f1] px-3 py-1.5 text-xs font-medium text-[#cc2a2a] transition hover:bg-[#ffe2e2]"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </article>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          ) : activeSection === "upgrade" ? (
             <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
               <form onSubmit={handleUpgradeSubmit} className="rounded-[24px] bg-white p-6 shadow-sm">
                 <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-4">

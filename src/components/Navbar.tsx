@@ -1,10 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { Menu, Search, ShoppingCart } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const Navbar = () => {
+  const router = useRouter();
+
   return (
     <header className="w-full fixed top-0 z-50 bg-white shadow-sm">
 
@@ -12,12 +15,16 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-8 py-3">
 
         {/* LOGO */}
-        <div className="flex items-center gap-2">
-          <Image src="/logo.png" alt="logo" width={35} height={35} />
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900">
-            Educate<span className="text-[#1ec28e]">X</span>
-          </h1>
-        </div>
+        <button type="button" onClick={() => router.push("/")} className="inline-flex items-center">
+          <Image
+            src="/logo.png"
+            alt="Lookit logo"
+            width={220}
+            height={86}
+            priority
+            className="h-16 w-auto shrink-0 object-contain"
+          />
+        </button>
 
         {/* MENU */}
         <nav className="hidden lg:flex items-center gap-8 text-gray-700 text-sm font-medium">

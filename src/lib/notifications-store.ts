@@ -1,0 +1,51 @@
+import { randomUUID } from "crypto";
+import { promises as fs } from "fs";
+import path from "path";
+
+import type { ProfessionalNotification } from "@/types/notifications";
+
+const DATA_DIR = path.join(process.cwd(), "data");
+const NOTIFICATIONS_FILE = path.join(DATA_DIR, "notifications.json");
+
+async function ensureNotificationsFile() {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+
+  try {
+    await fs.access(NOTIFICATIONS_FILE);
+  } catch {
+    await fs.writeFile(NOTIFICATIONS_FILE, "[]", "utf-8");
+  }
+}
+
+async function readNotifications(): Promise<ProfessionalNotification[]> {
+  await ensureNotificationsFile();
+  const raw = await fs.readFile(NOTIFICATIONS_FILE, "utf-8");
+
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as ProfessionalNotification[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+async function writeNotifications(notifications: ProfessionalNotification[]) {
+  await fs.writeFile(NOTIFICATIONS_FILE, JSON.stringify(notifications, null, 2), "utf-8");
+}
+
+export async function appendProfessionalNotification(notification: Omit<ProfessionalNotification, "id" | "createdAt">) {
+  const notifications = await readNotifications();
+
+  notifications.unshift({
+    ...notification,
+    id: randomUUID(),
+    createdAt: new Date().toISOString(),
+  });
+
+  await writeNotifications(notifications.slice(0, 100));
+}
+
+export async function getProfessionalNotifications() {
+  const notifications = await readNotifications();
+  return notifications.sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+}

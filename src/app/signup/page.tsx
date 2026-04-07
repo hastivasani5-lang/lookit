@@ -1,198 +1,183 @@
 "use client";
 
-import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import type { UserRole } from "@/types/auth";
 
 export default function SignupPage() {
-  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const trial = useMemo(() => searchParams.get("trial") === "1", [searchParams]);
+  const [role, setRole] = useState<UserRole>("student");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [isAllowed, setIsAllowed] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle signup logic
+  useEffect(() => {
+    if (!trial) {
+      router.replace("/");
+      return;
+    }
+
+    setIsAllowed(true);
+  }, [router, trial]);
+
+  const handleSignup = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError("");
+    setIsSubmitting(true);
+
+    const response = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, email, password, role }),
+    });
+
+    const result = (await response.json()) as { message?: string };
+    setIsSubmitting(false);
+
+    if (!response.ok) {
+      setError(result.message || "Registration failed.");
+      return;
+    }
+
+    router.push(`/login?trial=1&registered=1&email=${encodeURIComponent(email)}&role=${role}`);
   };
 
+  if (!isAllowed) {
+    return null;
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-lime-300 to-lime-200 flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl flex gap-8 items-center">
-        {/* Left Side - Illustration */}
-        <div className="hidden lg:flex flex-1 justify-center">
-          <div className="relative w-full max-w-md h-96">
-            {/* Background elements */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              {/* Clock */}
-              <div className="absolute top-12 left-20 w-16 h-16 border-4 border-gray-800 rounded-full flex items-center justify-center">
-                <div className="w-1 h-6 bg-gray-800 absolute"></div>
-                <div className="w-6 h-1 bg-gray-800 absolute"></div>
-              </div>
-
-              {/* Plant pot left */}
-              <div className="absolute top-16 -left-8">
-                <div className="w-16 h-20 bg-white rounded-lg shadow-lg relative">
-                  <div className="absolute -top-8 left-2 w-3 h-12 bg-green-600 rounded"></div>
-                  <div className="absolute -top-6 left-5 w-3 h-10 bg-green-600 rounded"></div>
-                  <div className="absolute -top-10 left-1 w-2 h-14 bg-green-600 rounded"></div>
-                </div>
-              </div>
-
-              {/* Main Character */}
-              <div className="relative z-10 mb-4">
-                {/* Head */}
-                <div className="w-12 h-12 bg-amber-100 rounded-full mx-auto mb-2 relative">
-                  {/* Hair */}
-                  <div className="absolute -top-1 left-1 w-10 h-6 bg-amber-800 rounded-t-full"></div>
-                  {/* Face */}
-                  <div className="flex items-center justify-center h-full gap-1">
-                    <div className="w-1.5 h-1.5 bg-black rounded-full"></div>
-                    <div className="w-1.5 h-1.5 bg-black rounded-full"></div>
-                  </div>
-                  {/* Beard */}
-                  <div className="absolute bottom-1 left-2 w-8 h-2 border-b-2 border-amber-900"></div>
-                </div>
-
-                {/* Neck */}
-                <div className="w-3 h-2 bg-amber-100 mx-auto"></div>
-
-                {/* Body */}
-                <div className="w-16 h-20 bg-green-500 rounded-lg mx-auto flex items-center justify-center relative">
-                  <div className="w-4 h-12 bg-blue-600 rounded mx-1"></div>
-                  <div className="w-4 h-12 bg-blue-600 rounded mx-1"></div>
-                </div>
-
-                {/* Hands holding laptop */}
-                <div className="absolute top-16 left-4 w-2 h-4 bg-amber-100 rounded-full"></div>
-                <div className="absolute top-16 right-4 w-2 h-4 bg-amber-100 rounded-full"></div>
-
-                {/* Laptop */}
-                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-20 h-14 bg-gray-800 rounded-lg shadow-lg border-4 border-gray-900"></div>
-
-                {/* Shoes */}
-                <div className="flex gap-4 justify-center mt-1">
-                  <div className="w-6 h-4 bg-purple-600 rounded-full"></div>
-                  <div className="w-6 h-4 bg-purple-600 rounded-full"></div>
-                </div>
-              </div>
-
-              {/* Desk */}
-              <div className="w-56 h-4 bg-green-700 rounded-full shadow-2xl mt-4"></div>
-
-              {/* Plant pot right */}
-              <div className="absolute -bottom-8 right-12">
-                <div className="w-20 h-24 bg-gray-300 rounded-t-3xl shadow-lg relative">
-                  <div className="absolute -top-12 left-2 w-4 h-16 bg-green-600 rounded-full"></div>
-                  <div className="absolute -top-10 left-8 w-4 h-14 bg-green-600 rounded-full"></div>
-                  <div className="absolute -top-14 left-14 w-4 h-18 bg-green-600 rounded-full"></div>
-                </div>
-              </div>
-
-              {/* Chair */}
-              <div className="absolute -bottom-6 left-12">
-                <div className="w-12 h-3 bg-blue-600 rounded-full"></div>
-              </div>
-            </div>
+    <main className="fixed inset-0 overflow-hidden bg-[#d9ef9a] p-4 md:p-6">
+      <section className="mx-auto flex h-full w-full max-w-[1440px] flex-col overflow-hidden rounded-[36px] bg-[#b7e18d] shadow-[0_30px_80px_rgba(33,64,35,0.22)] lg:flex-row">
+        <div className="relative flex min-h-[420px] flex-1 items-end justify-center overflow-hidden bg-[linear-gradient(180deg,#d9f1b2_0%,#c3e68f_55%,#8bcc62_100%)] pt-16 lg:min-h-0">
+          <div className="pointer-events-none absolute left-10 top-10 h-14 w-14 rounded-full border-[4px] border-[#304430] bg-white/70 shadow-[0_8px_18px_rgba(49,70,49,0.2)]" />
+          <div className="pointer-events-none absolute bottom-10 right-10 h-48 w-24 rounded-t-[60px] bg-[#eef6d1]/75" />
+          <div className="pointer-events-none absolute left-1/2 top-7 z-20 w-full max-w-[560px] -translate-x-1/2 px-6 text-center text-[#1f3b25] md:top-10">
+            <h2 className="text-5xl font-extrabold leading-none tracking-tight md:text-7xl">Welcome</h2>
+            <p className="mt-1 text-2xl font-semibold leading-tight md:mt-2 md:text-4xl">to the website</p>
+          </div>
+          <div className="relative z-10 h-[90%] w-[92%] max-w-[640px] animate-float-slow">
+            <Image
+              src="/about1.png"
+              alt="Person reading a book"
+              width={640}
+              height={640}
+              className="h-full w-full object-contain object-bottom drop-shadow-[0_18px_30px_rgba(24,64,29,0.2)]"
+              priority
+            />
           </div>
         </div>
 
-        {/* Right Side - Form */}
-        <div className="flex-1 max-w-md">
-          <div className="bg-white rounded-3xl p-10 shadow-2xl">
-            {/* Logo */}
-            <div className="text-center mb-8">
-              <div className="text-2xl font-bold text-green-600">
-                <span className="text-green-500">📚</span> EducateX
-              </div>
-            </div>
+        <div className="flex flex-1 items-center justify-center bg-white px-6 py-10 lg:px-10">
+          <div className="w-full max-w-[420px] text-center">
+            <p className="mx-auto mb-6 flex w-fit items-center gap-2 text-lg font-semibold text-slate-800">
+              <span className="h-3 w-3 rounded-sm bg-lime-500" />
+              EducateX
+            </p>
 
-            {/* Heading */}
-            <h1 className="text-4xl font-bold text-gray-900 mb-8 text-center">
+            <h1 className="text-4xl font-semibold leading-[0.96] tracking-tight text-slate-900 md:text-5xl">
               Create account
             </h1>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Email Input */}
-              <input
-                type="email"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-6 py-3 border-2 border-gray-300 rounded-full focus:outline-none focus:border-green-500 transition text-gray-700 placeholder-gray-400"
-              />
+            {error && (
+              <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {error}
+              </div>
+            )}
 
-              {/* Password Input */}
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-6 py-3 border-2 border-gray-300 rounded-full focus:outline-none focus:border-green-500 transition text-gray-700 placeholder-gray-400"
-                />
+            <form onSubmit={handleSignup} className="mt-7 space-y-4 text-left">
+              <div className="grid grid-cols-2 rounded-full bg-[#f2f5ec] p-1">
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-5 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  onClick={() => setRole("student")}
+                  className={`rounded-full px-4 py-2.5 text-sm font-semibold transition ${
+                    role === "student" ? "bg-lime-400 text-slate-950 shadow-sm" : "text-slate-500"
+                  }`}
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
+                  Student
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRole("professional")}
+                  className={`rounded-full px-4 py-2.5 text-sm font-semibold transition ${
+                    role === "professional" ? "bg-lime-400 text-slate-950 shadow-sm" : "text-slate-500"
+                  }`}
+                >
+                  Professional
                 </button>
               </div>
 
-              {/* Submit Button */}
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  placeholder="Full name"
+                  className="h-14 w-full rounded-full border border-[#e2e6db] px-5 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-lime-400"
+                  autoComplete="name"
+                  required
+                />
+
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="Email address"
+                  className="h-14 w-full rounded-full border border-[#e2e6db] px-5 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-lime-400"
+                  autoComplete="email"
+                  required
+                />
+
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder="Password"
+                    className="h-14 w-full rounded-full border border-[#e2e6db] px-5 pr-12 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-lime-400"
+                    autoComplete="new-password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 transition hover:text-slate-700"
+                    onClick={() => setShowPassword((current) => !current)}
+                    aria-label="Toggle password visibility"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
               <button
                 type="submit"
-                className="w-full bg-lime-500 hover:bg-lime-600 text-gray-900 font-bold py-3 rounded-full transition mt-6"
+                disabled={isSubmitting}
+                className="flex h-14 w-full items-center justify-center rounded-full bg-lime-400 font-semibold text-slate-950 transition hover:bg-lime-500 disabled:cursor-not-allowed disabled:opacity-70"
               >
-                Create account
+                {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : "Create account"}
               </button>
             </form>
 
-            {/* Divider */}
-            <div className="text-center text-gray-500 text-sm my-6">
-              or sign up with
-            </div>
-
-            {/* Social Buttons */}
-            <div className="flex gap-4 justify-center mb-6">
-              <button className="w-12 h-12 rounded-full bg-lime-100 hover:bg-lime-200 flex items-center justify-center font-bold text-lg transition">
-                G
-              </button>
-              <button className="w-12 h-12 rounded-full bg-lime-100 hover:bg-lime-200 flex items-center justify-center transition">
-                ⊞
-              </button>
-              <button className="w-12 h-12 rounded-full bg-lime-100 hover:bg-lime-200 flex items-center justify-center transition">
-                ⚙
-              </button>
-            </div>
-
-            {/* Terms */}
-            <p className="text-center text-xs text-gray-600 mb-6">
-              By creating an account you agree to EducateX's{" "}
-              <Link href="#" className="text-green-600 hover:underline">
-                Terms of Services
-              </Link>{" "}
-              and{" "}
-              <Link href="#" className="text-green-600 hover:underline">
-                Privacy Policy
-              </Link>
-              .
-            </p>
-
-            {/* Login Link */}
-            <div className="text-center">
-              <span className="text-gray-600">Have an account? </span>
-              <Link href="/login" className="text-lime-600 hover:text-lime-700 font-semibold">
+            <p className="mt-8 text-center text-sm text-slate-600">
+              Have an account?{" "}
+              <Link href="/login?trial=1" className="font-semibold text-lime-700 transition hover:text-lime-800">
                 Log in
               </Link>
-            </div>
+            </p>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

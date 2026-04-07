@@ -1,0 +1,11 @@
+[
+  {
+    "id": "e8e23652-faf2-4d88-b5a4-c0078672885e",
+    "name": "gadhiya jenil",
+    "email": "jenilgadhiya918@gmail.com",
+    "passwordHash": "$2a$10$XtZgN2id/g.HvPD8QfaC3eP0dO8QNqiJ9IaSFOiT2FMzQHvtZQNWm",
+    "role": "professional",
+    "provider": "credentials",
+    "createdAt": "2026-04-07T03:44:59.206Z"
+  }
+]

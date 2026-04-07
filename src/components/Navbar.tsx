@@ -2,34 +2,62 @@
 
 import Link from "next/link";
 import { Menu, Search, ShoppingCart } from "lucide-react";
+import Image from "next/image";
 
 const Navbar = () => {
   return (
-    <header className="w-full py-4 px-4 md:px-8 flex items-center justify-between bg-white fixed top-0 z-50 shadow-sm">
-      
-      <div className="text-xl md:text-2xl font-bold text-green-600">
-        EducateX
-      </div>
+    <header className="w-full fixed top-0 z-50 bg-white shadow-sm">
 
-      <nav className="hidden lg:flex gap-6 text-gray-700">
-        <a href="#">Home</a>
-        <a href="#">About</a>
-        <a href="#">Pages</a>
-        <a href="#">Courses</a>
-        <a href="#">Shop</a>
-        <a href="#">Blog</a>
-        <a href="#">Contact</a>
-      </nav>
+      {/* MAIN NAV */}
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-8 py-3">
 
-      <div className="flex items-center gap-3">
-        <Search className="w-5 h-5" />
-        <ShoppingCart className="w-5 h-5" />
+        {/* LOGO */}
+        <div className="flex items-center gap-2">
+          <Image src="/logo.png" alt="logo" width={35} height={35} />
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+            Educate<span className="text-[#1ec28e]">X</span>
+          </h1>
+        </div>
 
-        <Link href="/signup?trial=1" className="hidden md:block bg-green-500 text-white px-4 py-2 rounded-full text-sm">
-          FREE TRIAL →
-        </Link>
+        {/* MENU */}
+        <nav className="hidden lg:flex items-center gap-8 text-gray-700 text-sm font-medium">
+          <a href="#" className="hover:text-[#1ec28e] transition">Home</a>
+          <a href="#" className="hover:text-[#1ec28e] transition">About</a>
+          <a href="#" className="hover:text-[#1ec28e] transition">Pages</a>
+          <a href="#" className="hover:text-[#1ec28e] transition">Courses</a>
+          <a href="#" className="hover:text-[#1ec28e] transition">Shop</a>
+          <a href="#" className="hover:text-[#1ec28e] transition">Blog</a>
+          <a href="#" className="hover:text-[#1ec28e] transition">Contact</a>
+        </nav>
 
-        <Menu className="lg:hidden" />
+        {/* RIGHT SIDE */}
+        <div className="flex items-center gap-4">
+
+          {/* SEARCH */}
+          <div className="w-10 h-10 rounded-full border flex items-center justify-center cursor-pointer hover:bg-gray-100 transition">
+            <Search className="w-4 h-4 text-gray-700" />
+          </div>
+
+          {/* CART */}
+          <div className="relative w-10 h-10 rounded-full border flex items-center justify-center cursor-pointer hover:bg-gray-100 transition">
+            <ShoppingCart className="w-4 h-4 text-gray-700" />
+
+            {/* BADGE */}
+            <span className="absolute -top-1 -right-1 bg-[#1ec28e] text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full">
+              0
+            </span>
+          </div>
+
+          {/* LOGIN BUTTON */}
+          <Link href="/dashboard/login" className="hidden md:flex items-center gap-2 bg-[#1ec28e] hover:bg-[#18ab7d] text-white px-5 py-2 rounded-full text-sm font-medium transition">
+            LOGIN →
+          </Link>
+
+          {/* MOBILE MENU */}
+          <Menu className="lg:hidden w-6 h-6 cursor-pointer" />
+
+        </div>
+
       </div>
 
     </header>

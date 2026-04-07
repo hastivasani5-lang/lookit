@@ -8,6 +8,8 @@ import Courses from "@/components/Courses";
 import FeaturedCourse from "@/components/FeaturedCourse";
 import Instructors from "@/components/Instructors";
 import Testimonials from "@/components/Testimonials";
+import BlogSection from "@/components/BlogSection";
+import Footer from "@/components/Footer";
 
 export default function StudentsPage() {
   return (
@@ -22,6 +24,8 @@ export default function StudentsPage() {
       <FeaturedCourse />
       <Instructors />
       <Testimonials />
+      <BlogSection />
+      <Footer />
     </>
   );
 }

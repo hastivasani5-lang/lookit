@@ -16,7 +16,7 @@ const About = () => {
 
       {/* RIGHT DECORATION */}
       <div className="absolute top-16 right-10 animate-float-slow">
-        <Image src="/wave.png" alt="wave" width={100} height={100} />
+        <Image src="/wave.png" alt="wave" width={100} height={100} className="h-auto w-auto" />
       </div>
 
       {/* MAIN CONTAINER */}
@@ -136,7 +136,7 @@ const About = () => {
         alt="books"
         width={130}
         height={130}
-        className="absolute bottom-10 right-10 hidden md:block animate-float"
+        className="absolute bottom-10 right-10 hidden h-auto w-auto md:block animate-float"
       />
 
     </section>

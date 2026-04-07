@@ -314,7 +314,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
           {coursePageThree.map((course, index) => (
             <article key={`${course.title}-${index}`} className="overflow-hidden rounded-[22px] bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
               <div className="relative h-44 overflow-hidden">
-                <Image src={course.image} alt={course.title} fill className="object-cover" />
+                <Image src={course.image} alt={course.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1536px) 50vw, 33vw" className="object-cover" />
                 <div className="absolute left-4 top-4 rounded-full bg-[#1ec28e] px-3 py-1 text-xs font-medium text-white">
                   {course.tag}
                 </div>
@@ -347,7 +347,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
         {coursePageOne.map((course, index) => (
           <article key={`${course.title}-${index}`} className="overflow-hidden rounded-[22px] bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
             <div className="relative h-44 overflow-hidden">
-              <Image src={course.image} alt={course.title} fill className="object-cover" />
+              <Image src={course.image} alt={course.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1536px) 50vw, 33vw" className="object-cover" />
               <div className="absolute left-4 top-4 rounded-full bg-[#1ec28e] px-3 py-1 text-xs font-medium text-white">
                 {course.tag}
               </div>

@@ -107,7 +107,7 @@ Available all programs
                   alt="course"
                   width={400}
                   height={250}
-                  className="rounded-xl w-full h-[200px] object-cover"
+                  className="rounded-xl h-[200px] w-full object-cover"
                 />
     {/* PRICE BADGE */}
     <div className={`absolute bottom-4 left-4 ${course.badgeColor} text-white text-sm px-4 py-2 rounded-full shadow-md`}>

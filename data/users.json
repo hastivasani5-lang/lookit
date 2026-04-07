@@ -37,5 +37,27 @@
     "specialization": "Web Design",
     "contactNumber": "+91 0987654321",
     "location": "vesu VR mall ,surat"
+  },
+  {
+    "id": "11f40abe-ac32-4e33-8281-c7cd20d74dc0",
+    "name": "Hasti Vasani",
+    "email": "hastivasani723@gmail.com",
+    "passwordHash": "$2a$10$FIQzX2F11JkwBppvRsxkDOQ0d2PZcTWJ.8z.cMAioo0szwK5IGMuy",
+    "role": "professional",
+    "certificates": [],
+    "reviews": [],
+    "provider": "credentials",
+    "createdAt": "2026-04-07T06:50:33.525Z"
+  },
+  {
+    "id": "390d9473-a894-4432-8013-1c2b8ccdcfc7",
+    "name": "Hasti Vasani",
+    "email": "hastivasani72@gmail.com",
+    "passwordHash": "$2a$10$nStwngkXGDERwZwcMske/.wlz2DRT.x3rt9JGIYXOE5OF3LMVoD0q",
+    "role": "professional",
+    "certificates": [],
+    "reviews": [],
+    "provider": "credentials",
+    "createdAt": "2026-04-07T06:59:41.762Z"
   }
 ]

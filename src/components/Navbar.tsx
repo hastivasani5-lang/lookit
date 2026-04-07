@@ -15,16 +15,12 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-8 py-3">
 
         {/* LOGO */}
-        <button type="button" onClick={() => router.push("/")} className="inline-flex items-center">
-          <Image
-            src="/logo.png"
-            alt="Lookit logo"
-            width={220}
-            height={86}
-            priority
-            className="h-16 w-auto shrink-0 object-contain"
-          />
-        </button>
+        <div className="flex items-center gap-2">
+          <Image src="/leaf.png" alt="logo" width={35} height={35} className="h-auto w-auto" />
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+            Educate<span className="text-[#1ec28e]">X</span>
+          </h1>
+        </div>
 
         {/* MENU */}
         <nav className="hidden lg:flex items-center gap-8 text-gray-700 text-sm font-medium">

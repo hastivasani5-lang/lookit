@@ -8,8 +8,17 @@
   --primary-color: #1ec28e;
 }
 
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   font-family: sans-serif;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* slow rotate */

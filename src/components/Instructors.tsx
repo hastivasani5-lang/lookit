@@ -136,6 +136,7 @@ Professional Instructor
                       src={item.img}
                       alt={item.name}
                       fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                       className="object-cover transition duration-500 group-hover:scale-110"
                     />
                   </div>
@@ -211,6 +212,7 @@ Professional Instructor
           alt="icon"
           width={60}
           height={60}
+          className="h-auto w-auto"
         />
       </motion.div>
 

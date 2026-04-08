@@ -64,32 +64,6 @@ export default function CourseFilterSection({
         </select>
       </div>
 
-      {/* LEVEL */}
-      <div>
-        <h3 className="text-sm font-semibold text-gray-700 mb-3">
-          Level
-        </h3>
-        <select className="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm">
-          <option value="all">All Levels</option>
-          <option value="beginner">Beginner</option>
-          <option value="intermediate">Intermediate</option>
-          <option value="advanced">Advanced</option>
-        </select>
-      </div>
-
-      {/* DURATION */}
-      <div>
-        <h3 className="text-sm font-semibold text-gray-700 mb-3">
-          Duration
-        </h3>
-        <select className="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm">
-          <option value="all">All Durations</option>
-          <option value="0-5">0–5 Hours</option>
-          <option value="5-10">5–10 Hours</option>
-          <option value="10+">10+ Hours</option>
-        </select>
-      </div>
-
       {/* LANGUAGE */}
       <div>
         <h3 className="text-sm font-semibold text-gray-700 mb-3">

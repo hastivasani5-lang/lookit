@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import ProfessionalProfileClient from "@/app/professionals/[id]/ProfessionalProfileClient";
 import { professionals } from "@/app/professionals/data";
+import Footer from "@/components/Footer";
 
 type ProfessionalProfilePageProps = {
   params: Promise<{
@@ -23,6 +24,8 @@ export default async function ProfessionalProfilePage({ params }: ProfessionalPr
     <>
       <Navbar />
       <ProfessionalProfileClient professional={professional} />
+      <Footer />
+
     </>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type WheelEvent } from "react";
 import CourseFilterSection from "@/components/CourseFilterSection";
 import ContentTypeTabs, { type ContentType } from "@/components/ContentTypeTabs";
 import CourseGridSection, {
@@ -15,6 +15,7 @@ export default function CoursesFilteredLayout() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedReview, setSelectedReview] = useState("all");
   const [selectedRating, setSelectedRating] = useState("all");
+  const rightPaneRef = useRef<HTMLDivElement | null>(null);
 
   const activeItems = useMemo(() => {
     if (contentType === "books") {
@@ -49,8 +50,7 @@ export default function CoursesFilteredLayout() {
         selectedReview === "all" ||
         (selectedReview === "100+" && course.reviewCount >= 100) ||
         (selectedReview === "300+" && course.reviewCount >= 300) ||
-        (selectedReview === "500+" && course.reviewCount >= 500) ||
-        (selectedReview === "700+" && course.reviewCount >= 700);
+        (selectedReview === "500+" && course.reviewCount >= 500);
 
       const ratingMatch =
         selectedRating === "all" ||
@@ -61,9 +61,33 @@ export default function CoursesFilteredLayout() {
     });
   }, [activeItems, selectedCategory, selectedReview, selectedRating]);
 
+  const handleDesktopLockedScroll = (event: WheelEvent<HTMLDivElement>) => {
+    if (typeof window === "undefined" || window.innerWidth < 1024) {
+      return;
+    }
+
+    const pane = rightPaneRef.current;
+    if (!pane) {
+      return;
+    }
+
+    const { deltaY } = event;
+    if (deltaY === 0) {
+      return;
+    }
+
+    const canScrollDown = pane.scrollTop + pane.clientHeight < pane.scrollHeight - 1;
+    const canScrollUp = pane.scrollTop > 0;
+
+    if ((deltaY > 0 && canScrollDown) || (deltaY < 0 && canScrollUp)) {
+      event.preventDefault();
+      pane.scrollTop += deltaY;
+    }
+  };
+
   return (
     <section className="mx-auto w-full max-w-400 px-4 py-10 md:px-8 lg:px-6 xl:px-4">
-      <div className="grid gap-8 lg:grid-cols-[300px_minmax(0,1fr)] lg:items-start">
+      <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-start" onWheel={handleDesktopLockedScroll}>
         {/* Filter Sidebar - Sticky */}
         <aside className="self-start lg:sticky lg:top-24">
           <CourseFilterSection
@@ -78,7 +102,7 @@ export default function CoursesFilteredLayout() {
         </aside>
 
         {/* Content Area - Scrollable */}
-        <div className="flex flex-col">
+        <div ref={rightPaneRef} className="flex flex-col lg:h-[calc(100vh-4rem)] lg:overflow-y-auto hide-scrollbar lg:pr-1">
           <ContentTypeTabs
             contentType={contentType}
             onContentTypeChange={setContentType}

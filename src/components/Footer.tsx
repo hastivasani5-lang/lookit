@@ -1,6 +1,17 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
+
+const footerPages = [
+  { label: "Home", href: "/" },
+  { label: "Find Experts", href: "/directory" },
+  { label: "Categories", href: "/categories" },
+  { label: "Professionals", href: "/professionals" },
+  { label: "Resources", href: "/resources" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
+];
 
 export default function Footer() {
   return (
@@ -19,17 +30,17 @@ export default function Footer() {
 
           {/* TEXT */}
           <h3 className="text-lg md:text-xl font-semibold">
-            SUBSCRIB <span className="text-[#1ec28e]">NEWSLETTER</span>
+            SUBSCRIB <span className="text-primary">NEWSLETTER</span>
           </h3>
 
           {/* INPUT */}
-          <div className="flex items-center bg-[#111] border border-gray-700 rounded-full px-4 py-2 w-full md:w-[350px]">
+          <div className="flex items-center bg-[#111] border border-gray-700 rounded-full px-4 py-2 w-full md:w-88">
             <input
               type="email"
               placeholder="Enter Your Email"
               className="bg-transparent outline-none flex-1 text-sm text-gray-300"
             />
-            <button className="bg-[#1ec28e] w-10 h-10 rounded-full flex items-center justify-center text-white">
+            <button className="bg-primary w-10 h-10 rounded-full flex items-center justify-center text-white">
               ➤
             </button>
           </div>
@@ -37,7 +48,7 @@ export default function Footer() {
         </div>
 
         {/* ================= MAIN FOOTER ================= */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 mb-12">
 
           {/* GET IN TOUCH */}
           <div>
@@ -55,27 +66,17 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* ONLINE PLATFORM */}
+          {/* PAGES */}
           <div>
-            <h3 className="font-semibold text-lg mb-4">Online Platform</h3>
+            <h3 className="font-semibold text-lg mb-4">Pages</h3>
             <ul className="space-y-3 text-gray-400 text-sm">
-              <li>➜ About Us</li>
-              <li>➜ Our Courses</li>
-              <li>➜ Instructors</li>
-              <li>➜ Enroll Now</li>
-              <li>➜ Career</li>
-            </ul>
-          </div>
-
-          {/* QUICK LINKS */}
-          <div>
-            <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
-            <ul className="space-y-3 text-gray-400 text-sm">
-              <li>➜ Latest Blog</li>
-              <li>➜ Our Gallary</li>
-              <li>➜ Contact Us</li>
-              <li>➜ Privacy Policy</li>
-              <li>➜ FAQ’s</li>
+              {footerPages.map((page) => (
+                <li key={page.href}>
+                  <Link href={page.href} className="transition hover:text-white">
+                    ➜ {page.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -98,7 +99,7 @@ export default function Footer() {
                   <p className="text-sm">
                     10 Proven Strategies to Online Learning
                   </p>
-                  <p className="text-[#1ec28e] text-xs">8 Jan, 2025</p>
+                  <p className="text-primary text-xs">8 Jan, 2025</p>
                 </div>
               </div>
 
@@ -115,7 +116,7 @@ export default function Footer() {
                   <p className="text-sm">
                     Trends that are shaping the Learning...
                   </p>
-                  <p className="text-[#1ec28e] text-xs">8 Jan, 2025</p>
+                  <p className="text-primary text-xs">8 Jan, 2025</p>
                 </div>
               </div>
 
@@ -128,7 +129,7 @@ export default function Footer() {
         <div className="border-t border-gray-800 pt-6 pb-6 flex flex-col md:flex-row items-center justify-between gap-4">
 
           <p className="text-gray-400 text-sm">
-            © 2025 <span className="text-[#1ec28e]">Educate</span>. Designed By Dream IT Solution
+            © 2025 <span className="text-primary">Educate</span>. Designed By Dream IT Solution
           </p>
 
           {/* SOCIAL */}

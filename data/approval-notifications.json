@@ -1,5 +1,17 @@
 [
   {
+    "professionalId": "4e0ef160-d7d5-4ccc-b9da-9d6364f456b7",
+    "professionalName": "Hasti Vasani",
+    "professionalEmail": "hastivasani3@gmail.com",
+    "event": "registration",
+    "title": "New professional registered",
+    "message": "Hasti Vasani has registered and is waiting for approval.",
+    "status": "pending",
+    "audience": "admin",
+    "id": "7a49225c-d690-4637-8cdf-ed8029932892",
+    "createdAt": "2026-04-08T09:54:13.759Z"
+  },
+  {
     "professionalId": "8aed2221-d2c3-4e8b-ab97-08e5f1247053",
     "professionalName": "smit",
     "professionalEmail": "smit11@gmail.com",

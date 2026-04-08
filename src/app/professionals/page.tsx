@@ -6,6 +6,7 @@ import Link from "next/link";
 import { MapPin, Search, Sparkles, Star } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { professionals } from "@/app/professionals/data";
 
 const categoryOptions = [
@@ -137,7 +138,7 @@ export default function ProfessionalsPage() {
           </div>
 
           <div className="grid gap-8 lg:grid-cols-[295px_minmax(0,1fr)] lg:items-start">
-            <aside className="self-start rounded-3xl border border-[#dbe8e4] bg-white p-5 shadow-sm lg:sticky lg:top-24 lg:z-20">
+            <aside className="self-start rounded-3xl border border-[#dbe8e4] bg-white p-5 shadow-sm lg:sticky lg:top-24 lg:z-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto hide-scrollbar">
               <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-4">
                 <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
                 <button
@@ -218,7 +219,7 @@ export default function ProfessionalsPage() {
               </div>
             </aside>
 
-            <div>
+            <div className="lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto hide-scrollbar lg:pr-1">
               <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-[#dbe8e4] bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between" data-aos="fade-up">
                 <p className="text-sm font-medium text-gray-700">
                   Showing <span className="font-semibold text-gray-900">{filteredProfessionals.length}</span> professionals
@@ -240,12 +241,11 @@ export default function ProfessionalsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 xl:grid-cols-3">
                 {visibleProfessionals.map((item) => (
                   <article
                     key={item.id}
-                    className="group overflow-hidden rounded-3xl border border-[#dbe8e4] bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_28px_rgba(15,23,42,0.13)]"
-                    data-aos="zoom-in"
+                    className="group flex h-full flex-col overflow-hidden rounded-3xl border border-[#dbe8e4] bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_28px_rgba(15,23,42,0.13)]"
                   >
                     <div className="relative h-52 overflow-hidden">
                       <Image
@@ -257,7 +257,7 @@ export default function ProfessionalsPage() {
                       <div className="absolute inset-0 bg-linear-to-t from-black/50 via-black/10 to-transparent" />
                     </div>
 
-                    <div className="space-y-3 p-4">
+                    <div className="flex flex-1 flex-col space-y-3 p-4">
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
                         <p className="text-sm font-medium text-primary">{item.specialization}</p>
@@ -280,7 +280,7 @@ export default function ProfessionalsPage() {
 
                       <Link
                         href={`/professionals/${item.id}`}
-                        className="block w-full rounded-full bg-primary px-4 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+                        className="mt-auto block w-full rounded-full bg-primary px-4 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
                       >
                         View Profile
                       </Link>
@@ -310,6 +310,36 @@ export default function ProfessionalsPage() {
           </div>
         </section>
       </main>
+
+      <section className="bg-[#edf4f2] px-4 pb-12 md:px-8 lg:px-10">
+        <div className="mx-auto w-full max-w-7xl">
+          <div className="relative overflow-hidden rounded-3xl border border-[#cfe7df] bg-linear-to-r from-[#e9faf4] via-[#f4fffb] to-[#ecf7f4] p-6 shadow-sm md:p-8">
+            <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-primary/15 blur-2xl" />
+            <div className="absolute -bottom-12 -left-12 h-36 w-36 rounded-full bg-[#0f172a]/5 blur-2xl" />
+
+            <div className="relative flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Need Expert Guidance?</p>
+                <h2 className="mt-2 text-2xl font-bold text-gray-900 md:text-3xl">
+                  Book a one-on-one consultation with top professionals
+                </h2>
+                <p className="mt-2 text-sm text-gray-600 md:text-base">
+                  Get personalized advice and a step-by-step support plan for your child.
+                </p>
+              </div>
+
+              <Link
+                href="/contact"
+                className="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+              >
+                Talk to an Expert
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
     </>
   );
 }

@@ -6,6 +6,7 @@ import StatsSection from "@/components/StatsSection";
 import CoursesFilteredLayout from "@/components/CoursesFilteredLayout";
 import CoursesInstructorsSection from "@/components/CoursesInstructorsSection";
 import CoursesPromoBanner from "@/components/CoursesPromoBanner";
+import Footer from "@/components/Footer";
 
 export default function CoursesPage() {
   return (
@@ -17,6 +18,8 @@ export default function CoursesPage() {
         <CoursesFilteredLayout />
         <CoursesPromoBanner />
         <CoursesInstructorsSection />
+        <Footer />
+
       </main>
     </>
   );

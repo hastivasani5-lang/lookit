@@ -1,22 +1,63 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowLeft, ArrowRight, User, BookOpen } from "lucide-react";
 
 type Instructor = {
+  id: number;
   name: string;
   role: string;
   image: string;
 };
 
 const instructors: Instructor[] = [
-  { name: "Jesse Pinkman", role: "UI & UX Designer", image: "/pro1.jpeg" },
-  { name: "Walter White", role: "UI & UX Designer", image: "/pro2.jpeg" },
-  { name: "Skyler White", role: "UI & UX Designer", image: "/pro3.jpeg" },
-  { name: "Jane Margolis", role: "UI & UX Designer", image: "/pro4.jpeg" },
+  { id: 1, name: "Dr. Aanya Mehta", role: "ADHD Specialist", image: "/pro1.jpeg" },
+  { id: 2, name: "Ritika Sharma", role: "Speech Therapist", image: "/pro2.jpeg" },
+  { id: 3, name: "Neha Kapoor", role: "Dyslexia Expert", image: "/pro3.jpeg" },
+  { id: 4, name: "Sonal Iyer", role: "Autism Support Coach", image: "/pro4.jpeg" },
+  { id: 5, name: "Mohit Verma", role: "Special Education Mentor", image: "/pro1.jpeg" },
+  { id: 6, name: "Arjun Desai", role: "ADHD Behavior Coach", image: "/pro2.jpeg" },
 ];
 
 const socials = ["ig", "f", "v", "tw"];
 
 export default function CoursesInstructorsSection() {
+  const trackRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollByCard = (direction: "prev" | "next") => {
+    const track = trackRef.current;
+    if (!track) {
+      return;
+    }
+
+    const card = track.querySelector<HTMLElement>("[data-instructor-card='true']");
+    const cardWidth = card?.offsetWidth ?? 320;
+    const gap = 20;
+    const amount = cardWidth + gap;
+    const delta = direction === "next" ? amount : -amount;
+    track.scrollBy({ left: delta, behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      const maxScrollLeft = track.scrollWidth - track.clientWidth;
+      if (track.scrollLeft >= maxScrollLeft - 1) {
+        track.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        scrollByCard("next");
+      }
+    }, 2800);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
+
   return (
     <section className="px-4 pb-16 md:px-10 lg:px-16">
       <div className="mx-auto max-w-7xl rounded-md bg-[#dfeaec] px-4 py-10 md:px-8">
@@ -29,6 +70,7 @@ export default function CoursesInstructorsSection() {
             <button
               type="button"
               aria-label="Previous"
+              onClick={() => scrollByCard("prev")}
               className="text-2xl leading-none transition hover:opacity-80"
             >
               <ArrowLeft size={22} />
@@ -36,6 +78,7 @@ export default function CoursesInstructorsSection() {
             <button
               type="button"
               aria-label="Next"
+              onClick={() => scrollByCard("next")}
               className="rounded bg-[#c6e3e7] p-2 leading-none transition hover:bg-[#b6d8de]"
             >
               <ArrowRight size={22} />
@@ -43,11 +86,15 @@ export default function CoursesInstructorsSection() {
           </div>
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div
+          ref={trackRef}
+          className="hide-scrollbar flex gap-5 overflow-x-auto scroll-smooth pb-2"
+        >
           {instructors.map((item) => (
             <article
-              key={item.name}
-              className="overflow-hidden rounded-xl border border-[#dce3e6] bg-white shadow-[0_8px_20px_rgba(33,42,48,0.05)]"
+              key={item.id}
+              data-instructor-card="true"
+              className="min-w-65 flex-1 overflow-hidden rounded-xl border border-[#dce3e6] bg-white shadow-[0_8px_20px_rgba(33,42,48,0.05)] sm:min-w-75 lg:min-w-80"
             >
               <div className="relative h-52 w-full bg-[#f2f4f5]">
                 <Image
@@ -85,6 +132,13 @@ export default function CoursesInstructorsSection() {
                     12 Courses
                   </span>
                 </div>
+
+                <Link
+                  href={`/professionals/${item.id}`}
+                  className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+                >
+                  View Profile
+                </Link>
               </div>
             </article>
           ))}

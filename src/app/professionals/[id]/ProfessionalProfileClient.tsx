@@ -129,7 +129,7 @@ export default function ProfessionalProfileClient({ professional }: Props) {
   };
 
   return (
-    <main className="min-h-screen bg-[#edf4f2] px-4 pb-12 pt-28 md:px-8 lg:px-10">
+    <main className="min-h-screen bg-[#edf4f2] px-4  pb-12 pt-18 md:px-8 lg:px-10">
       <section className="mx-auto grid w-full max-w-6xl gap-8 rounded-4xl border border-[#dbe8e4] bg-white p-6 shadow-[0_20px_40px_rgba(15,23,42,0.08)] md:p-8 lg:grid-cols-[340px_minmax(0,1fr)]">
         <div className="relative overflow-hidden rounded-3xl">
           <Image

@@ -9,7 +9,7 @@ export default function CoursesPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-[#eef5f3] py-10">
+      <main className="min-h-screen bg-[#eef5f3] pt-10">
         <PageBanner />
         <StatsSection />
         <CoursesFilteredLayout />

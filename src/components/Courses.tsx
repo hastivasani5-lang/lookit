@@ -40,10 +40,10 @@ const courses = [
 
 const Courses = () => {
   return (
-    <section className="py-20 bg-white relative overflow-hidden px-4">
+    <section className="relative overflow-hidden bg-white px-4 py-20 md:px-8 lg:px-10">
 
       {/* CONTAINER */}
-      <div className="max-w-[1150px] mx-auto">
+      <div className="mx-auto w-full max-w-400">
 
    <div className="max-w-7xl mx-auto mb-16">
         
@@ -53,7 +53,7 @@ const Courses = () => {
           <div className="w-full lg:w-1/2" data-aos="fade-right">
             
             <div className="flex items-center gap-2 text-sm text-gray-500">
-              <span className="w-2 h-2 bg-[#1ec28e] rounded-full"></span>
+              <span className="h-2 w-2 rounded-full bg-primary"></span>
               CORE FEATURES
             </div>
 
@@ -82,8 +82,8 @@ Available all programs
       key={i}
       className={`px-5 py-2 rounded-full text-sm font-medium transition ${
         i === 0
-          ? "bg-[#1ec28e] text-white"
-          : "bg-gray-100 hover:bg-[#1ec28e]/10"
+          ? "bg-primary text-white"
+          : "bg-gray-100 hover:bg-primary/10"
       }`}
     >
       {item}
@@ -92,7 +92,7 @@ Available all programs
 </div>
 
         {/* CARDS */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3 xl:gap-10">
 
           {courses.map((course, i) => (
             <div
@@ -107,7 +107,7 @@ Available all programs
                   alt="course"
                   width={400}
                   height={250}
-                  className="rounded-xl h-[200px] w-full object-cover"
+                  className="h-50 w-full rounded-xl object-cover"
                 />
     {/* PRICE BADGE */}
     <div className={`absolute bottom-4 left-4 ${course.badgeColor} text-white text-sm px-4 py-2 rounded-full shadow-md`}>
@@ -153,7 +153,7 @@ Available all programs
 
   {/* FOOTER (LESSONS + STUDENTS) */}
     
- <div className="mt-4 relative h-[40px]">
+ <div className="relative mt-4 h-10">
 
   {/* FOOTER (DEFAULT) */}
   <div className="
@@ -179,7 +179,7 @@ Available all programs
     transition-all duration-300
     group-hover:opacity-100 group-hover:translate-y-0
   ">
-    <button className="bg-[#1ec28e] text-white px-6 py-2 rounded-full text-sm hover:bg-[#18ab7d]">
+    <button className="rounded-full bg-primary px-6 py-2 text-sm text-white hover:bg-[#18ab7d]">
       ENROL NOW →
     </button>
   </div>
@@ -202,7 +202,7 @@ Available all programs
         alt="char"
         width={140}
         height={100}
-        className="absolute bottom-0 left-0 hidden h-auto w-[140px] lg:block animate-float"
+        className="absolute bottom-0 left-0 hidden h-auto w-35 animate-float lg:block"
       />
 
     </section>

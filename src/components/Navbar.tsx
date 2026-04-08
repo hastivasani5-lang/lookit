@@ -97,7 +97,7 @@ const Navbar = () => {
                   <button
                     type="button"
                     onClick={() => signOut({ callbackUrl: "/dashboard/students" })}
-                    className="mt-3 inline-flex h-9 w-full items-center justify-center gap-2 rounded-full bg-[#1ec28e] px-4 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
+                    className="mt-3 inline-flex h-9 w-full items-center justify-center gap-2 rounded-full bg-primary px-4 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
                   >
                     <LogOut className="h-4 w-4" />
                     Logout

@@ -1,177 +1,312 @@
 "use client";
 
 import Image from "next/image";
+import { ArrowUpRight } from "lucide-react";
 
-const courses = [
+export type CourseItem = {
+  img: string;
+  title: string;
+  color: string;
+  category: string;
+  rating: number;
+  reviewCount: number;
+};
+
+export const allCourses: CourseItem[] = [
   {
-    img: "/about1.png",
-    price: "$30",
-    category: "Business",
-    title: "Business Innovation And Development",
-    instructor: "John D. Alexon",
-    lessons: "12 Lessons",
-    students: "1200 Students",
-    color: "bg-[#eaf4fb]",
-    badgeColor: "bg-blue-500",
+    img: "/pro1.jpeg",
+    title: "Master Web Design",
+    color: "bg-[#c49a7d]",
+    category: "UI/UX Design",
+    rating: 4.8,
+    reviewCount: 120,
   },
   {
-    img: "/hero.png",
-    price: "Free",
-    category: "Networking",
-    title: "Fundamentals of Network And Domains",
-    instructor: "David Watson",
-    lessons: "16 Lessons",
-    students: "1500 Students",
-    color: "bg-[#f6efe9]",
-    badgeColor: "bg-orange-400",
+    img: "/pro2.jpeg",
+    title: "App Development",
+    color: "bg-[#6aa6a6]",
+    category: "Web Development",
+    rating: 4.6,
+    reviewCount: 340,
   },
   {
-    img: "/start.png",
-    price: "$35",
-    category: "Designing",
-    title: "Creative Graphic Design with Adobe Suite",
-    instructor: "Nelson Mendela",
-    lessons: "15 Lessons",
-    students: "1600 Students",
-    color: "bg-[#eef7f3]",
-    badgeColor: "bg-[#1ec28e]",
-  },
-   {
-    img: "/about1.png",
-    price: "$30",
-    category: "Business",
-    title: "Business Innovation And Development",
-    instructor: "John D. Alexon",
-    lessons: "12 Lessons",
-    students: "1200 Students",
-    color: "bg-[#eaf4fb]",
-    badgeColor: "bg-blue-500",
+    img: "/pro3.jpeg",
+    title: "Digital Marketing",
+    color: "bg-[#c45a9a]",
+    category: "Marketing",
+    rating: 4.4,
+    reviewCount: 210,
   },
   {
-    img: "/hero.png",
-    price: "Free",
-    category: "Networking",
-    title: "Fundamentals of Network And Domains",
-    instructor: "David Watson",
-    lessons: "16 Lessons",
-    students: "1500 Students",
-    color: "bg-[#f6efe9]",
-    badgeColor: "bg-orange-400",
+    img: "/pro1.jpeg",
+    title: "Master Web Design",
+    color: "bg-[#c49a7d]",
+    category: "Graphic Design",
+    rating: 4.7,
+    reviewCount: 560,
   },
   {
-    img: "/start.png",
-    price: "$35",
-    category: "Designing",
-    title: "Creative Graphic Design with Adobe Suite",
-    instructor: "Nelson Mendela",
-    lessons: "15 Lessons",
-    students: "1600 Students",
-    color: "bg-[#eef7f3]",
-    badgeColor: "bg-[#1ec28e]",
+    img: "/pro2.jpeg",
+    title: "App Development",
+    color: "bg-[#6aa6a6]",
+    category: "Data Science",
+    rating: 4.5,
+    reviewCount: 140,
+  },
+  {
+    img: "/pro3.jpeg",
+    title: "Digital Marketing",
+    color: "bg-[#c45a9a]",
+    category: "Business Strategy",
+    rating: 4.2,
+    reviewCount: 90,
   },
 ];
 
-export default function CourseGridSection() {
+export const allBooks: CourseItem[] = [
+  {
+    img: "/pro1.jpeg",
+    title: "UI Patterns Handbook",
+    color: "bg-[#c49a7d]",
+    category: "UI/UX Design",
+    rating: 4.7,
+    reviewCount: 180,
+  },
+  {
+    img: "/pro2.jpeg",
+    title: "Modern React Architecture",
+    color: "bg-[#6aa6a6]",
+    category: "Programming",
+    rating: 4.8,
+    reviewCount: 420,
+  },
+  {
+    img: "/pro3.jpeg",
+    title: "Growth Marketing Playbook",
+    color: "bg-[#c45a9a]",
+    category: "Marketing",
+    rating: 4.4,
+    reviewCount: 130,
+  },
+  {
+    img: "/pro1.jpeg",
+    title: "Design Systems In Action",
+    color: "bg-[#c49a7d]",
+    category: "UI/UX Design",
+    rating: 4.5,
+    reviewCount: 260,
+  },
+  {
+    img: "/pro2.jpeg",
+    title: "Backend Performance Guide",
+    color: "bg-[#6aa6a6]",
+    category: "Cyber Security",
+    rating: 4.3,
+    reviewCount: 95,
+  },
+  {
+    img: "/pro3.jpeg",
+    title: "Brand Positioning Essentials",
+    color: "bg-[#c45a9a]",
+    category: "Finance",
+    rating: 4.6,
+    reviewCount: 540,
+  },
+];
+
+export const allVideoLearnings: CourseItem[] = [
+  {
+    img: "/pro1.jpeg",
+    title: "Figma To Prototype Bootcamp",
+    color: "bg-[#c49a7d]",
+    category: "UI/UX Design",
+    rating: 4.9,
+    reviewCount: 650,
+  },
+  {
+    img: "/pro2.jpeg",
+    title: "Full Stack Crash Course",
+    color: "bg-[#6aa6a6]",
+    category: "Web Development",
+    rating: 4.7,
+    reviewCount: 470,
+  },
+  {
+    img: "/pro3.jpeg",
+    title: "Ads Funnel Deep Dive",
+    color: "bg-[#c45a9a]",
+    category: "Marketing",
+    rating: 4.3,
+    reviewCount: 160,
+  },
+  {
+    img: "/pro1.jpeg",
+    title: "User Research Masterclass",
+    color: "bg-[#c49a7d]",
+    category: "Personal Development",
+    rating: 4.6,
+    reviewCount: 220,
+  },
+  {
+    img: "/pro2.jpeg",
+    title: "API Security In Practice",
+    color: "bg-[#6aa6a6]",
+    category: "Cyber Security",
+    rating: 4.5,
+    reviewCount: 115,
+  },
+  {
+    img: "/pro3.jpeg",
+    title: "Sales Storytelling Workshop",
+    color: "bg-[#c45a9a]",
+    category: "Business Strategy",
+    rating: 4.8,
+    reviewCount: 710,
+  },
+];
+
+export const allOnlinePlatforms: CourseItem[] = [
+  {
+    img: "/pro1.jpeg",
+    title: "Live Mentor Platform",
+    color: "bg-[#c49a7d]",
+    category: "UI/UX Design",
+    rating: 4.8,
+    reviewCount: 390,
+  },
+  {
+    img: "/pro2.jpeg",
+    title: "Code Interview Hub",
+    color: "bg-[#6aa6a6]",
+    category: "Development",
+    rating: 4.7,
+    reviewCount: 610,
+  },
+  {
+    img: "/pro3.jpeg",
+    title: "Business Growth Academy",
+    color: "bg-[#c45a9a]",
+    category: "Business",
+    rating: 4.6,
+    reviewCount: 270,
+  },
+  {
+    img: "/pro1.jpeg",
+    title: "Portfolio Review Studio",
+    color: "bg-[#c49a7d]",
+    category: "UI/UX Design",
+    rating: 4.5,
+    reviewCount: 145,
+  },
+  {
+    img: "/pro2.jpeg",
+    title: "System Design Arena",
+    color: "bg-[#6aa6a6]",
+    category: "Development",
+    rating: 4.9,
+    reviewCount: 730,
+  },
+  {
+    img: "/pro3.jpeg",
+    title: "Startup Launch Platform",
+    color: "bg-[#c45a9a]",
+    category: "Business",
+    rating: 4.4,
+    reviewCount: 110,
+  },
+];
+
+type CourseGridSectionProps = {
+  courses?: CourseItem[];
+};
+
+export default function CourseGridSection({
+  courses = allCourses,
+}: CourseGridSectionProps) {
+  if (courses.length === 0) {
+    return null;
+  }
+
   return (
-    <section>
-      {/* GRID */}
-      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
+    <section className="bg-[#f4f6f5] px-2 sm:px-4 md:px-6 lg:px-3 xl:px-2">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 sm:grid-cols-2 xl:grid-cols-3 xl:gap-12">
 
-          {courses.map((course, i) => (
-            <div
-              key={i}
-              className={`${course.color} p-5 rounded-2xl transition hover:-translate-y-2 hover:shadow-xl group`}
-            >
+        {courses.map((course, i) => (
+          <div key={i} className="group">
 
-              {/* IMAGE */}
-              <div className="relative mb-4">
-                <Image
-                  src={course.img}
-                  alt="course"
-                  width={400}
-                  height={250}
-                  className="rounded-xl w-full h-50 object-cover"
-                />
+            {/* SVG MASK SHAPE */}
+            <div className="relative h-64 w-full sm:h-72">
 
-                {/* PRICE BADGE */}
-                <div
-                  className={`absolute bottom-4 left-4 ${course.badgeColor} text-white text-sm px-4 py-2 rounded-full shadow-md`}
+              <svg
+                viewBox="0 0 300 260"
+                className="absolute w-full h-full"
+                preserveAspectRatio="none"
+              >
+                <defs>
+                  <clipPath id={`clip-${i}`} clipPathUnits="objectBoundingBox">
+                    <path d="M0.05,0.15 Q0.05,0 0.2,0 H0.85 Q1,0 1,0.15 V0.75 Q1,1 0.8,1 H0.2 Q0,1 0,0.75 Z" />
+                  </clipPath>
+                </defs>
+
+                <foreignObject
+                  x="0"
+                  y="0"
+                  width="100%"
+                  height="100%"
+                  clipPath={`url(#clip-${i})`}
                 >
-                  {course.price}
-                </div>
+                  <div className="w-full h-full relative">
+                    <Image
+                      src={course.img}
+                      alt={course.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                </foreignObject>
+              </svg>
+
+              {/* FLOAT BUTTON */}
+              <div className={`absolute bottom-[-20px] right-6 ${course.color} w-16 h-16 rounded-full flex items-center justify-center shadow-xl`}>
+                <ArrowUpRight className="text-white" size={24} />
               </div>
+            </div>
 
-              {/* CATEGORY */}
-              <span className="text-xs px-3 py-1 rounded-full bg-white shadow text-gray-600 inline-block mb-3">
-                {course.category}
-              </span>
+            {/* CONTENT */}
+            <div className="mt-12">
 
-              {/* TITLE */}
-              <h3 className="text-lg font-semibold text-gray-900 leading-snug mb-2">
+              <h3 className="text-xl font-semibold text-gray-900">
                 {course.title}
               </h3>
 
-              {/* RATING */}
-              <div className="flex items-center gap-2 text-sm mb-4">
-                <div className="text-orange-500">★★★★★</div>
-                <span className="text-gray-500">(4.5/3 Ratings)</span>
-              </div>
+              <p className="text-sm text-gray-500 mt-2">
+                ⭐ {course.rating.toFixed(1)} ({course.reviewCount})
+              </p>
 
-              {/* INSTRUCTOR */}
-              <div className="flex items-center gap-3 mb-4">
-                <Image
-                  src="/person.png"
-                  alt="user"
-                  width={40}
-                  height={40}
-                  className="h-10 w-10 rounded-full object-cover"
-                />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">
-                    {course.instructor}
-                  </p>
-                  <p className="text-xs text-gray-500">Instructor</p>
-                </div>
-              </div>
+              <p className="text-sm text-gray-500">
+                📚 20 Lessons
+              </p>
 
-              {/* DIVIDER */}
-              <div className="border-t border-gray-200 my-4"></div>
+              <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+                Fill out the form and the algorithm will offer the right team of experts
+              </p>
 
-              {/* FOOTER + HOVER */}
-              <div className="mt-4 relative h-10">
+<div className="flex flex-wrap gap-2 mt-3">
 
-                {/* DEFAULT */}
-                <div className="flex justify-between items-center text-sm absolute w-full transition-all duration-300 group-hover:opacity-0 group-hover:translate-y-4">
+  <span className="text-xs font-medium px-3 py-1.5 rounded-full bg-[#eef5f3] text-[#1ec28e] border border-[#d1e7dd] transition hover:bg-[#1ec28e] hover:text-white">
+    {course.category}
+  </span>
 
-                  <div className="flex items-center gap-2 text-gray-600">
-                    📄 <span>{course.lessons}</span>
-                  </div>
+  <span className="text-xs font-medium px-3 py-1.5 rounded-full bg-[#eef5f3] text-[#1ec28e] border border-[#d1e7dd] transition hover:bg-[#1ec28e] hover:text-white">
+    UI/UX
+  </span>
 
-                  <div className="flex items-center gap-2 text-gray-600">
-                    👤 <span>{course.students}</span>
-                  </div>
-
-                </div>
-
-                {/* HOVER BUTTON */}
-                <div className="absolute w-full flex justify-end opacity-0 translate-y-4 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
-                  <button className="bg-primary text-white px-6 py-2 rounded-full text-sm hover:bg-[#18ab7d]">
-                    ENROL NOW →
-                  </button>
-                </div>
-
-              </div>
+</div>
 
             </div>
-          ))}
+          </div>
+        ))}
 
-      </div>
-
-      {/* SHOW MORE */}
-      <div className="mt-12 flex justify-center">
-        <button className="rounded-full bg-primary px-8 py-3 text-sm font-semibold text-white transition hover:bg-[#18ab7d]">
-          SHOW MORE
-        </button>
       </div>
     </section>
   );

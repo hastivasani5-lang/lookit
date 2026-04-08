@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Search, Sparkles, Star } from "lucide-react";
@@ -41,6 +41,7 @@ const languageOptions = [
 ] as const;
 
 export default function ProfessionalsPage() {
+  const [mounted, setMounted] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedRating, setSelectedRating] = useState("all");
   const [selectedReviews, setSelectedReviews] = useState("all");
@@ -48,6 +49,10 @@ export default function ProfessionalsPage() {
   const [searchText, setSearchText] = useState("");
   const [sortBy, setSortBy] = useState("popular");
   const [visibleCount, setVisibleCount] = useState(6);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const filteredProfessionals = useMemo(() => {
     const query = searchText.trim().toLowerCase();
@@ -83,6 +88,16 @@ export default function ProfessionalsPage() {
   }, [searchText, selectedCategory, selectedLanguage, selectedRating, selectedReviews, sortBy]);
 
   const visibleProfessionals = filteredProfessionals.slice(0, visibleCount);
+
+  if (!mounted) {
+    return (
+      <>
+        <Navbar />
+        <main className="min-h-screen bg-[#edf4f2] px-4 pb-14 pt-28 md:px-8 lg:px-10" />
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>

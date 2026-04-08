@@ -24,8 +24,13 @@ export default function Footer() {
 
           {/* LOGO */}
           <div className="flex items-center gap-3">
-            <div className="text-green-400 text-2xl">📖</div>
-            <h2 className="text-xl font-semibold">Educate</h2>
+            <Image
+              src="/logo.png"
+              alt="EducateX logo"
+              width={160}
+              height={56}
+              className="h-9 w-auto object-contain"
+            />
           </div>
 
           {/* TEXT */}
@@ -89,7 +94,7 @@ export default function Footer() {
               {/* POST 1 */}
               <div className="flex gap-3">
                 <Image
-                  src="/blog1.jpg"
+                  src="/blog-thumb1.png"
                   width={60}
                   height={60}
                   className="rounded-lg object-cover"
@@ -106,7 +111,7 @@ export default function Footer() {
               {/* POST 2 */}
               <div className="flex gap-3">
                 <Image
-                  src="/blog2.jpg"
+                  src="/blog-thumb2.png"
                   width={60}
                   height={60}
                   className="rounded-lg object-cover"

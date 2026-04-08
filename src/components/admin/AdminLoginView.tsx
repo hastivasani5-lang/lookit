@@ -45,8 +45,14 @@ export default function AdminLoginView() {
       <section className="mx-auto grid w-full max-w-6xl overflow-hidden rounded-[28px] bg-white shadow-[0_22px_50px_rgba(15,23,42,0.18)] lg:grid-cols-2">
         <div className="flex flex-col justify-center px-6 py-10 sm:px-10 md:px-14 lg:py-14">
           <div className="mb-10 flex items-center gap-3">
-            <span className="grid h-7 w-7 place-items-center rounded-full bg-[#1ec28e]/15 text-[#1ec28e]">●</span>
-            <p className="text-xl font-semibold text-slate-700">System logo</p>
+            <Image
+              src="/logo.png"
+              alt="EducateX logo"
+              width={160}
+              height={56}
+              priority
+              className="h-10 w-auto object-contain"
+            />
           </div>
 
           <h1 className="text-4xl font-semibold leading-tight text-slate-800 sm:text-5xl">Welcome to login system</h1>
@@ -106,6 +112,7 @@ export default function AdminLoginView() {
             src="/jenil.png"
             alt="Admin login visual"
             fill
+            sizes="(max-width: 1024px) 0px, 50vw"
             priority
             className="object-cover"
           />

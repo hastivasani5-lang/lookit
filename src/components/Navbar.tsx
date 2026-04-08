@@ -35,10 +35,7 @@ const Navbar = () => {
     <header className="fixed top-0 z-50 w-full bg-white shadow-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-3 py-2 sm:px-4 sm:py-3 md:px-8">
         <div className="flex items-center gap-2">
-          <Image src="/leaf.png" alt="logo" width={35} height={35} className="h-8 w-8 sm:h-9 sm:w-9" />
-          <h1 className="text-lg font-bold text-gray-900 sm:text-xl md:text-2xl">
-            Educate<span className="text-primary">X</span>
-          </h1>
+          <Image src="/logo.png" alt="EducateX logo" width={160} height={56} priority className="h-8 w-auto sm:h-9 md:h-10" />
         </div>
 
         <nav className="hidden items-center gap-8 text-sm font-medium text-gray-700 lg:flex">

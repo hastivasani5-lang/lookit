@@ -65,10 +65,14 @@ export default function SignupPage() {
 
         <div className="flex flex-1 items-center justify-center bg-white px-6 py-10 lg:px-10">
           <div className="w-full max-w-[420px] text-center">
-            <p className="mx-auto mb-6 flex w-fit items-center gap-2 text-lg font-semibold text-slate-800">
-              <span className="h-3 w-3 rounded-sm bg-lime-500" />
-              EducateX
-            </p>
+            <Image
+              src="/logo.png"
+              alt="EducateX logo"
+              width={160}
+              height={56}
+              priority
+              className="mx-auto mb-6 h-10 w-auto object-contain"
+            />
 
             <h1 className="text-4xl font-semibold leading-[0.96] tracking-tight text-slate-900 md:text-5xl">
               Create account

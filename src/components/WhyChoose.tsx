@@ -97,6 +97,7 @@ const WhyChoose = () => {
               src="/img1.png"
               alt="students"
               fill
+              sizes="(max-width: 640px) 260px, (max-width: 768px) 320px, (max-width: 1024px) 380px, 420px"
               className="object-contain"
             />
           </div>

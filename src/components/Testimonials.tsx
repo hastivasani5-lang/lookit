@@ -95,6 +95,7 @@ Professional Instructor
           src="/testi-map.png"
           alt=""
           fill
+          sizes="(max-width: 768px) 100vw, 420px"
           className="object-contain"
         />
       </div>
@@ -117,7 +118,7 @@ Professional Instructor
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         className="absolute top-[30px] left-[10px] w-12 h-12 rounded-full overflow-hidden border-white shadow-md"
       >
-        <Image src="/pro1.jpeg" fill alt="" />
+        <Image src="/pro1.jpeg" fill sizes="48px" alt="" />
       </motion.div>
 
       {/* AVATAR LEFT BOTTOM */}
@@ -126,7 +127,7 @@ Professional Instructor
         transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
         className="absolute bottom-[30px] left-[20px] w-12 h-12 rounded-full overflow-hidden border-white shadow-md"
       >
-        <Image src="/pro2.jpeg" fill alt="" />
+        <Image src="/pro2.jpeg" fill sizes="48px" alt="" />
       </motion.div>
 
       {/* AVATAR RIGHT */}
@@ -135,7 +136,7 @@ Professional Instructor
         transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut" }}
         className="absolute top-[150px] right-[20px] w-12 h-12 rounded-full overflow-hidden border-white shadow-md"
       >
-        <Image src="/pro3.jpeg" fill alt="" />
+        <Image src="/pro3.jpeg" fill sizes="48px" alt="" />
       </motion.div>
 
     </div>

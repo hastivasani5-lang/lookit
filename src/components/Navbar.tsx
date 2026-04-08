@@ -48,7 +48,7 @@ const Navbar = () => {
           </div>
 
           {/* LOGIN BUTTON */}
-          <Link href="/dashboard/login" className="hidden md:flex items-center gap-2 bg-primary hover:bg-[#18ab7d] text-white px-5 py-2 rounded-full text-sm font-medium transition">
+          <Link href="/login" className="hidden md:flex items-center gap-2 bg-primary hover:bg-[#18ab7d] text-white px-5 py-2 rounded-full text-sm font-medium transition">
             LOGIN →
           </Link>
 

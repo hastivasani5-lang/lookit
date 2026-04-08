@@ -5,7 +5,7 @@ const quickLinks = [
   { label: "Students Dashboard", href: "/dashboard/students" },
   { label: "Teachers Dashboard", href: "/dashboard/teachers" },
   { label: "Admin Panel", href: "/dashboard/adminpanel" },
-  { label: "Login", href: "/dashboard/login" },
+  { label: "Login", href: "/login" },
   { label: "Signup", href: "/signup" },
 ];
 

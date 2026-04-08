@@ -101,7 +101,7 @@ const Navbar = () => {
             </div>
           ) : (
             <Link href="/login" className="hidden rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-white transition hover:bg-[#18ab7d] sm:flex sm:px-5 sm:py-2 sm:text-sm">
-              LOGIN ?
+              LOGIN ->
             </Link>
           )}
 
@@ -128,7 +128,7 @@ const Navbar = () => {
             <Link href="/contact" className="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
             {!isAuthenticated ? (
               <Link href="/login" className="mx-3 mt-2 inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-[#18ab7d]" onClick={() => setMobileMenuOpen(false)}>
-                LOGIN ?
+                LOGIN ->
               </Link>
             ) : null}
           </nav>

@@ -1,6 +1,7 @@
 "use client";
 
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
@@ -100,18 +101,14 @@ export default function AdminLoginView() {
           </form>
         </div>
 
-        <div className="relative hidden min-h-[560px] overflow-hidden bg-gradient-to-br from-[#22c58f] via-[#1ec28e] to-[#12a976] lg:block">
-          <div className="absolute -left-28 -top-28 h-[460px] w-[460px] rounded-full border-[12px] border-white/35" />
-          <div className="absolute -left-20 -top-20 h-[420px] w-[420px] rounded-full border-[8px] border-white/20" />
-
-          <div className="absolute left-10 top-1/2 w-[520px] -translate-y-1/2 rotate-[-14deg]">
-            <div className="h-56 rounded-[26px] border border-white/45 bg-white/75 shadow-2xl backdrop-blur-md" />
-            <div className="-mt-40 ml-4 h-56 rounded-[26px] bg-[#b8f0dd]/75 shadow-2xl" />
-            <div className="-mt-40 ml-8 h-56 rounded-[26px] bg-[#8ee3c5]/70 shadow-2xl" />
-            <div className="-mt-40 ml-12 h-56 rounded-[26px] bg-[#68d7b1]/70 shadow-2xl" />
-          </div>
-
-          <div className="absolute bottom-0 right-0 h-[58%] w-full bg-gradient-to-t from-[#0e8f63]/50 to-transparent" />
+        <div className="relative hidden min-h-[560px] overflow-hidden bg-[#e6f7ef] lg:block">
+          <Image
+            src="/jenil.png"
+            alt="Admin login visual"
+            fill
+            priority
+            className="object-cover"
+          />
         </div>
       </section>
     </main>

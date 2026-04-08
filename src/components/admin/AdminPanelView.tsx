@@ -27,6 +27,11 @@ const students = [
   { name: "Diana Plenty", id: "PRE43174", marks: 1165, percent: "91%" },
   { name: "John Millar", id: "PRE43187", marks: 1175, percent: "92%" },
 ];
+const ADMIN_PROFILE = {
+  name: "Admin",
+  email: "jenilgadhiya@gmail.com",
+  avatar: "/pro1.jpeg",
+};
 
 type AdminSection =
   | "Dashboard"
@@ -520,6 +525,7 @@ export default function AdminPanelView() {
   const [usersTab, setUsersTab] = useState<"students" | "professionals">("students");
   const [userDetailsById, setUserDetailsById] = useState<Record<number, AdminUserDetails>>({});
   const [professionalUsers, setProfessionalUsers] = useState<AdminProfessionalUser[]>([]);
+  const [adminProfileOpen, setAdminProfileOpen] = useState(false);
 
   const selectedStudent = studentsList.find((student) => student.id === selectedStudentId) ?? null;
   const selectedStudentMeta = selectedStudent ? userDetailsById[selectedStudent.id] : null;
@@ -963,7 +969,7 @@ export default function AdminPanelView() {
           </div>
         </aside>
 
-        <div className={`bg-[#f8f9ff] p-3 sm:p-4 md:p-5 transition ${selectedStudent || detailModal ? "blur-sm" : ""}`}>
+        <div className={`bg-[#f8f9ff] p-3 sm:p-4 md:p-5 transition ${selectedStudent || detailModal || adminProfileOpen ? "blur-sm" : ""}`}>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white p-3 sm:p-4">
             <input
               type="text"
@@ -974,10 +980,22 @@ export default function AdminPanelView() {
               <span className="hidden text-slate-600 sm:inline">Open For Order</span>
               <span className="h-2.5 w-2.5 rounded-full bg-[#1ec28e]" />
               <Bell className="h-4 w-4 text-slate-500" />
-              <div className="flex items-center gap-2 rounded-full bg-slate-50 px-2 py-1">
-                <Image src="/pro1.jpeg" alt="admin" width={24} height={24} className="h-6 w-6 rounded-full object-cover" />
-                <span className="text-slate-700">Luke J R</span>
-              </div>
+              <button
+                type="button"
+                onClick={() => setAdminProfileOpen(true)}
+                className="flex items-center gap-2 rounded-full bg-slate-50 px-2 py-1 transition hover:bg-slate-100"
+                aria-label="Open admin profile"
+                title={ADMIN_PROFILE.email}
+              >
+                <Image
+                  src={ADMIN_PROFILE.avatar}
+                  alt="Admin profile"
+                  width={24}
+                  height={24}
+                  className="h-6 w-6 rounded-full object-cover"
+                />
+                <span className="text-slate-700">{ADMIN_PROFILE.name}</span>
+              </button>
             </div>
           </div>
 
@@ -1789,6 +1807,60 @@ export default function AdminPanelView() {
           )}
         </div>
       </section>
+
+      {adminProfileOpen ? (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/40 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-800">Admin Profile</h3>
+                <p className="text-sm text-slate-500">Manage your admin session from here.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setAdminProfileOpen(false)}
+                className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <div className="flex items-center gap-3">
+                <Image
+                  src={ADMIN_PROFILE.avatar}
+                  alt="Admin profile"
+                  width={56}
+                  height={56}
+                  className="h-14 w-14 rounded-full object-cover"
+                />
+                <div>
+                  <p className="text-base font-semibold text-slate-800">{ADMIN_PROFILE.name}</p>
+                  <p className="text-sm text-slate-500">System Administrator</p>
+                  <p className="text-sm text-slate-600">{ADMIN_PROFILE.email}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setAdminProfileOpen(false)}
+                className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                onClick={onLogout}
+                className="rounded-full bg-[#1ec28e] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ad7d]"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {detailModal ? (
         <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/40 backdrop-blur-sm p-4">

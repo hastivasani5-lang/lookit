@@ -7,13 +7,11 @@ import { useRouter } from "next/navigation";
 import {
   Bell,
   BookOpen,
-  CalendarDays,
   ChevronRight,
   CreditCard,
   Heart,
   LayoutGrid,
   LogOut,
-  MessageSquare,
   Save,
   Search,
   Settings,
@@ -40,8 +38,18 @@ type ProfessionalDashboardProps = {
   user: ProfessionalUser;
 };
 
-type DashboardSection = "overview" | "add" | "upgrade" | "friends" | "groups" | "videos" | "events" | "settings";
+type DashboardSection = "overview" | "add" | "upgrade" | "settings";
 type AddContentTab = "books" | "videos";
+
+type SearchResultItem = {
+  id: string;
+  title: string;
+  description: string;
+  section: DashboardSection;
+  addTab?: AddContentTab;
+  featuredTargetPage?: FeaturedPage;
+  openUrl?: string;
+};
 
 type AddedBook = {
   id: string;
@@ -82,10 +90,6 @@ const sidebarItems: Array<{ label: string; icon: typeof LayoutGrid; section: Das
   { label: "Overview", icon: LayoutGrid, section: "overview" },
   { label: "Add", icon: Upload, section: "add" },
   { label: "Upgrade Profile", icon: CreditCard, section: "upgrade" },
-  { label: "Friends", icon: Users, section: "friends" },
-  { label: "Groups", icon: MessageSquare, section: "groups" },
-  { label: "Videos", icon: Video, section: "videos" },
-  { label: "Events", icon: CalendarDays, section: "events" },
   { label: "Settings", icon: Settings, section: "settings" },
 ];
 
@@ -274,6 +278,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   const [bookFormError, setBookFormError] = useState("");
   const [youtubeLinkInput, setYoutubeLinkInput] = useState("");
   const [youtubeLinkError, setYoutubeLinkError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     setIsMounted(true);
@@ -406,10 +411,6 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       </div>
     );
   }, [featuredPage]);
-
-  if (!isMounted) {
-    return null;
-  }
 
   const handleProfileSave = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -709,6 +710,128 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     });
   };
 
+  const searchableItems = useMemo<SearchResultItem[]>(() => {
+    const profileReviews = profileReviewsText
+      .split("\n")
+      .map((review) => review.trim())
+      .filter(Boolean)
+      .join(" • ");
+
+    return [
+      ...overviewCards.map((card) => ({
+        id: `overview-${card.title}`,
+        title: card.title,
+        description: card.description,
+        section: "overview" as const,
+      })),
+      ...coursePageOne.map((course, index) => ({
+        id: `course-1-${index}`,
+        title: course.title,
+        description: `${course.tag} • ${course.academy} • ${course.lessons}`,
+        section: "overview" as const,
+        featuredTargetPage: 1 as const,
+      })),
+      ...coursePageTwo.map((course, index) => ({
+        id: `course-2-${index}`,
+        title: course.title,
+        description: `${course.tag} • ${course.academy}`,
+        section: "overview" as const,
+        featuredTargetPage: 2 as const,
+        openUrl: `https://www.youtube.com/watch?v=${course.youtubeId}`,
+      })),
+      ...coursePageThree.map((course, index) => ({
+        id: `course-3-${index}`,
+        title: course.title,
+        description: `${course.tag} • ${course.academy} • ${course.lessons}`,
+        section: "overview" as const,
+        featuredTargetPage: 3 as const,
+      })),
+      ...addedBooks.map((book) => ({
+        id: book.id,
+        title: book.name,
+        description: `${book.category} • MRP ₹${book.mrp} • ${book.fileName}`,
+        section: "add" as const,
+        addTab: "books" as const,
+        openUrl: book.url,
+      })),
+      ...addedVideos.map((video) => ({
+        id: video.id,
+        title: video.name,
+        description: `${video.source === "youtube" ? "YouTube" : "Video File"} • ${video.sizeLabel}`,
+        section: "add" as const,
+        addTab: "videos" as const,
+        openUrl: video.url,
+      })),
+      {
+        id: "profile-overview",
+        title: profileName || "Professional Profile",
+        description: `${profileEmail} • ${profileSpecialization || "No specialization"} • ${profileContactNumber || "No contact"}`,
+        section: "settings" as const,
+      },
+      {
+        id: "profile-location",
+        title: "Location",
+        description: profileLocation || "No location set",
+        section: "settings" as const,
+      },
+      {
+        id: "profile-reviews",
+        title: "Reviews",
+        description: profileReviews || "No reviews added",
+        section: "settings" as const,
+      },
+      {
+        id: "upgrade-profile",
+        title: "Upgrade Profile",
+        description: "Pay to rank higher than other professionals.",
+        section: "upgrade" as const,
+      },
+    ];
+  }, [
+    addedBooks,
+    addedVideos,
+    profileContactNumber,
+    profileEmail,
+    profileLocation,
+    profileName,
+    profileReviewsText,
+    profileSpecialization,
+  ]);
+
+  const searchResults = useMemo(() => {
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+    if (!normalizedQuery) {
+      return [];
+    }
+
+    return searchableItems.filter((item) => {
+      const searchableText = `${item.title} ${item.description}`.toLowerCase();
+      return searchableText.includes(normalizedQuery);
+    });
+  }, [searchQuery, searchableItems]);
+
+  const handleSearchResultClick = (result: SearchResultItem) => {
+    if (result.openUrl) {
+      window.open(result.openUrl, "_blank", "noopener,noreferrer");
+    }
+
+    setActiveSection(result.section);
+
+    if (result.section === "add" && result.addTab) {
+      setAddContentTab(result.addTab);
+    }
+
+    if (result.section === "overview" && result.featuredTargetPage) {
+      setFeaturedPage(result.featuredTargetPage);
+    }
+
+    setSearchQuery("");
+  };
+
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <main className="h-screen overflow-hidden bg-[#f3f4fb] p-4 md:p-6 lg:p-8">
       <div className="mx-auto grid h-[calc(100vh-2rem)] max-w-[1600px] grid-cols-1 overflow-hidden rounded-[28px] bg-white shadow-[0_24px_80px_rgba(17,24,39,0.08)] md:h-[calc(100vh-3rem)] lg:h-[calc(100vh-4rem)] lg:grid-cols-[260px_minmax(0,1fr)]">
@@ -775,6 +898,8 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                 <input
                   type="text"
                   placeholder="Search here"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
                   className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
                 />
               </div>
@@ -785,7 +910,50 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
             </div>
           </div>
 
-          {activeSection === "add" ? (
+          {searchQuery.trim() ? (
+            <div className="mt-6 rounded-[24px] bg-white p-6 shadow-sm">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-900">Search Results</h3>
+                  <p className="text-sm text-slate-500">
+                    {searchResults.length} result{searchResults.length === 1 ? "" : "s"} found for “{searchQuery.trim()}”.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="rounded-full bg-[#effaf6] px-4 py-2 text-xs font-semibold text-[#1ec28e] transition hover:bg-[#dff5eb]"
+                >
+                  Clear Search
+                </button>
+              </div>
+
+              {searchResults.length === 0 ? (
+                <p className="rounded-2xl bg-[#f7faf8] px-4 py-3 text-sm text-slate-500">No matching results found.</p>
+              ) : (
+                <div className="space-y-3">
+                  {searchResults.map((result) => (
+                    <button
+                      key={result.id}
+                      type="button"
+                      onClick={() => handleSearchResultClick(result)}
+                      className="w-full rounded-2xl border border-slate-100 bg-[#f7faf8] p-4 text-left transition hover:border-[#1ec28e]/40 hover:bg-[#f2fbf7]"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-semibold text-slate-900">{result.title}</p>
+                          <p className="mt-1 text-xs text-slate-500">{result.description}</p>
+                        </div>
+                        <span className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[#1ec28e]">
+                          {result.section}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : activeSection === "add" ? (
             <div className="mt-6 space-y-6">
               <div className="rounded-[24px] bg-white p-3 shadow-sm">
                 <div className="flex w-full max-w-sm items-center gap-2 rounded-2xl bg-[#f7faf8] p-1">

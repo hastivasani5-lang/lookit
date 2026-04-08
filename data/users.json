@@ -59,5 +59,16 @@
     "reviews": [],
     "provider": "credentials",
     "createdAt": "2026-04-07T06:59:41.762Z"
+  },
+  {
+    "id": "eb74ca98-e9e1-4ef5-a00e-aeeea4af6f6e",
+    "name": "smit",
+    "email": "smit@gmail.com",
+    "passwordHash": "$2a$10$dAA2kr1bAo7O8dCfpc8rQeMe/4x5KfB1Hz7bo3DKf3pVeOiPe/C.y",
+    "role": "student",
+    "certificates": [],
+    "reviews": [],
+    "provider": "credentials",
+    "createdAt": "2026-04-08T04:40:28.034Z"
   }
 ]

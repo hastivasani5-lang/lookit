@@ -1,10 +1,32 @@
 "use client";
 
-import { Menu, Search, ShoppingCart } from "lucide-react";
+import { LogOut, Menu, Search, ShoppingCart, UserCircle2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { signOut, useSession } from "next-auth/react";
+import { useEffect, useRef, useState } from "react";
 
 const Navbar = () => {
+  const { data: session, status } = useSession();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const onOutsideClick = (event: MouseEvent) => {
+      if (!menuRef.current) return;
+      if (!menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", onOutsideClick);
+    return () => document.removeEventListener("mousedown", onOutsideClick);
+  }, []);
+
+  const displayName = session?.user?.name?.trim() || "Student";
+  const displayEmail = session?.user?.email?.trim() || "";
+  const isAuthenticated = status === "authenticated";
+
   return (
     <header className="w-full fixed top-0 z-50 bg-white shadow-sm">
 
@@ -47,10 +69,47 @@ const Navbar = () => {
             </span>
           </div>
 
-          {/* LOGIN BUTTON */}
-          <Link href="/login" className="hidden md:flex items-center gap-2 bg-primary hover:bg-[#18ab7d] text-white px-5 py-2 rounded-full text-sm font-medium transition">
-            LOGIN →
-          </Link>
+          {isAuthenticated ? (
+            <div className="relative hidden md:block" ref={menuRef}>
+              <button
+                type="button"
+                onClick={() => setMenuOpen((open) => !open)}
+                className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50"
+                aria-label="Open profile menu"
+              >
+                {session?.user?.image ? (
+                  <Image
+                    src={session.user.image}
+                    alt="Profile"
+                    width={40}
+                    height={40}
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <UserCircle2 className="h-6 w-6" />
+                )}
+              </button>
+
+              {menuOpen && (
+                <div className="absolute right-0 mt-2 w-72 rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_18px_42px_rgba(15,23,42,0.16)]">
+                  <p className="truncate text-sm font-semibold text-slate-900">{displayName}</p>
+                  <p className="mt-1 truncate text-xs text-slate-500">{displayEmail}</p>
+                  <button
+                    type="button"
+                    onClick={() => signOut({ callbackUrl: "/dashboard/students" })}
+                    className="mt-3 inline-flex h-9 w-full items-center justify-center gap-2 rounded-full bg-[#1ec28e] px-4 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link href="/login" className="hidden md:flex items-center gap-2 bg-primary hover:bg-[#18ab7d] text-white px-5 py-2 rounded-full text-sm font-medium transition">
+              LOGIN →
+            </Link>
+          )}
 
           {/* MOBILE MENU */}
           <Menu className="lg:hidden w-6 h-6 cursor-pointer" />

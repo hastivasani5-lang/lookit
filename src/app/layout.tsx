@@ -1,6 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 
 import AOSInit from "@/components/AOSInit";
+import GuestLoginPrompt from "@/components/GuestLoginPrompt";
+import SessionProviderClient from "@/components/SessionProviderClient";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,8 +29,11 @@ export default function RootLayout({
         <link rel="icon" href="/logo.png" />
       </head>
       <body className="min-h-full flex flex-col">
-        <AOSInit />
-        {children}
+        <SessionProviderClient>
+          <AOSInit />
+          <GuestLoginPrompt />
+          {children}
+        </SessionProviderClient>
       </body>
     </html>
   );

@@ -1,10 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { Menu, Search, ShoppingCart } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const Navbar = () => {
+  const router = useRouter();
+
   return (
     <header className="w-full fixed top-0 z-50 bg-white shadow-sm">
 
@@ -13,7 +16,7 @@ const Navbar = () => {
 
         {/* LOGO */}
         <div className="flex items-center gap-2">
-          <Image src="/logo.png" alt="logo" width={35} height={35} />
+          <Image src="/leaf.png" alt="logo" width={35} height={35} className="h-auto w-auto" />
           <h1 className="text-xl md:text-2xl font-bold text-gray-900">
             Educate<span className="text-primary">X</span>
           </h1>
@@ -48,7 +51,8 @@ const Navbar = () => {
           </div>
 
           {/* LOGIN BUTTON */}
-          <Link href="/dashboard/login" className="hidden md:flex items-center gap-2 bg-primary hover:bg-[#18ab7d] text-white px-5 py-2 rounded-full text-sm font-medium transition">
+          <Link href="/login" className="hidden md:flex items-center gap-2 bg-[#1ec28e] hover:bg-[#18ab7d] text-white px-5 py-2 rounded-full text-sm font-medium transition"/>
+          <Link href="/login" className="hidden md:flex items-center gap-2 bg-primary hover:bg-[#18ab7d] text-white px-5 py-2 rounded-full text-sm font-medium transition">
             LOGIN →
           </Link>
 
@@ -56,7 +60,6 @@ const Navbar = () => {
           <Menu className="lg:hidden w-6 h-6 cursor-pointer" />
 
         </div>
-
       </div>
 
     </header>

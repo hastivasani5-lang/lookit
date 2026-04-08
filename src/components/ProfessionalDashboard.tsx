@@ -60,6 +60,7 @@ type AddedBook = {
   sizeLabel: string;
   url: string;
   imageUrl: string;
+  source: "file" | "amazon";
 };
 
 type AddedVideo = {
@@ -275,6 +276,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   const [bookCategoryInput, setBookCategoryInput] = useState("");
   const [bookImageFile, setBookImageFile] = useState<File | null>(null);
   const [bookImageLinkInput, setBookImageLinkInput] = useState("");
+  const [bookLinkInput, setBookLinkInput] = useState("");
   const [bookFormError, setBookFormError] = useState("");
   const [youtubeLinkInput, setYoutubeLinkInput] = useState("");
   const [youtubeLinkError, setYoutubeLinkError] = useState("");
@@ -553,7 +555,59 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     return `${mb.toFixed(1)} MB`;
   };
 
-  const handleBookUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const parseHttpUrl = (value: string) => {
+    try {
+      const parsed = new URL(value);
+      if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+        return parsed;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
+  const isAmazonLink = (value: string) => {
+    const parsed = parseHttpUrl(value);
+    if (!parsed) {
+      return false;
+    }
+
+    const host = parsed.hostname.toLowerCase();
+    return host.includes("amazon.") || host.includes("amzn.to");
+  };
+
+  useEffect(() => {
+    if (!isMounted || user.role !== "professional") {
+      return;
+    }
+
+    const loadLibrary = async () => {
+      try {
+        const response = await fetch("/api/profile/library", { cache: "no-store" });
+        if (!response.ok) {
+          setAddedBooks([]);
+          setAddedVideos([]);
+          return;
+        }
+
+        const payload = (await response.json().catch(() => ({}))) as {
+          books?: AddedBook[];
+          videos?: AddedVideo[];
+        };
+
+        setAddedBooks(Array.isArray(payload.books) ? payload.books : []);
+        setAddedVideos(Array.isArray(payload.videos) ? payload.videos : []);
+      } catch {
+        setAddedBooks([]);
+        setAddedVideos([]);
+      }
+    };
+
+    void loadLibrary();
+  }, [isMounted, user.role]);
+
+  const handleBookUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? []);
     if (files.length === 0) {
       return;
@@ -576,17 +630,12 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     if (bookImageFile) {
       resolvedBookImageUrl = URL.createObjectURL(bookImageFile);
     } else if (trimmedBookImageLink) {
-      try {
-        const parsed = new URL(trimmedBookImageLink);
-        if (!parsed.protocol.startsWith("http")) {
-          throw new Error("Invalid protocol");
-        }
-        resolvedBookImageUrl = trimmedBookImageLink;
-      } catch {
+      if (!parseHttpUrl(trimmedBookImageLink)) {
         setBookFormError("Please provide a valid image link.");
         event.target.value = "";
         return;
       }
+      resolvedBookImageUrl = trimmedBookImageLink;
     } else {
       setBookFormError("Please upload a book image file or provide an image link.");
       event.target.value = "";
@@ -601,7 +650,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
 
     setBookFormError("");
 
-    const newBooks = files.map((file, index) => ({
+    const localBooks = files.map((file, index) => ({
       id: `book-${Date.now()}-${index}`,
       name: trimmedBookName,
       mrp: parsedMrp.toFixed(2),
@@ -610,15 +659,121 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       sizeLabel: formatFileSize(file.size),
       url: URL.createObjectURL(file),
       imageUrl: resolvedBookImageUrl,
+      source: "file" as const,
     }));
 
-    setAddedBooks((prev) => [...newBooks, ...prev]);
+    setAddedBooks((prev) => [...localBooks, ...prev]);
+
+    try {
+      const persisted = await Promise.all(
+        files.map(async (file) => {
+          const response = await fetch("/api/profile/library", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              kind: "book",
+              name: trimmedBookName,
+              category: trimmedBookCategory,
+              mrp: parsedMrp.toFixed(2),
+              imageUrl: trimmedBookImageLink || "/books.png",
+              url: "",
+              source: "file",
+              fileName: file.name,
+              sizeLabel: formatFileSize(file.size),
+            }),
+          });
+
+          const payload = (await response.json().catch(() => ({}))) as { book?: AddedBook };
+          return payload.book;
+        }),
+      );
+
+      const validPersisted = persisted.filter((book): book is AddedBook => Boolean(book));
+      if (validPersisted.length > 0) {
+        setAddedBooks((current) => {
+          const withoutTemp = current.filter((book) => !localBooks.some((tempBook) => tempBook.id === book.id));
+          return [...validPersisted, ...withoutTemp];
+        });
+      }
+    } catch {
+      // keep local preview entries even if persistence fails
+    }
+
     setBookNameInput("");
     setBookMrpInput("");
     setBookCategoryInput("");
     setBookImageFile(null);
     setBookImageLinkInput("");
+    setBookLinkInput("");
     event.target.value = "";
+  };
+
+  const handleAmazonBookAdd = async () => {
+    const trimmedBookName = bookNameInput.trim();
+    const trimmedBookMrp = bookMrpInput.trim();
+    const trimmedBookCategory = bookCategoryInput.trim();
+    const trimmedBookImageLink = bookImageLinkInput.trim();
+    const trimmedBookLink = bookLinkInput.trim();
+    const parsedMrp = Number(trimmedBookMrp);
+
+    if (!trimmedBookName || !trimmedBookMrp || !trimmedBookCategory || !trimmedBookLink) {
+      setBookFormError("Please enter book name, MRP, category/type, and Amazon link.");
+      return;
+    }
+
+    if (!Number.isFinite(parsedMrp) || parsedMrp <= 0) {
+      setBookFormError("Please enter a valid MRP amount.");
+      return;
+    }
+
+    if (!isAmazonLink(trimmedBookLink)) {
+      setBookFormError("Please provide a valid Amazon book link.");
+      return;
+    }
+
+    if (trimmedBookImageLink && !parseHttpUrl(trimmedBookImageLink)) {
+      setBookFormError("Please provide a valid image link.");
+      return;
+    }
+
+    setBookFormError("");
+
+    try {
+      const response = await fetch("/api/profile/library", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          kind: "book",
+          name: trimmedBookName,
+          category: trimmedBookCategory,
+          mrp: parsedMrp.toFixed(2),
+          imageUrl: trimmedBookImageLink || "/books.png",
+          url: trimmedBookLink,
+          source: "amazon",
+          fileName: "Amazon Link",
+          sizeLabel: "External",
+        }),
+      });
+
+      const payload = (await response.json().catch(() => ({}))) as { book?: AddedBook; message?: string };
+
+      if (!response.ok || !payload.book) {
+        setBookFormError(payload.message || "Unable to add Amazon book.");
+        return;
+      }
+
+      setAddedBooks((prev) => [payload.book as AddedBook, ...prev]);
+    } catch {
+      setBookFormError("Unable to add Amazon book.");
+      return;
+    }
+
+    setBookNameInput("");
+    setBookMrpInput("");
+    setBookCategoryInput("");
+    setBookImageFile(null);
+    setBookImageLinkInput("");
+    setBookLinkInput("");
   };
 
   const getYouTubeEmbedUrl = (link: string) => {
@@ -640,13 +795,13 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     }
   };
 
-  const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVideoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? []);
     if (files.length === 0) {
       return;
     }
 
-    const newVideos = files.map((file, index) => ({
+    const localVideos = files.map((file, index) => ({
       id: `video-${Date.now()}-${index}`,
       name: file.name,
       sizeLabel: formatFileSize(file.size),
@@ -654,11 +809,43 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       source: "file" as const,
     }));
 
-    setAddedVideos((prev) => [...newVideos, ...prev]);
+    setAddedVideos((prev) => [...localVideos, ...prev]);
+
+    try {
+      const persisted = await Promise.all(
+        files.map(async (file) => {
+          const response = await fetch("/api/profile/library", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              kind: "video",
+              name: file.name,
+              url: "",
+              source: "file",
+              sizeLabel: formatFileSize(file.size),
+            }),
+          });
+
+          const payload = (await response.json().catch(() => ({}))) as { video?: AddedVideo };
+          return payload.video;
+        }),
+      );
+
+      const validPersisted = persisted.filter((video): video is AddedVideo => Boolean(video));
+      if (validPersisted.length > 0) {
+        setAddedVideos((current) => {
+          const withoutTemp = current.filter((video) => !localVideos.some((tempVideo) => tempVideo.id === video.id));
+          return [...validPersisted, ...withoutTemp];
+        });
+      }
+    } catch {
+      // keep local preview entries even if persistence fails
+    }
+
     event.target.value = "";
   };
 
-  const handleYouTubeAdd = () => {
+  const handleYouTubeAdd = async () => {
     const trimmedLink = youtubeLinkInput.trim();
     if (!trimmedLink) {
       setYoutubeLinkError("Please enter a YouTube link.");
@@ -671,21 +858,35 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       return;
     }
 
-    setYoutubeLinkError("");
-    setAddedVideos((prev) => [
-      {
-        id: `yt-${Date.now()}`,
-        name: "YouTube Video",
-        sizeLabel: "YouTube Link",
-        url: embedUrl,
-        source: "youtube",
-      },
-      ...prev,
-    ]);
-    setYoutubeLinkInput("");
+    try {
+      const response = await fetch("/api/profile/library", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          kind: "video",
+          name: "YouTube Video",
+          sizeLabel: "YouTube Link",
+          url: embedUrl,
+          source: "youtube",
+        }),
+      });
+
+      const payload = (await response.json().catch(() => ({}))) as { video?: AddedVideo; message?: string };
+
+      if (!response.ok || !payload.video) {
+        setYoutubeLinkError(payload.message || "Unable to add YouTube video.");
+        return;
+      }
+
+      setYoutubeLinkError("");
+      setAddedVideos((prev) => [payload.video as AddedVideo, ...prev]);
+      setYoutubeLinkInput("");
+    } catch {
+      setYoutubeLinkError("Unable to add YouTube video.");
+    }
   };
 
-  const handleDeleteBook = (bookId: string) => {
+  const handleDeleteBook = async (bookId: string) => {
     setAddedBooks((currentBooks) => {
       const bookToRemove = currentBooks.find((book) => book.id === bookId);
       if (bookToRemove?.imageUrl.startsWith("blob:")) {
@@ -697,9 +898,15 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
 
       return currentBooks.filter((book) => book.id !== bookId);
     });
+
+    await fetch("/api/profile/library", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ kind: "book", id: bookId }),
+    }).catch(() => undefined);
   };
 
-  const handleDeleteVideo = (videoId: string) => {
+  const handleDeleteVideo = async (videoId: string) => {
     setAddedVideos((currentVideos) => {
       const videoToRemove = currentVideos.find((video) => video.id === videoId);
       if (videoToRemove?.source === "file" && videoToRemove.url.startsWith("blob:")) {
@@ -708,6 +915,12 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
 
       return currentVideos.filter((video) => video.id !== videoId);
     });
+
+    await fetch("/api/profile/library", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ kind: "video", id: videoId }),
+    }).catch(() => undefined);
   };
 
   const searchableItems = useMemo<SearchResultItem[]>(() => {
@@ -749,7 +962,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       ...addedBooks.map((book) => ({
         id: book.id,
         title: book.name,
-        description: `${book.category} • MRP ₹${book.mrp} • ${book.fileName}`,
+        description: `${book.category} • MRP ₹${book.mrp} • ${book.source === "amazon" ? "Amazon link" : book.fileName}`,
         section: "add" as const,
         addTab: "books" as const,
         openUrl: book.url,
@@ -1036,6 +1249,23 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                       />
                     </div>
 
+                    <div className="mt-3 grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
+                      <input
+                        type="url"
+                        value={bookLinkInput}
+                        onChange={(event) => setBookLinkInput(event.target.value)}
+                        placeholder="Paste Amazon book link"
+                        className="h-11 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAmazonBookAdd}
+                        className="inline-flex h-11 items-center justify-center rounded-xl bg-[#1ec28e] px-4 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
+                      >
+                        Add Amazon Book
+                      </button>
+                    </div>
+
                     <label className="mt-5 flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-2xl border border-dashed border-slate-300 px-4 text-sm text-slate-600 transition hover:border-[#1ec28e] hover:bg-[#f7faf8]">
                       <span>Choose books to upload</span>
                       <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-medium text-[#1ec28e]">Browse</span>
@@ -1070,7 +1300,9 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                               <p className="line-clamp-2 text-sm font-semibold text-slate-900">{book.name}</p>
                               <p className="text-xs text-slate-500">{book.category}</p>
                               <p className="text-sm font-semibold text-[#1ec28e]">MRP ₹{book.mrp}</p>
-                              <p className="truncate text-xs text-slate-500">{book.fileName} • {book.sizeLabel}</p>
+                              <p className="truncate text-xs text-slate-500">
+                                {book.source === "amazon" ? "Amazon Link" : book.fileName} • {book.sizeLabel}
+                              </p>
                               <div className="flex items-center gap-2 pt-1">
                                 <a
                                   href={book.url}
@@ -1449,19 +1681,6 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                   </label>
                 </div>
 
-                <div className="mt-4">
-                  <label className="space-y-2 text-sm font-medium text-slate-700">
-                    Reviews (one per line)
-                    <textarea
-                      value={profileReviewsText}
-                      onChange={(event) => setProfileReviewsText(event.target.value)}
-                      placeholder="Great professional service"
-                      rows={4}
-                      className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
-                    />
-                  </label>
-                </div>
-
                 {profileError && (
                   <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{profileError}</div>
                 )}
@@ -1487,8 +1706,8 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
           ) : (
             <>
               <div className="mt-6 rounded-[24px] bg-white p-5 shadow-sm md:p-6">
-                <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-                  <div className="flex items-center gap-4">
+                <div className="grid gap-5 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:items-start">
+                  <div className="flex justify-center lg:justify-start">
                     <Image
                       src={avatarSrc}
                       alt="Professional profile"
@@ -1496,39 +1715,46 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                       height={92}
                       className="h-20 w-20 rounded-3xl border border-slate-100 object-cover"
                     />
-                    <div>
-                      <p className="text-sm font-medium text-[#1ec28e]">Professional Profile</p>
-                      <h3 className="mt-1 text-2xl font-semibold text-slate-900">{profileName || "Professional User"}</h3>
-                      <p className="mt-1 text-sm text-slate-500">{profileEmail}</p>
-                      <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
-                        <span className="rounded-full bg-[#f7faf8] px-3 py-1 text-slate-600">
-                          {profileSpecialization || "Specialization not set"}
-                        </span>
-                        <span className="rounded-full bg-[#f7faf8] px-3 py-1 text-slate-600">
-                          {profileContactNumber || "Contact not set"}
-                        </span>
+                  </div>
+
+                  <div className="text-center lg:text-left">
+                    <p className="text-sm font-medium text-[#1ec28e]">Professional Profile</p>
+                    <h3 className="mt-1 text-2xl font-semibold text-slate-900">{profileName || "Professional User"}</h3>
+
+                    {(profileSpecialization || profileContactNumber) && (
+                      <div className="mt-2 flex flex-wrap items-center justify-center gap-2 text-xs lg:justify-start">
+                        {profileSpecialization ? (
+                          <span className="rounded-full bg-[#f7faf8] px-3 py-1 text-slate-600">{profileSpecialization}</span>
+                        ) : null}
+                        {profileContactNumber ? (
+                          <span className="rounded-full bg-[#f7faf8] px-3 py-1 text-slate-600">{profileContactNumber}</span>
+                        ) : null}
                       </div>
-                      <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-500">
-                        <span className="rounded-full bg-[#effaf6] px-3 py-1 text-[#1ec28e]">Professional</span>
+                    )}
+
+                    <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-xs text-slate-500 lg:justify-start">
+                      <span className="rounded-full bg-[#effaf6] px-3 py-1 text-[#1ec28e]">Professional</span>
+                      {certificateList.length > 0 ? (
                         <span className="rounded-full bg-slate-100 px-3 py-1">{certificateList.length} Certificates</span>
-                        {profileBoostedUntil && (
-                          <span className="rounded-full bg-amber-50 px-3 py-1 text-amber-700">
-                            Boost active
-                          </span>
-                        )}
-                      </div>
+                      ) : null}
+                      {profileBoostedUntil ? (
+                        <span className="rounded-full bg-amber-50 px-3 py-1 text-amber-700">Boost active</span>
+                      ) : null}
+                    </div>
+
+                    {profileLocation ? (
                       <a
                         href={mapsHref}
                         target="_blank"
                         rel="noreferrer"
                         className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-[#1ec28e] transition hover:text-[#18ab7d]"
                       >
-                        {profileLocation ? profileLocation : "Add your location"}
+                        {profileLocation}
                       </a>
-                    </div>
+                    ) : null}
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-start justify-center lg:justify-end">
                     <button
                       type="button"
                       onClick={() => setActiveSection("settings")}
@@ -1561,31 +1787,6 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                   </div>
                 )}
 
-                <div className="mt-5 rounded-2xl border border-slate-100 bg-[#f7faf8] p-4">
-                  <p className="text-sm font-semibold text-slate-900">Reviews</p>
-                  <div className="mt-3 space-y-2">
-                    {(profileReviewsText
-                      .split("\n")
-                      .map((review) => review.trim())
-                      .filter(Boolean)
-                      .slice(0, 4)
-                    ).map((review, index) => (
-                      <div key={`${review}-${index}`} className="rounded-xl bg-white px-3 py-2 text-sm text-slate-600">
-                        <div className="mb-1 flex items-center gap-1 text-amber-500">
-                          <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                          <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                          <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                          <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                          <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                        </div>
-                        {review}
-                      </div>
-                    ))}
-                    {profileReviewsText.trim().length === 0 && (
-                      <p className="text-sm text-slate-500">No reviews added yet.</p>
-                    )}
-                  </div>
-                </div>
               </div>
 
               <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

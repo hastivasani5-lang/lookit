@@ -84,22 +84,23 @@ type PayoutEntry = {
 
 type UploadView = "professional-uploads" | "student-purchases";
 
-type ProfessionalUploadedBook = {
-  id: number;
-  title: string;
-  category: string;
-  uploadedBy: string;
-  mrp: string;
-  uploadedAt: string;
+type ProfessionalUploadSummary = {
+  id: string;
+  name: string;
+  email: string;
+  categories: string[];
+  booksCount: number;
+  videosCount: number;
+  lastUpdated: string;
 };
 
-type StudentPurchasedBook = {
-  id: number;
-  title: string;
-  studentName: string;
-  purchasedFrom: string;
-  amount: string;
-  purchasedAt: string;
+type StudentActivitySummary = {
+  id: string;
+  name: string;
+  email: string;
+  purchasedBooksCount: number;
+  watchedVideosCount: number;
+  lastActivity: string;
 };
 
 type DetailModalState = {
@@ -285,76 +286,6 @@ const initialPayoutEntries: PayoutEntry[] = [
   },
 ];
 
-const professionalUploadedBooks: ProfessionalUploadedBook[] = [
-  {
-    id: 1,
-    title: "Advanced React Patterns",
-    category: "Technology",
-    uploadedBy: "Riya Sharma",
-    mrp: "₹499",
-    uploadedAt: "Today",
-  },
-  {
-    id: 2,
-    title: "UI Design Fundamentals",
-    category: "Design",
-    uploadedBy: "Aarav Mehta",
-    mrp: "₹399",
-    uploadedAt: "Yesterday",
-  },
-  {
-    id: 3,
-    title: "SEO Growth Blueprint",
-    category: "Marketing",
-    uploadedBy: "Neha Verma",
-    mrp: "₹349",
-    uploadedAt: "2 days ago",
-  },
-  {
-    id: 4,
-    title: "Data Analytics with Python",
-    category: "Analytics",
-    uploadedBy: "Kunal Patel",
-    mrp: "₹599",
-    uploadedAt: "3 days ago",
-  },
-];
-
-const studentPurchasedBooks: StudentPurchasedBook[] = [
-  {
-    id: 1,
-    title: "Advanced React Patterns",
-    studentName: "Ava Johnson",
-    purchasedFrom: "Riya Sharma",
-    amount: "₹499",
-    purchasedAt: "Today",
-  },
-  {
-    id: 2,
-    title: "UI Design Fundamentals",
-    studentName: "Noah Williams",
-    purchasedFrom: "Aarav Mehta",
-    amount: "₹399",
-    purchasedAt: "Yesterday",
-  },
-  {
-    id: 3,
-    title: "Data Analytics with Python",
-    studentName: "Mia Patel",
-    purchasedFrom: "Kunal Patel",
-    amount: "₹599",
-    purchasedAt: "Yesterday",
-  },
-  {
-    id: 4,
-    title: "SEO Growth Blueprint",
-    studentName: "Ethan Lee",
-    purchasedFrom: "Neha Verma",
-    amount: "₹349",
-    purchasedAt: "3 days ago",
-  },
-];
-
 const initialStudents: AdminStudent[] = [
   {
     id: 1,
@@ -518,6 +449,7 @@ export default function AdminPanelView() {
   const [categoryType, setCategoryType] = useState("");
   const [categoryDescription, setCategoryDescription] = useState("");
   const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
+  const [isCategoryFormOpen, setIsCategoryFormOpen] = useState(false);
   const [notifications, setNotifications] = useState<ProfessionalNotification[]>([]);
   const [notificationsLoading, setNotificationsLoading] = useState(false);
   const [usersLoading, setUsersLoading] = useState(false);
@@ -525,6 +457,9 @@ export default function AdminPanelView() {
   const [usersTab, setUsersTab] = useState<"students" | "professionals">("students");
   const [userDetailsById, setUserDetailsById] = useState<Record<number, AdminUserDetails>>({});
   const [professionalUsers, setProfessionalUsers] = useState<AdminProfessionalUser[]>([]);
+  const [professionalUploadRows, setProfessionalUploadRows] = useState<ProfessionalUploadSummary[]>([]);
+  const [studentUploadRows, setStudentUploadRows] = useState<StudentActivitySummary[]>([]);
+  const [uploadsLoading, setUploadsLoading] = useState(false);
   const [adminProfileOpen, setAdminProfileOpen] = useState(false);
 
   const selectedStudent = studentsList.find((student) => student.id === selectedStudentId) ?? null;
@@ -613,6 +548,16 @@ export default function AdminPanelView() {
     setEditingCategoryId(null);
   };
 
+  const openAddCategoryForm = () => {
+    resetCategoryForm();
+    setIsCategoryFormOpen(true);
+  };
+
+  const closeCategoryForm = () => {
+    setIsCategoryFormOpen(false);
+    resetCategoryForm();
+  };
+
   const saveCategory = () => {
     const name = categoryName.trim();
     const type = categoryType.trim();
@@ -635,7 +580,7 @@ export default function AdminPanelView() {
             : category,
         ),
       );
-      resetCategoryForm();
+      closeCategoryForm();
       return;
     }
 
@@ -651,7 +596,7 @@ export default function AdminPanelView() {
       },
       ...current,
     ]);
-    resetCategoryForm();
+    closeCategoryForm();
   };
 
   const editCategory = (categoryId: number) => {
@@ -664,6 +609,7 @@ export default function AdminPanelView() {
     setCategoryName(category.name);
     setCategoryType(category.type);
     setCategoryDescription(category.description);
+    setIsCategoryFormOpen(true);
   };
 
   const deleteCategory = (categoryId: number) => {
@@ -913,6 +859,40 @@ export default function AdminPanelView() {
     void loadUsers();
   }, [activeSection]);
 
+  useEffect(() => {
+    if (activeSection !== "Uploads") {
+      return;
+    }
+
+    const loadUploads = async () => {
+      setUploadsLoading(true);
+
+      try {
+        const response = await fetch("/api/admin/uploads", { cache: "no-store" });
+        const payload = (await response.json().catch(() => ({}))) as {
+          professionals?: ProfessionalUploadSummary[];
+          students?: StudentActivitySummary[];
+        };
+
+        if (!response.ok) {
+          setProfessionalUploadRows([]);
+          setStudentUploadRows([]);
+          return;
+        }
+
+        setProfessionalUploadRows(Array.isArray(payload.professionals) ? payload.professionals : []);
+        setStudentUploadRows(Array.isArray(payload.students) ? payload.students : []);
+      } catch {
+        setProfessionalUploadRows([]);
+        setStudentUploadRows([]);
+      } finally {
+        setUploadsLoading(false);
+      }
+    };
+
+    void loadUploads();
+  }, [activeSection]);
+
   const onLogout = async () => {
     await fetch("/api/admin/logout", { method: "POST" });
     router.refresh();
@@ -969,7 +949,7 @@ export default function AdminPanelView() {
           </div>
         </aside>
 
-        <div className={`bg-[#f8f9ff] p-3 sm:p-4 md:p-5 transition ${selectedStudent || detailModal || adminProfileOpen ? "blur-sm" : ""}`}>
+        <div className={`bg-[#f8f9ff] p-3 sm:p-4 md:p-5 transition ${selectedStudent || detailModal || adminProfileOpen || isCategoryFormOpen ? "blur-sm" : ""}`}>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white p-3 sm:p-4">
             <input
               type="text"
@@ -1098,30 +1078,44 @@ export default function AdminPanelView() {
             </div>
           ) : (
             <div className="rounded-2xl bg-white p-6">
-              <h2 className="text-2xl font-semibold text-slate-800">
-                {activeSection === "Users"
-                  ? "User Management"
-                  : activeSection === "Approvals"
-                    ? "Professional Requests"
-                    : activeSection === "Reviews"
-                      ? "Review Moderation"
-                      : activeSection === "Categories"
-                        ? "Category Management"
-                        : activeSection === "Uploads"
-                          ? "Book Upload Center"
-                          : activeSection === "Payouts"
-                            ? "Teacher Payments"
-                            : "Teacher Notifications"}
-              </h2>
-              <p className="mt-2 text-sm text-slate-500">
-                {activeSection === "Users" && "Manage account status, roles, and access permissions."}
-                {activeSection === "Approvals" && "Approve or reject pending professional onboarding requests."}
-                {activeSection === "Reviews" && "Review, approve, or remove reported platform feedback."}
-                {activeSection === "Categories" && "Manage all professional categories in one place."}
-                {activeSection === "Uploads" && "Upload books and assign metadata for publishing."}
-                {activeSection === "Payouts" && "Track payouts and settle teacher earnings securely."}
-                {activeSection === "Alerts" && "Professional updates appear here automatically."}
-              </p>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <h2 className="text-2xl font-semibold text-slate-800">
+                    {activeSection === "Users"
+                      ? "User Management"
+                      : activeSection === "Approvals"
+                        ? "Professional Requests"
+                        : activeSection === "Reviews"
+                          ? "Review Moderation"
+                          : activeSection === "Categories"
+                            ? "Category Management"
+                            : activeSection === "Uploads"
+                              ? "Book Upload Center"
+                              : activeSection === "Payouts"
+                                ? "Teacher Payments"
+                                : "Teacher Notifications"}
+                  </h2>
+                  <p className="mt-2 text-sm text-slate-500">
+                    {activeSection === "Users" && "Manage account status, roles, and access permissions."}
+                    {activeSection === "Approvals" && "Approve or reject pending professional onboarding requests."}
+                    {activeSection === "Reviews" && "Review, approve, or remove reported platform feedback."}
+                    {activeSection === "Categories" && "Manage all professional categories in one place."}
+                    {activeSection === "Uploads" && "Upload books and assign metadata for publishing."}
+                    {activeSection === "Payouts" && "Track payouts and settle teacher earnings securely."}
+                    {activeSection === "Alerts" && "Professional updates appear here automatically."}
+                  </p>
+                </div>
+
+                {activeSection === "Categories" ? (
+                  <button
+                    type="button"
+                    onClick={openAddCategoryForm}
+                    className="rounded-full bg-[#1ec28e] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ad7d]"
+                  >
+                    Add Category
+                  </button>
+                ) : null}
+              </div>
 
               {activeSection === "Approvals" ? (
                 <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
@@ -1173,6 +1167,20 @@ export default function AdminPanelView() {
                                 <div className="flex justify-end gap-2">
                                   <button
                                     type="button"
+                                    onClick={() => updateApprovalStatus(request.id, "approved")}
+                                    className="rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-3 py-1.5 text-xs font-semibold text-[#178c43] transition hover:bg-[#dff6e8]"
+                                  >
+                                    Approve
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => updateApprovalStatus(request.id, "rejected")}
+                                    className="rounded-full border border-[#f5c1c1] bg-[#ffe7e7] px-3 py-1.5 text-xs font-semibold text-[#cc2a2a] transition hover:bg-[#ffdcdc]"
+                                  >
+                                    Reject
+                                  </button>
+                                  <button
+                                    type="button"
                                     onClick={() =>
                                       openDetailModal({
                                         title: "Approval Request Details",
@@ -1188,20 +1196,6 @@ export default function AdminPanelView() {
                                   >
                                     <Eye className="h-3.5 w-3.5" />
                                     View
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => updateApprovalStatus(request.id, "approved")}
-                                    className="rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-3 py-1.5 text-xs font-semibold text-[#178c43] transition hover:bg-[#dff6e8]"
-                                  >
-                                    Approve
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => updateApprovalStatus(request.id, "rejected")}
-                                    className="rounded-full border border-[#f5c1c1] bg-[#ffe7e7] px-3 py-1.5 text-xs font-semibold text-[#cc2a2a] transition hover:bg-[#ffdcdc]"
-                                  >
-                                    Reject
                                   </button>
                                 </div>
                               </td>
@@ -1428,53 +1422,52 @@ export default function AdminPanelView() {
                   {uploadView === "professional-uploads" ? (
                     <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
                       <div className="border-b border-slate-200 px-4 py-3">
-                        <h3 className="font-semibold text-slate-800">Books Uploaded by Professionals</h3>
+                        <h3 className="font-semibold text-slate-800">Professionals</h3>
                       </div>
                       <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                           <thead className="bg-slate-50 text-left text-slate-500">
                             <tr>
-                              <th className="px-4 py-3">Book Title</th>
-                              <th className="px-4 py-3">Category</th>
-                              <th className="px-4 py-3">Uploaded By</th>
-                              <th className="px-4 py-3">MRP</th>
-                              <th className="px-4 py-3">Uploaded</th>
+                              <th className="px-4 py-3">Name</th>
+                              <th className="px-4 py-3">Email</th>
+                              <th className="px-4 py-3">Categories</th>
+                              <th className="px-4 py-3">Books</th>
+                              <th className="px-4 py-3">Videos</th>
                               <th className="px-4 py-3 text-right">View</th>
                             </tr>
                           </thead>
                           <tbody>
-                            {professionalUploadedBooks.map((book) => (
-                              <tr key={book.id} className="border-t border-slate-100 text-slate-700">
-                                <td className="px-4 py-3 font-medium text-slate-800">{book.title}</td>
-                                <td className="px-4 py-3">{book.category}</td>
-                                <td className="px-4 py-3">{book.uploadedBy}</td>
-                                <td className="px-4 py-3">{book.mrp}</td>
-                                <td className="px-4 py-3">{book.uploadedAt}</td>
-                                <td className="px-4 py-3">
-                                  <div className="flex justify-end">
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        openDetailModal({
-                                          title: "Uploaded Book Details",
-                                          entries: [
-                                            { label: "Book Title", value: book.title },
-                                            { label: "Category", value: book.category },
-                                            { label: "Uploaded By", value: book.uploadedBy },
-                                            { label: "MRP", value: book.mrp },
-                                            { label: "Uploaded", value: book.uploadedAt },
-                                          ],
-                                        })
-                                      }
-                                      className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
-                                    >
-                                      <Eye className="h-3.5 w-3.5" />
-                                      View
-                                    </button>
-                                  </div>
-                                </td>
+                            {uploadsLoading ? (
+                              <tr>
+                                <td colSpan={6} className="px-4 py-4 text-sm text-slate-500">Loading professionals...</td>
                               </tr>
-                            ))}
+                            ) : professionalUploadRows.length === 0 ? (
+                              <tr>
+                                <td colSpan={6} className="px-4 py-4 text-sm text-slate-500">No professionals found.</td>
+                              </tr>
+                            ) : (
+                              professionalUploadRows.map((professional) => (
+                                <tr key={professional.id} className="border-t border-slate-100 text-slate-700">
+                                  <td className="px-4 py-3 font-medium text-slate-800">{professional.name}</td>
+                                  <td className="px-4 py-3 text-xs text-slate-600">{professional.email}</td>
+                                  <td className="px-4 py-3">{professional.categories.length}</td>
+                                  <td className="px-4 py-3">{professional.booksCount}</td>
+                                  <td className="px-4 py-3">{professional.videosCount}</td>
+                                  <td className="px-4 py-3">
+                                    <div className="flex justify-end">
+                                      <button
+                                        type="button"
+                                        onClick={() => router.push(`/admin/uploads/professionals/${professional.id}`)}
+                                        className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
+                                      >
+                                        <Eye className="h-3.5 w-3.5" />
+                                        View
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))
+                            )}
                           </tbody>
                         </table>
                       </div>
@@ -1482,53 +1475,52 @@ export default function AdminPanelView() {
                   ) : (
                     <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
                       <div className="border-b border-slate-200 px-4 py-3">
-                        <h3 className="font-semibold text-slate-800">Books Purchased by Students</h3>
+                        <h3 className="font-semibold text-slate-800">Students</h3>
                       </div>
                       <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                           <thead className="bg-slate-50 text-left text-slate-500">
                             <tr>
-                              <th className="px-4 py-3">Book Title</th>
-                              <th className="px-4 py-3">Student</th>
-                              <th className="px-4 py-3">Purchased From</th>
-                              <th className="px-4 py-3">Amount</th>
-                              <th className="px-4 py-3">Purchased</th>
+                              <th className="px-4 py-3">Name</th>
+                              <th className="px-4 py-3">Email</th>
+                              <th className="px-4 py-3">Purchased Books</th>
+                              <th className="px-4 py-3">Watched Videos</th>
+                              <th className="px-4 py-3">Last Activity</th>
                               <th className="px-4 py-3 text-right">View</th>
                             </tr>
                           </thead>
                           <tbody>
-                            {studentPurchasedBooks.map((purchase) => (
-                              <tr key={purchase.id} className="border-t border-slate-100 text-slate-700">
-                                <td className="px-4 py-3 font-medium text-slate-800">{purchase.title}</td>
-                                <td className="px-4 py-3">{purchase.studentName}</td>
-                                <td className="px-4 py-3">{purchase.purchasedFrom}</td>
-                                <td className="px-4 py-3">{purchase.amount}</td>
-                                <td className="px-4 py-3">{purchase.purchasedAt}</td>
-                                <td className="px-4 py-3">
-                                  <div className="flex justify-end">
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        openDetailModal({
-                                          title: "Student Purchase Details",
-                                          entries: [
-                                            { label: "Book Title", value: purchase.title },
-                                            { label: "Student", value: purchase.studentName },
-                                            { label: "Purchased From", value: purchase.purchasedFrom },
-                                            { label: "Amount", value: purchase.amount },
-                                            { label: "Purchased", value: purchase.purchasedAt },
-                                          ],
-                                        })
-                                      }
-                                      className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
-                                    >
-                                      <Eye className="h-3.5 w-3.5" />
-                                      View
-                                    </button>
-                                  </div>
-                                </td>
+                            {uploadsLoading ? (
+                              <tr>
+                                <td colSpan={6} className="px-4 py-4 text-sm text-slate-500">Loading students...</td>
                               </tr>
-                            ))}
+                            ) : studentUploadRows.length === 0 ? (
+                              <tr>
+                                <td colSpan={6} className="px-4 py-4 text-sm text-slate-500">No students found.</td>
+                              </tr>
+                            ) : (
+                              studentUploadRows.map((student) => (
+                                <tr key={student.id} className="border-t border-slate-100 text-slate-700">
+                                  <td className="px-4 py-3 font-medium text-slate-800">{student.name}</td>
+                                  <td className="px-4 py-3 text-xs text-slate-600">{student.email}</td>
+                                  <td className="px-4 py-3">{student.purchasedBooksCount}</td>
+                                  <td className="px-4 py-3">{student.watchedVideosCount}</td>
+                                  <td className="px-4 py-3">{new Date(student.lastActivity).toLocaleDateString()}</td>
+                                  <td className="px-4 py-3">
+                                    <div className="flex justify-end">
+                                      <button
+                                        type="button"
+                                        onClick={() => router.push(`/admin/uploads/students/${student.id}`)}
+                                        className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
+                                      >
+                                        <Eye className="h-3.5 w-3.5" />
+                                        View
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))
+                            )}
                           </tbody>
                         </table>
                       </div>
@@ -1537,55 +1529,6 @@ export default function AdminPanelView() {
                 </div>
               ) : activeSection === "Categories" ? (
                 <div className="mt-6 space-y-5">
-                  <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
-                    <h3 className="text-base font-semibold text-slate-800">
-                      {editingCategoryId !== null ? "Edit Professional Category" : "Add Professional Category"}
-                    </h3>
-
-                    <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                      <input
-                        type="text"
-                        value={categoryName}
-                        onChange={(event) => setCategoryName(event.target.value)}
-                        placeholder="Category name"
-                        className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-[#1ec28e]"
-                      />
-                      <input
-                        type="text"
-                        value={categoryType}
-                        onChange={(event) => setCategoryType(event.target.value)}
-                        placeholder="Category type"
-                        className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-[#1ec28e]"
-                      />
-                      <textarea
-                        value={categoryDescription}
-                        onChange={(event) => setCategoryDescription(event.target.value)}
-                        placeholder="Category description"
-                        rows={3}
-                        className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-[#1ec28e] sm:col-span-2"
-                      />
-                    </div>
-
-                    <div className="mt-4 flex flex-wrap justify-end gap-2">
-                      {editingCategoryId !== null ? (
-                        <button
-                          type="button"
-                          onClick={resetCategoryForm}
-                          className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
-                        >
-                          Cancel
-                        </button>
-                      ) : null}
-                      <button
-                        type="button"
-                        onClick={saveCategory}
-                        className="rounded-full bg-[#1ec28e] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ad7d]"
-                      >
-                        {editingCategoryId !== null ? "Update Category" : "Add Category"}
-                      </button>
-                    </div>
-                  </div>
-
                   <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
                     <table className="w-full text-sm">
                       <thead className="bg-slate-50 text-left text-slate-500">
@@ -1608,6 +1551,22 @@ export default function AdminPanelView() {
                               <div className="flex justify-end gap-2">
                                 <button
                                   type="button"
+                                  onClick={() => editCategory(category.id)}
+                                  className="inline-flex items-center gap-1 rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-3 py-1.5 text-xs font-semibold text-[#178c43] transition hover:bg-[#dff6e8]"
+                                >
+                                  <PencilLine className="h-3.5 w-3.5" />
+                                  Edit
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => deleteCategory(category.id)}
+                                  className="inline-flex items-center gap-1 rounded-full border border-[#f5c1c1] bg-[#ffe7e7] px-3 py-1.5 text-xs font-semibold text-[#cc2a2a] transition hover:bg-[#ffdcdc]"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                  Delete
+                                </button>
+                                <button
+                                  type="button"
                                   onClick={() =>
                                     openDetailModal({
                                       title: "Professional Category Details",
@@ -1623,22 +1582,6 @@ export default function AdminPanelView() {
                                 >
                                   <Eye className="h-3.5 w-3.5" />
                                   View
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => editCategory(category.id)}
-                                  className="inline-flex items-center gap-1 rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-3 py-1.5 text-xs font-semibold text-[#178c43] transition hover:bg-[#dff6e8]"
-                                >
-                                  <PencilLine className="h-3.5 w-3.5" />
-                                  Edit
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => deleteCategory(category.id)}
-                                  className="inline-flex items-center gap-1 rounded-full border border-[#f5c1c1] bg-[#ffe7e7] px-3 py-1.5 text-xs font-semibold text-[#cc2a2a] transition hover:bg-[#ffdcdc]"
-                                >
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                  Delete
                                 </button>
                               </div>
                             </td>
@@ -1807,6 +1750,57 @@ export default function AdminPanelView() {
           )}
         </div>
       </section>
+
+      {isCategoryFormOpen ? (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/40 backdrop-blur-sm p-4">
+          <div className="w-full max-w-3xl rounded-2xl bg-white p-4 shadow-2xl sm:p-5">
+            <h3 className="text-base font-semibold text-slate-800">
+              {editingCategoryId !== null ? "Edit Professional Category" : "Add Professional Category"}
+            </h3>
+
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <input
+                type="text"
+                value={categoryName}
+                onChange={(event) => setCategoryName(event.target.value)}
+                placeholder="Category name"
+                className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-[#1ec28e]"
+              />
+              <input
+                type="text"
+                value={categoryType}
+                onChange={(event) => setCategoryType(event.target.value)}
+                placeholder="Category type"
+                className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-[#1ec28e]"
+              />
+              <textarea
+                value={categoryDescription}
+                onChange={(event) => setCategoryDescription(event.target.value)}
+                placeholder="Category description"
+                rows={4}
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-[#1ec28e] sm:col-span-2"
+              />
+            </div>
+
+            <div className="mt-4 flex flex-wrap justify-end gap-2">
+              <button
+                type="button"
+                onClick={closeCategoryForm}
+                className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={saveCategory}
+                className="rounded-full bg-[#1ec28e] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ad7d]"
+              >
+                {editingCategoryId !== null ? "Update Category" : "Add Category"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {adminProfileOpen ? (
         <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/40 backdrop-blur-sm p-4">

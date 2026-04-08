@@ -1,5 +1,19 @@
 [
   {
+    "id": "4e0ef160-d7d5-4ccc-b9da-9d6364f456b7",
+    "name": "Hasti Vasani",
+    "email": "hastivasani3@gmail.com",
+    "passwordHash": "$2a$10$xblFr2tBMRQj2HOluFfz0ebl6y85KuUwFj.DO79o.zKj9gbqMhVHK",
+    "role": "professional",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "rejected",
+    "approvalReviewedBy": "Admin",
+    "approvalReviewedAt": "2026-04-08T11:25:45.881Z",
+    "provider": "credentials",
+    "createdAt": "2026-04-08T09:54:13.741Z"
+  },
+  {
     "id": "8aed2221-d2c3-4e8b-ab97-08e5f1247053",
     "name": "smit",
     "email": "smit11@gmail.com",
@@ -7,9 +21,9 @@
     "role": "professional",
     "certificates": [],
     "reviews": [],
-    "approvalStatus": "rejected",
+    "approvalStatus": "approved",
     "approvalReviewedBy": "Admin",
-    "approvalReviewedAt": "2026-04-08T06:37:02.219Z",
+    "approvalReviewedAt": "2026-04-08T11:26:15.205Z",
     "provider": "credentials",
     "createdAt": "2026-04-08T06:33:45.898Z"
   },
@@ -46,6 +60,8 @@
     "certificates": [],
     "reviews": [],
     "approvalStatus": "approved",
+    "approvalReviewedBy": "Admin",
+    "approvalReviewedAt": "2026-04-08T11:27:10.526Z",
     "provider": "credentials",
     "createdAt": "2026-04-07T06:59:41.762Z"
   },
@@ -90,6 +106,8 @@
     "certificates": [],
     "reviews": [],
     "approvalStatus": "approved",
+    "approvalReviewedBy": "Admin",
+    "approvalReviewedAt": "2026-04-08T11:27:09.790Z",
     "provider": "credentials",
     "createdAt": "2026-04-07T06:50:33.525Z"
   },
@@ -101,20 +119,9 @@
     "role": "professional",
     "certificates": [],
     "reviews": [],
+    "profileBoostedUntil": "2026-07-08T11:22:50.319Z",
     "approvalStatus": "approved",
     "provider": "credentials",
     "createdAt": "2026-04-07T03:44:59.206Z"
-  },
-  {
-    "id": "4e0ef160-d7d5-4ccc-b9da-9d6364f456b7",
-    "name": "Hasti Vasani",
-    "email": "hastivasani3@gmail.com",
-    "passwordHash": "$2a$10$xblFr2tBMRQj2HOluFfz0ebl6y85KuUwFj.DO79o.zKj9gbqMhVHK",
-    "role": "professional",
-    "certificates": [],
-    "reviews": [],
-    "approvalStatus": "pending",
-    "provider": "credentials",
-    "createdAt": "2026-04-08T09:54:13.741Z"
   }
 ]

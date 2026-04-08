@@ -41,11 +41,16 @@ type AdminSection =
 type ApprovalStatus = "pending" | "approved" | "rejected";
 
 type ApprovalRequest = {
-  id: number;
+  id: string;
   name: string;
-  type: string;
+  email: string;
+  specialization: string;
   updated: string;
   status: ApprovalStatus;
+  provider: "credentials" | "google";
+  approvalReviewedBy: string | null;
+  approvalReviewedAt: string | null;
+  approvalNote: string | null;
 };
 
 type ReviewEntry = {
@@ -163,8 +168,30 @@ const menuItems: Array<{ label: AdminSection; icon: typeof Home }> = [
 ];
 
 const initialApprovalRequests: ApprovalRequest[] = [
-  { id: 1, name: "Primary record", type: "System", updated: "Today", status: "pending" },
-  { id: 2, name: "Secondary queue", type: "Manual", updated: "Yesterday", status: "pending" },
+  {
+    id: "placeholder-1",
+    name: "Pending professional",
+    email: "-",
+    specialization: "-",
+    updated: "Today",
+    status: "pending",
+    provider: "credentials",
+    approvalReviewedBy: null,
+    approvalReviewedAt: null,
+    approvalNote: null,
+  },
+  {
+    id: "placeholder-2",
+    name: "Pending professional",
+    email: "-",
+    specialization: "-",
+    updated: "Yesterday",
+    status: "pending",
+    provider: "credentials",
+    approvalReviewedBy: null,
+    approvalReviewedAt: null,
+    approvalNote: null,
+  },
 ];
 
 const initialReviewEntries: ReviewEntry[] = [
@@ -476,7 +503,7 @@ export default function AdminPanelView() {
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null);
   const [editingStudentId, setEditingStudentId] = useState<number | null>(null);
   const [studentDraft, setStudentDraft] = useState<AdminStudent | null>(null);
-  const [approvalRequests, setApprovalRequests] = useState(initialApprovalRequests);
+  const [approvalRequests, setApprovalRequests] = useState<ApprovalRequest[]>(initialApprovalRequests);
   const [reviewEntries, setReviewEntries] = useState(initialReviewEntries);
   const [payoutEntries] = useState(initialPayoutEntries);
   const [uploadView, setUploadView] = useState<UploadView>("professional-uploads");
@@ -498,18 +525,45 @@ export default function AdminPanelView() {
   const selectedStudentMeta = selectedStudent ? userDetailsById[selectedStudent.id] : null;
   const editingStudent = studentsList.find((student) => student.id === editingStudentId) ?? null;
 
-  const updateApprovalStatus = (id: number, status: Exclude<ApprovalStatus, "pending">) => {
-    setApprovalRequests((currentRequests) =>
-      currentRequests.map((request) =>
-        request.id === id
-          ? {
-              ...request,
-              status,
-              updated: "Just now",
-            }
-          : request,
-      ),
-    );
+  const updateApprovalStatus = async (professionalId: string, status: Exclude<ApprovalStatus, "pending">) => {
+    try {
+      const response = await fetch("/api/admin/professionals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ professionalId, status, reviewedBy: "Admin" }),
+      });
+
+      if (!response.ok) {
+        return;
+      }
+
+      const payload = (await response.json().catch(() => ({}))) as {
+        professional?: {
+          id: string;
+          approvalStatus: ApprovalStatus;
+          approvalReviewedBy: string | null;
+          approvalReviewedAt: string | null;
+          approvalNote: string | null;
+        };
+      };
+
+      setApprovalRequests((currentRequests) =>
+        currentRequests.map((request) =>
+          request.id === professionalId
+            ? {
+                ...request,
+                status: payload.professional?.approvalStatus ?? status,
+                updated: "Just now",
+                approvalReviewedBy: payload.professional?.approvalReviewedBy ?? "Admin",
+                approvalReviewedAt: payload.professional?.approvalReviewedAt ?? new Date().toISOString(),
+                approvalNote: payload.professional?.approvalNote ?? request.approvalNote,
+              }
+            : request,
+        ),
+      );
+    } catch {
+      return;
+    }
   };
 
   const approvalCounts = approvalRequests.reduce(
@@ -695,6 +749,58 @@ export default function AdminPanelView() {
     };
 
     void loadNotifications();
+  }, [activeSection]);
+
+  useEffect(() => {
+    if (activeSection !== "Approvals") {
+      return;
+    }
+
+    const loadApprovals = async () => {
+      try {
+        const response = await fetch("/api/admin/professionals", { cache: "no-store" });
+        const payload = (await response.json().catch(() => ({}))) as {
+          message?: string;
+          professionals?: Array<{
+            id: string;
+            name: string;
+            email: string;
+            specialization: string;
+            provider: "credentials" | "google";
+            approvalStatus: ApprovalStatus;
+            approvalReviewedBy: string | null;
+            approvalReviewedAt: string | null;
+            approvalNote: string | null;
+            createdAt: string;
+          }>;
+        };
+
+        if (!response.ok) {
+          setApprovalRequests([]);
+          return;
+        }
+
+        const professionals = Array.isArray(payload.professionals) ? payload.professionals : [];
+        setApprovalRequests(
+          professionals.map((professional) => ({
+            id: professional.id,
+            name: professional.name,
+            email: professional.email,
+            specialization: professional.specialization || "-",
+            updated: new Date(professional.createdAt).toLocaleDateString(),
+            status: professional.approvalStatus,
+            provider: professional.provider,
+            approvalReviewedBy: professional.approvalReviewedBy,
+            approvalReviewedAt: professional.approvalReviewedAt,
+            approvalNote: professional.approvalNote,
+          })),
+        );
+      } catch {
+        setApprovalRequests([]);
+      }
+    };
+
+    void loadApprovals();
   }, [activeSection]);
 
   useEffect(() => {
@@ -978,7 +1084,7 @@ export default function AdminPanelView() {
                 {activeSection === "Users"
                   ? "User Management"
                   : activeSection === "Approvals"
-                    ? "Teacher Requests"
+                    ? "Professional Requests"
                     : activeSection === "Reviews"
                       ? "Review Moderation"
                       : activeSection === "Categories"
@@ -991,7 +1097,7 @@ export default function AdminPanelView() {
               </h2>
               <p className="mt-2 text-sm text-slate-500">
                 {activeSection === "Users" && "Manage account status, roles, and access permissions."}
-                {activeSection === "Approvals" && "Approve or reject pending teacher onboarding requests."}
+                {activeSection === "Approvals" && "Approve or reject pending professional onboarding requests."}
                 {activeSection === "Reviews" && "Review, approve, or remove reported platform feedback."}
                 {activeSection === "Categories" && "Manage all professional categories in one place."}
                 {activeSection === "Uploads" && "Upload books and assign metadata for publishing."}
@@ -1038,7 +1144,7 @@ export default function AdminPanelView() {
                           return (
                             <tr key={request.id} className={`border-t border-slate-100 text-slate-700 ${statusStyle.row}`}>
                               <td className="px-4 py-4 font-medium text-slate-800">{request.name}</td>
-                              <td className="px-4 py-4">{request.type}</td>
+                              <td className="px-4 py-4">{request.specialization}</td>
                               <td className="px-4 py-4">{request.updated}</td>
                               <td className="px-4 py-4">
                                 <span className={`inline-flex min-w-24 items-center justify-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${statusStyle.pill}`}>
@@ -1054,7 +1160,7 @@ export default function AdminPanelView() {
                                         title: "Approval Request Details",
                                         entries: [
                                           { label: "Name", value: request.name },
-                                          { label: "Type", value: request.type },
+                                          { label: "Type", value: request.specialization },
                                           { label: "Updated", value: request.updated },
                                           { label: "Status", value: request.status },
                                         ],

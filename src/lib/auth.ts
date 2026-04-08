@@ -2,7 +2,7 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { compare } from "bcryptjs";
-import { getUserByEmail, getUserById } from "@/lib/user-store";
+import { getUserByEmail, getUserById, recordProfessionalLoginAttempt } from "@/lib/user-store";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -25,6 +25,11 @@ export const authOptions: NextAuthOptions = {
 
         if (user.role !== credentials.role) {
           return null;
+        }
+
+        if (user.role === "professional" && user.approvalStatus === "rejected") {
+          await recordProfessionalLoginAttempt(user, "rejected");
+          throw new Error("approval-rejected");
         }
 
         const isPasswordValid = await compare(credentials.password, user.passwordHash);
@@ -70,6 +75,11 @@ export const authOptions: NextAuthOptions = {
         return "/login?error=register-first";
       }
 
+      if (dbUser.role === "professional" && dbUser.approvalStatus === "rejected") {
+        await recordProfessionalLoginAttempt(dbUser, "rejected");
+        return "/login?error=approval-rejected";
+      }
+
       user.id = dbUser.id;
       user.role = dbUser.role;
 
@@ -90,6 +100,7 @@ export const authOptions: NextAuthOptions = {
           token.picture = dbUser.image ?? token.picture;
           token.location = dbUser.location;
           token.profileBoostedUntil = dbUser.profileBoostedUntil;
+          token.approvalStatus = dbUser.approvalStatus;
         }
       }
 
@@ -104,6 +115,7 @@ export const authOptions: NextAuthOptions = {
         session.user.image = token.picture ?? session.user.image;
         session.user.location = token.location ?? "";
         session.user.profileBoostedUntil = token.profileBoostedUntil ?? null;
+        session.user.approvalStatus = token.approvalStatus ?? "approved";
       }
 
       return session;

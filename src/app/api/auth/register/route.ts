@@ -35,12 +35,16 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       {
-        message: "Account created successfully.",
+        message:
+          user.role === "professional"
+            ? "Account created successfully. Your professional profile is pending admin approval."
+            : "Account created successfully.",
         user: {
           id: user.id,
           name: user.name,
           email: user.email,
           role: user.role,
+          approvalStatus: user.approvalStatus,
         },
       },
       { status: 201 },

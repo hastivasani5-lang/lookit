@@ -61,10 +61,38 @@ export function ensureDbSchema() {
           certificates TEXT[] NOT NULL DEFAULT '{}',
           reviews TEXT[] NOT NULL DEFAULT '{}',
           profile_boosted_until TIMESTAMPTZ,
+          approval_status TEXT NOT NULL DEFAULT 'approved' CHECK (approval_status IN ('pending', 'approved', 'rejected')),
+          approval_reviewed_by TEXT,
+          approval_reviewed_at TIMESTAMPTZ,
+          approval_note TEXT,
           provider TEXT NOT NULL CHECK (provider IN ('credentials', 'google')),
           created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
         );
       `)
+      .then(() =>
+        db.query(`
+          ALTER TABLE users
+          ADD COLUMN IF NOT EXISTS approval_status TEXT NOT NULL DEFAULT 'approved';
+        `),
+      )
+      .then(() =>
+        db.query(`
+          ALTER TABLE users
+          ADD COLUMN IF NOT EXISTS approval_reviewed_by TEXT;
+        `),
+      )
+      .then(() =>
+        db.query(`
+          ALTER TABLE users
+          ADD COLUMN IF NOT EXISTS approval_reviewed_at TIMESTAMPTZ;
+        `),
+      )
+      .then(() =>
+        db.query(`
+          ALTER TABLE users
+          ADD COLUMN IF NOT EXISTS approval_note TEXT;
+        `),
+      )
       .then(() => undefined);
   }
 

@@ -1,4 +1,5 @@
 export type UserRole = "student" | "professional";
+export type ProfessionalApprovalStatus = "pending" | "approved" | "rejected";
 
 export interface AppUser {
   id: string;
@@ -13,6 +14,10 @@ export interface AppUser {
   certificates?: string[];
   reviews?: string[];
   profileBoostedUntil?: string;
+  approvalStatus: ProfessionalApprovalStatus;
+  approvalReviewedBy?: string;
+  approvalReviewedAt?: string;
+  approvalNote?: string;
   provider: "credentials" | "google";
   createdAt: string;
 }

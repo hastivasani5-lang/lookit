@@ -1,64 +1,29 @@
 [
   {
-    "id": "e8e23652-faf2-4d88-b5a4-c0078672885e",
-    "name": "gadhiya jenil",
-    "email": "jenilgadhiya918@gmail.com",
-    "passwordHash": "$2a$10$XtZgN2id/g.HvPD8QfaC3eP0dO8QNqiJ9IaSFOiT2FMzQHvtZQNWm",
+    "id": "8aed2221-d2c3-4e8b-ab97-08e5f1247053",
+    "name": "smit",
+    "email": "smit11@gmail.com",
+    "passwordHash": "$2a$10$NJAV5dZS5853SQEYi2Mbpu.ciXEok2SsfIJyt/xqEszlRsCX76FSm",
     "role": "professional",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "rejected",
+    "approvalReviewedBy": "Admin",
+    "approvalReviewedAt": "2026-04-08T06:37:02.219Z",
     "provider": "credentials",
-    "createdAt": "2026-04-07T03:44:59.206Z"
+    "createdAt": "2026-04-08T06:33:45.898Z"
   },
   {
-    "id": "bd05d10d-3216-4736-9501-54a8f85b2648",
-    "name": "jenil",
-    "email": "jenil@gmail.com",
-    "passwordHash": "$2a$10$tXy4Y/y0Mq3h3YTbEuRj9.PoI./L/wrWyeLAHw.bK9/wpJg7DXH6C",
+    "id": "2d237113-7f33-4218-844d-4c9418f2ee2c",
+    "name": "smit",
+    "email": "smit12@gmail.com",
+    "passwordHash": "$2a$10$mlkJQZVDlxS1r0C4O.5ir..tWYFe2j9ULs2YJIv9ObUj3m83MMt/e",
     "role": "student",
     "certificates": [],
     "reviews": [],
+    "approvalStatus": "approved",
     "provider": "credentials",
-    "createdAt": "2026-04-07T06:56:45.747Z"
-  },
-  {
-    "id": "b8da2a21-3f10-4131-a1b6-3b3532d52774",
-    "name": "jenil",
-    "email": "jenil12@gmail.com",
-    "passwordHash": "$2a$10$rw4HPdhVpfcSmUaJvrTJEeLwizY.yCiiuIYcvMg/PhDIr6quu4kX.",
-    "role": "professional",
-    "certificates": [
-      "/uploads/certificates/b8da2a21-3f10-4131-a1b6-3b3532d52774-1775546191248-tg4mti.pdf"
-    ],
-    "reviews": [
-      "good"
-    ],
-    "provider": "credentials",
-    "createdAt": "2026-04-07T06:57:54.656Z",
-    "image": "/uploads/b8da2a21-3f10-4131-a1b6-3b3532d52774-1775546191247.png",
-    "specialization": "Web Design",
-    "contactNumber": "+91 0987654321",
-    "location": "vesu VR mall ,surat"
-  },
-  {
-    "id": "11f40abe-ac32-4e33-8281-c7cd20d74dc0",
-    "name": "Hasti Vasani",
-    "email": "hastivasani723@gmail.com",
-    "passwordHash": "$2a$10$FIQzX2F11JkwBppvRsxkDOQ0d2PZcTWJ.8z.cMAioo0szwK5IGMuy",
-    "role": "professional",
-    "certificates": [],
-    "reviews": [],
-    "provider": "credentials",
-    "createdAt": "2026-04-07T06:50:33.525Z"
-  },
-  {
-    "id": "390d9473-a894-4432-8013-1c2b8ccdcfc7",
-    "name": "Hasti Vasani",
-    "email": "hastivasani72@gmail.com",
-    "passwordHash": "$2a$10$nStwngkXGDERwZwcMske/.wlz2DRT.x3rt9JGIYXOE5OF3LMVoD0q",
-    "role": "professional",
-    "certificates": [],
-    "reviews": [],
-    "provider": "credentials",
-    "createdAt": "2026-04-07T06:59:41.762Z"
+    "createdAt": "2026-04-08T06:32:51.956Z"
   },
   {
     "id": "eb74ca98-e9e1-4ef5-a00e-aeeea4af6f6e",
@@ -68,7 +33,76 @@
     "role": "student",
     "certificates": [],
     "reviews": [],
+    "approvalStatus": "approved",
     "provider": "credentials",
     "createdAt": "2026-04-08T04:40:28.034Z"
+  },
+  {
+    "id": "390d9473-a894-4432-8013-1c2b8ccdcfc7",
+    "name": "Hasti Vasani",
+    "email": "hastivasani72@gmail.com",
+    "passwordHash": "$2a$10$nStwngkXGDERwZwcMske/.wlz2DRT.x3rt9JGIYXOE5OF3LMVoD0q",
+    "role": "professional",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-07T06:59:41.762Z"
+  },
+  {
+    "id": "b8da2a21-3f10-4131-a1b6-3b3532d52774",
+    "name": "jenil",
+    "email": "jenil12@gmail.com",
+    "passwordHash": "$2a$10$rw4HPdhVpfcSmUaJvrTJEeLwizY.yCiiuIYcvMg/PhDIr6quu4kX.",
+    "role": "professional",
+    "image": "/uploads/b8da2a21-3f10-4131-a1b6-3b3532d52774-1775546191247.png",
+    "specialization": "Web Design",
+    "contactNumber": "+91 0987654321",
+    "location": "vesu VR mall ,surat",
+    "certificates": [
+      "/uploads/certificates/b8da2a21-3f10-4131-a1b6-3b3532d52774-1775546191248-tg4mti.pdf"
+    ],
+    "reviews": [
+      "good"
+    ],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-07T06:57:54.656Z"
+  },
+  {
+    "id": "bd05d10d-3216-4736-9501-54a8f85b2648",
+    "name": "jenil",
+    "email": "jenil@gmail.com",
+    "passwordHash": "$2a$10$tXy4Y/y0Mq3h3YTbEuRj9.PoI./L/wrWyeLAHw.bK9/wpJg7DXH6C",
+    "role": "student",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-07T06:56:45.747Z"
+  },
+  {
+    "id": "11f40abe-ac32-4e33-8281-c7cd20d74dc0",
+    "name": "Hasti Vasani",
+    "email": "hastivasani723@gmail.com",
+    "passwordHash": "$2a$10$FIQzX2F11JkwBppvRsxkDOQ0d2PZcTWJ.8z.cMAioo0szwK5IGMuy",
+    "role": "professional",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-07T06:50:33.525Z"
+  },
+  {
+    "id": "e8e23652-faf2-4d88-b5a4-c0078672885e",
+    "name": "gadhiya jenil",
+    "email": "jenilgadhiya918@gmail.com",
+    "passwordHash": "$2a$10$XtZgN2id/g.HvPD8QfaC3eP0dO8QNqiJ9IaSFOiT2FMzQHvtZQNWm",
+    "role": "professional",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-07T03:44:59.206Z"
   }
 ]

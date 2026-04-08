@@ -1,4 +1,5 @@
 import type { UserRole } from "@/types/auth";
+import type { ProfessionalApprovalStatus } from "@/types/auth";
 import "next-auth";
 import "next-auth/jwt";
 
@@ -12,6 +13,7 @@ declare module "next-auth" {
       image?: string | null;
       location?: string | null;
       profileBoostedUntil?: string | null;
+      approvalStatus?: ProfessionalApprovalStatus;
     };
   }
 
@@ -27,5 +29,6 @@ declare module "next-auth/jwt" {
     role?: UserRole;
     location?: string;
     profileBoostedUntil?: string | null;
+    approvalStatus?: ProfessionalApprovalStatus;
   }
 }

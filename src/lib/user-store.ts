@@ -2,7 +2,11 @@ import { randomUUID } from "crypto";
 import { promises as fs } from "fs";
 import path from "path";
 import { hash } from "bcryptjs";
-import type { AppUser, UserRole } from "@/types/auth";
+import type { AppUser, ProfessionalApprovalStatus, UserRole } from "@/types/auth";
+import {
+  appendAdminApprovalNotification,
+  appendProfessionalApprovalNotification,
+} from "./approval-notifications-store";
 import { appendProfessionalNotification } from "@/lib/notifications-store";
 import { ensureDbSchema, getDbPool, isPostgresConfigured } from "@/lib/db";
 
@@ -22,9 +26,36 @@ type UserRow = {
   certificates: string[] | null;
   reviews: string[] | null;
   profile_boosted_until: Date | null;
+  approval_status: ProfessionalApprovalStatus | null;
+  approval_reviewed_by: string | null;
+  approval_reviewed_at: Date | null;
+  approval_note: string | null;
   provider: "credentials" | "google";
   created_at: Date;
 };
+
+function normalizeUser(user: Partial<AppUser> & Pick<AppUser, "id" | "name" | "email" | "role" | "provider" | "createdAt">): AppUser {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    passwordHash: user.passwordHash,
+    role: user.role,
+    image: user.image,
+    specialization: user.specialization,
+    contactNumber: user.contactNumber,
+    location: user.location,
+    certificates: user.certificates ?? [],
+    reviews: user.reviews ?? [],
+    profileBoostedUntil: user.profileBoostedUntil,
+    approvalStatus: user.approvalStatus ?? "approved",
+    approvalReviewedBy: user.approvalReviewedBy,
+    approvalReviewedAt: user.approvalReviewedAt,
+    approvalNote: user.approvalNote,
+    provider: user.provider,
+    createdAt: user.createdAt,
+  };
+}
 
 function mapRowToUser(row: UserRow): AppUser {
   return {
@@ -40,9 +71,17 @@ function mapRowToUser(row: UserRow): AppUser {
     certificates: row.certificates ?? [],
     reviews: row.reviews ?? [],
     profileBoostedUntil: row.profile_boosted_until ? row.profile_boosted_until.toISOString() : undefined,
+    approvalStatus: row.approval_status ?? "approved",
+    approvalReviewedBy: row.approval_reviewed_by ?? undefined,
+    approvalReviewedAt: row.approval_reviewed_at ? row.approval_reviewed_at.toISOString() : undefined,
+    approvalNote: row.approval_note ?? undefined,
     provider: row.provider,
     createdAt: row.created_at.toISOString(),
   };
+}
+
+function getDefaultApprovalStatus(role: UserRole): ProfessionalApprovalStatus {
+  return role === "professional" ? "pending" : "approved";
 }
 
 function getProfileChangeLabels(currentUser: AppUser, updatedUser: AppUser) {
@@ -83,7 +122,38 @@ async function readUsers(): Promise<AppUser[]> {
 
   try {
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as AppUser[]) : [];
+    return Array.isArray(parsed)
+      ? parsed.map((user) =>
+          normalizeUser({
+            id: String(user.id),
+            name: String(user.name ?? ""),
+            email: String(user.email ?? ""),
+            role: user.role === "professional" ? "professional" : "student",
+            provider: user.provider === "google" ? "google" : "credentials",
+            createdAt: String(user.createdAt ?? new Date().toISOString()),
+            passwordHash: typeof user.passwordHash === "string" ? user.passwordHash : undefined,
+            image: typeof user.image === "string" ? user.image : undefined,
+            specialization: typeof user.specialization === "string" ? user.specialization : undefined,
+            contactNumber: typeof user.contactNumber === "string" ? user.contactNumber : undefined,
+            location: typeof user.location === "string" ? user.location : undefined,
+            certificates: Array.isArray(user.certificates)
+              ? user.certificates.filter((value: unknown): value is string => typeof value === "string")
+              : [],
+            reviews: Array.isArray(user.reviews)
+              ? user.reviews.filter((value: unknown): value is string => typeof value === "string")
+              : [],
+            profileBoostedUntil: typeof user.profileBoostedUntil === "string" ? user.profileBoostedUntil : undefined,
+            approvalStatus:
+              user.approvalStatus === "pending" || user.approvalStatus === "approved" || user.approvalStatus === "rejected"
+                ? user.approvalStatus
+                : undefined,
+            approvalReviewedBy: typeof user.approvalReviewedBy === "string" ? user.approvalReviewedBy : undefined,
+            approvalReviewedAt:
+              typeof user.approvalReviewedAt === "string" ? user.approvalReviewedAt : undefined,
+            approvalNote: typeof user.approvalNote === "string" ? user.approvalNote : undefined,
+          }),
+        )
+      : [];
   } catch {
     return [];
   }
@@ -145,6 +215,112 @@ export async function getAllUsers() {
   return result.rows.map(mapRowToUser);
 }
 
+export async function getProfessionalUsers() {
+  const users = await getAllUsers();
+  return users.filter((user) => user.role === "professional");
+}
+
+export async function setProfessionalApproval(
+  professionalId: string,
+  status: Exclude<ProfessionalApprovalStatus, "pending">,
+  reviewedBy: string,
+  note?: string,
+) {
+  const users = await getAllUsers();
+  const index = users.findIndex((user) => user.id === professionalId);
+
+  if (index === -1) {
+    throw new Error("Professional not found.");
+  }
+
+  const currentUser = users[index];
+
+  if (currentUser.role !== "professional") {
+    throw new Error("Only professionals can be approved or rejected.");
+  }
+
+  const updatedUser: AppUser = {
+    ...currentUser,
+    approvalStatus: status,
+    approvalReviewedBy: reviewedBy,
+    approvalReviewedAt: new Date().toISOString(),
+    approvalNote: note?.trim() || undefined,
+  };
+
+  users[index] = updatedUser;
+
+  if (!isPostgresConfigured()) {
+    await writeUsers(users);
+  } else {
+    await ensureDbSchema();
+    const db = getDbPool();
+
+    await db.query(
+      `
+        UPDATE users
+        SET approval_status = $2, approval_reviewed_by = $3, approval_reviewed_at = NOW(), approval_note = $4
+        WHERE id = $1
+      `,
+      [professionalId, status, reviewedBy, note?.trim() || null],
+    );
+  }
+
+  const message =
+    status === "approved"
+      ? "Your professional account has been approved. You can now log in."
+      : "Your professional account was rejected by the admin.";
+
+  await appendAdminApprovalNotification({
+    professionalId: updatedUser.id,
+    professionalName: updatedUser.name,
+    professionalEmail: updatedUser.email,
+    event: "decision",
+    title: status === "approved" ? "Professional approved" : "Professional rejected",
+    message: `${updatedUser.name} was ${status} by ${reviewedBy}.`,
+    status,
+  });
+
+  await appendProfessionalApprovalNotification({
+    professionalId: updatedUser.id,
+    professionalName: updatedUser.name,
+    professionalEmail: updatedUser.email,
+    event: "decision",
+    title: status === "approved" ? "Approval granted" : "Application rejected",
+    message,
+    status,
+    note: note?.trim() || undefined,
+  });
+
+  return updatedUser;
+}
+
+export async function recordProfessionalLoginAttempt(user: AppUser, reason: "pending" | "rejected") {
+  await appendAdminApprovalNotification({
+    professionalId: user.id,
+    professionalName: user.name,
+    professionalEmail: user.email,
+    event: "login_attempt",
+    title: "Professional login blocked",
+    message:
+      reason === "pending"
+        ? `${user.name} attempted to log in before approval.`
+        : `${user.name} attempted to log in after being rejected.`,
+    status: user.approvalStatus === "rejected" ? "rejected" : "pending",
+  });
+}
+
+export async function notifyNewProfessionalRegistration(user: AppUser) {
+  await appendAdminApprovalNotification({
+    professionalId: user.id,
+    professionalName: user.name,
+    professionalEmail: user.email,
+    event: "registration",
+    title: "New professional registered",
+    message: `${user.name} has registered and is waiting for approval.`,
+    status: "pending",
+  });
+}
+
 export async function registerUser(input: {
   name: string;
   email: string;
@@ -173,12 +349,18 @@ export async function registerUser(input: {
       certificates: [],
       reviews: [],
       profileBoostedUntil: undefined,
+      approvalStatus: getDefaultApprovalStatus(input.role),
       provider: "credentials",
       createdAt: new Date().toISOString(),
     };
 
     users.push(newUser);
     await writeUsers(users);
+
+    if (input.role === "professional") {
+      await notifyNewProfessionalRegistration(newUser);
+    }
+
     return newUser;
   }
 
@@ -199,15 +381,21 @@ export async function registerUser(input: {
     `
       INSERT INTO users (
         id, name, email, password_hash, role, provider,
-        certificates, reviews, created_at
+        certificates, reviews, approval_status, created_at
       )
-      VALUES ($1, $2, $3, $4, $5, 'credentials', ARRAY[]::TEXT[], ARRAY[]::TEXT[], NOW())
+      VALUES ($1, $2, $3, $4, $5, 'credentials', ARRAY[]::TEXT[], ARRAY[]::TEXT[], $6, NOW())
       RETURNING *
     `,
-    [id, input.name.trim(), email, passwordHash, input.role],
+    [id, input.name.trim(), email, passwordHash, input.role, getDefaultApprovalStatus(input.role)],
   );
 
-  return mapRowToUser(result.rows[0]);
+  const newUser = mapRowToUser(result.rows[0]);
+
+  if (input.role === "professional") {
+    await notifyNewProfessionalRegistration(newUser);
+  }
+
+  return newUser;
 }
 
 export async function upsertGoogleUser(input: {
@@ -236,6 +424,7 @@ export async function upsertGoogleUser(input: {
       certificates: [],
       reviews: [],
       profileBoostedUntil: undefined,
+        approvalStatus: "approved",
       provider: "google",
       createdAt: new Date().toISOString(),
     };

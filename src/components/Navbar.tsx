@@ -2,12 +2,9 @@
 
 import { Menu, Search, ShoppingCart } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 const Navbar = () => {
-  const router = useRouter();
-
   return (
     <header className="w-full fixed top-0 z-50 bg-white shadow-sm">
 
@@ -24,12 +21,33 @@ const Navbar = () => {
 
         {/* MENU */}
         <nav className="hidden lg:flex items-center gap-8 text-gray-700 text-sm font-medium">
-          <Link href="/about" className="hover:text-primary transition">About</Link>
-          <Link href="/pages" className="hover:text-primary transition">Pages</Link>
-          <Link href="/courses" className="hover:text-primary transition">Courses</Link>
-          <Link href="/shop" className="hover:text-primary transition">Shop</Link>
-          <Link href="/blog" className="hover:text-primary transition">Blog</Link>
-          <Link href="/contact" className="hover:text-primary transition">Contact</Link>
+          <Link href="/" className="hover:text-primary transition">
+            Home
+          </Link>
+
+          <Link href="/directory" className="hover:text-primary transition">
+            Find Experts
+          </Link>
+
+          <Link href="/categories" className="hover:text-primary transition">
+            Categories
+          </Link>
+
+          <Link href="/professionals" className="hover:text-primary transition">
+            Professionals
+          </Link>
+
+          <Link href="/resources" className="hover:text-primary transition">
+            Resources
+          </Link>
+
+          <Link href="/about" className="hover:text-primary transition">
+            About
+          </Link>
+
+          <Link href="/contact" className="hover:text-primary transition">
+            Contact
+          </Link>
         </nav>
 
         {/* RIGHT SIDE */}
@@ -51,7 +69,6 @@ const Navbar = () => {
           </div>
 
           {/* LOGIN BUTTON */}
-          <Link href="/login" className="hidden md:flex items-center gap-2 bg-[#1ec28e] hover:bg-[#18ab7d] text-white px-5 py-2 rounded-full text-sm font-medium transition"/>
           <Link href="/login" className="hidden md:flex items-center gap-2 bg-primary hover:bg-[#18ab7d] text-white px-5 py-2 rounded-full text-sm font-medium transition">
             LOGIN →
           </Link>

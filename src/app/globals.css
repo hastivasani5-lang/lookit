@@ -10,6 +10,18 @@
 
 body {
   font-family: sans-serif;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+html {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+body::-webkit-scrollbar,
+html::-webkit-scrollbar {
+  display: none;
 }
 
 /* slow rotate */

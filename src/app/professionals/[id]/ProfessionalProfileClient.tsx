@@ -7,7 +7,7 @@ import { CreditCard, MapPin, PlayCircle, Star } from "lucide-react";
 
 import type { PublicProfessional } from "@/lib/professional-display";
 import { addCartItem } from "@/lib/cart-store";
-import { getOnlineProfessionalImage } from "../online-images";
+import { getOnlineProfessionalImage } from "@/app/professionals/online-images";
 
 type UploadedBook = {
   id: string;
@@ -387,6 +387,7 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
                   })
                 )}
               </div>
+<<<<<<< HEAD
 
               <div className="mt-5 rounded-2xl border border-[#dbe8e4] bg-[#f8fbfa] p-4 text-sm text-gray-600">
                 <p>
@@ -397,6 +398,70 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
                   <Link
                     href="/cart"
                     className="mt-3 inline-flex rounded-full bg-primary px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#18ab7d]"
+=======
+            </div>
+<<<<<<< HEAD
+=======
+          </div>
+        </aside>
+
+        <div className="space-y-8">
+          <div className="rounded-4xl border border-[#dbe8e4] bg-[#fbfdfc] p-6 shadow-sm md:p-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Overview</p>
+            <h2 className="mt-2 text-2xl font-bold text-gray-900 md:text-3xl">Profile overview</h2>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-gray-600 md:text-base">
+              Explore this expert’s offerings, learning materials, reviews, and consultation options from one place.
+            </p>
+>>>>>>> be64503 (Update professionals pages and UI fixes)
+=======
+>>>>>>> 72dcf36 (Push latest dashboard updates)
+          </div>
+
+          <div className="rounded-3xl border border-[#dbe8e4] bg-white p-6 shadow-sm md:p-8">
+            <h2 className="text-lg font-semibold text-gray-900">About</h2>
+            <p className="mt-2 text-sm leading-7 text-gray-600">
+              {professional.name} is a trusted {professional.specialization.toLowerCase()} helping families
+              with personalized support plans, practical sessions, and measurable progress.
+            </p>
+          </div>
+
+          <section className="rounded-3xl border border-[#dbe8e4] bg-white p-5 shadow-sm md:p-6" data-aos="fade-up">
+            <div className="flex flex-wrap gap-2 border-b border-gray-200 pb-4">
+              {contentTabs.map((tab) => (
+                <button
+                  key={tab.value}
+                  type="button"
+                  onClick={() => setActiveTab(tab.value)}
+                  className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                    activeTab === tab.value
+                      ? "bg-primary text-white"
+                      : "bg-[#eef7f4] text-gray-700 hover:bg-[#dff1eb]"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              {contentMap[activeTab].map((item) => (
+                <article key={item.id} className="rounded-2xl border border-gray-200 bg-[#fbfdfc] p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="text-base font-semibold text-gray-900">{item.title}</h3>
+                      <p className="mt-1 text-sm text-gray-600">{item.subtitle}</p>
+                    </div>
+                    <PlayCircle className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="mt-3 flex items-center justify-between text-sm">
+                    <span className="font-semibold text-primary">{item.price}</span>
+                    <span className="text-gray-500">{item.duration ?? "Self paced"}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleBuyNow(item)}
+                    className="mt-4 w-full rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+>>>>>>> bbdf576 (Push latest dashboard updates)
                   >
                     Go to Cart
                   </Link>
@@ -407,7 +472,134 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
         </div>
       </section>
 
+<<<<<<< HEAD
       <section className="mx-auto mt-8 grid w-full max-w-7xl gap-8 lg:grid-cols-2">
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 72dcf36 (Push latest dashboard updates)
+      {showLibrarySection ? (
+      <section className="mx-auto mt-8 w-full max-w-6xl rounded-3xl border border-[#dbe8e4] bg-white p-6 shadow-sm md:p-8" data-aos="fade-up">
+        <div className="flex flex-wrap gap-2 border-b border-gray-200 pb-4">
+          {contentTabs.map((tab) => (
+            <button
+              key={tab.value}
+              type="button"
+              onClick={() => setActiveTab(tab.value)}
+              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                activeTab === tab.value
+                  ? "bg-primary text-white"
+                  : "bg-[#eef7f4] text-gray-700 hover:bg-[#dff1eb]"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          {contentMap[activeTab].length === 0 ? (
+            <p className="rounded-2xl border border-dashed border-gray-300 bg-white p-4 text-sm text-gray-500">No {activeTab} uploaded yet.</p>
+          ) : (
+            contentMap[activeTab].map((item) => {
+              const isFree = item.price === "Free";
+              const hasOpenLink = Boolean(item.url);
+
+              return (
+                <article key={item.id} className="rounded-2xl border border-gray-200 bg-[#fbfdfc] p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="text-base font-semibold text-gray-900">{item.title}</h3>
+                      <p className="mt-1 text-sm text-gray-600">{item.subtitle}</p>
+                    </div>
+                    <PlayCircle className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="mt-3 flex items-center justify-between text-sm">
+                    <span className="font-semibold text-primary">{item.price}</span>
+                    <span className="text-gray-500 capitalize">{item.contentType}</span>
+                  </div>
+
+                  {isFree ? (
+                    hasOpenLink ? (
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+                      >
+                        Open Free
+                      </a>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled
+                        className="mt-4 w-full rounded-full bg-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-500"
+                      >
+                        Free (No Link)
+                      </button>
+                    )
+                  ) : (
+                    <div className="mt-4 grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleAddToCart(item)}
+                        disabled={!canAddToCart}
+                        className="w-full rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#18ab7d] disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {canAddToCart && cartItemIds.includes(item.id) ? "Added" : "Add to Cart"}
+                      </button>
+                      {hasOpenLink ? (
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex w-full items-center justify-center rounded-full border border-primary px-4 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary hover:text-white"
+                        >
+                          Open
+                        </a>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled
+                          className="w-full rounded-full border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-400"
+                        >
+                          No Link
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </article>
+              );
+            })
+          )}
+        </div>
+
+        <div className="mt-5 rounded-2xl border border-[#dbe8e4] bg-[#f8fbfa] p-4 text-sm text-gray-600">
+          <p>
+            Free items open directly. Paid items can be purchased from your cart.
+            {canAddToCart ? "" : " Please log in as a student to buy paid items."}
+          </p>
+          {canAddToCart ? (
+            <Link
+              href="/cart"
+              className="mt-3 inline-flex rounded-full bg-primary px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#18ab7d]"
+            >
+              Go to Cart
+            </Link>
+          ) : null}
+        </div>
+      </section>
+      ) : null}
+
+      <section className="mx-auto mt-8 w-full max-w-6xl">
+<<<<<<< HEAD
+=======
+      <section className="mx-auto mt-8 grid w-full max-w-7xl gap-8 lg:grid-cols-2">
+>>>>>>> be64503 (Update professionals pages and UI fixes)
+=======
+>>>>>>> 72dcf36 (Push latest dashboard updates)
+>>>>>>> bbdf576 (Push latest dashboard updates)
         <div className="rounded-3xl border border-[#dbe8e4] bg-white p-6 shadow-sm md:p-8" data-aos="fade-up">
           <div className="mb-4 flex items-center justify-between rounded-2xl bg-[#f4faf7] px-4 py-3">
             <h2 className="text-xl font-semibold text-gray-900">User Reviews</h2>

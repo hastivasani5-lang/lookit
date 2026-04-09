@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import { CircleMarker, MapContainer, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -16,8 +17,19 @@ const cityCoords: Record<string, [number, number]> = {
 };
 
 export default function ProfessionalsMap({ locations }: { locations: string[] }) {
-  // Remove duplicates
-  const uniqueLocations = Array.from(new Set(locations));
+  const [isMounted, setIsMounted] = useState(false);
+  const [isMapReady, setIsMapReady] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const uniqueLocations = useMemo(() => Array.from(new Set(locations)), [locations]);
+
+  if (!isMounted) {
+    return <div style={{ width: "100%", height: 400, marginTop: 32 }} />;
+  }
+
   return (
     <div style={{ width: "100%", height: 400, marginTop: 32 }}>
       <MapContainer
@@ -25,11 +37,14 @@ export default function ProfessionalsMap({ locations }: { locations: string[] })
         zoom={4.5}
         style={{ width: "100%", height: "100%", borderRadius: 12 }}
         scrollWheelZoom={false}
+        whenReady={() => setIsMapReady(true)}
       >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+        {isMapReady ? (
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+        ) : null}
         {uniqueLocations.map((city) =>
           cityCoords[city] ? (
             <CircleMarker

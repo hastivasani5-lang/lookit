@@ -11,7 +11,7 @@ export default function ContactPage() {
     <>
       <Navbar />
 
-      <main className="min-h-screen bg-[#f6f6f6] pb-12 pt-24">
+      <main className="min-h-screen bg-[#f6f6f6] pb-12 pt-0">
         <section className="relative isolate h-[390px] w-full overflow-hidden bg-[#ecf2ef]">
           <div className="absolute inset-0 bg-[radial-gradient(140%_95%_at_-4%_50%,rgba(77,195,157,0.32)_0%,rgba(77,195,157,0.18)_30%,rgba(236,242,239,0.88)_58%,rgba(236,242,239,0)_100%)]" />
           <div className="absolute inset-0 bg-[conic-gradient(from_188deg_at_-6%_50%,rgba(45,179,137,0.18),rgba(45,179,137,0.04),rgba(45,179,137,0.2),rgba(45,179,137,0.05),rgba(45,179,137,0.18))]" />
@@ -41,13 +41,13 @@ export default function ContactPage() {
                   alt="Book icon"
                   width={110}
                   height={48}
-                  className="absolute left-1/2 top-[30px] -translate-x-1/2"
+                  className="absolute left-1/2 top-[30px] -translate-x-1/2 animate-bounce"
                   priority
                 />
               </div>
             </div>
 
-            <div className="absolute bottom-0 right-0 h-full w-[48%] min-w-[460px] max-w-[760px]">
+            <div className="absolute bottom-0 right-0 h-[92%] w-[48%] min-w-[460px] max-w-[760px]">
               <Image
                 src="/about1.png"
                 alt="Students"

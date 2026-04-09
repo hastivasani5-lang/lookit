@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { BookOpen, GraduationCap, MapPin, Search, Sparkles, Star, Users } from "lucide-react";
+import { BookOpen, GraduationCap, MapPin, Search, SlidersHorizontal, Sparkles, Star, Users, X } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -54,6 +54,7 @@ export default function ProfessionalsPage() {
   const [professionalQuery, setProfessionalQuery] = useState("");
   const [sortBy, setSortBy] = useState("popular");
   const [visibleCount, setVisibleCount] = useState(6);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   useEffect(() => {
     let isActive = true;
@@ -151,6 +152,28 @@ export default function ProfessionalsPage() {
     resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  useEffect(() => {
+    if (!isFiltersOpen) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isFiltersOpen]);
+
+  const resetFilters = () => {
+    setSelectedCategory("all");
+    setSelectedRating("all");
+    setSelectedReviews("all");
+    setSelectedLanguage("all");
+    setLocationText("");
+    setProfessionalQuery("");
+  };
+
   return (
     <>
       <Navbar />
@@ -223,19 +246,12 @@ export default function ProfessionalsPage() {
           <TopRatedProfessionalsSection professionals={professionals} embedded />
 
           <div ref={resultsRef} className="grid gap-8 lg:grid-cols-[295px_minmax(0,1fr)] lg:items-start">
-            <aside className="self-start rounded-3xl border border-[#dbe8e4] bg-white p-5 shadow-sm lg:sticky lg:top-24 lg:z-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto hide-scrollbar">
+            <aside className="hidden self-start rounded-3xl border border-[#dbe8e4] bg-white p-5 shadow-sm lg:sticky lg:top-24 lg:z-20 lg:block lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto hide-scrollbar">
               <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-4">
                 <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
                 <button
                   type="button"
-                  onClick={() => {
-                    setSelectedCategory("all");
-                    setSelectedRating("all");
-                    setSelectedReviews("all");
-                    setSelectedLanguage("all");
-                    setLocationText("");
-                    setProfessionalQuery("");
-                  }}
+                  onClick={resetFilters}
                   className="text-sm font-medium text-primary hover:underline"
                 >
                   Clear
@@ -317,6 +333,21 @@ export default function ProfessionalsPage() {
             </aside>
 
             <div className="lg:pr-1">
+              <div className="mb-4 flex items-center justify-between rounded-2xl border border-[#dbe8e4] bg-white p-3 shadow-sm lg:hidden">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Filters</p>
+                  <p className="text-sm font-medium text-gray-800">Refine professionals</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsFiltersOpen(true)}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white"
+                  aria-label="Open filters"
+                >
+                  <SlidersHorizontal className="h-4 w-4" />
+                </button>
+              </div>
+
               <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-[#dbe8e4] bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between" data-aos="fade-up">
                 <p className="text-sm font-medium text-gray-700">
                   Showing <span className="font-semibold text-gray-900">{filteredProfessionals.length}</span> professionals
@@ -406,6 +437,123 @@ export default function ProfessionalsPage() {
               ) : null}
             </div>
           </div>
+
+          {isFiltersOpen ? (
+            <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Professionals filters">
+              <button
+                type="button"
+                className="absolute inset-0 bg-black/40"
+                onClick={() => setIsFiltersOpen(false)}
+                aria-label="Close filters"
+              />
+
+              <aside className="absolute right-0 top-0 h-full w-[88vw] max-w-88 overflow-y-auto bg-white p-5 shadow-2xl">
+                <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-4">
+                  <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+                  <button
+                    type="button"
+                    onClick={() => setIsFiltersOpen(false)}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-700"
+                    aria-label="Close"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    resetFilters();
+                    setIsFiltersOpen(false);
+                  }}
+                  className="mb-4 text-sm font-medium text-primary hover:underline"
+                >
+                  Clear All
+                </button>
+
+                <div className="space-y-4">
+                  <label className="block">
+                    <span className="mb-1.5 block text-sm font-medium text-gray-700">Category</span>
+                    <select
+                      value={selectedCategory}
+                      onChange={(event) => setSelectedCategory(event.target.value)}
+                      className="w-full rounded-xl border border-gray-200 bg-[#fafdfc] px-3 py-2.5 text-sm outline-none transition focus:border-primary"
+                    >
+                      {categoryOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className="block">
+                    <span className="mb-1.5 block text-sm font-medium text-gray-700">Rating</span>
+                    <select
+                      value={selectedRating}
+                      onChange={(event) => setSelectedRating(event.target.value)}
+                      className="w-full rounded-xl border border-gray-200 bg-[#fafdfc] px-3 py-2.5 text-sm outline-none transition focus:border-primary"
+                    >
+                      {ratingOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className="block">
+                    <span className="mb-1.5 block text-sm font-medium text-gray-700">Reviews</span>
+                    <select
+                      value={selectedReviews}
+                      onChange={(event) => setSelectedReviews(event.target.value)}
+                      className="w-full rounded-xl border border-gray-200 bg-[#fafdfc] px-3 py-2.5 text-sm outline-none transition focus:border-primary"
+                    >
+                      {reviewOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className="block">
+                    <span className="mb-1.5 block text-sm font-medium text-gray-700">Language</span>
+                    <select
+                      value={selectedLanguage}
+                      onChange={(event) => setSelectedLanguage(event.target.value)}
+                      className="w-full rounded-xl border border-gray-200 bg-[#fafdfc] px-3 py-2.5 text-sm outline-none transition focus:border-primary"
+                    >
+                      {languageOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className="block">
+                    <span className="mb-1.5 block text-sm font-medium text-gray-700">Location</span>
+                    <input
+                      type="text"
+                      value={locationText}
+                      onChange={(event) => setLocationText(event.target.value)}
+                      placeholder="Search city or area"
+                      className="w-full rounded-xl border border-gray-200 bg-[#fafdfc] px-3 py-2.5 text-sm outline-none transition focus:border-primary"
+                    />
+                  </label>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsFiltersOpen(false)}
+                  className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white"
+                >
+                  Apply Filters
+                </button>
+              </aside>
+            </div>
+          ) : null}
         </section>
       </main>
 

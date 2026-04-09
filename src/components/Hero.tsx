@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 
 const HeroSection = () => {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-[#e9f7ef] via-[#e6f4f1] to-[#eef5ff] px-6 lg:px-16 py-20">
+    <section className="relative overflow-hidden bg-gradient-to-br from-[#e9f7ef] via-[#e6f4f1] to-[#eef5ff] px-4 py-14 sm:px-6 sm:py-20 lg:px-16">
 
       {/* ANIMATED BACKGROUND SHAPES - Clean & Non-redundant */}
       <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden">
@@ -58,17 +58,17 @@ const HeroSection = () => {
         />
       </div>
 
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-10 items-center relative z-10">
+      <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2">
 
         {/* LEFT CONTENT */}
-        <div>
+        <div className="mx-auto w-full md:max-w-2xl md:text-center lg:max-w-none lg:text-left">
 
           {/* TAG */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#e8f9f3] text-[#1ec28e] text-sm font-medium mb-6"
+            className="mb-6 inline-flex items-center gap-2 rounded-full bg-[#e8f9f3] px-4 py-2 text-sm font-medium text-[#1ec28e] md:justify-center"
           >
             ✔ 100% SATISFACTION GUARANTEE
           </motion.div>
@@ -78,7 +78,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
-            className="text-xl md:text-2xl lg:text-[48px] font-bold leading-tight text-gray-900"
+            className="text-xl font-bold leading-tight text-gray-900 md:text-2xl lg:text-[48px]"
           >
             Growup Your Learning <br />
             Skills with Educate
@@ -89,7 +89,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mt-6 text-gray-600 max-w-lg"
+            className="mt-6 max-w-lg text-gray-600 md:mx-auto lg:mx-0"
           >
             <span className="font-semibold text-gray-800">Educate</span> the
             ultimate destination for knowledge seekers and educators alike.
@@ -101,7 +101,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="flex items-center gap-6 mt-8 mb-16"
+            className="mt-8 mb-10 flex flex-wrap items-center gap-4 sm:mb-16 sm:gap-6 md:justify-center lg:justify-start"
           >
             <button className="bg-[#1ec28e] hover:bg-[#18ab7d] text-white px-6 py-3 rounded-full font-medium transition flex items-center gap-2">
               GET STARTED →
@@ -117,7 +117,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="flex items-center gap-4"
+            className="flex flex-wrap items-center gap-4 md:justify-center lg:justify-start"
           >
             <div className="w-12 h-12 bg-black text-white flex items-center justify-center rounded-full">
               ★
@@ -138,7 +138,7 @@ const HeroSection = () => {
           </motion.div>
         </div>
 
-        <div className="relative flex justify-center items-center">
+        <div className="relative flex items-center justify-center">
 
           {/* MAIN IMAGE */}
           <motion.div
@@ -159,7 +159,7 @@ const HeroSection = () => {
           <motion.div
             animate={{ y: [0, -12, 0] }}
             transition={{ repeat: Infinity, duration: 3 }}
-            className="absolute left-[-20px] bottom-[40px] z-20 bg-white/70 backdrop-blur-xl px-6 py-4 rounded-2xl shadow-xl flex items-center gap-4"
+            className="absolute bottom-[36px] left-0 z-20 hidden items-center gap-4 rounded-2xl bg-white/70 px-4 py-3 shadow-xl backdrop-blur-xl sm:flex md:-left-5 md:px-6 md:py-4"
           >
             <div className="flex -space-x-2">
               <Image
@@ -181,7 +181,7 @@ const HeroSection = () => {
           <motion.div
             animate={{ rotate: [0, 20, -20, 0] }}
             transition={{ repeat: Infinity, duration: 4 }}
-            className="absolute top-0 left-10"
+            className="absolute left-6 top-2 hidden md:block"
           >
             <Image src="/hero-arrow.png" width={70} height={70} alt="" />
           </motion.div>
@@ -190,7 +190,7 @@ const HeroSection = () => {
           <motion.div
             animate={{ y: [0, 15, 0] }}
             transition={{ repeat: Infinity, duration: 5 }}
-            className="absolute top-24 right-0"
+            className="absolute right-0 top-24 hidden md:block"
           >
             <Image src="/hero-dot.png" width={70} height={70} alt="" />
           </motion.div>
@@ -199,7 +199,7 @@ const HeroSection = () => {
           <motion.div
             animate={{ y: [0, 20, 0] }}
             transition={{ repeat: Infinity, duration: 6 }}
-            className="absolute left-0 top-1/2"
+            className="absolute left-0 top-1/2 hidden md:block"
           >
             <Image src="/start.png" width={60} height={60} alt="" />
           </motion.div>
@@ -208,7 +208,7 @@ const HeroSection = () => {
           <motion.div
             animate={{ y: [0, -10, 0] }}
             transition={{ repeat: Infinity, duration: 3 }}
-            className="absolute top-0 right-20"
+            className="absolute right-20 top-0 hidden md:block"
           >
             <Image src="/mini1.png" width={50} height={50} alt="" />
           </motion.div>

@@ -1,11 +1,12 @@
 "use client";
 
-import { ArrowUp, LogOut, Menu, X, Search, ShoppingCart, UserCircle2 } from "lucide-react";
+import { ArrowUp, LogOut, Menu, X, Search, ShoppingCart, UserCircle2, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 type SearchProfessional = {
   id: string;
@@ -18,6 +19,12 @@ type SearchResult = {
   href: string;
   type: string;
 };
+
+function getNavHref(label: string) {
+  if (label === "Home") return "/";
+  if (label === "Find Experts") return "/directory";
+  return `/${label.toLowerCase().replace(/\s+/g, "")}`;
+}
 
 const Navbar = () => {
   const router = useRouter();
@@ -61,7 +68,6 @@ const Navbar = () => {
         setSearchOpen(false);
       }
     };
-
     document.addEventListener("keydown", onEscape);
     return () => document.removeEventListener("keydown", onEscape);
   }, []);
@@ -70,24 +76,17 @@ const Navbar = () => {
     const onScroll = () => {
       setShowScrollTop(window.scrollY > 180);
     };
-
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
-    if (!searchOpen || professionalResultsLoaded) {
-      return;
-    }
-
+    if (!searchOpen || professionalResultsLoaded) return;
     const loadProfessionals = async () => {
       try {
         const response = await fetch("/api/professionals", { cache: "no-store" });
-        const payload = (await response.json().catch(() => ({}))) as {
-          professionals?: SearchProfessional[];
-        };
-
+        const payload = (await response.json().catch(() => ({}))) as { professionals?: SearchProfessional[] };
         if (response.ok && Array.isArray(payload.professionals)) {
           setProfessionalResults(payload.professionals);
         }
@@ -97,7 +96,6 @@ const Navbar = () => {
         setProfessionalResultsLoaded(true);
       }
     };
-
     void loadProfessionals();
   }, [professionalResultsLoaded, searchOpen]);
 
@@ -108,11 +106,7 @@ const Navbar = () => {
 
   const searchResults = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
-
-    if (!query) {
-      return [] as SearchResult[];
-    }
-
+    if (!query) return [];
     const pageResults = [
       { label: "Home", href: "/", type: "Page" },
       { label: "Find Experts", href: "/directory", type: "Page" },
@@ -123,238 +117,236 @@ const Navbar = () => {
       { label: "Contact", href: "/contact", type: "Page" },
       { label: "Cart", href: "/cart", type: "Page" },
     ].filter((item) => item.label.toLowerCase().includes(query));
-
     const professionalMatches = professionalResults
-      .filter((professional) => `${professional.name} ${professional.specialization}`.toLowerCase().includes(query))
-      .map((professional) => ({
-        label: professional.name,
-        href: `/professionals/${professional.id}`,
-        type: professional.specialization,
-      }));
-
+      .filter((p) => `${p.name} ${p.specialization}`.toLowerCase().includes(query))
+      .map((p) => ({ label: p.name, href: `/professionals/${p.id}`, type: p.specialization }));
     return [...pageResults, ...professionalMatches].slice(0, 6);
   }, [professionalResults, searchQuery]);
 
   const runSearch = (value?: string) => {
     const query = (value ?? searchQuery).trim();
-
-    if (!query) {
-      return;
-    }
-
+    if (!query) return;
     const normalizedQuery = query.toLowerCase();
     const exactPage = [
-      { label: "Home", href: "/" },
-      { label: "Find Experts", href: "/directory" },
-      { label: "Categories", href: "/categories" },
-      { label: "Professionals", href: "/professionals" },
-      { label: "Shop", href: "/shop" },
-      { label: "About", href: "/about" },
-      { label: "Contact", href: "/contact" },
-      { label: "Cart", href: "/cart" },
+      { label: "Home", href: "/" }, { label: "Find Experts", href: "/directory" },
+      { label: "Categories", href: "/categories" }, { label: "Professionals", href: "/professionals" },
+      { label: "Shop", href: "/shop" }, { label: "About", href: "/about" },
+      { label: "Contact", href: "/contact" }, { label: "Cart", href: "/cart" },
     ].find((item) => item.label.toLowerCase() === normalizedQuery || item.label.toLowerCase().includes(normalizedQuery));
-
-    if (exactPage) {
-      router.push(exactPage.href);
-    } else {
-      const match = professionalResults.find((professional) => professional.name.toLowerCase().includes(normalizedQuery));
-      if (match) {
-        router.push(`/professionals/${match.id}`);
-      } else {
-        router.push(`/professionals?search=${encodeURIComponent(query)}`);
-      }
+    if (exactPage) router.push(exactPage.href);
+    else {
+      const match = professionalResults.find((p) => p.name.toLowerCase().includes(normalizedQuery));
+      if (match) router.push(`/professionals/${match.id}`);
+      else router.push(`/professionals?search=${encodeURIComponent(query)}`);
     }
-
     setSearchOpen(false);
     setSearchQuery("");
   };
 
   if (!hasMounted) {
     return (
-      <header className="z-50 w-full bg-white shadow-sm">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-3 py-2 sm:px-4 sm:py-3 md:px-8">
-          <div className="h-8 w-29.5 rounded bg-slate-100 sm:h-9 sm:w-33 md:h-10 md:w-37" />
-          <div className="h-8 w-8 rounded-full bg-slate-100 sm:h-10 sm:w-10" />
+      <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md shadow-sm">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-8">
+          <div className="h-8 w-28 rounded-lg bg-slate-100 animate-pulse" />
+          <div className="h-8 w-8 rounded-full bg-slate-100 animate-pulse" />
         </div>
       </header>
     );
   }
 
   return (
-    <header className="z-50 w-full bg-white shadow-sm">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-3 py-2 sm:px-4 sm:py-3 md:px-8">
-        <div className="flex items-center gap-2">
-          <span className="text-lg font-bold tracking-[0.12em] text-slate-900 sm:text-xl">LOOKKIT</span>
-        </div>
+    <>
+      <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md shadow-sm transition-all duration-300">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-8">
+          {/* Logo */}
+          <Link href="/" className="group flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-emerald-500 group-hover:rotate-12 transition-transform" />
+            <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+              LOOKIT
+            </span>
+          </Link>
 
-        <nav className="hidden items-center gap-8 text-sm font-medium text-gray-700 lg:flex">
-          <Link href="/" className="transition hover:text-primary">Home</Link>
-          <Link href="/directory" className="transition hover:text-primary">Find Experts</Link>
-          <Link href="/categories" className="transition hover:text-primary">Categories</Link>
-          <Link href="/professionals" className="transition hover:text-primary">Professionals</Link>
-          <Link href="/shop" className="transition hover:text-primary">Shop</Link>
-          <Link href="/about" className="transition hover:text-primary">About</Link>
-          <Link href="/contact" className="transition hover:text-primary">Contact</Link>
-        </nav>
-
-        <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
-          <button
-            type="button"
-            onClick={() => {
-              setSearchOpen((current) => !current);
-              setMobileMenuOpen(false);
-            }}
-            className="flex h-8 w-8 items-center justify-center rounded-full border transition hover:bg-gray-100 sm:h-10 sm:w-10"
-            aria-label="Open search"
-          >
-            <Search className="h-4 w-4 text-gray-700" />
-          </button>
-
-          {isStudent ? (
-            <Link href="/cart" className="relative flex h-8 w-8 items-center justify-center rounded-full border transition hover:bg-gray-100 sm:h-10 sm:w-10" aria-label="Open cart">
-              <ShoppingCart className="h-4 w-4 text-gray-700" />
-              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] text-white">0</span>
-            </Link>
-          ) : (
-            <button type="button" className="relative flex h-8 w-8 items-center justify-center rounded-full border opacity-60 sm:h-10 sm:w-10" aria-label="Cart is available for students" disabled>
-              <ShoppingCart className="h-4 w-4 text-gray-700" />
-            </button>
-          )}
-
-          {isAuthenticated ? (
-            <div className="relative" ref={profileMenuRef}>
-              <button
-                type="button"
-                onClick={() => setProfileMenuOpen((open) => !open)}
-                className="grid h-8 w-8 place-items-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 sm:h-10 sm:w-10"
-                aria-label="Open profile menu"
+          {/* Desktop Nav */}
+          <nav className="hidden items-center gap-6 text-sm font-medium text-gray-600 lg:flex">
+            {["Home", "Find Experts", "Categories", "Professionals", "Shop", "About", "Contact"].map((item) => (
+              <Link
+                key={item}
+                href={getNavHref(item)}
+                className="relative transition-colors hover:text-emerald-600 after:absolute after:bottom-[-4px] after:left-0 after:h-0.5 after:w-0 after:bg-gradient-to-r after:from-emerald-500 after:to-teal-500 after:transition-all after:duration-300 hover:after:w-full"
               >
-                {session?.user?.image ? (
-                  <Image
-                    src={session.user.image}
-                    alt="Profile"
-                    width={40}
-                    height={40}
-                    className="h-8 w-8 rounded-full object-cover sm:h-10 sm:w-10"
-                  />
-                ) : (
-                  <UserCircle2 className="h-5 w-5 sm:h-6 sm:w-6" />
-                )}
-              </button>
+                {item}
+              </Link>
+            ))}
+          </nav>
 
-              {profileMenuOpen ? (
-                <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-slate-200 bg-white p-3 shadow-[0_18px_42px_rgba(15,23,42,0.16)] sm:w-72 sm:p-4">
-                  <p className="truncate text-xs font-semibold text-slate-900 sm:text-sm">{displayName}</p>
-                  <p className="mt-1 truncate text-xs text-slate-500">{displayEmail}</p>
-                  <button
-                    type="button"
-                    onClick={() => signOut({ callbackUrl: "/dashboard/students" })}
-                    className="mt-3 inline-flex h-8 w-full items-center justify-center gap-2 rounded-full bg-primary px-4 text-xs font-medium text-white transition hover:bg-[#18ab7d] sm:h-9 sm:text-sm"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    Logout
-                  </button>
-                </div>
-              ) : null}
-            </div>
-          ) : (
-            <Link href="/login" className="hidden rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-white transition hover:bg-[#18ab7d] sm:flex sm:px-5 sm:py-2 sm:text-sm">
-              LOGIN 
-            </Link>
-          )}
+          {/* Right Icons */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => { setSearchOpen(true); setMobileMenuOpen(false); }}
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-50 text-gray-600 transition-all hover:bg-emerald-50 hover:text-emerald-600 hover:scale-105"
+              aria-label="Search"
+            >
+              <Search className="h-4 w-4" />
+            </button>
 
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen((open) => !open)}
-            className="flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-gray-100 lg:hidden sm:h-10 sm:w-10"
-            aria-label="Toggle mobile menu"
-          >
-            {mobileMenuOpen ? <X className="h-5 w-5 text-gray-700 sm:h-6 sm:w-6" /> : <Menu className="h-5 w-5 text-gray-700 sm:h-6 sm:w-6" />}
-          </button>
-        </div>
-      </div>
+            {isStudent ? (
+              <Link href="/cart" className="relative flex h-9 w-9 items-center justify-center rounded-full bg-gray-50 text-gray-600 transition-all hover:bg-emerald-50 hover:text-emerald-600 hover:scale-105">
+                <ShoppingCart className="h-4 w-4" />
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-[10px] font-bold text-white shadow-sm">0</span>
+              </Link>
+            ) : (
+              <div className="relative flex h-9 w-9 items-center justify-center rounded-full bg-gray-50 text-gray-400 cursor-not-allowed opacity-60">
+                <ShoppingCart className="h-4 w-4" />
+              </div>
+            )}
 
-      {searchOpen ? (
-        <div className="absolute left-0 top-full z-50 w-full border-t border-gray-200 bg-white shadow-lg">
-          <div ref={searchMenuRef} className="mx-auto w-full max-w-7xl px-3 py-4 sm:px-4 md:px-8">
-            <div className="overflow-hidden rounded-2xl border border-[#dbe8e4] bg-white shadow-[0_18px_42px_rgba(15,23,42,0.12)]">
-              <div className="flex items-center gap-3 border-b border-gray-100 px-4 py-3">
-                <Search className="h-4 w-4 text-gray-400" />
-                <input
-                  autoFocus
-                  value={searchQuery}
-                  onChange={(event) => setSearchQuery(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      runSearch();
-                    }
-                  }}
-                  placeholder="Search pages, professionals, or cart"
-                  className="w-full bg-transparent text-sm outline-none"
-                />
-                <button type="button" onClick={() => runSearch()} className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#18ab7d]">
-                  Search
+            {isAuthenticated ? (
+              <div className="relative" ref={profileMenuRef}>
+                <button
+                  onClick={() => setProfileMenuOpen((o) => !o)}
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md hover:scale-105"
+                >
+                  {session?.user?.image ? (
+                    <Image src={session.user.image} alt="Profile" width={36} height={36} className="h-9 w-9 rounded-full object-cover" />
+                  ) : (
+                    <UserCircle2 className="h-5 w-5 text-gray-600" />
+                  )}
                 </button>
-              </div>
-              <div className="max-h-80 overflow-y-auto p-2">
-                {searchResults.length === 0 ? (
-                  <p className="px-3 py-4 text-sm text-gray-500">Start typing to search pages and professionals.</p>
-                ) : (
-                  searchResults.map((item) => (
-                    <button
-                      key={`${item.href}-${item.label}`}
-                      type="button"
-                      onClick={() => {
-                        router.push(item.href);
-                        setSearchOpen(false);
-                        setSearchQuery("");
-                      }}
-                      className="flex w-full items-start justify-between rounded-xl px-3 py-3 text-left transition hover:bg-[#f7fbfa]"
+
+                <AnimatePresence>
+                  {profileMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute right-0 mt-3 w-64 rounded-2xl border border-gray-100 bg-white/90 backdrop-blur-lg p-4 shadow-xl"
                     >
-                      <div>
-                        <p className="text-sm font-semibold text-gray-900">{item.label}</p>
-                        <p className="text-xs text-gray-500">{item.type}</p>
-                      </div>
-                      <span className="text-xs font-medium text-primary">Open</span>
-                    </button>
-                  ))
-                )}
+                      <p className="truncate text-sm font-semibold text-gray-900">{displayName}</p>
+                      <p className="mt-1 truncate text-xs text-gray-500">{displayEmail}</p>
+                      <button
+                        onClick={() => signOut({ callbackUrl: "/dashboard/students" })}
+                        className="mt-4 inline-flex h-9 w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-xs font-semibold text-white transition-all hover:shadow-md hover:scale-[1.02]"
+                      >
+                        <LogOut className="h-3.5 w-3.5" />
+                        Logout
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-            </div>
+            ) : (
+              <Link href="/login" className="hidden rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:shadow-md hover:scale-105 sm:flex">
+                LOGIN
+              </Link>
+            )}
+
+            <button
+              onClick={() => setMobileMenuOpen((o) => !o)}
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-50 transition-all hover:bg-emerald-50 lg:hidden"
+            >
+              {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </button>
           </div>
         </div>
-      ) : null}
 
-      {mobileMenuOpen ? (
-        <div ref={mobileMenuRef} className="border-t border-gray-200 bg-white lg:hidden">
-          <nav className="flex flex-col space-y-2 px-3 py-3 sm:px-4">
-            <Link href="/" className="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100" onClick={() => setMobileMenuOpen(false)}>Home</Link>
-            <Link href="/directory" className="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100" onClick={() => setMobileMenuOpen(false)}>Find Experts</Link>
-            <Link href="/categories" className="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100" onClick={() => setMobileMenuOpen(false)}>Categories</Link>
-            <Link href="/professionals" className="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100" onClick={() => setMobileMenuOpen(false)}>Professionals</Link>
-            <Link href="/shop" className="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100" onClick={() => setMobileMenuOpen(false)}>Shop</Link>
-            <Link href="/about" className="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100" onClick={() => setMobileMenuOpen(false)}>About</Link>
-            <Link href="/contact" className="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
-            {!isAuthenticated ? (
-              <Link href="/login" className="mx-3 mt-2 inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-[#18ab7d]" onClick={() => setMobileMenuOpen(false)}>
-                LOGIN 
-              </Link>
-            ) : null}
-          </nav>
-        </div>
-      ) : null}
+        {/* Search Modal */}
+        <AnimatePresence>
+          {searchOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="absolute left-0 top-full z-50 w-full border-t border-gray-100 bg-white/95 backdrop-blur-md shadow-xl"
+            >
+              <div ref={searchMenuRef} className="mx-auto w-full max-w-7xl px-4 py-5 md:px-8">
+                <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-2xl">
+                  <div className="flex items-center gap-3 border-b border-gray-100 px-5 py-3">
+                    <Search className="h-5 w-5 text-emerald-500" />
+                    <input
+                      autoFocus
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && runSearch()}
+                      placeholder="Search pages, professionals, or cart..."
+                      className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
+                    />
+                    <button onClick={() => runSearch()} className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-2 text-xs font-semibold text-white shadow-sm hover:shadow-md transition-all">
+                      Search
+                    </button>
+                  </div>
+                  <div className="max-h-80 overflow-y-auto p-2">
+                    {searchResults.length === 0 ? (
+                      <p className="px-4 py-6 text-center text-sm text-gray-500">Type something to search pages and professionals.</p>
+                    ) : (
+                      searchResults.map((item) => (
+                        <button
+                          key={`${item.href}-${item.label}`}
+                          onClick={() => { router.push(item.href); setSearchOpen(false); setSearchQuery(""); }}
+                          className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-left transition hover:bg-emerald-50/50"
+                        >
+                          <div>
+                            <p className="text-sm font-semibold text-gray-800">{item.label}</p>
+                            <p className="text-xs text-gray-500">{item.type}</p>
+                          </div>
+                          <span className="text-xs font-medium text-emerald-600">Open →</span>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      {showScrollTop ? (
-        <button
-          type="button"
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-6 right-6 z-50 flex h-12 w-12 animate-bounce items-center justify-center rounded-4xl border-4 border-Solid border-primary bg-white text-primary shadow-lg transition hover:scale-105 hover:bg-[#f2fbf8]"
-          aria-label="Back to top"
-        >
-          <ArrowUp className="h-5 w-5" />
-        </button>
-      ) : null}
-    </header>
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden border-t border-gray-100 bg-white/95 backdrop-blur-md lg:hidden"
+            >
+              <nav className="flex flex-col space-y-1 px-4 py-4">
+                {["Home", "Find Experts", "Categories", "Professionals", "Shop", "About", "Contact"].map((item) => (
+                  <Link
+                    key={item}
+                    href={getNavHref(item)}
+                    className="rounded-xl px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-emerald-50 hover:text-emerald-700"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {item}
+                  </Link>
+                ))}
+                {!isAuthenticated && (
+                  <Link href="/login" className="mt-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2.5 text-center text-sm font-semibold text-white shadow-sm" onClick={() => setMobileMenuOpen(false)}>
+                    LOGIN
+                  </Link>
+                )}
+              </nav>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
+
+      {/* Scroll to top button */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg transition-all hover:scale-110 hover:shadow-xl"
+            aria-label="Back to top"
+          >
+            <ArrowUp className="h-5 w-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

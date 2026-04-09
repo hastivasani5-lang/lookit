@@ -15,17 +15,19 @@ export default function StudentsPage() {
   return (
     <>
       <Navbar />
-      <Hero />
-      <Features />
-      <About />
-      <Marquee />
-      <Courses />
-      <WhyChoose />
-      <FeaturedCourse />
-      <Instructors />
-      <Testimonials />
-      <BlogSection />
-      <Footer />
+      <main className="overflow-x-hidden">
+        <Hero />
+        <Features />
+        <About />
+        <Marquee />
+        <Courses />
+        <WhyChoose />
+        <FeaturedCourse />
+        <Instructors />
+        <Testimonials />
+        <BlogSection />
+        <Footer />
+      </main>
     </>
   );
 }

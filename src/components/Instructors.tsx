@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -11,9 +10,6 @@ import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 
 // ✅ AOS
-import AOS from "aos";
-import "aos/dist/aos.css";
-
 const instructors = [
   {
     name: "John D. Alexon",
@@ -53,30 +49,20 @@ const instructors = [
 ];
 
 const Instructors = () => {
-
-  // ✅ AOS INIT
-  useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: true,
-      easing: "ease-in-out",
-    });
-  }, []);
-
   return (
-    <section className="py-24 bg-white relative overflow-hidden px-4 md:px-8 lg:px-16">
+    <section className="relative overflow-hidden bg-white px-4 py-16 md:px-8 md:py-24 lg:px-16">
 
       <div className="max-w-7xl mx-auto">
 
         {/* ================= HEADER ================= */}
-    <div className="max-w-7xl mx-auto mb-16">
+    <div className="mx-auto mb-16 max-w-7xl text-center lg:text-left">
         
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+        <div className="flex flex-col items-center justify-between gap-6 lg:flex-row lg:items-center">
 
           {/* LEFT */}
           <div className="w-full lg:w-1/2" data-aos="fade-right">
             
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex items-center justify-center gap-2 text-sm text-gray-500 lg:justify-start">
               <span className="w-2 h-2 bg-[#1ec28e] rounded-full"></span>
               INSTRUCTORS
             </div>
@@ -88,7 +74,7 @@ const Instructors = () => {
 
           {/* RIGHT */}
           <div className="w-full lg:w-1/2" data-aos="fade-left">
-            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight text-left lg:text-right">
+            <h2 className="text-2xl font-bold leading-tight text-gray-900 md:text-4xl lg:text-right">
             Introducing the Educators and
  <br />
 Professional Instructor
@@ -127,11 +113,11 @@ Professional Instructor
                   whileHover={{ y: -10 }}
                   data-aos="zoom-in-up"
                   data-aos-delay={i * 100}
-                  className={`${item.bg} rounded-2xl p-6 text-center transition duration-300 shadow-sm hover:shadow-xl group`}
+                  className={`${item.bg} group rounded-2xl p-6 text-center transition duration-300 shadow-sm hover:shadow-xl lg:text-left`}
                 >
 
                   {/* IMAGE */}
-                  <div className="relative w-full h-[220px] mb-5 rounded-xl overflow-hidden">
+                  <div className="relative mb-5 h-[220px] w-full overflow-hidden rounded-xl sm:h-[240px] lg:h-[220px]">
                     <Image
                       src={item.img}
                       alt={item.name}
@@ -142,7 +128,7 @@ Professional Instructor
                   </div>
 
                   {/* NAME */}
-                  <h3 className="font-semibold text-gray-900 text-lg">
+                  <h3 className="text-lg font-semibold text-gray-900">
                     {item.name}
                   </h3>
 
@@ -154,7 +140,7 @@ Professional Instructor
                   </span>
 
                   {/* RATING */}
-                  <div className="mt-4 flex justify-center items-center gap-1 text-orange-500 text-sm">
+                  <div className="mt-4 flex items-center justify-center gap-1 text-sm text-orange-500 lg:justify-start">
                     {Array(5)
                       .fill(0)
                       .map((_, i) => (
@@ -171,7 +157,7 @@ Professional Instructor
           {/* ✅ LEFT ARROW */}
           <button
             type="button"
-            className="instructors-swiper-prev absolute left-0 md:-left-4 lg:-left-6 top-1/2 -translate-y-1/2 z-30 flex h-12 w-12 items-center justify-center rounded-full border border-[#1ec28e]/25 bg-white text-[#1ec28e] shadow-lg transition hover:bg-[#1ec28e] hover:text-white"
+            className="instructors-swiper-prev absolute left-0 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#1ec28e]/25 bg-white text-[#1ec28e] shadow-lg transition hover:bg-[#1ec28e] hover:text-white md:flex md:-left-4 lg:-left-6"
           >
             <ArrowLeft size={23} />
           </button>
@@ -179,7 +165,7 @@ Professional Instructor
           {/* ✅ RIGHT ARROW */}
           <button
             type="button"
-            className="instructors-swiper-next absolute right-0 md:-right-4 lg:-right-6 top-1/2 -translate-y-1/2 z-30 flex h-12 w-12 items-center justify-center rounded-full border border-[#1ec28e]/25 bg-white text-[#1ec28e] shadow-lg transition hover:bg-[#1ec28e] hover:text-white"
+            className="instructors-swiper-next absolute right-0 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#1ec28e]/25 bg-white text-[#1ec28e] shadow-lg transition hover:bg-[#1ec28e] hover:text-white md:flex md:-right-4 lg:-right-6"
           >
             <ArrowRight size={23} />
           </button>
@@ -189,7 +175,7 @@ Professional Instructor
       </div>
 
       {/* LEFT DECOR */}
-      <div className="absolute left-6 top-24 hidden lg:block">
+      <div className="absolute left-6 top-24 hidden md:block lg:left-6">
         <div className="flex flex-col gap-3">
           {[1, 2, 3, 4].map((_, i) => (
             <div
@@ -205,7 +191,7 @@ Professional Instructor
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: [0, -10, 0], opacity: 1 }}
         transition={{ duration: 3, repeat: Infinity }}
-        className="absolute bottom-0 right-6 hidden lg:block"
+        className="absolute bottom-0 right-6 hidden md:block lg:right-6"
       >
         <Image
           src="/start.png"

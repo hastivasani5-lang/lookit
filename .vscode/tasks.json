@@ -21,6 +21,18 @@
 			"type": "shell",
 			"command": "cd /Users/jenilgadhiya/Desktop/lookit && export GIT_PAGER=cat && git checkout main && git add -A && (git commit -m \"Push latest dashboard updates\" || true) && git pull --rebase origin main && git push origin main && git rev-parse --abbrev-ref HEAD && git rev-parse --short HEAD",
 			"isBackground": false
+		},
+		{
+			"label": "push-main-latest",
+			"type": "shell",
+			"command": "cd /Users/jenilgadhiya/Desktop/lookit && export GIT_PAGER=cat && git checkout main && git add -A && (git commit -m \"Push latest dashboard updates\" || true) && git pull --rebase origin main && git push origin main && git rev-parse --abbrev-ref HEAD && git rev-parse --short HEAD",
+			"isBackground": false
+		},
+		{
+			"label": "push-main-latest",
+			"type": "shell",
+			"command": "git checkout main && git add -A && (git commit -m \"Push latest changes\" || true) && git pull --rebase origin main && git push origin main",
+			"isBackground": false
 		}
 	]
 }

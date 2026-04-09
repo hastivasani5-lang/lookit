@@ -47,18 +47,17 @@ const Testimonials = () => {
 
   const currentSlide = testimonialSlides[activeSlide];
 
-  const newLocal = <div className="absolute left-0 bottom-0 w-full h-1/2 bg-white hidden md:block"></div>;
   return (
-    <section className="bg-[#e6efed] py-10 px-4 md:px-10 lg:px-16 relative overflow-hidden">
+    <section className="relative overflow-hidden bg-[#e6efed] px-4 py-12 md:px-10 lg:px-16">
 
-       <div className="max-w-7xl mx-auto mb-16">
+      <div className="mx-auto mb-16 max-w-7xl text-center lg:text-left">
         
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+        <div className="flex flex-col items-center justify-between gap-6 lg:flex-row lg:items-center">
 
           {/* LEFT */}
           <div className="w-full lg:w-1/2" data-aos="fade-right">
             
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex items-center justify-center gap-2 text-sm text-gray-500 lg:justify-start">
               <span className="w-2 h-2 bg-[#1ec28e] rounded-full"></span>
               INSTRUCTORS
             </div>
@@ -70,7 +69,7 @@ const Testimonials = () => {
 
           {/* RIGHT */}
           <div className="w-full lg:w-1/2" data-aos="fade-left">
-            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight text-left lg:text-right">
+            <h2 className="text-2xl font-bold leading-tight text-gray-900 md:text-4xl lg:text-right">
             Introducing the Educators and
  <br />
 Professional Instructor
@@ -82,12 +81,12 @@ Professional Instructor
       </div>
 
    {/* MAIN */}
-<div className="grid lg:grid-cols-2 gap-12 items-center mb-9">
+<div className="mb-9 grid items-center gap-12 lg:grid-cols-2">
 
   {/* LEFT */}
   <div className="relative flex justify-center" data-aos="fade-right">
 
-    <div className="relative w-full max-w-[420px] h-[420px]">
+    <div className="relative h-[360px] w-full max-w-[340px] sm:h-[420px] sm:max-w-[420px]">
 
       {/* MAP */}
       <div className="absolute inset-0 opacity-20">
@@ -101,22 +100,22 @@ Professional Instructor
       </div>
 
       {/* ✅ GREEN HALF CIRCLE */}
-      <div className="absolute w-[300px] h-[300px] bg-[#1ec28e] rounded-full left-1/2 top-[60px] -translate-x-1/2"></div>
+      <div className="absolute left-1/2 top-[80px] h-[220px] w-[220px] -translate-x-1/2 rounded-full bg-[#1ec28e] sm:top-[60px] sm:h-[300px] sm:w-[300px]"></div>
 
       {/* MAIN IMAGE */}
       <Image
         src="/girls.png"
         alt=""
-        width={300}
-        height={420}
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 z-10"
+        width={260}
+        height={360}
+        className="absolute bottom-0 left-1/2 z-10 h-auto w-[220px] -translate-x-1/2 sm:w-[300px]"
       />
 
       {/* AVATAR TOP */}
       <motion.div
         animate={{ y: [0, -8, 0] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[30px] left-[10px] w-12 h-12 rounded-full overflow-hidden border-white shadow-md"
+        className="absolute left-[6px] top-[40px] h-10 w-10 overflow-hidden rounded-full border-white shadow-md sm:left-[10px] sm:top-[30px] sm:h-12 sm:w-12"
       >
         <Image src="/pro1.jpeg" fill sizes="48px" alt="" />
       </motion.div>
@@ -125,7 +124,7 @@ Professional Instructor
       <motion.div
         animate={{ y: [0, 10, 0] }}
         transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-[30px] left-[20px] w-12 h-12 rounded-full overflow-hidden border-white shadow-md"
+        className="absolute bottom-[26px] left-[10px] h-10 w-10 overflow-hidden rounded-full border-white shadow-md sm:bottom-[30px] sm:left-[20px] sm:h-12 sm:w-12"
       >
         <Image src="/pro2.jpeg" fill sizes="48px" alt="" />
       </motion.div>
@@ -134,7 +133,7 @@ Professional Instructor
       <motion.div
         animate={{ x: [0, 8, 0] }}
         transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[150px] right-[20px] w-12 h-12 rounded-full overflow-hidden border-white shadow-md"
+        className="absolute right-[10px] top-[150px] h-10 w-10 overflow-hidden rounded-full border-white shadow-md sm:right-[20px] sm:h-12 sm:w-12"
       >
         <Image src="/pro3.jpeg" fill sizes="48px" alt="" />
       </motion.div>
@@ -143,7 +142,7 @@ Professional Instructor
   </div>
 
   {/* RIGHT */}
-  <div className="flex flex-col gap-6 mb-8" data-aos="fade-left" data-aos-delay="120">
+  <div className="mb-8 flex flex-col gap-6 text-center lg:text-left" data-aos="fade-left" data-aos-delay="120">
 
     {/* CARD */}
     <motion.div
@@ -172,9 +171,9 @@ Professional Instructor
     </motion.div>
 
     {/* USER */}
-    <div className="flex items-center justify-between max-w-[520px]" data-aos="fade-up" data-aos-delay="260">
+    <div className="flex max-w-[520px] flex-col gap-4 sm:flex-row sm:items-center sm:justify-between" data-aos="fade-up" data-aos-delay="260">
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center justify-center gap-3 sm:justify-start">
         <motion.div
           key={currentSlide.image}
           initial={{ scale: 0.9, opacity: 0.7 }}
@@ -190,7 +189,7 @@ Professional Instructor
         </div>
       </div>
 
-      <div className="flex gap-3 items-center">
+      <div className="flex items-center justify-center gap-3 sm:ml-auto sm:justify-end">
         <button
           onClick={goPrev}
           aria-label="Previous testimonial"
@@ -215,11 +214,11 @@ Professional Instructor
 
         {/* CTA */}
 {/* CTA */}
-<div className="relative mt- md:mt-[-60px]">
+  <div className="relative mt-6 md:mt-[-60px]">
 
   
 
-  <div className="relative bg-[#1ec28e] rounded-[24px] px-6 md:px-10 py-6 md:py-8 flex flex-col md:flex-row items-center justify-between gap-6">
+  <div className="relative flex flex-col items-center justify-between gap-6 rounded-[24px] bg-[#1ec28e] px-6 py-6 text-center md:flex-row md:px-10 md:py-8 md:text-left">
 
     {/* TEXT */}
     <h3 className="text-white text-lg md:text-2xl font-semibold text-center md:text-left">
@@ -228,7 +227,7 @@ Professional Instructor
     </h3>
 
     {/* CALL */}
-    <div className="flex items-center gap-3 text-white justify-center md:justify-start">
+    <div className="flex items-center justify-center gap-3 text-white md:justify-start">
       <div className="w-10 h-10 bg-white text-[#1ec28e] rounded-full flex items-center justify-center">
         ☎
       </div>

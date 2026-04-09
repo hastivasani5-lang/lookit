@@ -37,16 +37,16 @@ export default function BlogSection() {
       data-aos-duration="900"
     >
 
-      <div className="max-w-7xl mx-auto">
+      <div className="mx-auto max-w-7xl text-center lg:text-left">
 
-   <div className="max-w-7xl mx-auto mb-16">
+    <div className="mx-auto mb-16 max-w-7xl">
         
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+        <div className="flex flex-col items-center justify-between gap-6 lg:flex-row lg:items-center">
 
           {/* LEFT */}
           <div className="w-full lg:w-1/2" data-aos="fade-right">
             
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex items-center justify-center gap-2 text-sm text-gray-500 lg:justify-start">
               <span className="w-2 h-2 bg-[#1ec28e] rounded-full"></span>
 LATEST BLOG
             </div>
@@ -58,7 +58,7 @@ LATEST BLOG
 
           {/* RIGHT */}
           <div className="w-full lg:w-1/2" data-aos="fade-left">
-            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight text-left lg:text-right">
+            <h2 className="text-2xl font-bold leading-tight text-gray-900 md:text-4xl lg:text-right">
             Read the Latest Insights and
   <br />
 Updates Educate Blog
@@ -70,18 +70,18 @@ Updates Educate Blog
       </div>
 
         {/* CARDS */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
 
           {blogs.map((blog, index) => (
             <div
               key={blog.id}
-              className={`rounded-[20px] p-6 ${
+              className={`rounded-[20px] p-6 text-center ${
                 blog.color === "blue"
                   ? "bg-[#eaf6fb]"
                   : blog.color === "green"
                   ? "bg-[#eaf7f2]"
                   : "bg-[#fff3eb]"
-              }`}
+              } lg:text-left`}
               data-aos="fade-up"
               data-aos-delay={120 + index * 120}
               data-aos-duration="800"
@@ -112,7 +112,7 @@ Updates Educate Blog
               </div>
 
               {/* AUTHOR */}
-              <div className="flex items-center gap-2 mb-3">
+              <div className="mb-3 flex items-center justify-center gap-2 lg:justify-start">
                 <div className="w-8 h-8 rounded-full overflow-hidden">
                   <Image src="/pro1.jpeg" width={32} height={32} alt="" />
                 </div>

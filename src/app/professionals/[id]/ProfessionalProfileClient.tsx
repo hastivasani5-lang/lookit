@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MapPin, PlayCircle, Star } from "lucide-react";
 
+<<<<<<< HEAD
 import type { PublicProfessional } from "@/lib/professional-display";
 import { addCartItem } from "@/lib/cart-store";
 
@@ -25,6 +26,10 @@ type UploadedVideo = {
   source: "file" | "youtube";
   sizeLabel: string;
 };
+=======
+import type { Professional } from "@/app/professionals/data";
+import { getOnlineProfessionalImage } from "@/app/professionals/online-images";
+>>>>>>> be64503 (Update professionals pages and UI fixes)
 
 type ContentItem = {
   id: string;
@@ -203,35 +208,42 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
   };
 
   return (
-    <main className="min-h-screen bg-[#edf4f2] px-4  pb-12 pt-18 md:px-8 lg:px-10">
-      <section className="mx-auto grid w-full max-w-6xl gap-8 rounded-4xl border border-[#dbe8e4] bg-white p-6 shadow-[0_20px_40px_rgba(15,23,42,0.08)] md:p-8 lg:grid-cols-[340px_minmax(0,1fr)]">
-        <div className="relative overflow-hidden rounded-3xl">
-          <Image
-            src={professional.image}
-            alt={professional.name}
-            width={600}
-            height={700}
-            className="h-full w-full object-cover"
-          />
-        </div>
-
-        <div className="space-y-6">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Professional Profile</p>
-            <h1 className="mt-2 text-3xl font-bold text-gray-900 md:text-4xl">{professional.name}</h1>
-            <p className="mt-2 text-lg font-medium text-primary">{professional.specialization}</p>
+    <main className="min-h-screen bg-[#edf4f2] px-4 pb-12 pt-10 md:px-8 lg:px-10">
+      <section className="mx-auto w-full max-w-7xl rounded-[36px] border border-[#dbe8e4] bg-white p-4 shadow-[0_20px_40px_rgba(15,23,42,0.08)] md:p-6 lg:p-8">
+        <div className="grid gap-8 lg:grid-cols-[360px_minmax(0,1fr)] lg:items-start">
+        <aside className="sticky top-24 overflow-hidden rounded-4xl border border-[#dbe8e4] bg-white p-4 shadow-[0_20px_40px_rgba(15,23,42,0.08)] md:p-5 lg:rounded-4xl">
+          <div className="relative overflow-hidden rounded-3xl">
+            <Image
+              src={getOnlineProfessionalImage(professional.id)}
+              alt={professional.name}
+              width={600}
+              height={700}
+              className="h-85 w-full object-cover md:h-105"
+            />
+            <div className="absolute inset-0 bg-linear-to-t from-black/45 via-transparent to-transparent" />
           </div>
 
-          <div className="grid gap-3 rounded-2xl border border-[#dbe8e4] bg-[#f8fbfa] p-4 text-sm text-gray-700 sm:grid-cols-2">
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-primary" />
-              <span>{professional.location}</span>
+          <div className="mt-4 space-y-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Professional Profile</p>
+              <h1 className="mt-2 text-2xl font-bold text-gray-900 md:text-3xl">{professional.name}</h1>
+              <p className="mt-1 text-base font-medium text-primary">{professional.specialization}</p>
             </div>
-            <div className="flex items-center gap-2">
-              <Star className="h-4 w-4 fill-primary text-primary" />
-              <span className="font-semibold text-gray-900">{professional.rating.toFixed(1)}</span>
-              <span>({professional.reviews} reviews)</span>
+
+            <div className="grid gap-3 rounded-3xl border border-[#dbe8e4] bg-[#f8fbfa] p-4 text-sm text-gray-700">
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-primary" />
+                <span>{professional.location}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Star className="h-4 w-4 fill-primary text-primary" />
+                <span className="font-semibold text-gray-900">{professional.rating.toFixed(1)}</span>
+                <span>({professional.reviews} reviews)</span>
+              </div>
+              <p className="rounded-full bg-white px-3 py-2">Language: {professional.language}</p>
+              <p className="rounded-full bg-white px-3 py-2">Category: {professional.category}</p>
             </div>
+<<<<<<< HEAD
             <p>Language: {professional.language}</p>
             <div className="space-y-2">
               <p>Category: {professional.category}</p>
@@ -250,18 +262,76 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
                 )}
               </div>
             </div>
+=======
+          </div>
+        </aside>
+
+        <div className="space-y-8">
+          <div className="rounded-4xl border border-[#dbe8e4] bg-[#fbfdfc] p-6 shadow-sm md:p-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Overview</p>
+            <h2 className="mt-2 text-2xl font-bold text-gray-900 md:text-3xl">Profile overview</h2>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-gray-600 md:text-base">
+              Explore this expert’s offerings, learning materials, reviews, and consultation options from one place.
+            </p>
+>>>>>>> be64503 (Update professionals pages and UI fixes)
           </div>
 
-          <div className="rounded-2xl border border-[#dbe8e4] p-4">
+          <div className="rounded-3xl border border-[#dbe8e4] bg-white p-6 shadow-sm md:p-8">
             <h2 className="text-lg font-semibold text-gray-900">About</h2>
             <p className="mt-2 text-sm leading-7 text-gray-600">
               {professional.name} is a trusted {professional.specialization.toLowerCase()} helping families
               with personalized support plans, practical sessions, and measurable progress.
             </p>
           </div>
+
+          <section className="rounded-3xl border border-[#dbe8e4] bg-white p-5 shadow-sm md:p-6" data-aos="fade-up">
+            <div className="flex flex-wrap gap-2 border-b border-gray-200 pb-4">
+              {contentTabs.map((tab) => (
+                <button
+                  key={tab.value}
+                  type="button"
+                  onClick={() => setActiveTab(tab.value)}
+                  className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                    activeTab === tab.value
+                      ? "bg-primary text-white"
+                      : "bg-[#eef7f4] text-gray-700 hover:bg-[#dff1eb]"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              {contentMap[activeTab].map((item) => (
+                <article key={item.id} className="rounded-2xl border border-gray-200 bg-[#fbfdfc] p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="text-base font-semibold text-gray-900">{item.title}</h3>
+                      <p className="mt-1 text-sm text-gray-600">{item.subtitle}</p>
+                    </div>
+                    <PlayCircle className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="mt-3 flex items-center justify-between text-sm">
+                    <span className="font-semibold text-primary">{item.price}</span>
+                    <span className="text-gray-500">{item.duration ?? "Self paced"}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleBuyNow(item)}
+                    className="mt-4 w-full rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+                  >
+                    Buy Now
+                  </button>
+                </article>
+              ))}
+            </div>
+          </section>
+        </div>
         </div>
       </section>
 
+<<<<<<< HEAD
       {showLibrarySection ? (
       <section className="mx-auto mt-8 w-full max-w-6xl rounded-3xl border border-[#dbe8e4] bg-white p-6 shadow-sm md:p-8" data-aos="fade-up">
         <div className="flex flex-wrap gap-2 border-b border-gray-200 pb-4">
@@ -376,6 +446,9 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
       ) : null}
 
       <section className="mx-auto mt-8 w-full max-w-6xl">
+=======
+      <section className="mx-auto mt-8 grid w-full max-w-7xl gap-8 lg:grid-cols-2">
+>>>>>>> be64503 (Update professionals pages and UI fixes)
         <div className="rounded-3xl border border-[#dbe8e4] bg-white p-6 shadow-sm md:p-8" data-aos="fade-up">
           <div className="mb-4 flex items-center justify-between rounded-2xl bg-[#f4faf7] px-4 py-3">
             <h2 className="text-xl font-semibold text-gray-900">User Reviews</h2>
@@ -419,22 +492,28 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
             </button>
           </form>
 
-          <ul className="mt-6 space-y-3">
+          <ul className="mt-6 space-y-4">
             {reviews.map((review) => (
-              <li key={review.id} className="rounded-2xl border border-gray-200 bg-[#fafdfc] p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#e7f6f0] text-sm font-bold text-primary">
-                      {review.name.slice(0, 1)}
-                    </span>
-                    <div>
-                      <p className="font-semibold text-gray-900">{review.name}</p>
-                      <p className="text-xs text-gray-500">Verified learner</p>
+              <li key={review.id} className="rounded-3xl border border-gray-200 bg-[#fbfdfc] p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                <div className="flex items-start gap-4">
+                  <span className="mt-0.5 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-[#e7f6f0] to-[#d7f0e6] text-sm font-bold text-primary">
+                    {review.name.slice(0, 1)}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div>
+                        <p className="font-semibold text-gray-900">{review.name}</p>
+                        <p className="text-xs text-gray-500">Verified learner</p>
+                      </div>
+                      <span className="rounded-full bg-[#eef7f4] px-3 py-1 text-xs font-semibold text-primary">
+                        {"★".repeat(review.rating)}
+                      </span>
                     </div>
+                    <p className="mt-3 border-l-2 border-primary/30 pl-3 text-sm leading-7 text-gray-600">
+                      {review.message}
+                    </p>
                   </div>
-                  <p className="text-sm text-primary">{"★".repeat(review.rating)}</p>
                 </div>
-                <p className="mt-2 text-sm text-gray-600">{review.message}</p>
               </li>
             ))}
           </ul>

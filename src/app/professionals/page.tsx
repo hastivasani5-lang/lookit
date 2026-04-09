@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { BookOpen, GraduationCap, MapPin, Sparkles, Star, Users } from "lucide-react";
+import { BookOpen, GraduationCap, MapPin, Search, Sparkles, Star, Users } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import InstructorBanner from "@/components/InstructorBanner";
 import TopRatedProfessionalsSection from "@/components/TopRatedProfessionalsSection";
 import { buildSeedProfessional, type PublicProfessional } from "@/lib/professional-display";
 import { professionals as seedProfessionals } from "@/app/professionals/data";
@@ -43,12 +44,14 @@ const languageOptions = [
 ] as const;
 
 export default function ProfessionalsPage() {
+  const resultsRef = useRef<HTMLDivElement | null>(null);
   const [liveProfessionals, setLiveProfessionals] = useState<PublicProfessional[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedRating, setSelectedRating] = useState("all");
   const [selectedReviews, setSelectedReviews] = useState("all");
   const [selectedLanguage, setSelectedLanguage] = useState("all");
   const [locationText, setLocationText] = useState("");
+  const [professionalQuery, setProfessionalQuery] = useState("");
   const [sortBy, setSortBy] = useState("popular");
   const [visibleCount, setVisibleCount] = useState(6);
 
@@ -107,8 +110,13 @@ export default function ProfessionalsPage() {
       const languageMatch = selectedLanguage === "all" || item.language === selectedLanguage;
       const locationQuery = locationText.trim().toLowerCase();
       const locationMatch = locationQuery.length === 0 || item.location.toLowerCase().includes(locationQuery);
+      const nameQuery = professionalQuery.trim().toLowerCase();
+      const nameMatch =
+        nameQuery.length === 0 ||
+        item.name.toLowerCase().includes(nameQuery) ||
+        item.specialization.toLowerCase().includes(nameQuery);
 
-      return categoryMatch && ratingMatch && reviewsMatch && languageMatch && locationMatch;
+      return categoryMatch && ratingMatch && reviewsMatch && languageMatch && locationMatch && nameMatch;
     });
 
     return result.sort((left, right) => {
@@ -125,96 +133,96 @@ export default function ProfessionalsPage() {
 
       return right.reviews - left.reviews;
     });
-  }, [liveProfessionalIds, locationText, professionals, selectedCategory, selectedLanguage, selectedRating, selectedReviews, sortBy]);
+  }, [
+    liveProfessionalIds,
+    locationText,
+    professionalQuery,
+    professionals,
+    selectedCategory,
+    selectedLanguage,
+    selectedRating,
+    selectedReviews,
+    sortBy,
+  ]);
 
   const visibleProfessionals = filteredProfessionals.slice(0, visibleCount);
+
+  const handleTopSearchClick = () => {
+    resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-[#eef5f3] pt-10">
-        <section className="mx-auto w-full max-w-400 px-4 py-10 md:px-8 lg:px-6 xl:px-4">
-          <div
-            className="relative mb-8 overflow-hidden rounded-4xl border border-[#d5e9e2] bg-white p-6 shadow-[0_22px_45px_rgba(15,23,42,0.07)] md:p-8"
-            data-aos="fade-up"
-          >
-            <div className="absolute -right-14 -top-14 h-40 w-40 rounded-full bg-primary/10 blur-2xl" />
-            <div className="absolute -bottom-16 -left-16 h-44 w-44 rounded-full bg-[#0f172a]/5 blur-2xl" />
+      <main className="min-h-screen bg-[#eef5f3] pt-10"><br />
+        <InstructorBanner />
 
-            <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:items-center">
-              <div>
-                <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  Professionals
-                </p>
-                <h1 className="mt-2 text-3xl font-bold text-gray-900 md:text-4xl">
-                  Find Trusted Education Experts
-                </h1>
-                <p className="mt-3 max-w-3xl text-sm leading-7 text-gray-600 md:text-base">
-                  Compare verified specialists by category, ratings, reviews, and language.
-                  Choose the right expert for your child with confidence.
-                </p>
+        <div className="mx-auto mt-5 w-full max-w-400 px-4 md:px-8 lg:px-6 xl:px-4">
+          <div className="grid gap-3 rounded-2xl border border-emerald-100 bg-white p-3 shadow-sm md:grid-cols-[190px_minmax(0,1fr)_220px_120px] md:items-end md:p-4">
+            <label className="block">
+              <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-emerald-700">Category</span>
+              <select
+                value={selectedCategory}
+                onChange={(event) => setSelectedCategory(event.target.value)}
+                className="w-full rounded-xl border border-emerald-200 bg-[#fafdfc] px-3 py-2 text-sm text-gray-700 outline-none transition focus:border-emerald-400"
+              >
+                {categoryOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-                <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                  <div className="rounded-2xl border border-[#dbe8e4] bg-[#f7fbfa] p-4 shadow-sm">
-                    <div className="flex items-center gap-2 text-primary">
-                      <Users className="h-4 w-4" />
-                      <span className="text-xs font-semibold uppercase tracking-[0.16em]">Experts</span>
-                    </div>
-                    <p className="mt-2 text-2xl font-bold text-gray-900">{professionals.length}</p>
-                    <p className="text-xs text-gray-500">Verified professionals</p>
-                  </div>
-                  <div className="rounded-2xl border border-[#dbe8e4] bg-[#f7fbfa] p-4 shadow-sm">
-                    <div className="flex items-center gap-2 text-primary">
-                      <GraduationCap className="h-4 w-4" />
-                      <span className="text-xs font-semibold uppercase tracking-[0.16em]">Categories</span>
-                    </div>
-                    <p className="mt-2 text-2xl font-bold text-gray-900">5+</p>
-                    <p className="text-xs text-gray-500">Speciality areas</p>
-                  </div>
-                  <div className="rounded-2xl border border-[#dbe8e4] bg-[#f7fbfa] p-4 shadow-sm">
-                    <div className="flex items-center gap-2 text-primary">
-                      <BookOpen className="h-4 w-4" />
-                      <span className="text-xs font-semibold uppercase tracking-[0.16em]">Support</span>
-                    </div>
-                    <p className="mt-2 text-2xl font-bold text-gray-900">24/7</p>
-                    <p className="text-xs text-gray-500">Guidance resources</p>
-                  </div>
-                </div>
+            <label className="block">
+              <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-emerald-700">Professionals Search</span>
+              <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-[#fafdfc] px-3 py-2">
+                <Search className="h-4 w-4 text-emerald-500" />
+                <input
+                  type="text"
+                  value={professionalQuery}
+                  onChange={(event) => setProfessionalQuery(event.target.value)}
+                  placeholder="Search by name or specialization"
+                  className="w-full bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
+                />
               </div>
+            </label>
 
-              <div className="relative overflow-hidden rounded-4xl border border-[#dbe8e4] bg-linear-to-br from-[#eaf8f3] via-white to-[#edf6f4] p-4 shadow-[0_16px_35px_rgba(15,23,42,0.08)]">
-                <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-primary/10 blur-2xl" />
-                <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-[#0f172a]/5 blur-2xl" />
-
-                <div className="relative grid gap-4 sm:grid-cols-[minmax(0,1fr)_110px] sm:items-center">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Expert Spotlight</p>
-                    <h2 className="mt-2 text-2xl font-bold text-gray-900">
-                      Browse top professionals with rich details
-                    </h2>
-                    <p className="mt-2 text-sm leading-7 text-gray-600">
-                      Each card shows ratings, location, language, and a direct profile link.
-                    </p>
-                  </div>
-
-                  <div className="relative mx-auto h-28 w-28 overflow-hidden rounded-full border-4 border-white shadow-lg">
-                    <Image
-                      src="/pro1.jpeg"
-                      alt="Professional spotlight"
-                      fill
-                      sizes="112px"
-                      className="object-cover"
-                    />
-                  </div>
-                </div>
+            <label className="block">
+              <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-emerald-700">Location Search</span>
+              <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-[#fafdfc] px-3 py-2">
+                <MapPin className="h-4 w-4 text-emerald-500" />
+                <input
+                  type="text"
+                  value={locationText}
+                  onChange={(event) => setLocationText(event.target.value)}
+                  placeholder="Search city or area"
+                  className="w-full bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
+                />
               </div>
+            </label>
+
+            <div className="block">
+              <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-transparent">Search</span>
+              <button
+                type="button"
+                onClick={handleTopSearchClick}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:scale-[1.02] hover:shadow-md"
+              >
+                <Search className="h-4 w-4" />
+                Search
+              </button>
             </div>
           </div>
+        </div>
+
+        <section className="mx-auto w-full max-w-400 px-4 py-10 md:px-8 lg:px-6 xl:px-4">
+
+
 
           <TopRatedProfessionalsSection professionals={professionals} embedded />
 
-          <div className="grid gap-8 lg:grid-cols-[295px_minmax(0,1fr)] lg:items-start">
+          <div ref={resultsRef} className="grid gap-8 lg:grid-cols-[295px_minmax(0,1fr)] lg:items-start">
             <aside className="self-start rounded-3xl border border-[#dbe8e4] bg-white p-5 shadow-sm lg:sticky lg:top-24 lg:z-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto hide-scrollbar">
               <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-4">
                 <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
@@ -226,6 +234,7 @@ export default function ProfessionalsPage() {
                     setSelectedReviews("all");
                     setSelectedLanguage("all");
                     setLocationText("");
+                    setProfessionalQuery("");
                   }}
                   className="text-sm font-medium text-primary hover:underline"
                 >
@@ -307,7 +316,7 @@ export default function ProfessionalsPage() {
               </div>
             </aside>
 
-            <div className="lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto hide-scrollbar lg:pr-1">
+            <div className="lg:pr-1">
               <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-[#dbe8e4] bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between" data-aos="fade-up">
                 <p className="text-sm font-medium text-gray-700">
                   Showing <span className="font-semibold text-gray-900">{filteredProfessionals.length}</span> professionals

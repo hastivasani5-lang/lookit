@@ -1,5 +1,6 @@
 import type { AppUser } from "@/types/auth";
 import { professionals as fallbackProfessionals, type Professional as SeedProfessional } from "@/app/professionals/data";
+import { getOnlineProfessionalImage } from "@/app/professionals/online-images";
 
 export type PublicProfessional = {
   id: string;
@@ -23,7 +24,7 @@ export function buildSeedProfessional(professional: SeedProfessional): PublicPro
     location: professional.location,
     rating: professional.rating,
     reviews: professional.reviews,
-    image: professional.image,
+    image: getOnlineProfessionalImage(professional.id),
   };
 }
 
@@ -62,6 +63,6 @@ export function buildPublicProfessional(user: AppUser, index = 0): PublicProfess
     location,
     rating: fallback.rating,
     reviews: reviewsCount > 0 ? reviewsCount * 50 : fallback.reviews,
-    image: user.image ?? fallback.image,
+    image: getOnlineProfessionalImage(user.id),
   };
 }

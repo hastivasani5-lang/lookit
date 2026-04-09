@@ -115,8 +115,8 @@ export default function LoginPage() {
         <div className="flex flex-1 items-center justify-center bg-white px-4 sm:px-6 py-8 md:py-10 lg:px-10">
           <div className="w-full max-w-[420px] text-center">
             <Image
-              src="/lookit-logo.svg"
-              alt="Lookit logo"
+              src="/logo.png"
+              alt="EducateX logo"
               width={160}
               height={56}
               priority

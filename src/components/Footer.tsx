@@ -25,8 +25,8 @@ export default function Footer() {
           {/* LOGO */}
           <div className="flex items-center gap-3">
             <Image
-              src="/lookit-logo-light.svg"
-              alt="Lookit logo"
+              src="/logo.png"
+              alt="EducateX logo"
               width={160}
               height={56}
               className="h-9 w-auto object-contain"

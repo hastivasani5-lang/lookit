@@ -2,7 +2,6 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { getAllUsers } from "@/lib/user-store";
-import { getAllLibraries } from "@/lib/content-library-store";
 
 export const runtime = "nodejs";
 
@@ -14,7 +13,6 @@ export async function GET() {
   }
 
   const users = await getAllUsers();
-  const libraries = await getAllLibraries();
 
   return NextResponse.json({
     users: users.map((user) => ({
@@ -30,7 +28,6 @@ export async function GET() {
       reviews: user.reviews ?? [],
       profileBoostedUntil: user.profileBoostedUntil ?? null,
       createdAt: user.createdAt,
-      categories: user.role === "professional" ? libraries.professionals[user.id]?.categories ?? [] : [],
     })),
   });
 }

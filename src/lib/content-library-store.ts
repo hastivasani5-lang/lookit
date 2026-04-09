@@ -20,7 +20,6 @@ export type StoredBook = {
 export type StoredVideo = {
   id: string;
   name: string;
-  mrp: string;
   url: string;
   source: "file" | "youtube";
   sizeLabel: string;
@@ -103,49 +102,8 @@ function getOrCreateProfessionalLibrary(store: LibraryStore, professionalId: str
   return store.professionals[professionalId];
 }
 
-function getOrCreateStudentLibrary(store: LibraryStore, studentId: string): StudentLibrary {
-  if (!store.students[studentId]) {
-    store.students[studentId] = {
-      purchasedBooks: [],
-      watchedVideos: [],
-    };
-  }
-
-  return store.students[studentId];
-}
-
 function uniqueCategories(values: string[]) {
   return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
-}
-
-export async function addProfessionalCategory(professionalId: string, category: string) {
-  const trimmedCategory = category.trim();
-
-  if (!trimmedCategory) {
-    return [];
-  }
-
-  const store = await readStore();
-  const library = getOrCreateProfessionalLibrary(store, professionalId);
-  library.categories = uniqueCategories([...library.categories, trimmedCategory]);
-  await writeStore(store);
-
-  return library.categories;
-}
-
-export async function deleteProfessionalCategory(professionalId: string, category: string) {
-  const trimmedCategory = category.trim();
-
-  if (!trimmedCategory) {
-    return [];
-  }
-
-  const store = await readStore();
-  const library = getOrCreateProfessionalLibrary(store, professionalId);
-  library.categories = library.categories.filter((value) => value !== trimmedCategory);
-  await writeStore(store);
-
-  return library.categories;
 }
 
 export async function getProfessionalLibrary(professionalId: string): Promise<ProfessionalLibrary> {
@@ -204,45 +162,6 @@ export async function deleteProfessionalVideo(professionalId: string, videoId: s
   const library = getOrCreateProfessionalLibrary(store, professionalId);
   library.videos = library.videos.filter((video) => video.id !== videoId);
   await writeStore(store);
-}
-
-export async function recordStudentBookPurchase(
-  studentId: string,
-  input: { title: string; source: string; amount: string },
-) {
-  const store = await readStore();
-  const library = getOrCreateStudentLibrary(store, studentId);
-
-  const purchase: StudentBookActivity = {
-    id: `purchase-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    title: input.title.trim(),
-    source: input.source.trim() || "Library",
-    amount: input.amount.trim(),
-    purchasedAt: new Date().toLocaleString(),
-  };
-
-  library.purchasedBooks = [purchase, ...library.purchasedBooks];
-  await writeStore(store);
-  return purchase;
-}
-
-export async function recordStudentVideoActivity(
-  studentId: string,
-  input: { title: string; provider: string },
-) {
-  const store = await readStore();
-  const library = getOrCreateStudentLibrary(store, studentId);
-
-  const activity: StudentVideoActivity = {
-    id: `watch-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    title: input.title.trim(),
-    provider: input.provider.trim() || "Library",
-    watchedAt: new Date().toLocaleString(),
-  };
-
-  library.watchedVideos = [activity, ...library.watchedVideos];
-  await writeStore(store);
-  return activity;
 }
 
 export async function getAllLibraries() {

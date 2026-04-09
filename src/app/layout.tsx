@@ -26,7 +26,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
-        <link rel="icon" href="/lookit-logo.svg" />
+        <link rel="icon" href="/logo.png" />
       </head>
       <body className="min-h-full flex flex-col">
         <SessionProviderClient>

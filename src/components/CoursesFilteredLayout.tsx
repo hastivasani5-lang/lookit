@@ -10,39 +10,7 @@ import CourseGridSection, {
   allVideoLearnings,
 } from "@/components/CourseGridSection";
 
-type CoursesFilteredLayoutProps = {
-  searchQuery: string;
-};
-
-function scoreMatch(itemText: string, query: string) {
-  const normalizedText = itemText.toLowerCase();
-  const normalizedQuery = query.trim().toLowerCase();
-
-  if (!normalizedQuery) {
-    return 0;
-  }
-
-  if (normalizedText === normalizedQuery) {
-    return 100;
-  }
-
-  if (normalizedText.startsWith(normalizedQuery)) {
-    return 80;
-  }
-
-  if (normalizedText.includes(normalizedQuery)) {
-    return 60;
-  }
-
-  const terms = normalizedQuery.split(/\s+/).filter(Boolean);
-  if (terms.length > 1 && terms.every((term) => normalizedText.includes(term))) {
-    return 50;
-  }
-
-  return 0;
-}
-
-export default function CoursesFilteredLayout({ searchQuery }: CoursesFilteredLayoutProps) {
+export default function CoursesFilteredLayout() {
   const [contentType, setContentType] = useState<ContentType>("courses");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedReview, setSelectedReview] = useState("all");
@@ -74,17 +42,9 @@ export default function CoursesFilteredLayout({ searchQuery }: CoursesFilteredLa
   }, [categories, selectedCategory]);
 
   const filteredCourses = useMemo(() => {
-    const normalizedQuery = searchQuery.trim().toLowerCase();
-    const queryTerms = normalizedQuery.split(/\s+/).filter(Boolean);
-
     return activeItems.filter((course) => {
       const categoryMatch =
         selectedCategory === "all" || course.category === selectedCategory;
-
-      const searchText = `${course.title} ${course.category}`.toLowerCase();
-      const searchMatch =
-        queryTerms.length === 0 ||
-        queryTerms.every((term) => searchText.includes(term));
 
       const reviewMatch =
         selectedReview === "all" ||
@@ -97,18 +57,9 @@ export default function CoursesFilteredLayout({ searchQuery }: CoursesFilteredLa
         (selectedRating === "4+" && course.rating >= 4) ||
         (selectedRating === "4.5+" && course.rating >= 4.5);
 
-      return categoryMatch && reviewMatch && ratingMatch && searchMatch;
-    }).sort((firstItem, secondItem) => {
-      if (!normalizedQuery) {
-        return 0;
-      }
-
-      const firstScore = scoreMatch(`${firstItem.title} ${firstItem.category}`, normalizedQuery);
-      const secondScore = scoreMatch(`${secondItem.title} ${secondItem.category}`, normalizedQuery);
-
-      return secondScore - firstScore;
+      return categoryMatch && reviewMatch && ratingMatch;
     });
-  }, [activeItems, searchQuery, selectedCategory, selectedReview, selectedRating]);
+  }, [activeItems, selectedCategory, selectedReview, selectedRating]);
 
   const handleDesktopLockedScroll = (event: WheelEvent<HTMLDivElement>) => {
     if (typeof window === "undefined" || window.innerWidth < 1024) {

@@ -9,11 +9,9 @@ import {
   BookOpen,
   ChevronRight,
   CreditCard,
-  FolderTree,
   Heart,
   LayoutGrid,
   LogOut,
-  Plus,
   Save,
   Search,
   Settings,
@@ -21,14 +19,12 @@ import {
   Upload,
   Users,
   Video,
-  Trash2,
 } from "lucide-react";
 
 type ProfessionalUser = {
   id: string;
   name: string;
   email: string;
-  role: "student" | "professional";
   image?: string | null;
   specialization?: string | null;
   contactNumber?: string | null;
@@ -42,7 +38,7 @@ type ProfessionalDashboardProps = {
   user: ProfessionalUser;
 };
 
-type DashboardSection = "overview" | "add" | "categories" | "upgrade" | "settings";
+type DashboardSection = "overview" | "add" | "upgrade" | "settings";
 type AddContentTab = "books" | "videos";
 
 type SearchResultItem = {
@@ -70,7 +66,6 @@ type AddedBook = {
 type AddedVideo = {
   id: string;
   name: string;
-  mrp: string;
   sizeLabel: string;
   url: string;
   source: "file" | "youtube";
@@ -95,7 +90,6 @@ const upgradePlans: Array<{
 const sidebarItems: Array<{ label: string; icon: typeof LayoutGrid; section: DashboardSection }> = [
   { label: "Overview", icon: LayoutGrid, section: "overview" },
   { label: "Add", icon: Upload, section: "add" },
-  { label: "Categories", icon: FolderTree, section: "categories" },
   { label: "Upgrade Profile", icon: CreditCard, section: "upgrade" },
   { label: "Settings", icon: Settings, section: "settings" },
 ];
@@ -255,7 +249,6 @@ const detailVideos = [
 
 export default function ProfessionalDashboard({ user }: ProfessionalDashboardProps) {
   const router = useRouter();
-  const libraryCacheKey = `professional-library-${user.id}`;
   const [isMounted, setIsMounted] = useState(false);
   const [activeSection, setActiveSection] = useState<DashboardSection>("overview");
   const [addContentTab, setAddContentTab] = useState<AddContentTab>("books");
@@ -278,9 +271,6 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   const [profileReviewsText, setProfileReviewsText] = useState((user.reviews ?? []).join("\n"));
   const [addedBooks, setAddedBooks] = useState<AddedBook[]>([]);
   const [addedVideos, setAddedVideos] = useState<AddedVideo[]>([]);
-  const [addedCategories, setAddedCategories] = useState<string[]>([]);
-  const [categoryInput, setCategoryInput] = useState("");
-  const [categoryFormError, setCategoryFormError] = useState("");
   const [bookNameInput, setBookNameInput] = useState("");
   const [bookMrpInput, setBookMrpInput] = useState("");
   const [bookCategoryInput, setBookCategoryInput] = useState("");
@@ -288,8 +278,6 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   const [bookImageLinkInput, setBookImageLinkInput] = useState("");
   const [bookLinkInput, setBookLinkInput] = useState("");
   const [bookFormError, setBookFormError] = useState("");
-  const [videoNameInput, setVideoNameInput] = useState("");
-  const [videoMrpInput, setVideoMrpInput] = useState("");
   const [youtubeLinkInput, setYoutubeLinkInput] = useState("");
   const [youtubeLinkError, setYoutubeLinkError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -297,37 +285,6 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
-  useEffect(() => {
-    if (!isMounted || user.role !== "professional") {
-      return;
-    }
-
-    try {
-      const raw = window.localStorage.getItem(libraryCacheKey);
-      if (!raw) {
-        return;
-      }
-
-      const parsed = JSON.parse(raw) as {
-        books?: AddedBook[];
-        videos?: AddedVideo[];
-        categories?: string[];
-      };
-
-      if (Array.isArray(parsed.books)) {
-        setAddedBooks(parsed.books);
-      }
-      if (Array.isArray(parsed.videos)) {
-        setAddedVideos(parsed.videos);
-      }
-      if (Array.isArray(parsed.categories)) {
-        setAddedCategories(parsed.categories);
-      }
-    } catch {
-      return;
-    }
-  }, [isMounted, libraryCacheKey, user.role]);
 
   useEffect(() => {
     setProfileName(user.name);
@@ -629,121 +586,26 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       try {
         const response = await fetch("/api/profile/library", { cache: "no-store" });
         if (!response.ok) {
+          setAddedBooks([]);
+          setAddedVideos([]);
           return;
         }
 
         const payload = (await response.json().catch(() => ({}))) as {
           books?: AddedBook[];
           videos?: AddedVideo[];
-          categories?: string[];
         };
 
         setAddedBooks(Array.isArray(payload.books) ? payload.books : []);
         setAddedVideos(Array.isArray(payload.videos) ? payload.videos : []);
-        setAddedCategories(Array.isArray(payload.categories) ? payload.categories : []);
       } catch {
-        return;
+        setAddedBooks([]);
+        setAddedVideos([]);
       }
     };
 
     void loadLibrary();
   }, [isMounted, user.role]);
-
-  useEffect(() => {
-    if (!isMounted || user.role !== "professional") {
-      return;
-    }
-
-    const refreshLibrary = async () => {
-      try {
-        const response = await fetch("/api/profile/library", { cache: "no-store" });
-        if (!response.ok) {
-          return;
-        }
-
-        const payload = (await response.json().catch(() => ({}))) as {
-          books?: AddedBook[];
-          videos?: AddedVideo[];
-          categories?: string[];
-        };
-
-        if (Array.isArray(payload.books)) {
-          setAddedBooks(payload.books);
-        }
-        if (Array.isArray(payload.videos)) {
-          setAddedVideos(payload.videos);
-        }
-        if (Array.isArray(payload.categories)) {
-          setAddedCategories(payload.categories);
-        }
-      } catch {
-        return;
-      }
-    };
-
-    void refreshLibrary();
-  }, [addedBooks.length, addedVideos.length, isMounted, user.role]);
-
-  useEffect(() => {
-    if (!isMounted || user.role !== "professional") {
-      return;
-    }
-
-    try {
-      window.localStorage.setItem(
-        libraryCacheKey,
-        JSON.stringify({
-          books: addedBooks,
-          videos: addedVideos,
-          categories: addedCategories,
-        }),
-      );
-    } catch {
-      return;
-    }
-  }, [addedBooks, addedCategories, addedVideos, isMounted, libraryCacheKey, user.role]);
-
-  const handleCategoryAdd = async (event?: React.FormEvent<HTMLFormElement>) => {
-    event?.preventDefault();
-
-    const trimmedCategory = categoryInput.trim();
-    if (!trimmedCategory) {
-      setCategoryFormError("Please enter a category name.");
-      return;
-    }
-
-    setCategoryFormError("");
-
-    try {
-      const response = await fetch("/api/profile/library", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ kind: "category", category: trimmedCategory }),
-      });
-
-      const payload = (await response.json().catch(() => ({}))) as { categories?: string[]; message?: string };
-
-      if (!response.ok) {
-        setCategoryFormError(payload.message || "Unable to add category.");
-        return;
-      }
-
-      setAddedCategories(Array.isArray(payload.categories) ? payload.categories : []);
-      setCategoryInput("");
-    } catch {
-      setCategoryFormError("Unable to add category.");
-    }
-  };
-
-  const handleCategoryDelete = async (category: string) => {
-    setAddedCategories((current) => current.filter((value) => value !== category));
-
-    await fetch("/api/profile/library", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ kind: "category", id: category }),
-    }).catch(() => undefined);
-  };
 
   const handleBookUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? []);
@@ -763,50 +625,62 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     }
 
     const trimmedBookImageLink = bookImageLinkInput.trim();
+    let resolvedBookImageUrl = "";
 
-    if (!bookImageFile && !trimmedBookImageLink) {
-      setBookFormError("Please upload a book image file or provide an image link.");
-      event.target.value = "";
-      return;
-    }
-
-    if (trimmedBookImageLink) {
+    if (bookImageFile) {
+      resolvedBookImageUrl = URL.createObjectURL(bookImageFile);
+    } else if (trimmedBookImageLink) {
       if (!parseHttpUrl(trimmedBookImageLink)) {
         setBookFormError("Please provide a valid image link.");
         event.target.value = "";
         return;
       }
+      resolvedBookImageUrl = trimmedBookImageLink;
+    } else {
+      setBookFormError("Please upload a book image file or provide an image link.");
+      event.target.value = "";
+      return;
     }
 
-    if (!Number.isFinite(parsedMrp) || parsedMrp < 0) {
-      setBookFormError("Please enter a valid MRP amount (0 for free).");
+    if (!Number.isFinite(parsedMrp) || parsedMrp <= 0) {
+      setBookFormError("Please enter a valid MRP amount.");
       event.target.value = "";
       return;
     }
 
     setBookFormError("");
 
+    const localBooks = files.map((file, index) => ({
+      id: `book-${Date.now()}-${index}`,
+      name: trimmedBookName,
+      mrp: parsedMrp.toFixed(2),
+      category: trimmedBookCategory,
+      fileName: file.name,
+      sizeLabel: formatFileSize(file.size),
+      url: URL.createObjectURL(file),
+      imageUrl: resolvedBookImageUrl,
+      source: "file" as const,
+    }));
+
+    setAddedBooks((prev) => [...localBooks, ...prev]);
+
     try {
       const persisted = await Promise.all(
         files.map(async (file) => {
-          const formData = new FormData();
-          formData.append("kind", "book");
-          formData.append("name", trimmedBookName);
-          formData.append("category", trimmedBookCategory);
-          formData.append("mrp", parsedMrp.toFixed(2));
-          formData.append("file", file);
-
-          if (bookImageFile) {
-            formData.append("imageFile", bookImageFile);
-          }
-
-          if (trimmedBookImageLink) {
-            formData.append("imageUrl", trimmedBookImageLink);
-          }
-
           const response = await fetch("/api/profile/library", {
             method: "POST",
-            body: formData,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              kind: "book",
+              name: trimmedBookName,
+              category: trimmedBookCategory,
+              mrp: parsedMrp.toFixed(2),
+              imageUrl: trimmedBookImageLink || "/books.png",
+              url: "",
+              source: "file",
+              fileName: file.name,
+              sizeLabel: formatFileSize(file.size),
+            }),
           });
 
           const payload = (await response.json().catch(() => ({}))) as { book?: AddedBook };
@@ -816,14 +690,13 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
 
       const validPersisted = persisted.filter((book): book is AddedBook => Boolean(book));
       if (validPersisted.length > 0) {
-        setAddedBooks((current) => [...validPersisted, ...current]);
-      } else {
-        setBookFormError("Unable to save uploaded book(s). Please try again.");
+        setAddedBooks((current) => {
+          const withoutTemp = current.filter((book) => !localBooks.some((tempBook) => tempBook.id === book.id));
+          return [...validPersisted, ...withoutTemp];
+        });
       }
     } catch {
-      setBookFormError("Unable to save uploaded book(s). Please try again.");
-      event.target.value = "";
-      return;
+      // keep local preview entries even if persistence fails
     }
 
     setBookNameInput("");
@@ -848,8 +721,8 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       return;
     }
 
-    if (!Number.isFinite(parsedMrp) || parsedMrp < 0) {
-      setBookFormError("Please enter a valid MRP amount (0 for free).");
+    if (!Number.isFinite(parsedMrp) || parsedMrp <= 0) {
+      setBookFormError("Please enter a valid MRP amount.");
       return;
     }
 
@@ -928,29 +801,29 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       return;
     }
 
-    const trimmedVideoMrp = videoMrpInput.trim();
-    const parsedVideoMrp = Number(trimmedVideoMrp || "0");
+    const localVideos = files.map((file, index) => ({
+      id: `video-${Date.now()}-${index}`,
+      name: file.name,
+      sizeLabel: formatFileSize(file.size),
+      url: URL.createObjectURL(file),
+      source: "file" as const,
+    }));
 
-    if (!Number.isFinite(parsedVideoMrp) || parsedVideoMrp < 0) {
-      setYoutubeLinkError("Please enter a valid video MRP.");
-      event.target.value = "";
-      return;
-    }
-
-    setYoutubeLinkError("");
+    setAddedVideos((prev) => [...localVideos, ...prev]);
 
     try {
       const persisted = await Promise.all(
         files.map(async (file) => {
-          const formData = new FormData();
-          formData.append("kind", "video");
-          formData.append("name", videoNameInput.trim() || file.name);
-          formData.append("mrp", parsedVideoMrp.toFixed(2));
-          formData.append("file", file);
-
           const response = await fetch("/api/profile/library", {
             method: "POST",
-            body: formData,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              kind: "video",
+              name: file.name,
+              url: "",
+              source: "file",
+              sizeLabel: formatFileSize(file.size),
+            }),
           });
 
           const payload = (await response.json().catch(() => ({}))) as { video?: AddedVideo };
@@ -960,37 +833,20 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
 
       const validPersisted = persisted.filter((video): video is AddedVideo => Boolean(video));
       if (validPersisted.length > 0) {
-        setAddedVideos((current) => [...validPersisted, ...current]);
-      } else {
-        setYoutubeLinkError("Unable to save uploaded video(s). Please try again.");
+        setAddedVideos((current) => {
+          const withoutTemp = current.filter((video) => !localVideos.some((tempVideo) => tempVideo.id === video.id));
+          return [...validPersisted, ...withoutTemp];
+        });
       }
     } catch {
-      setYoutubeLinkError("Unable to save uploaded video(s). Please try again.");
-      event.target.value = "";
-      return;
+      // keep local preview entries even if persistence fails
     }
 
     event.target.value = "";
-    setVideoNameInput("");
-    setVideoMrpInput("");
   };
 
   const handleYouTubeAdd = async () => {
     const trimmedLink = youtubeLinkInput.trim();
-    const trimmedVideoName = videoNameInput.trim();
-    const trimmedVideoMrp = videoMrpInput.trim();
-
-    if (!trimmedVideoName) {
-      setYoutubeLinkError("Please enter a video name.");
-      return;
-    }
-
-    const parsedVideoMrp = Number(trimmedVideoMrp || "0");
-    if (!Number.isFinite(parsedVideoMrp) || parsedVideoMrp < 0) {
-      setYoutubeLinkError("Please enter a valid video MRP.");
-      return;
-    }
-
     if (!trimmedLink) {
       setYoutubeLinkError("Please enter a YouTube link.");
       return;
@@ -1008,8 +864,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           kind: "video",
-          name: trimmedVideoName,
-          mrp: parsedVideoMrp.toFixed(2),
+          name: "YouTube Video",
           sizeLabel: "YouTube Link",
           url: embedUrl,
           source: "youtube",
@@ -1026,39 +881,46 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       setYoutubeLinkError("");
       setAddedVideos((prev) => [payload.video as AddedVideo, ...prev]);
       setYoutubeLinkInput("");
-      setVideoNameInput("");
-      setVideoMrpInput("");
     } catch {
       setYoutubeLinkError("Unable to add YouTube video.");
     }
   };
 
   const handleDeleteBook = async (bookId: string) => {
-    const response = await fetch("/api/profile/library", {
+    setAddedBooks((currentBooks) => {
+      const bookToRemove = currentBooks.find((book) => book.id === bookId);
+      if (bookToRemove?.imageUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(bookToRemove.imageUrl);
+      }
+      if (bookToRemove?.url.startsWith("blob:")) {
+        URL.revokeObjectURL(bookToRemove.url);
+      }
+
+      return currentBooks.filter((book) => book.id !== bookId);
+    });
+
+    await fetch("/api/profile/library", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ kind: "book", id: bookId }),
     }).catch(() => undefined);
-
-    if (!response || !response.ok) {
-      return;
-    }
-
-    setAddedBooks((currentBooks) => currentBooks.filter((book) => book.id !== bookId));
   };
 
   const handleDeleteVideo = async (videoId: string) => {
-    const response = await fetch("/api/profile/library", {
+    setAddedVideos((currentVideos) => {
+      const videoToRemove = currentVideos.find((video) => video.id === videoId);
+      if (videoToRemove?.source === "file" && videoToRemove.url.startsWith("blob:")) {
+        URL.revokeObjectURL(videoToRemove.url);
+      }
+
+      return currentVideos.filter((video) => video.id !== videoId);
+    });
+
+    await fetch("/api/profile/library", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ kind: "video", id: videoId }),
     }).catch(() => undefined);
-
-    if (!response || !response.ok) {
-      return;
-    }
-
-    setAddedVideos((currentVideos) => currentVideos.filter((video) => video.id !== videoId));
   };
 
   const searchableItems = useMemo<SearchResultItem[]>(() => {
@@ -1108,16 +970,10 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       ...addedVideos.map((video) => ({
         id: video.id,
         title: video.name,
-        description: `${video.source === "youtube" ? "YouTube" : "Video File"} • MRP ₹${video.mrp} • ${video.sizeLabel}`,
+        description: `${video.source === "youtube" ? "YouTube" : "Video File"} • ${video.sizeLabel}`,
         section: "add" as const,
         addTab: "videos" as const,
         openUrl: video.url,
-      })),
-      ...addedCategories.map((category) => ({
-        id: `category-${category}`,
-        title: category,
-        description: "Professional category",
-        section: "categories" as const,
       })),
       {
         id: "profile-overview",
@@ -1153,7 +1009,6 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     profileName,
     profileReviewsText,
     profileSpecialization,
-    addedCategories,
   ]);
 
   const searchResults = useMemo(() => {
@@ -1177,10 +1032,6 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
 
     if (result.section === "add" && result.addTab) {
       setAddContentTab(result.addTab);
-    }
-
-    if (result.section === "categories") {
-      setActiveSection("categories");
     }
 
     if (result.section === "overview" && result.featuredTargetPage) {
@@ -1482,31 +1333,12 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                     <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
                       <div>
                         <h3 className="text-lg font-semibold text-slate-900">Add Videos</h3>
-                        <p className="text-sm text-slate-500">Upload tutorial or course videos and set free/paid MRP.</p>
+                        <p className="text-sm text-slate-500">Upload tutorial or course videos.</p>
                       </div>
                       <Video className="h-5 w-5 text-[#1ec28e]" />
                     </div>
 
-                    <div className="mt-5 grid gap-3 md:grid-cols-2">
-                      <input
-                        type="text"
-                        value={videoNameInput}
-                        onChange={(event) => setVideoNameInput(event.target.value)}
-                        placeholder="Video name"
-                        className="h-11 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
-                      />
-                      <input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={videoMrpInput}
-                        onChange={(event) => setVideoMrpInput(event.target.value)}
-                        placeholder="MRP (0 for free)"
-                        className="h-11 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
-                      />
-                    </div>
-
-                    <label className="mt-3 flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-2xl border border-dashed border-slate-300 px-4 text-sm text-slate-600 transition hover:border-[#1ec28e] hover:bg-[#f7faf8]">
+                    <label className="mt-5 flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-2xl border border-dashed border-slate-300 px-4 text-sm text-slate-600 transition hover:border-[#1ec28e] hover:bg-[#f7faf8]">
                       <span>Choose videos to upload</span>
                       <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-medium text-[#1ec28e]">Browse</span>
                       <input
@@ -1566,9 +1398,6 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                             <div className="space-y-1 p-4">
                               <p className="truncate text-sm font-semibold text-slate-900">{video.name}</p>
                               <p className="text-xs text-slate-500">{video.sizeLabel}</p>
-                              <p className="text-xs font-medium text-[#1ec28e]">
-                                {Number(video.mrp) > 0 ? `MRP ₹${video.mrp}` : "Free"}
-                              </p>
                               <button
                                 type="button"
                                 onClick={() => handleDeleteVideo(video.id)}
@@ -1716,82 +1545,6 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                   <p className="mt-2">Upgraded profiles appear higher than standard professionals in search and discovery lists.</p>
                 </div>
               </aside>
-            </div>
-          ) : activeSection === "categories" ? (
-            <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-              <div className="rounded-[24px] bg-white p-6 shadow-sm">
-                <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900">Categories</h3>
-                    <p className="text-sm text-slate-500">Add multiple categories that describe your expertise.</p>
-                  </div>
-                  <FolderTree className="h-5 w-5 text-[#1ec28e]" />
-                </div>
-
-                <form onSubmit={handleCategoryAdd} className="mt-5 flex gap-3">
-                  <input
-                    type="text"
-                    value={categoryInput}
-                    onChange={(event) => setCategoryInput(event.target.value)}
-                    placeholder="Add a category"
-                    className="h-11 flex-1 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
-                  />
-                  <button
-                    type="submit"
-                    className="inline-flex h-11 items-center gap-2 rounded-xl bg-[#1ec28e] px-4 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Add
-                  </button>
-                </form>
-
-                {categoryFormError && <p className="mt-3 text-xs font-medium text-red-600">{categoryFormError}</p>}
-
-                <div className="mt-6">
-                  <div className="mb-3 flex items-center justify-between">
-                    <h4 className="text-sm font-semibold text-slate-900">Saved categories</h4>
-                    <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-semibold text-[#1ec28e]">
-                      {addedCategories.length}
-                    </span>
-                  </div>
-
-                  {addedCategories.length === 0 ? (
-                    <p className="rounded-2xl bg-[#f7faf8] px-4 py-3 text-sm text-slate-500">No categories added yet.</p>
-                  ) : (
-                    <div className="flex flex-wrap gap-2">
-                      {addedCategories.map((category) => (
-                        <span key={category} className="inline-flex items-center gap-2 rounded-full bg-[#f7faf8] px-3 py-2 text-sm text-slate-600">
-                          {category}
-                          <button
-                            type="button"
-                            onClick={() => void handleCategoryDelete(category)}
-                            className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white text-slate-500 transition hover:text-red-600"
-                            aria-label={`Remove ${category}`}
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="rounded-[24px] bg-white p-6 shadow-sm">
-                <h4 className="text-base font-semibold text-slate-900">How it appears</h4>
-                <p className="mt-2 text-sm text-slate-500">These categories will show on your public profile and in the admin panel.</p>
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {addedCategories.length > 0 ? (
-                    addedCategories.map((category) => (
-                      <span key={category} className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-medium text-[#1ec28e]">
-                        {category}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-500">No categories yet</span>
-                  )}
-                </div>
-              </div>
             </div>
           ) : activeSection === "settings" ? (
             <div className="mt-6 grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">

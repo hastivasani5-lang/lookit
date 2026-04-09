@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 import Navbar from "@/components/Navbar";
 import PageBanner from "@/components/PageBanner";
 import StatsSection from "@/components/StatsSection";
@@ -11,15 +9,13 @@ import CoursesPromoBanner from "@/components/CoursesPromoBanner";
 import Footer from "@/components/Footer";
 
 export default function CoursesPage() {
-  const [searchQuery, setSearchQuery] = useState("");
-
   return (
     <>
       <Navbar />
       <main className="min-h-screen bg-[#eef5f3] pt-10">
-        <PageBanner searchQuery={searchQuery} onSearchQueryChange={setSearchQuery} />
+        <PageBanner />
         <StatsSection />
-        <CoursesFilteredLayout searchQuery={searchQuery} />
+        <CoursesFilteredLayout />
         <CoursesPromoBanner />
         <CoursesInstructorsSection />
         <Footer />

@@ -46,8 +46,8 @@ export default function AdminLoginView() {
         <div className="flex flex-col justify-center px-6 py-10 sm:px-10 md:px-14 lg:py-14">
           <div className="mb-10 flex items-center gap-3">
             <Image
-              src="/lookit-logo.svg"
-              alt="Lookit logo"
+              src="/logo.png"
+              alt="EducateX logo"
               width={160}
               height={56}
               priority

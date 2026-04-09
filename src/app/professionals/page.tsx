@@ -3,14 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { MapPin, Search, Sparkles, Star } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { buildSeedProfessional, type PublicProfessional } from "@/lib/professional-display";
-import { professionals as seedProfessionals } from "@/app/professionals/data";
+import { professionals } from "@/app/professionals/data";
 
 const categoryOptions = [
   { label: "All Categories", value: "all" },
@@ -44,11 +41,7 @@ const languageOptions = [
 ] as const;
 
 export default function ProfessionalsPage() {
-  const searchParams = useSearchParams();
-  const { data: session, status } = useSession();
   const [mounted, setMounted] = useState(false);
-  const [liveProfessionals, setLiveProfessionals] = useState<PublicProfessional[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedRating, setSelectedRating] = useState("all");
   const [selectedReviews, setSelectedReviews] = useState("all");
@@ -60,68 +53,6 @@ export default function ProfessionalsPage() {
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  useEffect(() => {
-    const query = searchParams.get("search")?.trim() || "";
-    if (query) {
-      setSearchText(query);
-      setVisibleCount(6);
-    }
-  }, [searchParams]);
-
-  const canUseSearch = status === "authenticated" && session?.user?.role === "student";
-  const liveProfessionalIds = useMemo(() => new Set(liveProfessionals.map((professional) => professional.id)), [liveProfessionals]);
-
-  useEffect(() => {
-    let isActive = true;
-
-    const loadProfessionals = async () => {
-      setLoading(true);
-
-      try {
-        const response = await fetch("/api/professionals", { cache: "no-store" });
-        const payload = (await response.json().catch(() => ({}))) as {
-          professionals?: PublicProfessional[];
-        };
-
-        if (!isActive) {
-          return;
-        }
-
-        if (!response.ok) {
-          setLiveProfessionals([]);
-          return;
-        }
-
-        setLiveProfessionals(Array.isArray(payload.professionals) ? payload.professionals : []);
-      } catch {
-        if (isActive) {
-          setLiveProfessionals([]);
-        }
-      } finally {
-        if (isActive) {
-          setLoading(false);
-        }
-      }
-    };
-
-    void loadProfessionals();
-
-    return () => {
-      isActive = false;
-    };
-  }, []);
-
-  const professionals = useMemo(
-    () => {
-      const seededProfessionals = seedProfessionals
-        .map(buildSeedProfessional)
-        .filter((professional) => !liveProfessionalIds.has(professional.id));
-
-      return [...liveProfessionals, ...seededProfessionals];
-    },
-    [liveProfessionalIds, liveProfessionals],
-  );
 
   const filteredProfessionals = useMemo(() => {
     const query = searchText.trim().toLowerCase();
@@ -149,19 +80,12 @@ export default function ProfessionalsPage() {
     });
 
     return result.sort((a, b) => {
-      const aIsLive = liveProfessionalIds.has(a.id);
-      const bIsLive = liveProfessionalIds.has(b.id);
-
-      if (aIsLive !== bIsLive) {
-        return aIsLive ? -1 : 1;
-      }
-
       if (sortBy === "rating") {
         return b.rating - a.rating;
       }
       return b.reviews - a.reviews;
     });
-  }, [liveProfessionalIds, searchText, selectedCategory, selectedLanguage, selectedRating, selectedReviews, sortBy]);
+  }, [searchText, selectedCategory, selectedLanguage, selectedRating, selectedReviews, sortBy]);
 
   const visibleProfessionals = filteredProfessionals.slice(0, visibleCount);
 
@@ -221,10 +145,9 @@ export default function ProfessionalsPage() {
               <input
                 type="text"
                 value={searchText}
-                disabled={!canUseSearch}
                 onChange={(event) => setSearchText(event.target.value)}
                 placeholder="Search by name, specialization, or city"
-                className="w-full rounded-xl border border-gray-200 bg-[#f8fbfa] py-3 pl-11 pr-4 text-sm outline-none transition focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full rounded-xl border border-gray-200 bg-[#f8fbfa] py-3 pl-11 pr-4 text-sm outline-none transition focus:border-primary"
               />
             </label>
           </div>
@@ -235,7 +158,6 @@ export default function ProfessionalsPage() {
                 <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
                 <button
                   type="button"
-                  disabled={!canUseSearch}
                   onClick={() => {
                     setSelectedCategory("all");
                     setSelectedRating("all");
@@ -243,7 +165,7 @@ export default function ProfessionalsPage() {
                     setSelectedLanguage("all");
                     setSearchText("");
                   }}
-                  className="text-sm font-medium text-primary hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+                  className="text-sm font-medium text-primary hover:underline"
                 >
                   Clear
                 </button>
@@ -254,9 +176,8 @@ export default function ProfessionalsPage() {
                   <span className="mb-1.5 block text-sm font-medium text-gray-700">Category</span>
                   <select
                     value={selectedCategory}
-                    disabled={!canUseSearch}
                     onChange={(event) => setSelectedCategory(event.target.value)}
-                    className="w-full rounded-xl border border-gray-200 bg-[#fafdfc] px-3 py-2.5 text-sm outline-none transition focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full rounded-xl border border-gray-200 bg-[#fafdfc] px-3 py-2.5 text-sm outline-none transition focus:border-primary"
                   >
                     {categoryOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -270,9 +191,8 @@ export default function ProfessionalsPage() {
                   <span className="mb-1.5 block text-sm font-medium text-gray-700">Rating</span>
                   <select
                     value={selectedRating}
-                    disabled={!canUseSearch}
                     onChange={(event) => setSelectedRating(event.target.value)}
-                    className="w-full rounded-xl border border-gray-200 bg-[#fafdfc] px-3 py-2.5 text-sm outline-none transition focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full rounded-xl border border-gray-200 bg-[#fafdfc] px-3 py-2.5 text-sm outline-none transition focus:border-primary"
                   >
                     {ratingOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -286,9 +206,8 @@ export default function ProfessionalsPage() {
                   <span className="mb-1.5 block text-sm font-medium text-gray-700">Reviews</span>
                   <select
                     value={selectedReviews}
-                    disabled={!canUseSearch}
                     onChange={(event) => setSelectedReviews(event.target.value)}
-                    className="w-full rounded-xl border border-gray-200 bg-[#fafdfc] px-3 py-2.5 text-sm outline-none transition focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full rounded-xl border border-gray-200 bg-[#fafdfc] px-3 py-2.5 text-sm outline-none transition focus:border-primary"
                   >
                     {reviewOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -302,9 +221,8 @@ export default function ProfessionalsPage() {
                   <span className="mb-1.5 block text-sm font-medium text-gray-700">Language</span>
                   <select
                     value={selectedLanguage}
-                    disabled={!canUseSearch}
                     onChange={(event) => setSelectedLanguage(event.target.value)}
-                    className="w-full rounded-xl border border-gray-200 bg-[#fafdfc] px-3 py-2.5 text-sm outline-none transition focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full rounded-xl border border-gray-200 bg-[#fafdfc] px-3 py-2.5 text-sm outline-none transition focus:border-primary"
                   >
                     {languageOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -389,7 +307,7 @@ export default function ProfessionalsPage() {
 
               {visibleProfessionals.length === 0 ? (
                 <div className="mt-6 rounded-2xl border border-dashed border-gray-300 bg-white p-8 text-center text-sm text-gray-600">
-                  {loading ? "Loading professionals..." : "No professionals match these filters."}
+                  No professionals match these filters.
                 </div>
               ) : null}
 

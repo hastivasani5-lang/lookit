@@ -7,8 +7,8 @@ const WhyChoose = () => {
     <section className="relative overflow-hidden bg-[#eef5f3] px-4 py-12 sm:py-16 md:px-8 lg:px-16 lg:py-20">
       <div className="absolute right-4 top-6 hidden animate-float-slow sm:right-8 sm:top-8 md:block lg:right-10 lg:top-10">
         <Image
-          src="/wave.png"
-          alt="decorative wave"
+          src="/shape.png"
+          alt="shape"
           width={80}
           height={100}
           className="h-auto w-14 opacity-90 sm:w-16 lg:w-20"

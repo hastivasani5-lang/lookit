@@ -1,8 +1,8 @@
 import { promises as fs } from "fs";
-import path from "path";
+import { getDataDir, getDataFile } from "@/lib/storage-path";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const LIBRARY_FILE = path.join(DATA_DIR, "content-library.json");
+const DATA_DIR = getDataDir();
+const LIBRARY_FILE = getDataFile("content-library.json");
 
 export type StoredBook = {
   id: string;

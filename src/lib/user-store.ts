@@ -1,6 +1,5 @@
 import { randomUUID } from "crypto";
 import { promises as fs } from "fs";
-import path from "path";
 import { hash } from "bcryptjs";
 import type { AppUser, ProfessionalApprovalStatus, UserRole } from "@/types/auth";
 import {
@@ -9,9 +8,10 @@ import {
 } from "./approval-notifications-store";
 import { appendProfessionalNotification } from "@/lib/notifications-store";
 import { ensureDbSchema, getDbPool, isPostgresConfigured } from "@/lib/db";
+import { getDataDir, getDataFile } from "@/lib/storage-path";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const USERS_FILE = path.join(DATA_DIR, "users.json");
+const DATA_DIR = getDataDir();
+const USERS_FILE = getDataFile("users.json");
 
 type UserRow = {
   id: string;

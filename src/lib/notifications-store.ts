@@ -1,11 +1,11 @@
 import { randomUUID } from "crypto";
 import { promises as fs } from "fs";
-import path from "path";
 
 import type { ProfessionalNotification } from "@/types/notifications";
+import { getDataDir, getDataFile } from "@/lib/storage-path";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const NOTIFICATIONS_FILE = path.join(DATA_DIR, "notifications.json");
+const DATA_DIR = getDataDir();
+const NOTIFICATIONS_FILE = getDataFile("notifications.json");
 
 async function ensureNotificationsFile() {
   await fs.mkdir(DATA_DIR, { recursive: true });

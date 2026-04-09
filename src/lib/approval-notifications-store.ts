@@ -1,11 +1,11 @@
 import { randomUUID } from "crypto";
 import { promises as fs } from "fs";
-import path from "path";
 
 import type { ProfessionalApprovalStatus } from "@/types/auth";
+import { getDataDir, getDataFile } from "@/lib/storage-path";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const APPROVAL_NOTIFICATIONS_FILE = path.join(DATA_DIR, "approval-notifications.json");
+const DATA_DIR = getDataDir();
+const APPROVAL_NOTIFICATIONS_FILE = getDataFile("approval-notifications.json");
 
 type ApprovalAudience = "admin" | "professional";
 type ApprovalEvent = "registration" | "login_attempt" | "decision";

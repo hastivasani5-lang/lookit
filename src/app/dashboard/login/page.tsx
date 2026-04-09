@@ -24,8 +24,8 @@ export default function DashboardLoginPage() {
     <main className="min-h-screen bg-[#f4f7f6] px-4 pt-28 pb-12">
       <div className="mx-auto w-full max-w-md rounded-3xl border border-gray-200 bg-white p-7 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
         <Image
-          src="/logo.png"
-          alt="EducateX logo"
+              src="/lookit-logo.svg"
+              alt="Lookit logo"
           width={160}
           height={56}
           priority

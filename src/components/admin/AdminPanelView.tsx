@@ -904,7 +904,7 @@ export default function AdminPanelView() {
         <aside className="hidden border-r border-slate-100 bg-white px-4 py-5 lg:flex lg:flex-col">
           <div className="pb-6">
             <Image
-              src="/logo.png"
+              src="/lookit-logo.svg"
               alt="Lookit logo"
               width={160}
               height={56}

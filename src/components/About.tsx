@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Marquee from "./Marquee";
 
 const About = () => {
   return (
@@ -24,27 +25,24 @@ const About = () => {
 
         {/* LEFT SIDE */}
         <div
-          className="relative flex justify-center items-center"
+          className="relative flex flex-col items-center justify-center"
           data-aos="fade-right"
         >
-          <div className="relative w-65 sm:w-80 md:w-90 lg:w-100">
+          <div className="relative w-72 sm:w-96 md:w-md lg:w-136">
 
             {/* IMAGE */}
             <Image
               src="/about1.png"
               alt="about"
-              width={500}
-              height={500}
-              className="w-full h-auto object-contain relative z-10"
+              width={700}
+              height={700}
+              className="w-full h-auto object-contain relative z-10 mt-8"
             />
 
             {/* ROTATING CIRCLE */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-[110%] h-[110%] border-2 border-dashed border-[#1ec28e]/40 rounded-full animate-spin-slow"></div>
+              <div className="w-[110%] h-[110%] border-2 border-dashed border-primary/40 rounded-full animate-spin-slow"></div>
             </div>
-
-         
-
           </div>
         </div>
 
@@ -53,7 +51,7 @@ const About = () => {
 
           {/* SMALL TITLE */}
           <p className="text-[11px] tracking-widest text-gray-500 flex items-center gap-2 mb-3">
-            <span className="w-1.5 h-1.5 bg-[#1ec28e] rounded-full"></span>
+            <span className="w-1.5 h-1.5 bg-primary rounded-full"></span>
             ABOUT US
           </p>
 
@@ -75,7 +73,7 @@ const About = () => {
           <div className="flex flex-wrap gap-x-8 gap-y-3 mb-5">
             
             <div className="flex items-center gap-2">
-              <span className="w-4 h-4 flex items-center justify-center rounded-full border border-[#1ec28e] text-[#1ec28e] text-[10px]">
+              <span className="w-4 h-4 flex items-center justify-center rounded-full border border-primary text-primary text-[10px]">
                 ✔
               </span>
               <p className="text-gray-800 text-sm font-medium">
@@ -84,7 +82,7 @@ const About = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="w-4 h-4 flex items-center justify-center rounded-full border border-[#1ec28e] text-[#1ec28e] text-[10px]">
+              <span className="w-4 h-4 flex items-center justify-center rounded-full border border-primary text-primary text-[10px]">
                 ✔
               </span>
               <p className="text-gray-800 text-sm font-medium">
@@ -101,7 +99,7 @@ const About = () => {
           <div className="flex flex-col sm:flex-row justify-between gap-6 mb-5">
 
             <div className="flex items-start gap-3">
-              <h3 className="text-3xl font-bold text-[#1ec28e]">30+</h3>
+              <h3 className="text-3xl font-bold text-primary">30+</h3>
               <p className="text-gray-500 text-xs leading-5">
                 Expert and Professional <br />
                 all Instructor
@@ -109,7 +107,7 @@ const About = () => {
             </div>
 
             <div className="flex items-start gap-3">
-              <h3 className="text-3xl font-bold text-[#1ec28e]">6k+</h3>
+              <h3 className="text-3xl font-bold text-primary">6k+</h3>
               <p className="text-gray-500 text-xs leading-5">
                 Enrolled Students all <br />
                 Over the World
@@ -122,7 +120,7 @@ const About = () => {
           <div className="border-t border-gray-200 mb-5"></div>
 
           {/* BUTTON */}
-          <button className="bg-[#1ec28e] hover:bg-[#18ab7d] text-white px-6 py-2.5 rounded-full text-xs font-medium transition">
+          <button className="bg-primary hover:bg-[#18ab7d] text-white px-6 py-2.5 rounded-full text-xs font-medium transition">
             MORE ABOUT →
           </button>
 
@@ -136,8 +134,12 @@ const About = () => {
         alt="books"
         width={130}
         height={130}
-        className="absolute bottom-10 right-10 hidden h-auto w-auto md:block animate-float"
+        className="absolute bottom-36 right-10 hidden h-auto w-auto md:block animate-float"
       />
+
+      <div className="absolute inset-x-0 bottom-2 md:bottom-3">
+        <Marquee />
+      </div>
 
     </section>
   );

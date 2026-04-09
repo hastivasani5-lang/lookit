@@ -4,6 +4,8 @@ import GoogleProvider from "next-auth/providers/google";
 import { compare } from "bcryptjs";
 import { getUserByEmail, getUserById, recordProfessionalLoginAttempt } from "@/lib/user-store";
 
+const authSecret = process.env.NEXTAUTH_SECRET || "lookit-fallback-secret-change-in-production";
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -122,5 +124,5 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: authSecret,
 };

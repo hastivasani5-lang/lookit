@@ -154,7 +154,7 @@ export default function ProfessionalsPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-[#eef5f3] pt-10"><br />
+      <main className="min-h-screen bg-[#eef5f3]">
         <InstructorBanner />
 
         <div className="mx-auto mt-5 w-full max-w-400 px-4 md:px-8 lg:px-6 xl:px-4">

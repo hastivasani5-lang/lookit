@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Menu, X, Search, ShoppingCart, UserCircle2 } from "lucide-react";
+import { ArrowUp, LogOut, Menu, X, Search, ShoppingCart, UserCircle2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -26,6 +26,7 @@ const Navbar = () => {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [professionalResults, setProfessionalResults] = useState<SearchProfessional[]>([]);
   const [professionalResultsLoaded, setProfessionalResultsLoaded] = useState(false);
@@ -63,6 +64,16 @@ const Navbar = () => {
 
     document.addEventListener("keydown", onEscape);
     return () => document.removeEventListener("keydown", onEscape);
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => {
+      setShowScrollTop(window.scrollY > 180);
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
@@ -160,7 +171,7 @@ const Navbar = () => {
 
   if (!hasMounted) {
     return (
-      <header className="fixed top-0 z-50 w-full bg-white shadow-sm">
+      <header className="z-50 w-full bg-white shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-3 py-2 sm:px-4 sm:py-3 md:px-8">
           <div className="h-8 w-29.5 rounded bg-slate-100 sm:h-9 sm:w-33 md:h-10 md:w-37" />
           <div className="h-8 w-8 rounded-full bg-slate-100 sm:h-10 sm:w-10" />
@@ -170,7 +181,7 @@ const Navbar = () => {
   }
 
   return (
-    <header className="fixed top-0 z-50 w-full bg-white shadow-sm">
+    <header className="z-50 w-full bg-white shadow-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-3 py-2 sm:px-4 sm:py-3 md:px-8">
         <div className="flex items-center gap-2">
           <span className="text-lg font-bold tracking-[0.12em] text-slate-900 sm:text-xl">LOOKKIT</span>
@@ -331,6 +342,17 @@ const Navbar = () => {
             ) : null}
           </nav>
         </div>
+      ) : null}
+
+      {showScrollTop ? (
+        <button
+          type="button"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="fixed bottom-6 right-6 z-50 flex h-12 w-12 animate-bounce items-center justify-center rounded-4xl border-4 border-Solid border-primary bg-white text-primary shadow-lg transition hover:scale-105 hover:bg-[#f2fbf8]"
+          aria-label="Back to top"
+        >
+          <ArrowUp className="h-5 w-5" />
+        </button>
       ) : null}
     </header>
   );

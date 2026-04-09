@@ -15,7 +15,7 @@ function DirectoryPageContent() {
   const searchQuery = searchParams.get("search")?.trim() ?? "";
 
   return (
-    <main className="min-h-screen bg-[#eef5f3] pt-10">
+    <main className="min-h-screen bg-[#eef5f3] ">
       <PageBanner />
       <StatsSection />
       <CoursesFilteredLayout searchQuery={searchQuery} />
@@ -30,7 +30,7 @@ export default function CoursesPage() {
   return (
     <>
       <Navbar />
-      <Suspense fallback={<main className="min-h-screen bg-[#eef5f3] pt-10" />}>
+      <Suspense fallback={<main className="min-h-screen bg-[#eef5f3]" />}>
         <DirectoryPageContent />
       </Suspense>
     </>

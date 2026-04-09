@@ -52,7 +52,7 @@ export default function ShopPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-[#eef5f3] pt-10">
+      <main className="min-h-screen bg-[#eef5f3] ">
         <section className="mx-auto w-full max-w-7xl px-4 py-10 md:px-8 lg:px-10">
           <div className="relative overflow-hidden rounded-4xl border border-[#d5e9e2] bg-white p-6 shadow-[0_22px_45px_rgba(15,23,42,0.07)] md:p-8">
             <div className="absolute -right-14 -top-14 h-40 w-40 rounded-full bg-primary/10 blur-2xl" />

@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 export default function InstructorBanner() {
   return (
-    <section className="relative overflow-hidden bg-[#e6efed] pt-3 pb-0 md:pt-4 md:pb-0">
+    <section className="relative overflow-hidden bg-[#e6efed]  pb-0 md:pt-4 md:pb-0">
       {/* BACKGROUND GRADIENT */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute left-[-20%] top-0 h-full w-[120%] bg-[radial-gradient(circle_at_left,rgba(30,194,142,0.15),transparent_60%)]" />

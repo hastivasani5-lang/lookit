@@ -50,6 +50,10 @@ export default function LoginPage() {
     if (authError === "approval-rejected") {
       setError("Your professional account was rejected by the admin.");
     }
+
+    if (authError === "Configuration" || authError === "OAuthSignin" || authError === "OAuthCallback" || authError === "OAuthCreateAccount" || authError === "Callback") {
+      setError("Login is temporarily unavailable because authentication is not configured correctly on the server.");
+    }
   }, []);
 
   const handleCredentialsLogin = async (event: React.FormEvent<HTMLFormElement>) => {

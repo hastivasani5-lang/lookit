@@ -71,6 +71,15 @@ export function ensureDbSchema() {
       `)
       .then(() =>
         db.query(`
+          CREATE TABLE IF NOT EXISTS app_data (
+            key TEXT PRIMARY KEY,
+            data JSONB NOT NULL,
+            updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+          );
+        `),
+      )
+      .then(() =>
+        db.query(`
           ALTER TABLE users
           ADD COLUMN IF NOT EXISTS approval_status TEXT NOT NULL DEFAULT 'approved';
         `),

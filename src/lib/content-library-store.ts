@@ -1,8 +1,10 @@
 import { promises as fs } from "fs";
 import { getDataDir, getDataFile } from "@/lib/storage-path";
+import { ensureDbSchema, getDbPool, isPostgresConfigured } from "@/lib/db";
 
 const DATA_DIR = getDataDir();
 const LIBRARY_FILE = getDataFile("content-library.json");
+const LIBRARY_DB_KEY = "content-library";
 
 export type StoredBook = {
   id: string;
@@ -72,6 +74,25 @@ async function ensureLibraryFile() {
 }
 
 async function readStore(): Promise<LibraryStore> {
+  if (isPostgresConfigured()) {
+    await ensureDbSchema();
+    const db = getDbPool();
+    const result = await db.query<{ data: unknown }>(
+      `SELECT data FROM app_data WHERE key = $1 LIMIT 1`,
+      [LIBRARY_DB_KEY],
+    );
+
+    if (result.rows.length === 0) {
+      return defaultStore;
+    }
+
+    const parsed = result.rows[0].data as Partial<LibraryStore>;
+    return {
+      professionals: parsed?.professionals ?? {},
+      students: parsed?.students ?? {},
+    };
+  }
+
   await ensureLibraryFile();
   const raw = await fs.readFile(LIBRARY_FILE, "utf-8");
 
@@ -87,6 +108,21 @@ async function readStore(): Promise<LibraryStore> {
 }
 
 async function writeStore(store: LibraryStore) {
+  if (isPostgresConfigured()) {
+    await ensureDbSchema();
+    const db = getDbPool();
+    await db.query(
+      `
+        INSERT INTO app_data (key, data, updated_at)
+        VALUES ($1, $2::jsonb, NOW())
+        ON CONFLICT (key)
+        DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()
+      `,
+      [LIBRARY_DB_KEY, JSON.stringify(store)],
+    );
+    return;
+  }
+
   await fs.writeFile(LIBRARY_FILE, JSON.stringify(store, null, 2), "utf-8");
 }
 

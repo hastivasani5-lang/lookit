@@ -73,10 +73,22 @@
 
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Search, MapPin } from "lucide-react";
+import { Search } from "lucide-react";
 
 export default function PageBanner() {
+  const router = useRouter();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const query = searchTerm.trim();
+
+    router.push(query ? `/professionals?search=${encodeURIComponent(query)}` : "/professionals");
+  };
+
   return (
     <section className="relative bg-[#e6efed] py-20 px-4 md:px-10 lg:px-16 overflow-hidden">
 
@@ -102,42 +114,28 @@ export default function PageBanner() {
         </p>
 
         {/* SEARCH BAR */}
-        <div className="mx-auto mt-8 flex w-full max-w-5xl flex-col gap-3 rounded-3xl border border-white/60 bg-white p-3 shadow-lg lg:flex-row lg:items-center">
-
-          {/* SEARCH INPUT */}
-          <div className="flex items-center gap-2 flex-1 bg-[#f4f6f5] px-4 py-3 rounded-2xl">
-            <Search className="w-4 h-4 text-gray-400" />
+        <form
+          onSubmit={handleSearch}
+          className="mx-auto mt-8 flex w-full max-w-4xl items-center gap-3 rounded-2xl border border-white/70 bg-white p-2.5 shadow-[0_12px_30px_rgba(15,23,42,0.08)]"
+        >
+          <label className="flex flex-1 items-center gap-2 rounded-xl bg-[#f4f6f5] px-4 py-3">
+            <Search className="h-4 w-4 text-gray-400" />
             <input
               type="text"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
               placeholder="Search experts..."
               className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
             />
-          </div>
+          </label>
 
-          {/* CATEGORY */}
-          <select className="flex-1 bg-[#f4f6f5] px-4 py-3 rounded-2xl text-sm outline-none">
-            <option>All Categories</option>
-            <option>ADHD</option>
-            <option>Dyslexia</option>
-            <option>Speech Therapy</option>
-          </select>
-
-          {/* LOCATION */}
-          <div className="flex items-center gap-2 flex-1 bg-[#f4f6f5] px-4 py-3 rounded-2xl">
-            <MapPin className="w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Location (ZIP)"
-              className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
-            />
-          </div>
-
-          {/* BUTTON */}
-          <button className="bg-primary hover:bg-[#18ab7d] text-white px-8 py-3 rounded-2xl text-sm font-semibold transition shadow-md">
+          <button
+            type="submit"
+            className="rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+          >
             Search
           </button>
-
-        </div>
+        </form>
 
       </div>
 

@@ -9,9 +9,10 @@ import type { PublicProfessional } from "@/lib/professional-display";
 
 type Props = {
   professionals: PublicProfessional[];
+  embedded?: boolean;
 };
 
-export default function TopRatedProfessionalsSection({ professionals }: Props) {
+export default function TopRatedProfessionalsSection({ professionals, embedded = false }: Props) {
   const trackRef = useRef<HTMLDivElement | null>(null);
 
   const topRatedProfessionals = useMemo(
@@ -61,8 +62,8 @@ export default function TopRatedProfessionalsSection({ professionals }: Props) {
   }
 
   return (
-    <section className="px-4 pb-16 md:px-8 lg:px-10">
-      <div className="mx-auto max-w-7xl rounded-4xl border border-[#dbe8e4] bg-white px-5 py-6 shadow-[0_16px_36px_rgba(15,23,42,0.08)] md:px-6 md:py-8">
+    <section className={embedded ? "mb-6" : "px-4 pb-16 md:px-8 lg:px-10"}>
+      <div className={`${embedded ? "w-full" : "mx-auto max-w-7xl"} rounded-4xl border border-[#dbe8e4] bg-white px-5 py-6 shadow-[0_16px_36px_rgba(15,23,42,0.08)] md:px-6 md:py-8`}>
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">Top Rated</p>
@@ -92,12 +93,12 @@ export default function TopRatedProfessionalsSection({ professionals }: Props) {
           </div>
         </div>
 
-        <div ref={trackRef} className="hide-scrollbar flex gap-5 overflow-x-auto scroll-smooth pb-2">
+        <div ref={trackRef} className="hide-scrollbar flex gap-5 overflow-x-auto overflow-y-hidden scroll-smooth pb-2">
           {topRatedProfessionals.map((item) => (
             <article
               key={item.id}
               data-top-rated-card="true"
-              className="flex min-w-65 flex-col overflow-hidden rounded-3xl border border-[#dbe8e4] bg-[#fbfdfc] shadow-sm transition hover:-translate-y-1 hover:shadow-[0_18px_30px_rgba(15,23,42,0.12)] sm:min-w-75"
+              className="flex min-w-62 flex-col overflow-hidden rounded-3xl border border-[#dbe8e4] bg-[#fbfdfc] shadow-sm transition hover:-translate-y-1 hover:shadow-[0_18px_30px_rgba(15,23,42,0.12)] sm:min-w-72"
             >
               <div className="relative h-52 overflow-hidden">
                 <Image

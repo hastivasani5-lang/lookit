@@ -903,14 +903,7 @@ export default function AdminPanelView() {
       <section className="mx-auto grid min-h-[calc(100vh-1.5rem)] w-full max-w-[1450px] overflow-hidden rounded-[28px] bg-white shadow-[0_18px_55px_rgba(15,23,42,0.14)] lg:grid-cols-[250px_minmax(0,1fr)]">
         <aside className="hidden border-r border-slate-100 bg-white px-4 py-5 lg:flex lg:flex-col">
           <div className="pb-6">
-            <Image
-              src="/logo.png"
-              alt="Lookit logo"
-              width={160}
-              height={56}
-              priority
-              className="h-10 w-auto object-contain"
-            />
+            <span className="text-2xl font-bold tracking-[0.12em] text-slate-900">LOOKIT</span>
           </div>
 
           <nav className="space-y-1.5">

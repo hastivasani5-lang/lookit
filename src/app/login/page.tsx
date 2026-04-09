@@ -114,14 +114,7 @@ export default function LoginPage() {
 
         <div className="flex flex-1 items-center justify-center bg-white px-4 sm:px-6 py-8 md:py-10 lg:px-10">
           <div className="w-full max-w-[420px] text-center">
-            <Image
-              src="/logo.png"
-              alt="EducateX logo"
-              width={160}
-              height={56}
-              priority
-              className="mx-auto mb-4 h-10 w-auto object-contain sm:mb-6"
-            />
+            <p className="mx-auto mb-4 text-2xl font-bold tracking-[0.12em] text-slate-900 sm:mb-6">LOOKIT</p>
 
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold leading-[0.96] tracking-tight text-slate-900">Log in</h1>
 

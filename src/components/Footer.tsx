@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
 
@@ -24,13 +22,7 @@ export default function Footer() {
 
           {/* LOGO */}
           <div className="flex items-center gap-3">
-            <Image
-              src="/logo.png"
-              alt="EducateX logo"
-              width={160}
-              height={56}
-              className="h-9 w-auto object-contain"
-            />
+            <span className="text-xl font-bold tracking-[0.12em] text-white">LOOKIT</span>
           </div>
 
           {/* TEXT */}

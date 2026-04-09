@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const About = () => {
   return (
-    <section className="w-full py-20 px-4 md:px-8 bg-[#eef5f3] relative overflow-hidden">
+    <section className="w-full pt-20 pb-0 px-4 md:px-8 bg-[#eef5f3] relative overflow-hidden">
       
       {/* LEFT DECORATION */}
       <div className="absolute top-16 left-10 animate-float">
@@ -27,7 +27,7 @@ const About = () => {
           className="relative flex justify-center items-center"
           data-aos="fade-right"
         >
-          <div className="relative w-65 sm:w-80 md:w-90 lg:w-100">
+          <div className="relative w-72 sm:w-88 md:w-[24rem] lg:w-[30rem]">
 
             {/* IMAGE */}
             <Image
@@ -35,7 +35,7 @@ const About = () => {
               alt="about"
               width={500}
               height={500}
-              className="w-full h-auto object-contain relative z-10"
+              className="w-full h-auto object-contain relative z-10 scale-110 md:scale-115 lg:scale-120 origin-center"
             />
 
             {/* ROTATING CIRCLE */}
@@ -121,10 +121,7 @@ const About = () => {
           {/* LINE */}
           <div className="border-t border-gray-200 mb-5"></div>
 
-          {/* BUTTON */}
-          <button className="bg-[#1ec28e] hover:bg-[#18ab7d] text-white px-6 py-2.5 rounded-full text-xs font-medium transition">
-            MORE ABOUT →
-          </button>
+          
 
         </div>
 

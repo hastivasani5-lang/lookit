@@ -173,7 +173,7 @@ const Navbar = () => {
     <header className="fixed top-0 z-50 w-full bg-white shadow-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-3 py-2 sm:px-4 sm:py-3 md:px-8">
         <div className="flex items-center gap-2">
-          <Image src="/logo.png" alt="EducateX logo" width={160} height={56} priority className="h-8 w-auto sm:h-9 md:h-10" />
+          <span className="text-lg font-bold tracking-[0.12em] text-slate-900 sm:text-xl">LOOKKIT</span>
         </div>
 
         <nav className="hidden items-center gap-8 text-sm font-medium text-gray-700 lg:flex">

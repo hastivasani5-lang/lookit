@@ -34,6 +34,122 @@ type UserRow = {
   created_at: Date;
 };
 
+let postgresUsersSeedPromise: Promise<void> | null = null;
+
+function normalizeParsedUsers(parsed: unknown): AppUser[] {
+  return Array.isArray(parsed)
+    ? parsed.map((user) =>
+        normalizeUser({
+          id: String(user.id),
+          name: String(user.name ?? ""),
+          email: String(user.email ?? ""),
+          role: user.role === "professional" ? "professional" : "student",
+          provider: user.provider === "google" ? "google" : "credentials",
+          createdAt: String(user.createdAt ?? new Date().toISOString()),
+          passwordHash: typeof user.passwordHash === "string" ? user.passwordHash : undefined,
+          image: typeof user.image === "string" ? user.image : undefined,
+          specialization: typeof user.specialization === "string" ? user.specialization : undefined,
+          contactNumber: typeof user.contactNumber === "string" ? user.contactNumber : undefined,
+          location: typeof user.location === "string" ? user.location : undefined,
+          certificates: Array.isArray(user.certificates)
+            ? user.certificates.filter((value: unknown): value is string => typeof value === "string")
+            : [],
+          reviews: Array.isArray(user.reviews)
+            ? user.reviews.filter((value: unknown): value is string => typeof value === "string")
+            : [],
+          profileBoostedUntil: typeof user.profileBoostedUntil === "string" ? user.profileBoostedUntil : undefined,
+          approvalStatus:
+            user.approvalStatus === "pending" || user.approvalStatus === "approved" || user.approvalStatus === "rejected"
+              ? user.approvalStatus
+              : undefined,
+          approvalReviewedBy: typeof user.approvalReviewedBy === "string" ? user.approvalReviewedBy : undefined,
+          approvalReviewedAt:
+            typeof user.approvalReviewedAt === "string" ? user.approvalReviewedAt : undefined,
+          approvalNote: typeof user.approvalNote === "string" ? user.approvalNote : undefined,
+        }),
+      )
+    : [];
+}
+
+async function seedPostgresUsersFromJsonIfNeeded() {
+  if (!isPostgresConfigured()) {
+    return;
+  }
+
+  if (postgresUsersSeedPromise) {
+    return postgresUsersSeedPromise;
+  }
+
+  postgresUsersSeedPromise = (async () => {
+    await ensureDbSchema();
+    const db = getDbPool();
+
+    const countResult = await db.query<{ count: string }>(`SELECT COUNT(*)::text AS count FROM users`);
+    const existingCount = Number(countResult.rows[0]?.count ?? "0");
+
+    if (existingCount > 0) {
+      return;
+    }
+
+    let raw = "";
+    try {
+      raw = await fs.readFile(USERS_FILE, "utf-8");
+    } catch {
+      return;
+    }
+
+    let usersFromJson: AppUser[] = [];
+    try {
+      usersFromJson = normalizeParsedUsers(JSON.parse(raw));
+    } catch {
+      usersFromJson = [];
+    }
+
+    if (usersFromJson.length === 0) {
+      return;
+    }
+
+    for (const user of usersFromJson) {
+      await db.query(
+        `
+          INSERT INTO users (
+            id, name, email, password_hash, role, image, specialization, contact_number, location,
+            certificates, reviews, profile_boosted_until, approval_status, approval_reviewed_by,
+            approval_reviewed_at, approval_note, provider, created_at
+          )
+          VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8, $9,
+            $10, $11, $12, $13, $14, $15, $16, $17, $18
+          )
+          ON CONFLICT (id) DO NOTHING
+        `,
+        [
+          user.id,
+          user.name,
+          user.email.toLowerCase().trim(),
+          user.passwordHash ?? null,
+          user.role,
+          user.image ?? null,
+          user.specialization ?? null,
+          user.contactNumber ?? null,
+          user.location ?? null,
+          user.certificates ?? [],
+          user.reviews ?? [],
+          user.profileBoostedUntil ?? null,
+          user.approvalStatus ?? getDefaultApprovalStatus(user.role),
+          user.approvalReviewedBy ?? null,
+          user.approvalReviewedAt ?? null,
+          user.approvalNote ?? null,
+          user.provider,
+          user.createdAt,
+        ],
+      );
+    }
+  })();
+
+  return postgresUsersSeedPromise;
+}
+
 function normalizeUser(user: Partial<AppUser> & Pick<AppUser, "id" | "name" | "email" | "role" | "provider" | "createdAt">): AppUser {
   return {
     id: user.id,
@@ -122,38 +238,7 @@ async function readUsers(): Promise<AppUser[]> {
 
   try {
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed)
-      ? parsed.map((user) =>
-          normalizeUser({
-            id: String(user.id),
-            name: String(user.name ?? ""),
-            email: String(user.email ?? ""),
-            role: user.role === "professional" ? "professional" : "student",
-            provider: user.provider === "google" ? "google" : "credentials",
-            createdAt: String(user.createdAt ?? new Date().toISOString()),
-            passwordHash: typeof user.passwordHash === "string" ? user.passwordHash : undefined,
-            image: typeof user.image === "string" ? user.image : undefined,
-            specialization: typeof user.specialization === "string" ? user.specialization : undefined,
-            contactNumber: typeof user.contactNumber === "string" ? user.contactNumber : undefined,
-            location: typeof user.location === "string" ? user.location : undefined,
-            certificates: Array.isArray(user.certificates)
-              ? user.certificates.filter((value: unknown): value is string => typeof value === "string")
-              : [],
-            reviews: Array.isArray(user.reviews)
-              ? user.reviews.filter((value: unknown): value is string => typeof value === "string")
-              : [],
-            profileBoostedUntil: typeof user.profileBoostedUntil === "string" ? user.profileBoostedUntil : undefined,
-            approvalStatus:
-              user.approvalStatus === "pending" || user.approvalStatus === "approved" || user.approvalStatus === "rejected"
-                ? user.approvalStatus
-                : undefined,
-            approvalReviewedBy: typeof user.approvalReviewedBy === "string" ? user.approvalReviewedBy : undefined,
-            approvalReviewedAt:
-              typeof user.approvalReviewedAt === "string" ? user.approvalReviewedAt : undefined,
-            approvalNote: typeof user.approvalNote === "string" ? user.approvalNote : undefined,
-          }),
-        )
-      : [];
+    return normalizeParsedUsers(parsed);
   } catch {
     return [];
   }
@@ -169,6 +254,7 @@ export async function getUserByEmail(email: string) {
     return users.find((user) => user.email.toLowerCase() === email.toLowerCase()) ?? null;
   }
 
+  await seedPostgresUsersFromJsonIfNeeded();
   await ensureDbSchema();
   const db = getDbPool();
 
@@ -190,6 +276,7 @@ export async function getUserById(id: string) {
     return users.find((user) => user.id === id) ?? null;
   }
 
+  await seedPostgresUsersFromJsonIfNeeded();
   await ensureDbSchema();
   const db = getDbPool();
 
@@ -208,6 +295,7 @@ export async function getAllUsers() {
     return users.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
 
+  await seedPostgresUsersFromJsonIfNeeded();
   await ensureDbSchema();
   const db = getDbPool();
 
@@ -365,6 +453,7 @@ export async function registerUser(input: {
   }
 
   await ensureDbSchema();
+  await seedPostgresUsersFromJsonIfNeeded();
   const db = getDbPool();
 
   const email = input.email.toLowerCase().trim();
@@ -435,6 +524,7 @@ export async function upsertGoogleUser(input: {
   }
 
   await ensureDbSchema();
+  await seedPostgresUsersFromJsonIfNeeded();
   const db = getDbPool();
 
   const email = input.email.toLowerCase().trim();
@@ -545,6 +635,7 @@ export async function updateUserProfile(input: {
   }
 
   await ensureDbSchema();
+  await seedPostgresUsersFromJsonIfNeeded();
   const db = getDbPool();
 
   const currentResult = await db.query<UserRow>(`SELECT * FROM users WHERE id = $1 LIMIT 1`, [input.id]);

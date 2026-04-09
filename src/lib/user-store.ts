@@ -220,6 +220,11 @@ export async function getProfessionalUsers() {
   return users.filter((user) => user.role === "professional");
 }
 
+export async function getApprovedProfessionalUsers() {
+  const users = await getAllUsers();
+  return users.filter((user) => user.role === "professional" && user.approvalStatus === "approved");
+}
+
 export async function setProfessionalApproval(
   professionalId: string,
   status: Exclude<ProfessionalApprovalStatus, "pending">,
@@ -292,6 +297,40 @@ export async function setProfessionalApproval(
   });
 
   return updatedUser;
+}
+
+export async function deleteProfessionalById(professionalId: string) {
+  const users = await getAllUsers();
+  const index = users.findIndex((user) => user.id === professionalId);
+
+  if (index === -1) {
+    throw new Error("Professional not found.");
+  }
+
+  const currentUser = users[index];
+
+  if (currentUser.role !== "professional") {
+    throw new Error("Only professionals can be deleted.");
+  }
+
+  const nextUsers = users.filter((user) => user.id !== professionalId);
+
+  if (!isPostgresConfigured()) {
+    await writeUsers(nextUsers);
+  } else {
+    await ensureDbSchema();
+    const db = getDbPool();
+
+    await db.query(
+      `
+        DELETE FROM users
+        WHERE id = $1
+      `,
+      [professionalId],
+    );
+  }
+
+  return currentUser;
 }
 
 export async function recordProfessionalLoginAttempt(user: AppUser, reason: "pending" | "rejected") {

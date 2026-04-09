@@ -3,11 +3,14 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { MapPin, Search, Sparkles, Star } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { professionals } from "@/app/professionals/data";
+import { buildSeedProfessional, type PublicProfessional } from "@/lib/professional-display";
+import { professionals as seedProfessionals } from "@/app/professionals/data";
 
 const categoryOptions = [
   { label: "All Categories", value: "all" },
@@ -41,7 +44,11 @@ const languageOptions = [
 ] as const;
 
 export default function ProfessionalsPage() {
+  const searchParams = useSearchParams();
+  const { data: session, status } = useSession();
   const [mounted, setMounted] = useState(false);
+  const [liveProfessionals, setLiveProfessionals] = useState<PublicProfessional[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedRating, setSelectedRating] = useState("all");
   const [selectedReviews, setSelectedReviews] = useState("all");
@@ -53,6 +60,61 @@ export default function ProfessionalsPage() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    const query = searchParams.get("search")?.trim() || "";
+    if (query) {
+      setSearchText(query);
+      setVisibleCount(6);
+    }
+  }, [searchParams]);
+
+  const canUseSearch = status === "authenticated" && session?.user?.role === "student";
+
+  useEffect(() => {
+    let isActive = true;
+
+    const loadProfessionals = async () => {
+      setLoading(true);
+
+      try {
+        const response = await fetch("/api/professionals", { cache: "no-store" });
+        const payload = (await response.json().catch(() => ({}))) as {
+          professionals?: PublicProfessional[];
+        };
+
+        if (!isActive) {
+          return;
+        }
+
+        if (!response.ok) {
+          setLiveProfessionals([]);
+          return;
+        }
+
+        setLiveProfessionals(Array.isArray(payload.professionals) ? payload.professionals : []);
+      } catch {
+        if (isActive) {
+          setLiveProfessionals([]);
+        }
+      } finally {
+        if (isActive) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadProfessionals();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  const professionals = useMemo(
+    () => [...liveProfessionals, ...seedProfessionals.map(buildSeedProfessional)],
+    [liveProfessionals],
+  );
 
   const filteredProfessionals = useMemo(() => {
     const query = searchText.trim().toLowerCase();
@@ -145,9 +207,10 @@ export default function ProfessionalsPage() {
               <input
                 type="text"
                 value={searchText}
+                disabled={!canUseSearch}
                 onChange={(event) => setSearchText(event.target.value)}
                 placeholder="Search by name, specialization, or city"
-                className="w-full rounded-xl border border-gray-200 bg-[#f8fbfa] py-3 pl-11 pr-4 text-sm outline-none transition focus:border-primary"
+                className="w-full rounded-xl border border-gray-200 bg-[#f8fbfa] py-3 pl-11 pr-4 text-sm outline-none transition focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
               />
             </label>
           </div>
@@ -158,6 +221,7 @@ export default function ProfessionalsPage() {
                 <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
                 <button
                   type="button"
+                  disabled={!canUseSearch}
                   onClick={() => {
                     setSelectedCategory("all");
                     setSelectedRating("all");
@@ -165,7 +229,7 @@ export default function ProfessionalsPage() {
                     setSelectedLanguage("all");
                     setSearchText("");
                   }}
-                  className="text-sm font-medium text-primary hover:underline"
+                  className="text-sm font-medium text-primary hover:underline disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Clear
                 </button>
@@ -176,8 +240,9 @@ export default function ProfessionalsPage() {
                   <span className="mb-1.5 block text-sm font-medium text-gray-700">Category</span>
                   <select
                     value={selectedCategory}
+                    disabled={!canUseSearch}
                     onChange={(event) => setSelectedCategory(event.target.value)}
-                    className="w-full rounded-xl border border-gray-200 bg-[#fafdfc] px-3 py-2.5 text-sm outline-none transition focus:border-primary"
+                    className="w-full rounded-xl border border-gray-200 bg-[#fafdfc] px-3 py-2.5 text-sm outline-none transition focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {categoryOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -191,8 +256,9 @@ export default function ProfessionalsPage() {
                   <span className="mb-1.5 block text-sm font-medium text-gray-700">Rating</span>
                   <select
                     value={selectedRating}
+                    disabled={!canUseSearch}
                     onChange={(event) => setSelectedRating(event.target.value)}
-                    className="w-full rounded-xl border border-gray-200 bg-[#fafdfc] px-3 py-2.5 text-sm outline-none transition focus:border-primary"
+                    className="w-full rounded-xl border border-gray-200 bg-[#fafdfc] px-3 py-2.5 text-sm outline-none transition focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {ratingOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -206,8 +272,9 @@ export default function ProfessionalsPage() {
                   <span className="mb-1.5 block text-sm font-medium text-gray-700">Reviews</span>
                   <select
                     value={selectedReviews}
+                    disabled={!canUseSearch}
                     onChange={(event) => setSelectedReviews(event.target.value)}
-                    className="w-full rounded-xl border border-gray-200 bg-[#fafdfc] px-3 py-2.5 text-sm outline-none transition focus:border-primary"
+                    className="w-full rounded-xl border border-gray-200 bg-[#fafdfc] px-3 py-2.5 text-sm outline-none transition focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {reviewOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -221,8 +288,9 @@ export default function ProfessionalsPage() {
                   <span className="mb-1.5 block text-sm font-medium text-gray-700">Language</span>
                   <select
                     value={selectedLanguage}
+                    disabled={!canUseSearch}
                     onChange={(event) => setSelectedLanguage(event.target.value)}
-                    className="w-full rounded-xl border border-gray-200 bg-[#fafdfc] px-3 py-2.5 text-sm outline-none transition focus:border-primary"
+                    className="w-full rounded-xl border border-gray-200 bg-[#fafdfc] px-3 py-2.5 text-sm outline-none transition focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {languageOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -307,7 +375,7 @@ export default function ProfessionalsPage() {
 
               {visibleProfessionals.length === 0 ? (
                 <div className="mt-6 rounded-2xl border border-dashed border-gray-300 bg-white p-8 text-center text-sm text-gray-600">
-                  No professionals match these filters.
+                  {loading ? "Loading professionals..." : "No professionals match these filters."}
                 </div>
               ) : null}
 

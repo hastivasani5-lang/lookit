@@ -150,10 +150,12 @@ type AdminUserDetails = {
 
 type AdminProfessionalUser = {
   id: number;
+  backendId: string;
   name: string;
   email: string;
   provider: "credentials" | "google";
   specialization: string;
+  categories: string[];
   contactNumber: string;
   location: string;
   certificatesCount: number;
@@ -441,7 +443,8 @@ export default function AdminPanelView() {
   const [studentDraft, setStudentDraft] = useState<AdminStudent | null>(null);
   const [approvalRequests, setApprovalRequests] = useState<ApprovalRequest[]>(initialApprovalRequests);
   const [reviewEntries, setReviewEntries] = useState(initialReviewEntries);
-  const [payoutEntries] = useState(initialPayoutEntries);
+  const [payoutEntries, setPayoutEntries] = useState<PayoutEntry[]>([]);
+  const [payoutsLoading, setPayoutsLoading] = useState(false);
   const [uploadView, setUploadView] = useState<UploadView>("professional-uploads");
   const [detailModal, setDetailModal] = useState<DetailModalState | null>(null);
   const [categoriesList, setCategoriesList] = useState(initialProfessionalCategories);
@@ -502,6 +505,22 @@ export default function AdminPanelView() {
             : request,
         ),
       );
+    } catch {
+      return;
+    }
+  };
+
+  const deleteProfessional = async (professionalId: string) => {
+    try {
+      const response = await fetch(`/api/admin/professionals/${professionalId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        return;
+      }
+
+      setProfessionalUsers((currentUsers) => currentUsers.filter((user) => user.backendId !== professionalId));
     } catch {
       return;
     }
@@ -775,6 +794,7 @@ export default function AdminPanelView() {
             role: "student" | "professional";
             provider: "credentials" | "google";
             specialization: string;
+            categories: string[];
             contactNumber: string;
             location: string;
             certificates: string[];
@@ -831,10 +851,12 @@ export default function AdminPanelView() {
 
         const mappedProfessionals: AdminProfessionalUser[] = professionalUsers.map((user, index) => ({
           id: index + 1,
+          backendId: user.id,
           name: user.name,
           email: user.email,
           provider: user.provider,
           specialization: user.specialization,
+          categories: Array.isArray(user.categories) ? user.categories : [],
           contactNumber: user.contactNumber,
           location: user.location,
           certificatesCount: user.certificates.length,
@@ -891,6 +913,64 @@ export default function AdminPanelView() {
     };
 
     void loadUploads();
+  }, [activeSection]);
+
+  useEffect(() => {
+    if (activeSection !== "Payouts") {
+      return;
+    }
+
+    const loadPayments = async () => {
+      setPayoutsLoading(true);
+
+      try {
+        const response = await fetch("/api/admin/payments", { cache: "no-store" });
+        const payload = (await response.json().catch(() => ({}))) as {
+          payments?: Array<{
+            actorRole: "student" | "professional";
+            actorName: string;
+            actorEmail: string;
+            professionalName?: string;
+            category: "content" | "profile-upgrade";
+            itemType: "book" | "video" | "course" | "lecture" | "upgrade";
+            itemTitle: string;
+            amount: string;
+            transactionId: string;
+            paidAt: string;
+            status: PayoutStatus;
+          }>;
+        };
+
+        if (!response.ok) {
+          setPayoutEntries([]);
+          return;
+        }
+
+        const payments = Array.isArray(payload.payments) ? payload.payments : [];
+
+        setPayoutEntries(
+          payments.map((payment, index) => ({
+            id: index + 1,
+            professionalName: payment.actorName,
+            professionalEmail: payment.actorEmail,
+            plan:
+              payment.category === "profile-upgrade"
+                ? `Profile upgrade (${payment.itemTitle})`
+                : `${payment.itemType.toUpperCase()} purchase${payment.professionalName ? ` • ${payment.professionalName}` : ""}`,
+            amount: payment.amount,
+            transactionId: payment.transactionId,
+            paidAt: new Date(payment.paidAt).toLocaleString(),
+            status: payment.status,
+          })),
+        );
+      } catch {
+        setPayoutEntries([]);
+      } finally {
+        setPayoutsLoading(false);
+      }
+    };
+
+    void loadPayments();
   }, [activeSection]);
 
   const onLogout = async () => {
@@ -1338,54 +1418,64 @@ export default function AdminPanelView() {
                         </tr>
                       </thead>
                       <tbody>
-                        {payoutEntries.map((entry) => (
-                          <tr key={entry.id} className="border-t border-slate-100 text-slate-700">
-                            <td className="px-4 py-3">
-                              <div className="font-medium text-slate-800">{entry.professionalName}</div>
-                              <div className="text-xs text-slate-500">{entry.professionalEmail}</div>
-                            </td>
-                            <td className="px-4 py-3">{entry.plan}</td>
-                            <td className="px-4 py-3 font-semibold text-slate-800">{entry.amount}</td>
-                            <td className="px-4 py-3 text-xs text-slate-600">{entry.transactionId}</td>
-                            <td className="px-4 py-3">{entry.paidAt}</td>
-                            <td className="px-4 py-3">
-                              <span
-                                className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${
-                                  entry.status === "completed"
-                                    ? "border border-[#bfe9cb] bg-[#e8f9ee] text-[#178c43]"
-                                    : "border border-amber-200 bg-amber-50 text-amber-700"
-                                }`}
-                              >
-                                {entry.status}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="flex justify-end">
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    openDetailModal({
-                                      title: "Payout Details",
-                                      entries: [
-                                        { label: "Professional", value: entry.professionalName },
-                                        { label: "Email", value: entry.professionalEmail },
-                                        { label: "Plan", value: entry.plan },
-                                        { label: "Amount", value: entry.amount },
-                                        { label: "Transaction ID", value: entry.transactionId },
-                                        { label: "Paid At", value: entry.paidAt },
-                                        { label: "Status", value: entry.status },
-                                      ],
-                                    })
-                                  }
-                                  className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
-                                >
-                                  <Eye className="h-3.5 w-3.5" />
-                                  View
-                                </button>
-                              </div>
-                            </td>
+                        {payoutsLoading ? (
+                          <tr>
+                            <td colSpan={7} className="px-4 py-4 text-sm text-slate-500">Loading payments...</td>
                           </tr>
-                        ))}
+                        ) : payoutEntries.length === 0 ? (
+                          <tr>
+                            <td colSpan={7} className="px-4 py-4 text-sm text-slate-500">No payments found.</td>
+                          </tr>
+                        ) : (
+                          payoutEntries.map((entry) => (
+                            <tr key={entry.id} className="border-t border-slate-100 text-slate-700">
+                              <td className="px-4 py-3">
+                                <div className="font-medium text-slate-800">{entry.professionalName}</div>
+                                <div className="text-xs text-slate-500">{entry.professionalEmail}</div>
+                              </td>
+                              <td className="px-4 py-3">{entry.plan}</td>
+                              <td className="px-4 py-3 font-semibold text-slate-800">{entry.amount}</td>
+                              <td className="px-4 py-3 text-xs text-slate-600">{entry.transactionId}</td>
+                              <td className="px-4 py-3">{entry.paidAt}</td>
+                              <td className="px-4 py-3">
+                                <span
+                                  className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${
+                                    entry.status === "completed"
+                                      ? "border border-[#bfe9cb] bg-[#e8f9ee] text-[#178c43]"
+                                      : "border border-amber-200 bg-amber-50 text-amber-700"
+                                  }`}
+                                >
+                                  {entry.status}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="flex justify-end">
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      openDetailModal({
+                                        title: "Payout Details",
+                                        entries: [
+                                          { label: "Professional", value: entry.professionalName },
+                                          { label: "Email", value: entry.professionalEmail },
+                                          { label: "Plan", value: entry.plan },
+                                          { label: "Amount", value: entry.amount },
+                                          { label: "Transaction ID", value: entry.transactionId },
+                                          { label: "Paid At", value: entry.paidAt },
+                                          { label: "Status", value: entry.status },
+                                        ],
+                                      })
+                                    }
+                                    className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
+                                  >
+                                    <Eye className="h-3.5 w-3.5" />
+                                    View
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        )}
                       </tbody>
                     </table>
                   </div>
@@ -1677,6 +1767,7 @@ export default function AdminPanelView() {
                           <tr>
                             <th className="px-4 py-3">Name</th>
                             <th className="px-4 py-3">Specialization</th>
+                            <th className="px-4 py-3">Categories</th>
                             <th className="px-4 py-3">Provider</th>
                             <th className="px-4 py-3">Joined</th>
                             <th className="px-4 py-3 text-right">Action</th>
@@ -1696,6 +1787,7 @@ export default function AdminPanelView() {
                                     { label: "Email", value: professional.email },
                                     { label: "Provider", value: professional.provider },
                                     { label: "Specialization", value: professional.specialization || "-" },
+                                    { label: "Categories", value: professional.categories.length > 0 ? professional.categories.join(", ") : "-" },
                                     { label: "Contact Number", value: professional.contactNumber || "-" },
                                     { label: "Location", value: professional.location || "-" },
                                     { label: "Certificates", value: String(professional.certificatesCount) },
@@ -1714,13 +1806,24 @@ export default function AdminPanelView() {
                                 <div className="text-xs text-slate-500">{professional.email}</div>
                               </td>
                               <td className="px-4 py-4 text-slate-700">{professional.specialization || "-"}</td>
+                              <td className="px-4 py-4 text-slate-700">
+                                {professional.categories.length > 0 ? professional.categories.join(", ") : "-"}
+                              </td>
                               <td className="px-4 py-4 text-slate-700">{professional.provider}</td>
                               <td className="px-4 py-4 text-slate-700">{professional.joinedAt}</td>
                               <td className="px-4 py-4">
                                 <div className="flex justify-end">
-                                  <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600">
-                                    View
-                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      void deleteProfessional(professional.backendId);
+                                    }}
+                                    className="inline-flex items-center gap-1 rounded-full border border-[#f5c1c1] bg-[#ffe7e7] px-3 py-1.5 text-xs font-semibold text-[#cc2a2a] transition hover:bg-[#ffdcdc]"
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                    Delete
+                                  </button>
                                 </div>
                               </td>
                             </tr>

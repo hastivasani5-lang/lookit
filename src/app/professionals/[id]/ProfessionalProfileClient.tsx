@@ -1,18 +1,38 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { CreditCard, MapPin, PlayCircle, Star } from "lucide-react";
+import { MapPin, PlayCircle, Star } from "lucide-react";
 
-import type { Professional } from "@/app/professionals/data";
+import type { PublicProfessional } from "@/lib/professional-display";
+import { addCartItem } from "@/lib/cart-store";
+
+type UploadedBook = {
+  id: string;
+  name: string;
+  category: string;
+  mrp: string;
+  url: string;
+  source: "file" | "amazon";
+};
+
+type UploadedVideo = {
+  id: string;
+  name: string;
+  mrp?: string;
+  url: string;
+  source: "file" | "youtube";
+  sizeLabel: string;
+};
 
 type ContentItem = {
   id: string;
   title: string;
   subtitle: string;
   price: string;
-  duration?: string;
+  url: string;
+  contentType: "book" | "video";
 };
 
 type ReviewItem = {
@@ -23,20 +43,37 @@ type ReviewItem = {
 };
 
 type Props = {
-  professional: Professional;
+  professional: PublicProfessional;
+  canAddToCart: boolean;
+  hasLibraryItems: boolean;
+  categories: string[];
+  books: UploadedBook[];
+  videos: UploadedVideo[];
 };
 
-type ContentTab = "videos" | "books" | "courses" | "lectures";
+type ContentTab = "videos" | "books";
 
 const contentTabs: Array<{ label: string; value: ContentTab }> = [
   { label: "Videos", value: "videos" },
   { label: "Books", value: "books" },
-  { label: "Courses", value: "courses" },
-  { label: "Lectures", value: "lectures" },
 ];
 
-export default function ProfessionalProfileClient({ professional }: Props) {
+function parseAmount(value: string) {
+  const amount = Number.parseFloat(value.replace(/[₹$,\s]/g, ""));
+  return Number.isFinite(amount) ? amount : 0;
+}
+
+function toPriceLabel(value: string) {
+  const amount = parseAmount(value);
+  return amount > 0 ? `₹${amount.toFixed(2)}` : "Free";
+}
+
+export default function ProfessionalProfileClient({ professional, canAddToCart, hasLibraryItems, categories, books, videos }: Props) {
+  const [liveBooks, setLiveBooks] = useState<UploadedBook[]>(books);
+  const [liveVideos, setLiveVideos] = useState<UploadedVideo[]>(videos);
+  const [liveCategories, setLiveCategories] = useState<string[]>(categories);
   const [activeTab, setActiveTab] = useState<ContentTab>("videos");
+  const [cartItemIds, setCartItemIds] = useState<string[]>([]);
   const [reviews, setReviews] = useState<ReviewItem[]>([
     {
       id: 1,
@@ -55,47 +92,93 @@ export default function ProfessionalProfileClient({ professional }: Props) {
   const [reviewText, setReviewText] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
 
-  const [selectedPlan, setSelectedPlan] = useState("single");
-  const [selectedProduct, setSelectedProduct] = useState<ContentItem | null>(null);
-  const [cardName, setCardName] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [cvv, setCvv] = useState("");
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const paymentCardRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    setLiveBooks(books);
+    setLiveVideos(videos);
+    setLiveCategories(categories);
+  }, [books, categories, videos]);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const loadLatestLibrary = async () => {
+      try {
+        const response = await fetch(`/api/professionals/${professional.id}/library`, { cache: "no-store" });
+        if (!response.ok || !isActive) {
+          return;
+        }
+
+        const payload = (await response.json().catch(() => ({}))) as {
+          books?: UploadedBook[];
+          videos?: UploadedVideo[];
+          categories?: string[];
+        };
+
+        if (!isActive) {
+          return;
+        }
+
+        setLiveBooks(Array.isArray(payload.books) ? payload.books : []);
+        setLiveVideos(Array.isArray(payload.videos) ? payload.videos : []);
+        setLiveCategories(Array.isArray(payload.categories) ? payload.categories : []);
+      } catch {
+        return;
+      }
+    };
+
+    void loadLatestLibrary();
+
+    return () => {
+      isActive = false;
+    };
+  }, [professional.id]);
 
   const contentMap: Record<ContentTab, ContentItem[]> = useMemo(
     () => ({
-      videos: [
-        { id: "v1", title: `${professional.specialization} Fundamentals`, subtitle: "Beginner video series", price: "Rs 499", duration: "2h 10m" },
-        { id: "v2", title: "Parent Strategy Walkthrough", subtitle: "Home implementation guide", price: "Rs 699", duration: "3h 00m" },
-      ],
-      books: [
-        { id: "b1", title: "Action Workbook", subtitle: `${professional.specialization} exercises`, price: "Rs 399" },
-        { id: "b2", title: "Parent Playbook", subtitle: "Daily routines and tracking templates", price: "Rs 549" },
-      ],
-      courses: [
-        { id: "c1", title: "8-Week Guided Program", subtitle: "Weekly sessions + assignments", price: "Rs 4,999", duration: "8 weeks" },
-        { id: "c2", title: "Assessment to Action", subtitle: "From diagnosis to measurable plan", price: "Rs 3,499", duration: "4 weeks" },
-      ],
-      lectures: [
-        { id: "l1", title: "Live Q&A Master Lecture", subtitle: "Monthly live session", price: "Rs 799", duration: "90 mins" },
-        { id: "l2", title: "School Support Lecture", subtitle: "Collaborating with teachers", price: "Rs 999", duration: "120 mins" },
-      ],
+      videos: liveVideos.map((video) => ({
+        id: video.id,
+        title: video.name,
+        subtitle: `${video.source === "youtube" ? "YouTube" : "Uploaded video"} • ${video.sizeLabel}`,
+        price: toPriceLabel(video.mrp ?? "0"),
+        url: video.url,
+        contentType: "video" as const,
+      })),
+      books: liveBooks.map((book) => ({
+        id: book.id,
+        title: book.name,
+        subtitle: `${book.category} • ${book.source === "amazon" ? "Amazon" : "Uploaded book"}`,
+        price: toPriceLabel(book.mrp),
+        url: book.url,
+        contentType: "book" as const,
+      })),
     }),
-    [professional.specialization]
+    [liveBooks, liveVideos]
   );
+
+  const showLibrarySection = hasLibraryItems || liveBooks.length > 0 || liveVideos.length > 0;
 
   const averageRating =
     reviews.length > 0
       ? (reviews.reduce((sum, item) => sum + item.rating, 0) / reviews.length).toFixed(1)
       : "0.0";
 
-  const handleBuyNow = (item: ContentItem) => {
-    setSelectedProduct(item);
-    setSelectedPlan("content");
-    setPaymentSuccess(false);
-    paymentCardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const handleAddToCart = (item: ContentItem) => {
+    if (!canAddToCart) {
+      return;
+    }
+
+    addCartItem({
+      id: `${professional.id}:${item.id}`,
+      professionalId: professional.id,
+      professionalName: professional.name,
+      title: item.title,
+      subtitle: item.subtitle,
+      price: item.price,
+      contentType: item.contentType,
+      sourceUrl: item.url,
+    });
+
+    setCartItemIds((current) => (current.includes(item.id) ? current : [item.id, ...current]));
   };
 
   const submitReview = (event: React.FormEvent<HTMLFormElement>) => {
@@ -117,15 +200,6 @@ export default function ProfessionalProfileClient({ professional }: Props) {
     setReviewName("");
     setReviewText("");
     setReviewRating(5);
-  };
-
-  const submitPayment = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!cardName || !cardNumber || !expiry || !cvv) {
-      setPaymentSuccess(false);
-      return;
-    }
-    setPaymentSuccess(true);
   };
 
   return (
@@ -159,7 +233,23 @@ export default function ProfessionalProfileClient({ professional }: Props) {
               <span>({professional.reviews} reviews)</span>
             </div>
             <p>Language: {professional.language}</p>
-            <p>Category: {professional.category}</p>
+            <div className="space-y-2">
+              <p>Category: {professional.category}</p>
+              <div className="flex flex-wrap gap-2">
+                {liveCategories.length > 0 ? (
+                  liveCategories.map((category) => (
+                    <span
+                      key={category}
+                      className="rounded-full bg-white px-3 py-1 text-xs font-medium text-primary"
+                    >
+                      {category}
+                    </span>
+                  ))
+                ) : (
+                  <span className="rounded-full bg-white px-3 py-1 text-xs text-gray-500">No categories added yet</span>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="rounded-2xl border border-[#dbe8e4] p-4">
@@ -172,6 +262,7 @@ export default function ProfessionalProfileClient({ professional }: Props) {
         </div>
       </section>
 
+      {showLibrarySection ? (
       <section className="mx-auto mt-8 w-full max-w-6xl rounded-3xl border border-[#dbe8e4] bg-white p-6 shadow-sm md:p-8" data-aos="fade-up">
         <div className="flex flex-wrap gap-2 border-b border-gray-200 pb-4">
           {contentTabs.map((tab) => (
@@ -191,32 +282,100 @@ export default function ProfessionalProfileClient({ professional }: Props) {
         </div>
 
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
-          {contentMap[activeTab].map((item) => (
-            <article key={item.id} className="rounded-2xl border border-gray-200 bg-[#fbfdfc] p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h3 className="text-base font-semibold text-gray-900">{item.title}</h3>
-                  <p className="mt-1 text-sm text-gray-600">{item.subtitle}</p>
-                </div>
-                <PlayCircle className="h-5 w-5 text-primary" />
-              </div>
-              <div className="mt-3 flex items-center justify-between text-sm">
-                <span className="font-semibold text-primary">{item.price}</span>
-                <span className="text-gray-500">{item.duration ?? "Self paced"}</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleBuyNow(item)}
-                className="mt-4 w-full rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
-              >
-                Buy Now
-              </button>
-            </article>
-          ))}
+          {contentMap[activeTab].length === 0 ? (
+            <p className="rounded-2xl border border-dashed border-gray-300 bg-white p-4 text-sm text-gray-500">No {activeTab} uploaded yet.</p>
+          ) : (
+            contentMap[activeTab].map((item) => {
+              const isFree = item.price === "Free";
+              const hasOpenLink = Boolean(item.url);
+
+              return (
+                <article key={item.id} className="rounded-2xl border border-gray-200 bg-[#fbfdfc] p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="text-base font-semibold text-gray-900">{item.title}</h3>
+                      <p className="mt-1 text-sm text-gray-600">{item.subtitle}</p>
+                    </div>
+                    <PlayCircle className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="mt-3 flex items-center justify-between text-sm">
+                    <span className="font-semibold text-primary">{item.price}</span>
+                    <span className="text-gray-500 capitalize">{item.contentType}</span>
+                  </div>
+
+                  {isFree ? (
+                    hasOpenLink ? (
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+                      >
+                        Open Free
+                      </a>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled
+                        className="mt-4 w-full rounded-full bg-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-500"
+                      >
+                        Free (No Link)
+                      </button>
+                    )
+                  ) : (
+                    <div className="mt-4 grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleAddToCart(item)}
+                        disabled={!canAddToCart}
+                        className="w-full rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#18ab7d] disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {canAddToCart && cartItemIds.includes(item.id) ? "Added" : "Add to Cart"}
+                      </button>
+                      {hasOpenLink ? (
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex w-full items-center justify-center rounded-full border border-primary px-4 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary hover:text-white"
+                        >
+                          Open
+                        </a>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled
+                          className="w-full rounded-full border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-400"
+                        >
+                          No Link
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </article>
+              );
+            })
+          )}
+        </div>
+
+        <div className="mt-5 rounded-2xl border border-[#dbe8e4] bg-[#f8fbfa] p-4 text-sm text-gray-600">
+          <p>
+            Free items open directly. Paid items can be purchased from your cart.
+            {canAddToCart ? "" : " Please log in as a student to buy paid items."}
+          </p>
+          {canAddToCart ? (
+            <Link
+              href="/cart"
+              className="mt-3 inline-flex rounded-full bg-primary px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#18ab7d]"
+            >
+              Go to Cart
+            </Link>
+          ) : null}
         </div>
       </section>
+      ) : null}
 
-      <section className="mx-auto mt-8 grid w-full max-w-6xl gap-8 lg:grid-cols-2">
+      <section className="mx-auto mt-8 w-full max-w-6xl">
         <div className="rounded-3xl border border-[#dbe8e4] bg-white p-6 shadow-sm md:p-8" data-aos="fade-up">
           <div className="mb-4 flex items-center justify-between rounded-2xl bg-[#f4faf7] px-4 py-3">
             <h2 className="text-xl font-semibold text-gray-900">User Reviews</h2>
@@ -279,93 +438,6 @@ export default function ProfessionalProfileClient({ professional }: Props) {
               </li>
             ))}
           </ul>
-        </div>
-
-        <div ref={paymentCardRef} className="rounded-3xl border border-[#dbe8e4] bg-white p-6 shadow-sm md:p-8" data-aos="fade-up">
-          <h2 className="flex items-center gap-2 text-xl font-semibold text-gray-900">
-            <CreditCard className="h-5 w-5 text-primary" />
-            Payment Checkout
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">Book consultation or purchase content from this profile.</p>
-
-          {selectedProduct ? (
-            <div className="mt-4 rounded-2xl border border-[#cdebdd] bg-[#f2fbf7] p-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Selected Item</p>
-              <div className="mt-1 flex items-center justify-between gap-2 text-sm">
-                <p className="font-semibold text-gray-900">{selectedProduct.title}</p>
-                <p className="font-semibold text-primary">{selectedProduct.price}</p>
-              </div>
-            </div>
-          ) : null}
-
-          <form onSubmit={submitPayment} className="mt-4 space-y-3">
-            <label className="block">
-              <span className="mb-1 block text-sm font-medium text-gray-700">Plan</span>
-              <select
-                value={selectedPlan}
-                onChange={(event) => setSelectedPlan(event.target.value)}
-                className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-primary"
-              >
-                <option value="single">Single Session - Rs 1,499</option>
-                <option value="monthly">Monthly Plan - Rs 4,999</option>
-                <option value="course">Course Bundle - Rs 3,499</option>
-                <option value="content">Selected Content Item</option>
-              </select>
-            </label>
-
-            <input
-              type="text"
-              value={cardName}
-              onChange={(event) => setCardName(event.target.value)}
-              placeholder="Card holder name"
-              className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-primary"
-            />
-            <input
-              type="text"
-              value={cardNumber}
-              onChange={(event) => setCardNumber(event.target.value)}
-              placeholder="Card number"
-              className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-primary"
-            />
-            <div className="grid grid-cols-2 gap-3">
-              <input
-                type="text"
-                value={expiry}
-                onChange={(event) => setExpiry(event.target.value)}
-                placeholder="MM/YY"
-                className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-primary"
-              />
-              <input
-                type="password"
-                value={cvv}
-                onChange={(event) => setCvv(event.target.value)}
-                placeholder="CVV"
-                className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-primary"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
-            >
-              Pay Now
-            </button>
-
-            {paymentSuccess ? (
-              <p className="rounded-xl bg-[#e9f8f2] px-3 py-2 text-sm text-[#0f7a5c]">
-                Payment successful (demo). Your booking request has been placed.
-              </p>
-            ) : null}
-          </form>
-
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link
-              href="/professionals"
-              className="rounded-full border border-primary px-5 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary hover:text-white"
-            >
-              Back to Professionals
-            </Link>
-          </div>
         </div>
       </section>
     </main>

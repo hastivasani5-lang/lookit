@@ -63,7 +63,7 @@ export default async function AdminProfessionalUploadDetailsPage({ params }: { p
                   <tr>
                     <th className="px-4 py-3">Book</th>
                     <th className="px-4 py-3">Category</th>
-                    <th className="px-4 py-3">MRP</th>
+                    <th className="px-4 py-3">Price</th>
                     <th className="px-4 py-3">Source</th>
                     <th className="px-4 py-3 text-right">Open</th>
                   </tr>
@@ -73,7 +73,7 @@ export default async function AdminProfessionalUploadDetailsPage({ params }: { p
                     <tr key={book.id} className="border-t border-slate-100 text-slate-700">
                       <td className="px-4 py-3 font-medium text-slate-800">{book.name}</td>
                       <td className="px-4 py-3">{book.category}</td>
-                      <td className="px-4 py-3">₹{book.mrp}</td>
+                      <td className="px-4 py-3">{Number(book.mrp) > 0 ? `₹${book.mrp}` : "Free"}</td>
                       <td className="px-4 py-3 capitalize">{book.source}</td>
                       <td className="px-4 py-3">
                         <div className="flex justify-end">
@@ -104,6 +104,7 @@ export default async function AdminProfessionalUploadDetailsPage({ params }: { p
                 <thead className="bg-slate-50 text-left text-slate-500">
                   <tr>
                     <th className="px-4 py-3">Video</th>
+                    <th className="px-4 py-3">Price</th>
                     <th className="px-4 py-3">Source</th>
                     <th className="px-4 py-3">Size/Type</th>
                     <th className="px-4 py-3 text-right">Open</th>
@@ -113,6 +114,7 @@ export default async function AdminProfessionalUploadDetailsPage({ params }: { p
                   {library.videos.map((video) => (
                     <tr key={video.id} className="border-t border-slate-100 text-slate-700">
                       <td className="px-4 py-3 font-medium text-slate-800">{video.name}</td>
+                      <td className="px-4 py-3">{Number(video.mrp ?? "0") > 0 ? `₹${video.mrp}` : "Free"}</td>
                       <td className="px-4 py-3 capitalize">{video.source}</td>
                       <td className="px-4 py-3">{video.sizeLabel}</td>
                       <td className="px-4 py-3">

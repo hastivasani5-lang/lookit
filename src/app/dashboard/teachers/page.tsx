@@ -35,6 +35,7 @@ export default async function TeachersPage() {
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role,
         image: user.image ?? null,
         specialization: user.specialization ?? null,
         contactNumber: user.contactNumber ?? null,

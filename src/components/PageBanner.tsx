@@ -74,9 +74,17 @@
 "use client";
 
 import Image from "next/image";
+import { useMemo } from "react";
 import { Search, MapPin } from "lucide-react";
 
-export default function PageBanner() {
+type PageBannerProps = {
+  searchQuery: string;
+  onSearchQueryChange: (value: string) => void;
+};
+
+export default function PageBanner({ searchQuery, onSearchQueryChange }: PageBannerProps) {
+  const buttonLabel = useMemo(() => (searchQuery.trim() ? "Search" : "Search"), [searchQuery]);
+
   return (
     <section className="relative bg-[#e6efed] py-20 px-4 md:px-10 lg:px-16 overflow-hidden">
 
@@ -102,7 +110,10 @@ export default function PageBanner() {
         </p>
 
         {/* SEARCH BAR */}
-        <div className="mx-auto mt-8 flex w-full max-w-5xl flex-col gap-3 rounded-3xl border border-white/60 bg-white p-3 shadow-lg lg:flex-row lg:items-center">
+        <form
+          className="mx-auto mt-8 flex w-full max-w-5xl flex-col gap-3 rounded-3xl border border-white/60 bg-white p-3 shadow-lg lg:flex-row lg:items-center"
+          onSubmit={(event) => event.preventDefault()}
+        >
 
           {/* SEARCH INPUT */}
           <div className="flex items-center gap-2 flex-1 bg-[#f4f6f5] px-4 py-3 rounded-2xl">
@@ -110,6 +121,8 @@ export default function PageBanner() {
             <input
               type="text"
               placeholder="Search experts..."
+              value={searchQuery}
+              onChange={(event) => onSearchQueryChange(event.target.value)}
               className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
             />
           </div>
@@ -133,11 +146,11 @@ export default function PageBanner() {
           </div>
 
           {/* BUTTON */}
-          <button className="bg-primary hover:bg-[#18ab7d] text-white px-8 py-3 rounded-2xl text-sm font-semibold transition shadow-md">
-            Search
+          <button type="submit" className="bg-primary hover:bg-[#18ab7d] text-white px-8 py-3 rounded-2xl text-sm font-semibold transition shadow-md">
+            {buttonLabel}
           </button>
 
-        </div>
+        </form>
 
       </div>
 

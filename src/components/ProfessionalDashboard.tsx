@@ -25,6 +25,7 @@ type ProfessionalUser = {
   id: string;
   name: string;
   email: string;
+  role?: string;
   image?: string | null;
   specialization?: string | null;
   contactNumber?: string | null;

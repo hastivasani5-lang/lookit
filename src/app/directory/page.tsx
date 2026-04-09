@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import PageBanner from "@/components/PageBanner";
 import StatsSection from "@/components/StatsSection";
@@ -9,13 +10,16 @@ import CoursesPromoBanner from "@/components/CoursesPromoBanner";
 import Footer from "@/components/Footer";
 
 export default function CoursesPage() {
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("search")?.trim() ?? "";
+
   return (
     <>
       <Navbar />
       <main className="min-h-screen bg-[#eef5f3] pt-10">
         <PageBanner />
         <StatsSection />
-        <CoursesFilteredLayout />
+        <CoursesFilteredLayout searchQuery={searchQuery} />
         <CoursesPromoBanner />
         <CoursesInstructorsSection />
         <Footer />

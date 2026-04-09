@@ -12,14 +12,19 @@ import CourseGridSection, {
 
 type CoursesFilteredLayoutProps = {
   contentType?: ContentType;
+  searchQuery?: string;
 };
 
-export default function CoursesFilteredLayout({ contentType: initialContentType = "courses" }: CoursesFilteredLayoutProps) {
+export default function CoursesFilteredLayout({
+  contentType: initialContentType = "courses",
+  searchQuery = "",
+}: CoursesFilteredLayoutProps) {
   const [contentType, setContentType] = useState<ContentType>(initialContentType);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedReview, setSelectedReview] = useState("all");
   const [selectedRating, setSelectedRating] = useState("all");
   const rightPaneRef = useRef<HTMLDivElement | null>(null);
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
 
   const activeItems = useMemo(() => {
     if (contentType === "books") {
@@ -47,6 +52,11 @@ export default function CoursesFilteredLayout({ contentType: initialContentType 
 
   const filteredCourses = useMemo(() => {
     return activeItems.filter((course) => {
+      const searchMatch =
+        normalizedSearchQuery.length === 0 ||
+        course.title.toLowerCase().includes(normalizedSearchQuery) ||
+        course.category.toLowerCase().includes(normalizedSearchQuery);
+
       const categoryMatch =
         selectedCategory === "all" || course.category === selectedCategory;
 
@@ -61,9 +71,9 @@ export default function CoursesFilteredLayout({ contentType: initialContentType 
         (selectedRating === "4+" && course.rating >= 4) ||
         (selectedRating === "4.5+" && course.rating >= 4.5);
 
-      return categoryMatch && reviewMatch && ratingMatch;
+      return searchMatch && categoryMatch && reviewMatch && ratingMatch;
     });
-  }, [activeItems, selectedCategory, selectedReview, selectedRating]);
+  }, [activeItems, normalizedSearchQuery, selectedCategory, selectedReview, selectedRating]);
 
   const handleDesktopLockedScroll = (event: WheelEvent<HTMLDivElement>) => {
     if (typeof window === "undefined" || window.innerWidth < 1024) {

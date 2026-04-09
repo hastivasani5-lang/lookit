@@ -16,8 +16,8 @@ export default function PageBanner() {
 
     router.push(
       query
-        ? `/professionals?search=${encodeURIComponent(query)}`
-        : "/professionals"
+        ? `/directory?search=${encodeURIComponent(query)}`
+        : "/directory"
     );
   };
 

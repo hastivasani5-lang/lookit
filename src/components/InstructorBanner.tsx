@@ -65,7 +65,7 @@ export default function InstructorBanner() {
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-1 justify-center lg:justify-end lg:self-end lg:pr-6"
+            className="flex flex-1 justify-center lg:justify-end lg:self-end lg:pr-10"
           >
             <div className="relative inline-block">
               {/* Glow effect (optional) */}

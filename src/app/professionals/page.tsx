@@ -70,6 +70,7 @@ export default function ProfessionalsPage() {
   }, [searchParams]);
 
   const canUseSearch = status === "authenticated" && session?.user?.role === "student";
+  const liveProfessionalIds = useMemo(() => new Set(liveProfessionals.map((professional) => professional.id)), [liveProfessionals]);
 
   useEffect(() => {
     let isActive = true;
@@ -112,8 +113,14 @@ export default function ProfessionalsPage() {
   }, []);
 
   const professionals = useMemo(
-    () => [...liveProfessionals, ...seedProfessionals.map(buildSeedProfessional)],
-    [liveProfessionals],
+    () => {
+      const seededProfessionals = seedProfessionals
+        .map(buildSeedProfessional)
+        .filter((professional) => !liveProfessionalIds.has(professional.id));
+
+      return [...liveProfessionals, ...seededProfessionals];
+    },
+    [liveProfessionalIds, liveProfessionals],
   );
 
   const filteredProfessionals = useMemo(() => {
@@ -142,12 +149,19 @@ export default function ProfessionalsPage() {
     });
 
     return result.sort((a, b) => {
+      const aIsLive = liveProfessionalIds.has(a.id);
+      const bIsLive = liveProfessionalIds.has(b.id);
+
+      if (aIsLive !== bIsLive) {
+        return aIsLive ? -1 : 1;
+      }
+
       if (sortBy === "rating") {
         return b.rating - a.rating;
       }
       return b.reviews - a.reviews;
     });
-  }, [searchText, selectedCategory, selectedLanguage, selectedRating, selectedReviews, sortBy]);
+  }, [liveProfessionalIds, searchText, selectedCategory, selectedLanguage, selectedRating, selectedReviews, sortBy]);
 
   const visibleProfessionals = filteredProfessionals.slice(0, visibleCount);
 

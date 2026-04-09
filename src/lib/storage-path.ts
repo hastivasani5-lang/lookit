@@ -5,7 +5,15 @@ const LOCAL_DATA_DIR = path.join(process.cwd(), "data");
 const VERCEL_DATA_DIR = path.join(os.tmpdir(), "lookit-data");
 
 export function getDataDir() {
-  return process.env.VERCEL ? VERCEL_DATA_DIR : LOCAL_DATA_DIR;
+  if (process.env.VERCEL) {
+    return VERCEL_DATA_DIR;
+  }
+
+  if (process.cwd().startsWith("/var/task")) {
+    return VERCEL_DATA_DIR;
+  }
+
+  return LOCAL_DATA_DIR;
 }
 
 export function getDataFile(fileName: string) {

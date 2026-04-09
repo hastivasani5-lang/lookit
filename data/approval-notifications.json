@@ -1,5 +1,29 @@
 [
   {
+    "professionalId": "4e0ef160-d7d5-4ccc-b9da-9d6364f456b7",
+    "professionalName": "Hasti Vasani",
+    "professionalEmail": "hastivasani3@gmail.com",
+    "event": "decision",
+    "title": "Approval granted",
+    "message": "Your professional account has been approved. You can now log in.",
+    "status": "approved",
+    "audience": "professional",
+    "id": "35cee1a0-06f2-49b5-b4ec-139967b489bc",
+    "createdAt": "2026-04-09T05:30:29.771Z"
+  },
+  {
+    "professionalId": "4e0ef160-d7d5-4ccc-b9da-9d6364f456b7",
+    "professionalName": "Hasti Vasani",
+    "professionalEmail": "hastivasani3@gmail.com",
+    "event": "decision",
+    "title": "Professional approved",
+    "message": "Hasti Vasani was approved by Admin.",
+    "status": "approved",
+    "audience": "admin",
+    "id": "628f8627-713e-4b96-a890-0f82aa4dfc92",
+    "createdAt": "2026-04-09T05:30:29.769Z"
+  },
+  {
     "professionalId": "390d9473-a894-4432-8013-1c2b8ccdcfc7",
     "professionalName": "Hasti Vasani",
     "professionalEmail": "hastivasani72@gmail.com",

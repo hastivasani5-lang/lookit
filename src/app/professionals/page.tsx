@@ -7,7 +7,8 @@ import { MapPin, Search, Sparkles, Star } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { professionals } from "@/app/professionals/data";
+import { buildSeedProfessional, type PublicProfessional } from "@/lib/professional-display";
+import { professionals as seedProfessionals } from "@/app/professionals/data";
 
 const categoryOptions = [
   { label: "All Categories", value: "all" },
@@ -42,6 +43,7 @@ const languageOptions = [
 
 export default function ProfessionalsPage() {
   const [mounted, setMounted] = useState(false);
+  const [liveProfessionals, setLiveProfessionals] = useState<PublicProfessional[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedRating, setSelectedRating] = useState("all");
   const [selectedReviews, setSelectedReviews] = useState("all");
@@ -53,6 +55,50 @@ export default function ProfessionalsPage() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const loadProfessionals = async () => {
+      try {
+        const response = await fetch("/api/professionals", { cache: "no-store" });
+        const payload = (await response.json().catch(() => ({}))) as {
+          professionals?: PublicProfessional[];
+        };
+
+        if (!isActive) {
+          return;
+        }
+
+        if (!response.ok) {
+          setLiveProfessionals([]);
+          return;
+        }
+
+        setLiveProfessionals(Array.isArray(payload.professionals) ? payload.professionals : []);
+      } catch {
+        if (isActive) {
+          setLiveProfessionals([]);
+        }
+      }
+    };
+
+    void loadProfessionals();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  const liveProfessionalIds = useMemo(() => new Set(liveProfessionals.map((professional) => professional.id)), [liveProfessionals]);
+
+  const professionals = useMemo(() => {
+    const seededProfessionals = seedProfessionals
+      .map(buildSeedProfessional)
+      .filter((professional) => !liveProfessionalIds.has(professional.id));
+
+    return [...liveProfessionals, ...seededProfessionals];
+  }, [liveProfessionalIds, liveProfessionals]);
 
   const filteredProfessionals = useMemo(() => {
     const query = searchText.trim().toLowerCase();
@@ -80,12 +126,19 @@ export default function ProfessionalsPage() {
     });
 
     return result.sort((a, b) => {
+      const aIsLive = liveProfessionalIds.has(a.id);
+      const bIsLive = liveProfessionalIds.has(b.id);
+
+      if (aIsLive !== bIsLive) {
+        return aIsLive ? -1 : 1;
+      }
+
       if (sortBy === "rating") {
         return b.rating - a.rating;
       }
       return b.reviews - a.reviews;
     });
-  }, [searchText, selectedCategory, selectedLanguage, selectedRating, selectedReviews, sortBy]);
+  }, [liveProfessionalIds, searchText, selectedCategory, selectedLanguage, selectedRating, selectedReviews, sortBy]);
 
   const visibleProfessionals = filteredProfessionals.slice(0, visibleCount);
 

@@ -7,7 +7,6 @@ import { CreditCard, MapPin, PlayCircle, Star } from "lucide-react";
 
 import type { PublicProfessional } from "@/lib/professional-display";
 import { addCartItem } from "@/lib/cart-store";
-import { getOnlineProfessionalImage } from "../online-images";
 
 type UploadedBook = {
   id: string;
@@ -231,7 +230,7 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
           <aside className="sticky top-24 overflow-hidden rounded-4xl border border-[#dbe8e4] bg-white p-4 shadow-[0_20px_40px_rgba(15,23,42,0.08)] md:p-5 lg:rounded-4xl">
             <div className="relative overflow-hidden rounded-3xl">
               <Image
-                src={getOnlineProfessionalImage(professional.id)}
+                src={professional.image}
                 alt={professional.name}
                 width={600}
                 height={700}

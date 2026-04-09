@@ -13,63 +13,58 @@ const footerPages = [
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0f0f0f] text-white pt-16 px-4 md:px-10 lg:px-16">
-
-      <div className="max-w-7xl mx-auto">
-
+    <footer className="bg-[#f4f6f8] px-4 pt-14 pb-10 text-[#1f2937] md:px-10 lg:px-16">
+      <div className="mx-auto max-w-7xl rounded-[10px] bg-white px-5 py-6 shadow-[0_16px_50px_rgba(15,23,42,0.06)] md:px-8 md:py-8 lg:px-12 lg:py-10">
         {/* ================= TOP NEWSLETTER ================= */}
-        <div className="bg-[#1c1c1c] rounded-[20px] px-6 md:px-10 py-6 flex flex-col md:flex-row items-center justify-between gap-6 mb-16">
-
+        <div className="mb-14 flex flex-col items-start justify-between gap-6 rounded-[22px] bg-[#0f5254] px-6 py-7 text-white md:flex-row md:items-center md:px-10 md:py-8">
           {/* LOGO */}
           <div className="flex items-center gap-3">
-            <span className="text-xl font-bold tracking-[0.12em] text-white">LOOKIT</span>
+            <span className="text-xl font-bold tracking-[0.12em] text-white/95">LOOKIT</span>
           </div>
 
           {/* TEXT */}
-          <h3 className="text-lg md:text-xl font-semibold">
+          <h3 className="text-lg font-semibold leading-tight md:text-2xl">
             SUBSCRIB <span className="text-primary">NEWSLETTER</span>
           </h3>
 
           {/* INPUT */}
-          <div className="flex items-center bg-[#111] border border-gray-700 rounded-full px-4 py-2 w-full md:w-88">
+          <div className="flex w-full items-center rounded-full border border-white/15 bg-white/10 px-2 py-2 backdrop-blur-sm md:w-88">
             <input
               type="email"
               placeholder="Enter Your Email"
-              className="bg-transparent outline-none flex-1 text-sm text-gray-300"
+              className="flex-1 bg-transparent px-3 text-sm text-white/90 placeholder:text-white/65 outline-none"
             />
-            <button className="bg-primary w-10 h-10 rounded-full flex items-center justify-center text-white">
+            <button className="flex h-10 w-10 items-center justify-center rounded-full bg-[#c8ea93] text-[#0f5254] transition hover:bg-[#b8e27b]">
               ➤
             </button>
           </div>
-
         </div>
 
         {/* ================= MAIN FOOTER ================= */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 mb-12">
-
+        <div className="mb-12 grid gap-10 border-b border-[#e9edf0] pb-10 md:grid-cols-2 lg:grid-cols-3">
           {/* GET IN TOUCH */}
           <div>
-            <h3 className="font-semibold text-lg mb-4">Get in Touch</h3>
-            <p className="text-gray-400 text-sm leading-relaxed mb-4">
+            <h3 className="mb-4 text-lg font-semibold text-[#132026]">Get in Touch</h3>
+            <p className="mb-4 text-sm leading-relaxed text-[#6b7280]">
               Educate the ultimate destination for We are committed to transforming without standards
             </p>
 
-            <p className="flex items-center gap-2 text-white font-semibold mb-2">
+            <p className="mb-2 flex items-center gap-2 font-semibold text-[#132026]">
               📞 +123 (4567) 890
             </p>
 
-            <p className="flex items-center gap-2 text-gray-400 text-sm">
+            <p className="flex items-center gap-2 text-sm text-[#6b7280]">
               ✉ example@gmail.com
             </p>
           </div>
 
           {/* PAGES */}
           <div>
-            <h3 className="font-semibold text-lg mb-4">Pages</h3>
-            <ul className="space-y-3 text-gray-400 text-sm">
+            <h3 className="mb-4 text-lg font-semibold text-[#132026]">Pages</h3>
+            <ul className="space-y-3 text-sm text-[#6b7280]">
               {footerPages.map((page) => (
                 <li key={page.href}>
-                  <Link href={page.href} className="transition hover:text-white">
+                  <Link href={page.href} className="transition hover:text-[#0f5254]">
                     ➜ {page.label}
                   </Link>
                 </li>
@@ -79,10 +74,9 @@ export default function Footer() {
 
           {/* RECENT POSTS */}
           <div>
-            <h3 className="font-semibold text-lg mb-4">Recent Posts</h3>
+            <h3 className="mb-4 text-lg font-semibold text-[#132026]">Recent Posts</h3>
 
             <div className="space-y-4">
-
               {/* POST 1 */}
               <div className="flex gap-3">
                 <Image
@@ -93,10 +87,10 @@ export default function Footer() {
                   alt=""
                 />
                 <div>
-                  <p className="text-sm">
+                  <p className="text-sm text-[#1f2937]">
                     10 Proven Strategies to Online Learning
                   </p>
-                  <p className="text-primary text-xs">8 Jan, 2025</p>
+                  <p className="text-xs text-primary">8 Jan, 2025</p>
                 </div>
               </div>
 
@@ -110,22 +104,19 @@ export default function Footer() {
                   alt=""
                 />
                 <div>
-                  <p className="text-sm">
+                  <p className="text-sm text-[#1f2937]">
                     Trends that are shaping the Learning...
                   </p>
-                  <p className="text-primary text-xs">8 Jan, 2025</p>
+                  <p className="text-xs text-primary">8 Jan, 2025</p>
                 </div>
               </div>
-
             </div>
           </div>
-
         </div>
 
         {/* ================= BOTTOM ================= */}
-        <div className="border-t border-gray-800 pt-6 pb-6 flex flex-col md:flex-row items-center justify-between gap-4">
-
-          <p className="text-gray-400 text-sm">
+        <div className="flex flex-col items-center justify-between gap-4 pt-2 pb-2 md:flex-row">
+          <p className="text-sm text-[#6b7280]">
             © 2025 <span className="text-primary">Educate</span>. Designed By Dream IT Solution
           </p>
 
@@ -134,15 +125,13 @@ export default function Footer() {
             {["f", "x", "in", "p"].map((item, i) => (
               <div
                 key={i}
-                className="w-9 h-9 rounded-full bg-[#1c1c1c] flex items-center justify-center text-sm"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-[#ecf4ef] text-sm font-semibold text-[#0f5254] transition hover:bg-[#dceee5]"
               >
                 {item}
               </div>
             ))}
           </div>
-
         </div>
-
       </div>
     </footer>
   );

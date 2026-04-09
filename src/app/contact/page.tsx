@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import ProfessionalsMapSection from "@/components/ProfessionalsMapSection";
+import Footer from "@/components/Footer";
+import ContactFormCard from "@/components/ContactFormCard";
 import { BookOpen, Mail, MapPin, Phone } from "lucide-react";
 
 export default function ContactPage() {
@@ -9,7 +11,7 @@ export default function ContactPage() {
     <>
       <Navbar />
 
-      <main className="bg-[#f6f6f6] pb-12 pt-24">
+      <main className="min-h-screen bg-[#f6f6f6] pb-12 pt-24">
         <section className="relative isolate h-[390px] w-full overflow-hidden bg-[#ecf2ef]">
           <div className="absolute inset-0 bg-[radial-gradient(140%_95%_at_-4%_50%,rgba(77,195,157,0.32)_0%,rgba(77,195,157,0.18)_30%,rgba(236,242,239,0.88)_58%,rgba(236,242,239,0)_100%)]" />
           <div className="absolute inset-0 bg-[conic-gradient(from_188deg_at_-6%_50%,rgba(45,179,137,0.18),rgba(45,179,137,0.04),rgba(45,179,137,0.2),rgba(45,179,137,0.05),rgba(45,179,137,0.18))]" />
@@ -111,56 +113,7 @@ export default function ContactPage() {
               </div>
             </div>
 
-            <div className="relative rounded-[22px] border border-[#ececec] bg-white px-5 py-7 shadow-[0_18px_40px_rgba(15,23,42,0.04)] md:px-7 md:py-9 lg:px-8 lg:py-10">
-              <p className="text-center text-xs font-semibold uppercase tracking-[0.12em] text-[#22c58b]">Contact Us</p>
-              <h3 className="mt-2 text-center text-3xl font-extrabold tracking-[-0.02em] text-[#1d2027] md:text-4xl">Feel Free to Contact Us</h3>
-
-              <form className="mt-7 space-y-4 md:space-y-4">
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
-                  <input
-                    type="text"
-                    placeholder="Your Name *"
-                    className="h-[52px] rounded-lg border border-[#e5e5e5] px-5 text-base font-medium text-[#18323f] outline-none placeholder:text-[#18323f]"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Phone No"
-                    className="h-[52px] rounded-lg border border-[#e5e5e5] px-5 text-base font-medium text-[#18323f] outline-none placeholder:text-[#18323f]"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
-                  <input
-                    type="email"
-                    placeholder="Enter E-Mail *"
-                    className="h-[52px] rounded-lg border border-[#e5e5e5] px-5 text-base font-medium text-[#18323f] outline-none placeholder:text-[#18323f]"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Select Subjects *"
-                    className="h-[52px] rounded-lg border border-[#e5e5e5] px-5 text-base font-medium text-[#18323f] outline-none placeholder:text-[#18323f]"
-                  />
-                </div>
-
-                <textarea
-                  rows={4}
-                  placeholder="Write Message :"
-                  className="min-h-[138px] w-full rounded-lg border border-[#e5e5e5] px-5 py-4 text-base font-medium text-[#18323f] outline-none placeholder:text-[#18323f]"
-                />
-
-                <label className="flex items-center gap-3 pt-1 text-base font-medium text-[#666b72]">
-                  <input type="checkbox" className="h-4 w-4 rounded border-[#cfcfcf] accent-[#22c58b]" />
-                  <span>Agree with Terms and Conditions</span>
-                </label>
-
-                <button
-                  type="button"
-                  className="mt-3 inline-flex h-[48px] items-center justify-center rounded-full bg-[#22c58b] px-8 text-base font-bold text-white transition hover:bg-[#1dad7a]"
-                >
-                  Send Message
-                </button>
-              </form>
-            </div>
+            <ContactFormCard />
           </div>
 
           <div className="pointer-events-none absolute bottom-[-16px] right-[12px] hidden grid-cols-8 gap-2 opacity-35 lg:grid">
@@ -172,6 +125,8 @@ export default function ContactPage() {
 
         <ProfessionalsMapSection />
       </main>
+
+      <Footer />
     </>
   );
 }

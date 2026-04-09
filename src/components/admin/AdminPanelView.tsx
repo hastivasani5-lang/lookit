@@ -103,6 +103,17 @@ type StudentActivitySummary = {
   lastActivity: string;
 };
 
+type ContactMessage = {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  subject: string;
+  message: string;
+  agreedToTerms: boolean;
+  createdAt: string;
+};
+
 type DetailModalState = {
   title: string;
   subtitle?: string;
@@ -452,6 +463,8 @@ export default function AdminPanelView() {
   const [isCategoryFormOpen, setIsCategoryFormOpen] = useState(false);
   const [notifications, setNotifications] = useState<ProfessionalNotification[]>([]);
   const [notificationsLoading, setNotificationsLoading] = useState(false);
+  const [contactMessages, setContactMessages] = useState<ContactMessage[]>([]);
+  const [contactMessagesLoading, setContactMessagesLoading] = useState(false);
   const [usersLoading, setUsersLoading] = useState(false);
   const [usersError, setUsersError] = useState("");
   const [usersTab, setUsersTab] = useState<"students" | "professionals">("students");
@@ -682,21 +695,33 @@ export default function AdminPanelView() {
 
     const loadNotifications = async () => {
       setNotificationsLoading(true);
+      setContactMessagesLoading(true);
 
       try {
-        const response = await fetch("/api/admin/notifications", { cache: "no-store" });
+        const [notificationsResponse, contactMessagesResponse] = await Promise.all([
+          fetch("/api/admin/notifications", { cache: "no-store" }),
+          fetch("/api/admin/contact-messages", { cache: "no-store" }),
+        ]);
 
-        if (!response.ok) {
+        if (!notificationsResponse.ok) {
           setNotifications([]);
-          return;
+        } else {
+          const data = (await notificationsResponse.json()) as { notifications?: ProfessionalNotification[] };
+          setNotifications(Array.isArray(data.notifications) ? data.notifications : []);
         }
 
-        const data = (await response.json()) as { notifications?: ProfessionalNotification[] };
-        setNotifications(Array.isArray(data.notifications) ? data.notifications : []);
+        if (!contactMessagesResponse.ok) {
+          setContactMessages([]);
+        } else {
+          const data = (await contactMessagesResponse.json()) as { messages?: ContactMessage[] };
+          setContactMessages(Array.isArray(data.messages) ? data.messages : []);
+        }
       } catch {
         setNotifications([]);
+        setContactMessages([]);
       } finally {
         setNotificationsLoading(false);
+        setContactMessagesLoading(false);
       }
     };
 
@@ -1095,7 +1120,7 @@ export default function AdminPanelView() {
                     {activeSection === "Categories" && "Manage all professional categories in one place."}
                     {activeSection === "Uploads" && "Upload books and assign metadata for publishing."}
                     {activeSection === "Payouts" && "Track payouts and settle teacher earnings securely."}
-                    {activeSection === "Alerts" && "Professional updates appear here automatically."}
+                    {activeSection === "Alerts" && "Professional updates and contact form submissions appear here automatically."}
                   </p>
                 </div>
 
@@ -1266,38 +1291,86 @@ export default function AdminPanelView() {
                   </div>
                 </div>
               ) : activeSection === "Alerts" ? (
-                <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <h3 className="text-lg font-semibold text-slate-800">Professional Notifications</h3>
-                      <p className="text-sm text-slate-500">Latest profile, certificate, and upgrade changes from professionals.</p>
+                <div className="mt-6 space-y-5">
+                  <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-800">Professional Notifications</h3>
+                        <p className="text-sm text-slate-500">Latest profile, certificate, and upgrade changes from professionals.</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-5 overflow-hidden rounded-xl border border-slate-200">
+                      {notificationsLoading ? (
+                        <div className="bg-white p-4 text-sm text-slate-500">Loading notifications...</div>
+                      ) : notifications.length > 0 ? (
+                        <div className="divide-y divide-slate-100">
+                          {notifications.map((notification) => (
+                            <div key={notification.id} className="bg-white p-4">
+                              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                                <div className="space-y-1">
+                                  <p className="font-semibold text-slate-800">{notification.professionalName}</p>
+                                  <p className="text-xs text-slate-500">{notification.professionalEmail}</p>
+                                  <p className="text-sm text-slate-700">{notification.summary}</p>
+                                  <p className="text-xs text-slate-500">{notification.details}</p>
+                                </div>
+                                <span className="inline-flex w-fit rounded-full border border-[#dbeafe] bg-[#eff6ff] px-3 py-1 text-xs font-semibold text-[#2563eb]">
+                                  {new Date(notification.createdAt).toLocaleString()}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="bg-white p-4 text-sm text-slate-500">No professional updates yet.</div>
+                      )}
                     </div>
                   </div>
 
-                  <div className="mt-5 overflow-hidden rounded-xl border border-slate-200">
-                    {notificationsLoading ? (
-                      <div className="bg-white p-4 text-sm text-slate-500">Loading notifications...</div>
-                    ) : notifications.length > 0 ? (
-                      <div className="divide-y divide-slate-100">
-                        {notifications.map((notification) => (
-                          <div key={notification.id} className="bg-white p-4">
-                            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                              <div className="space-y-1">
-                                <p className="font-semibold text-slate-800">{notification.professionalName}</p>
-                                <p className="text-xs text-slate-500">{notification.professionalEmail}</p>
-                                <p className="text-sm text-slate-700">{notification.summary}</p>
-                                <p className="text-xs text-slate-500">{notification.details}</p>
-                              </div>
-                              <span className="inline-flex w-fit rounded-full border border-[#dbeafe] bg-[#eff6ff] px-3 py-1 text-xs font-semibold text-[#2563eb]">
-                                {new Date(notification.createdAt).toLocaleString()}
-                              </span>
-                            </div>
-                          </div>
-                        ))}
+                  <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-800">Contact Form Submissions</h3>
+                        <p className="text-sm text-slate-500">Messages submitted from the Contact page form.</p>
                       </div>
-                    ) : (
-                      <div className="bg-white p-4 text-sm text-slate-500">No professional updates yet.</div>
-                    )}
+                    </div>
+
+                    <div className="mt-5 overflow-hidden rounded-xl border border-slate-200">
+                      {contactMessagesLoading ? (
+                        <div className="bg-white p-4 text-sm text-slate-500">Loading contact submissions...</div>
+                      ) : contactMessages.length > 0 ? (
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm">
+                            <thead className="bg-slate-50 text-left text-slate-500">
+                              <tr>
+                                <th className="px-4 py-3">Name</th>
+                                <th className="px-4 py-3">Email</th>
+                                <th className="px-4 py-3">Phone</th>
+                                <th className="px-4 py-3">Subject</th>
+                                <th className="px-4 py-3">Message</th>
+                                <th className="px-4 py-3">Submitted</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {contactMessages.map((entry) => (
+                                <tr key={entry.id} className="border-t border-slate-100 text-slate-700">
+                                  <td className="px-4 py-3 font-medium text-slate-800">{entry.name}</td>
+                                  <td className="px-4 py-3">{entry.email}</td>
+                                  <td className="px-4 py-3">{entry.phone || "-"}</td>
+                                  <td className="px-4 py-3">{entry.subject}</td>
+                                  <td className="px-4 py-3 max-w-[340px]">
+                                    <p className="line-clamp-3">{entry.message}</p>
+                                  </td>
+                                  <td className="px-4 py-3 text-xs text-slate-500">{new Date(entry.createdAt).toLocaleString()}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : (
+                        <div className="bg-white p-4 text-sm text-slate-500">No contact submissions yet.</div>
+                      )}
+                    </div>
                   </div>
                 </div>
               ) : activeSection === "Payouts" ? (

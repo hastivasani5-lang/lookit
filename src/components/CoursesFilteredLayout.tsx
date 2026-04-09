@@ -10,8 +10,12 @@ import CourseGridSection, {
   allVideoLearnings,
 } from "@/components/CourseGridSection";
 
-export default function CoursesFilteredLayout() {
-  const [contentType, setContentType] = useState<ContentType>("courses");
+type CoursesFilteredLayoutProps = {
+  contentType?: ContentType;
+};
+
+export default function CoursesFilteredLayout({ contentType: initialContentType = "courses" }: CoursesFilteredLayoutProps) {
+  const [contentType, setContentType] = useState<ContentType>(initialContentType);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedReview, setSelectedReview] = useState("all");
   const [selectedRating, setSelectedRating] = useState("all");

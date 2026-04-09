@@ -107,7 +107,7 @@ const Navbar = () => {
       { label: "Find Experts", href: "/directory", type: "Page" },
       { label: "Categories", href: "/categories", type: "Page" },
       { label: "Professionals", href: "/professionals", type: "Page" },
-      { label: "Resources", href: "/resources", type: "Page" },
+      { label: "Shop", href: "/shop", type: "Page" },
       { label: "About", href: "/about", type: "Page" },
       { label: "Contact", href: "/contact", type: "Page" },
       { label: "Cart", href: "/cart", type: "Page" },
@@ -137,7 +137,7 @@ const Navbar = () => {
       { label: "Find Experts", href: "/directory" },
       { label: "Categories", href: "/categories" },
       { label: "Professionals", href: "/professionals" },
-      { label: "Resources", href: "/resources" },
+      { label: "Shop", href: "/shop" },
       { label: "About", href: "/about" },
       { label: "Contact", href: "/contact" },
       { label: "Cart", href: "/cart" },
@@ -162,7 +162,7 @@ const Navbar = () => {
     return (
       <header className="fixed top-0 z-50 w-full bg-white shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-3 py-2 sm:px-4 sm:py-3 md:px-8">
-          <div className="h-8 w-[118px] rounded bg-slate-100 sm:h-9 sm:w-[132px] md:h-10 md:w-[148px]" />
+          <div className="h-8 w-29.5 rounded bg-slate-100 sm:h-9 sm:w-33 md:h-10 md:w-37" />
           <div className="h-8 w-8 rounded-full bg-slate-100 sm:h-10 sm:w-10" />
         </div>
       </header>
@@ -181,7 +181,7 @@ const Navbar = () => {
           <Link href="/directory" className="transition hover:text-primary">Find Experts</Link>
           <Link href="/categories" className="transition hover:text-primary">Categories</Link>
           <Link href="/professionals" className="transition hover:text-primary">Professionals</Link>
-          <Link href="/resources" className="transition hover:text-primary">Resources</Link>
+          <Link href="/shop" className="transition hover:text-primary">Shop</Link>
           <Link href="/about" className="transition hover:text-primary">About</Link>
           <Link href="/contact" className="transition hover:text-primary">Contact</Link>
         </nav>
@@ -321,7 +321,7 @@ const Navbar = () => {
             <Link href="/directory" className="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100" onClick={() => setMobileMenuOpen(false)}>Find Experts</Link>
             <Link href="/categories" className="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100" onClick={() => setMobileMenuOpen(false)}>Categories</Link>
             <Link href="/professionals" className="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100" onClick={() => setMobileMenuOpen(false)}>Professionals</Link>
-            <Link href="/resources" className="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100" onClick={() => setMobileMenuOpen(false)}>Resources</Link>
+            <Link href="/shop" className="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100" onClick={() => setMobileMenuOpen(false)}>Shop</Link>
             <Link href="/about" className="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100" onClick={() => setMobileMenuOpen(false)}>About</Link>
             <Link href="/contact" className="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
             {!isAuthenticated ? (

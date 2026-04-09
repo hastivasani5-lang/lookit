@@ -170,6 +170,11 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
       ? (reviews.reduce((sum, item) => sum + item.rating, 0) / reviews.length).toFixed(1)
       : "0.0";
 
+  const sortedReviews = useMemo(
+    () => [...reviews].sort((left, right) => right.rating - left.rating || right.id - left.id),
+    [reviews]
+  );
+
   const handleAddToCart = (item: ContentItem) => {
     if (!canAddToCart) {
       return;
@@ -450,7 +455,7 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
           </form>
 
           <ul className="mt-6 space-y-4">
-            {reviews.map((review) => (
+            {sortedReviews.map((review) => (
               <li key={review.id} className="rounded-3xl border border-gray-200 bg-[#fbfdfc] p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                 <div className="flex items-start gap-4">
                   <span className="mt-0.5 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-[#e7f6f0] to-[#d7f0e6] text-sm font-bold text-primary">

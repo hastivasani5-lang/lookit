@@ -1,6 +1,5 @@
-import React from "react";
-import ShopProductCard from "./ShopProductCard";
 import React, { useEffect, useRef, useState } from "react";
+import ShopProductCard from "./ShopProductCard";
 
 interface ShopProductGridProps {
   items: Array<{

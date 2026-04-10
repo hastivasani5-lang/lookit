@@ -1,3 +1,4 @@
+"use client";
 import Navbar from "@/components/Navbar";
 import About from "@/components/Aboutbannar";
 import AboutHero from "@/components/AboutHero";

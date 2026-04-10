@@ -924,27 +924,26 @@ export default function AdminPanelView() {
   };
 
   return (
-    <main className="min-h-screen bg-[#eef0fb] p-3 sm:p-4 md:p-6">
-      <section className="mx-auto grid min-h-[calc(100vh-1.5rem)] w-full max-w-[1450px] overflow-hidden rounded-[28px] bg-white shadow-[0_18px_55px_rgba(15,23,42,0.14)] lg:grid-cols-[250px_minmax(0,1fr)]">
-        <aside className="hidden border-r border-slate-100 bg-white px-4 py-5 lg:flex lg:flex-col">
+    <main className="min-h-screen bg-[#eef5f3] p-3 sm:p-4 md:p-6 font-sans">
+      <section className="flex min-h-[calc(100vh-1.5rem)] w-full overflow-hidden rounded-[28px] neumorph-admin-main bg-[#eef5f3] font-sans">
+        <aside className="fixed left-0 top-0 z-30 h-full w-[250px] border-r border-slate-100 bg-[#eef5f3] px-4 py-5 flex flex-col neumorph-admin-sidebar">
           <div className="pb-6">
             <span className="text-2xl font-bold tracking-[0.12em] text-slate-900">LOOKIT</span>
           </div>
 
-          <nav className="space-y-1.5">
+          <nav className="space-y-2">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeSection === item.label;
-
               return (
                 <button
                   key={item.label}
                   type="button"
                   onClick={() => setActiveSection(item.label)}
-                  className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition ${
+                  className={`flex w-full items-center justify-between rounded-2xl px-4 py-2 text-left text-sm font-semibold transition neumorph-sidebar-btn ${
                     isActive
-                      ? "bg-[#ecf9f3] text-[#1ec28e]"
-                      : "text-slate-500 hover:bg-slate-50"
+                      ? "neumorph-sidebar-btn-active"
+                      : "neumorph-sidebar-btn-inactive"
                   }`}
                 >
                   <span className="flex items-center gap-2">
@@ -954,89 +953,135 @@ export default function AdminPanelView() {
                 </button>
               );
             })}
+                <style>{`
+                  .neumorph-btn, .neumorph-sidebar-btn {
+                    background: #eef5f3;
+                    box-shadow: 6px 6px 12px #d0dbd6, -6px -6px 12px #ffffff;
+                    border-radius: 1rem;
+                    color: #2c5a48;
+                    font-weight: 600;
+                    transition: all 0.2s;
+                  }
+                  .neumorph-btn-active, .neumorph-sidebar-btn-active {
+                    background: #2d6a4f !important;
+                    color: #fff !important;
+                    box-shadow: 8px 8px 16px #d0dbd6, -8px -8px 16px #ffffff !important;
+                  }
+                  .neumorph-btn:hover:not(.neumorph-btn-active), .neumorph-sidebar-btn:hover:not(.neumorph-sidebar-btn-active) {
+                    box-shadow: 3px 3px 6px #d0dbd6, -3px -3px 6px #ffffff;
+                  }
+                  .neumorph-btn:active {
+                    box-shadow: 2px 2px 4px #d0dbd6, -2px -2px 4px #ffffff;
+                  }
+                `}</style>
           </nav>
 
           <div className="mt-auto">
             <button
               type="button"
               onClick={onLogout}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+              className="w-full rounded-2xl bg-[#eef5f3] border-none px-4 py-2 text-sm font-semibold text-[#2d6a4f] shadow-[3px_3px_6px_#d0dbd6,-3px_-3px_6px_#ffffff] hover:shadow-inner transition-all"
             >
               Logout
             </button>
           </div>
         </aside>
 
-        <div className={`bg-[#f8f9ff] p-3 sm:p-4 md:p-5 transition ${selectedStudent || detailModal || adminProfileOpen || isCategoryFormOpen ? "blur-sm" : ""}`}>
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white p-3 sm:p-4">
+        <div className={`neumorph-admin-content flex-1 p-3 sm:p-4 md:p-5 transition ml-[250px] h-screen overflow-y-auto hide-scrollbar ${selectedStudent || detailModal || adminProfileOpen || isCategoryFormOpen ? "blur-sm" : ""}`}>
+                <style>{`
+                  .hide-scrollbar {
+                    scrollbar-width: none; /* Firefox */
+                    -ms-overflow-style: none; /* IE 10+ */
+                  }
+                  .hide-scrollbar::-webkit-scrollbar {
+                    display: none; /* Chrome/Safari/Webkit */
+                  }
+                `}</style>
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl neumorph-admin-card p-4 shadow-[8px_8px_24px_#d0dbd6,-8px_-8px_24px_#ffffff]">
             <input
               type="text"
-              placeholder="Search anything here"
-              className="h-10 w-full max-w-xs rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-[#1ec28e]"
+              placeholder="Search anything here..."
+              className="h-11 w-full max-w-xs rounded-2xl border-none bg-[#f6fefb] px-4 text-sm text-slate-800 shadow-[inset_4px_4px_12px_#d0dbd6,inset_-4px_-4px_12px_#ffffff] outline-none focus:ring-2 focus:ring-[#1ec28e] transition"
+              style={{ boxShadow: 'inset 4px 4px 12px #d0dbd6, inset -4px -4px 12px #ffffff' }}
             />
-            <div className="flex items-center gap-3 text-sm">
+            <div className="flex items-center gap-4 text-sm">
               <span className="hidden text-slate-600 sm:inline">Open For Order</span>
-              <span className="h-2.5 w-2.5 rounded-full bg-[#1ec28e]" />
-              <Bell className="h-4 w-4 text-slate-500" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#1ec28e] shadow-[1px_1px_3px_#bfe9cb,-1px_-1px_3px_#ffffff]" />
+              <Bell className="h-5 w-5 text-[#1ec28e]" />
               <button
                 type="button"
                 onClick={() => setAdminProfileOpen(true)}
-                className="flex items-center gap-2 rounded-full bg-slate-50 px-2 py-1 transition hover:bg-slate-100"
+                className="flex items-center gap-2 rounded-full bg-[#f6fefb] px-2.5 py-1.5 shadow-[2px_2px_8px_#d0dbd6,-2px_-2px_8px_#ffffff] transition hover:shadow-inner"
                 aria-label="Open admin profile"
                 title={ADMIN_PROFILE.email}
               >
                 <Image
                   src={ADMIN_PROFILE.avatar}
                   alt="Admin profile"
-                  width={24}
-                  height={24}
-                  className="h-6 w-6 rounded-full object-cover"
+                  width={28}
+                  height={28}
+                  className="h-7 w-7 rounded-full object-cover border border-[#bfe9cb]"
                 />
                 <span className="text-slate-700">{ADMIN_PROFILE.name}</span>
               </button>
             </div>
           </div>
 
-          <div className="mb-4 flex gap-2 overflow-x-auto rounded-xl bg-white p-2 lg:hidden">
+          <div className="mb-4 flex gap-2 overflow-x-auto rounded-xl neumorph-admin-card p-2 lg:hidden">
             {menuItems.map((item) => (
               <button
                 key={item.label}
                 type="button"
                 onClick={() => setActiveSection(item.label)}
-                className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition ${
+                className={`whitespace-nowrap rounded-2xl px-4 py-1.5 text-xs font-semibold neumorph-admin-btn transition ${
                   activeSection === item.label
-                    ? "bg-[#fdf1f3] text-[#f15068]"
-                    : "bg-slate-50 text-slate-500"
+                    ? "bg-[#2d6a4f] text-white shadow-[8px_8px_16px_#d0dbd6,-8px_-8px_16px_#ffffff]"
+                    : "bg-[#eef5f3] text-[#2c5a48] shadow-[3px_3px_6px_#d0dbd6,-3px_-3px_6px_#ffffff] hover:shadow-inner"
                 }`}
               >
                 {item.label}
               </button>
             ))}
           </div>
+      <style>{`
+        .neumorph-admin-sidebar {
+          background: #eef5f3;
+          box-shadow: 12px 12px 24px #d0dbd6, -12px -12px 24px #ffffff;
+          transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+        }
+        .neumorph-admin-btn {
+          background: #eef5f3;
+          box-shadow: 3px 3px 6px #d0dbd6, -3px -3px 6px #ffffff;
+          transition: all 0.2s;
+        }
+        .neumorph-admin-btn:active {
+          box-shadow: 1px 1px 2px #d0dbd6, -1px -1px 2px #ffffff;
+        }
+      `}</style>
 
           {activeSection === "Dashboard" ? (
-            <div className="rounded-2xl bg-white p-4 sm:p-5">
+            <div className="rounded-2xl neumorph-admin-card p-4 sm:p-5">
               <h2 className="text-3xl font-semibold text-slate-800">Welcome.</h2>
               <p className="mb-4 text-sm text-slate-500">Navigate the future of education with Schooli.</p>
 
               <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-xl bg-[#f7f0ff] p-4">
-                  <p className="text-xs text-slate-500">Students</p>
-                  <p className="text-3xl font-bold text-slate-800">15.00K</p>
+                <div className="rounded-2xl neumorph-admin-stat p-4">
+                  <p className="text-xs text-[#2c5a48]">Students</p>
+                  <p className="text-3xl font-bold text-[#0f2c21]">15.00K</p>
                 </div>
-                <div className="rounded-xl bg-[#eef7ff] p-4">
-                  <p className="text-xs text-slate-500">Teachers</p>
-                  <p className="text-3xl font-bold text-slate-800">200</p>
+                <div className="rounded-2xl neumorph-admin-stat p-4">
+                  <p className="text-xs text-[#2c5a48]">Teachers</p>
+                  <p className="text-3xl font-bold text-[#0f2c21]">200</p>
                 </div>
-                <div className="rounded-xl bg-[#fff5ef] p-4">
-                  <p className="text-xs text-slate-500">Awards</p>
-                  <p className="text-3xl font-bold text-slate-800">5.6K</p>
+                <div className="rounded-2xl neumorph-admin-stat p-4">
+                  <p className="text-xs text-[#2c5a48]">Awards</p>
+                  <p className="text-3xl font-bold text-[#0f2c21]">5.6K</p>
                 </div>
               </div>
 
               <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
                 <div className="space-y-4">
-                  <div className="rounded-xl border border-slate-100 bg-white p-4">
+                  <div className="rounded-2xl neumorph-admin-card border border-transparent p-4">
                     <div className="mb-3 flex items-center justify-between">
                       <h3 className="font-semibold text-slate-800">Star Students</h3>
                       <button className="text-slate-400 hover:text-slate-600"><MoreHorizontal className="h-4 w-4" /></button>
@@ -1063,7 +1108,7 @@ export default function AdminPanelView() {
                     </table>
                   </div>
 
-                  <div className="rounded-xl border border-slate-100 bg-white p-4">
+                  <div className="rounded-2xl neumorph-admin-card border border-transparent p-4">
                     <div className="mb-3 flex items-center justify-between">
                       <h3 className="font-semibold text-slate-800">Notifications</h3>
                       <button className="text-sm text-slate-400 hover:text-slate-600">View all</button>
@@ -1076,17 +1121,39 @@ export default function AdminPanelView() {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="rounded-xl border border-slate-100 bg-white p-4">
+                  <div className="rounded-2xl neumorph-admin-card border border-transparent p-4">
                     <h3 className="font-semibold text-slate-800">Course Statistics</h3>
-                    <div className="mx-auto mt-4 grid h-40 w-40 place-items-center rounded-full bg-[conic-gradient(#7c4dff_0_45%,#1ec28e_45%_73%,#ffd166_73%_100%)] p-3">
-                      <div className="grid h-full w-full place-items-center rounded-full bg-white text-center">
+                    <div className="mx-auto mt-4 grid h-40 w-40 place-items-center rounded-full neumorph-admin-stat p-3">
+                      <div className="grid h-full w-full place-items-center rounded-full bg-[#eef5f3] text-center">
                         <p className="text-xs text-slate-400">Total</p>
                         <p className="text-2xl font-bold text-slate-800">15000</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="rounded-xl border border-slate-100 bg-white p-4">
+                  <div className="rounded-2xl neumorph-admin-card border border-transparent p-4">
+                          <style>{`
+                            .neumorph-admin-main {
+                              background: #eef5f3;
+                              box-shadow: 20px 20px 40px #d0dbd6, -20px -20px 40px #ffffff;
+                            }
+                            .neumorph-admin-content {
+                              background: #eef5f3;
+                            }
+                            .neumorph-admin-card {
+                              background: #eef5f3;
+                              box-shadow: 12px 12px 24px #d0dbd6, -12px -12px 24px #ffffff;
+                              transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+                            }
+                            .neumorph-admin-stat {
+                              background: #eef5f3;
+                              box-shadow: 8px 8px 16px #d0dbd6, -8px -8px 16px #ffffff;
+                              transition: all 0.2s;
+                            }
+                            .neumorph-admin-stat:active {
+                              box-shadow: 1px 1px 2px #d0dbd6, -1px -1px 2px #ffffff;
+                            }
+                          `}</style>
                     <h3 className="font-semibold text-slate-800">Total Exams</h3>
                     <p className="mt-2 text-4xl font-bold text-slate-800">256</p>
                     <p className="mt-1 text-xs text-slate-500">Here is your total exams ratio this month.</p>
@@ -1156,73 +1223,57 @@ export default function AdminPanelView() {
                     </div>
                   </div>
 
-                  <div className="mt-5 overflow-hidden rounded-xl border border-slate-200">
-                    <table className="w-full text-sm">
-                      <thead className="bg-slate-50 text-left text-slate-500">
-                        <tr>
-                          <th className="px-4 py-3">Name</th>
-                          <th className="px-4 py-3">Type</th>
-                          <th className="px-4 py-3">Updated</th>
-                          <th className="px-4 py-3">Status</th>
-                          <th className="px-4 py-3 text-right">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {approvalRequests.map((request) => {
-                          const statusStyle = approvalStatusStyles[request.status];
-
-                          return (
-                            <tr key={request.id} className={`border-t border-slate-100 text-slate-700 ${statusStyle.row}`}>
-                              <td className="px-4 py-4 font-medium text-slate-800">{request.name}</td>
-                              <td className="px-4 py-4">{request.specialization}</td>
-                              <td className="px-4 py-4">{request.updated}</td>
-                              <td className="px-4 py-4">
-                                <span className={`inline-flex min-w-24 items-center justify-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${statusStyle.pill}`}>
-                                  {statusStyle.label}
-                                </span>
-                              </td>
-                              <td className="px-4 py-4">
-                                <div className="flex justify-end gap-2">
-                                  <button
-                                    type="button"
-                                    onClick={() => updateApprovalStatus(request.id, "approved")}
-                                    className="rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-3 py-1.5 text-xs font-semibold text-[#178c43] transition hover:bg-[#dff6e8]"
-                                  >
-                                    Approve
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => updateApprovalStatus(request.id, "rejected")}
-                                    className="rounded-full border border-[#f5c1c1] bg-[#ffe7e7] px-3 py-1.5 text-xs font-semibold text-[#cc2a2a] transition hover:bg-[#ffdcdc]"
-                                  >
-                                    Reject
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      openDetailModal({
-                                        title: "Approval Request Details",
-                                        entries: [
-                                          { label: "Name", value: request.name },
-                                          { label: "Type", value: request.specialization },
-                                          { label: "Updated", value: request.updated },
-                                          { label: "Status", value: request.status },
-                                        ],
-                                      })
-                                    }
-                                    className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
-                                  >
-                                    <Eye className="h-3.5 w-3.5" />
-                                    View
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
+                  <ul className="mt-5 flex flex-col gap-3">
+                    {approvalRequests.map((request) => {
+                      const statusStyle = approvalStatusStyles[request.status];
+                      return (
+                        <li key={request.id} className={`flex flex-wrap items-center justify-between gap-4 rounded-2xl neumorph-admin-card p-4 shadow-[4px_4px_16px_#d0dbd6,-4px_-4px_16px_#ffffff] ${statusStyle.row}`}>
+                          <div className="flex-1 min-w-[120px] font-medium text-slate-800">{request.name}</div>
+                          <div className="flex-1 min-w-[120px] text-slate-700">{request.specialization || '-'}</div>
+                          <div className="flex-1 min-w-[100px] text-slate-700">{request.updated}</div>
+                          <div className="flex-1 min-w-[100px]">
+                            <span className={`inline-flex min-w-24 items-center justify-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${statusStyle.pill}`}>
+                              {statusStyle.label}
+                            </span>
+                          </div>
+                          <div className="flex flex-1 justify-end gap-2 min-w-[180px]">
+                            <button
+                              type="button"
+                              onClick={() => updateApprovalStatus(request.id, "approved")}
+                              className="rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-3 py-1.5 text-xs font-semibold text-[#178c43] transition hover:bg-[#dff6e8]"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => updateApprovalStatus(request.id, "rejected")}
+                              className="rounded-full border border-[#f5c1c1] bg-[#ffe7e7] px-3 py-1.5 text-xs font-semibold text-[#cc2a2a] transition hover:bg-[#ffdcdc]"
+                            >
+                              Reject
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                openDetailModal({
+                                  title: "Approval Request Details",
+                                  entries: [
+                                    { label: "Name", value: request.name },
+                                    { label: "Type", value: request.specialization },
+                                    { label: "Updated", value: request.updated },
+                                    { label: "Status", value: request.status },
+                                  ],
+                                })
+                              }
+                              className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
+                            >
+                              <Eye className="h-3.5 w-3.5" />
+                              View
+                            </button>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
                 </div>
               ) : activeSection === "Reviews" ? (
                 <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
@@ -1237,58 +1288,42 @@ export default function AdminPanelView() {
                     </div>
                   </div>
 
-                  <div className="mt-5 overflow-hidden rounded-xl border border-slate-200">
-                    <table className="w-full text-sm">
-                      <thead className="bg-slate-50 text-left text-slate-500">
-                        <tr>
-                          <th className="px-4 py-3">User</th>
-                          <th className="px-4 py-3">Professional</th>
-                          <th className="px-4 py-3">Review</th>
-                          <th className="px-4 py-3">Rating</th>
-                          <th className="px-4 py-3">Created</th>
-                          <th className="px-4 py-3 text-right">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {reviewEntries.map((review) => (
-                          <tr
-                            key={review.id}
-                            className={`border-t border-slate-100 text-slate-700 ${review.flagged ? "bg-[#fff1f1]" : "bg-white"}`}
+                  <ul className="mt-5 flex flex-col gap-3">
+                    {reviewEntries.map((review) => (
+                      <li
+                        key={review.id}
+                        className={`flex flex-wrap items-center gap-4 rounded-2xl neumorph-admin-card p-4 shadow-[4px_4px_16px_#d0dbd6,-4px_-4px_16px_#ffffff] ${review.flagged ? "bg-[#fff1f1]" : "bg-white"}`}
+                      >
+                        <div className="flex-1 min-w-[120px] font-medium text-slate-800">{review.userName}</div>
+                        <div className="flex-1 min-w-[120px]">
+                          <div className="font-medium text-slate-800">{review.professionalName}</div>
+                          <div className="text-xs text-slate-500">{review.professionalDetails}</div>
+                        </div>
+                        <div className="flex-1 min-w-[200px]">
+                          <div className="max-w-xl space-y-1">
+                            <p className="text-slate-700">{review.review}</p>
+                            {review.flagged ? (
+                              <span className="inline-flex rounded-full border border-[#f5c1c1] bg-[#ffe7e7] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-[#cc2a2a]">
+                                Flagged as inappropriate
+                              </span>
+                            ) : null}
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-[60px] font-semibold text-slate-800">{review.rating}/5</div>
+                        <div className="flex-1 min-w-[100px] text-slate-600">{review.createdAt}</div>
+                        <div className="flex flex-1 justify-end min-w-[120px]">
+                          <button
+                            type="button"
+                            onClick={() => deleteReview(review.id)}
+                            className="inline-flex items-center gap-1 rounded-full border border-[#f5c1c1] bg-[#ffe7e7] px-3 py-1.5 text-xs font-semibold text-[#cc2a2a] transition hover:bg-[#ffdcdc]"
                           >
-                            <td className="px-4 py-4 font-medium text-slate-800">{review.userName}</td>
-                            <td className="px-4 py-4">
-                              <div className="font-medium text-slate-800">{review.professionalName}</div>
-                              <div className="text-xs text-slate-500">{review.professionalDetails}</div>
-                            </td>
-                            <td className="px-4 py-4">
-                              <div className="max-w-xl space-y-1">
-                                <p className="text-slate-700">{review.review}</p>
-                                {review.flagged ? (
-                                  <span className="inline-flex rounded-full border border-[#f5c1c1] bg-[#ffe7e7] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-[#cc2a2a]">
-                                    Flagged as inappropriate
-                                  </span>
-                                ) : null}
-                              </div>
-                            </td>
-                            <td className="px-4 py-4 font-semibold text-slate-800">{review.rating}/5</td>
-                            <td className="px-4 py-4 text-slate-600">{review.createdAt}</td>
-                            <td className="px-4 py-4">
-                              <div className="flex justify-end">
-                                <button
-                                  type="button"
-                                  onClick={() => deleteReview(review.id)}
-                                  className="inline-flex items-center gap-1 rounded-full border border-[#f5c1c1] bg-[#ffe7e7] px-3 py-1.5 text-xs font-semibold text-[#cc2a2a] transition hover:bg-[#ffdcdc]"
-                                >
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                  Delete
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                            <Trash2 className="h-3.5 w-3.5" />
+                            Delete
+                          </button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               ) : activeSection === "Alerts" ? (
                 <div className="mt-6 space-y-5">
@@ -1658,18 +1693,20 @@ export default function AdminPanelView() {
                   </div>
                 </div>
               ) : activeSection === "Users" ? (
-                <div className="mt-6 overflow-hidden rounded-xl border border-slate-200 bg-white">
+                <div className="mt-6 overflow-visible rounded-2xl neumorph-admin-card border border-transparent p-4 shadow-[8px_8px_24px_#d0dbd6,-8px_-8px_24px_#ffffff]">
                   <div className="border-b border-slate-200 px-4 py-3">
                     <h3 className="font-semibold text-slate-800">Users</h3>
                     <p className="text-sm text-slate-500">Switch between students and professionals.</p>
                   </div>
 
-                  <div className="flex gap-2 border-b border-slate-200 px-4 py-3">
+                  <div className="flex gap-3 border-b border-slate-200 px-2 py-3 mb-2">
                     <button
                       type="button"
                       onClick={() => setUsersTab("students")}
-                      className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
-                        usersTab === "students" ? "bg-[#1ec28e] text-white" : "bg-slate-100 text-slate-600"
+                      className={`rounded-full px-6 py-2 text-xs font-semibold neumorph-admin-btn transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#1ec28e] focus:ring-offset-2 shadow-[4px_4px_12px_#d0dbd6,-4px_-4px_12px_#ffffff] ${
+                        usersTab === "students"
+                          ? "bg-[#e8f9ee] text-[#178c43] border border-[#bfe9cb]"
+                          : "bg-[#f6fefb] text-[#2c5a48] border border-transparent hover:shadow-inner"
                       }`}
                     >
                       Students
@@ -1677,8 +1714,10 @@ export default function AdminPanelView() {
                     <button
                       type="button"
                       onClick={() => setUsersTab("professionals")}
-                      className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
-                        usersTab === "professionals" ? "bg-[#1ec28e] text-white" : "bg-slate-100 text-slate-600"
+                      className={`rounded-full px-6 py-2 text-xs font-semibold neumorph-admin-btn transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#1ec28e] focus:ring-offset-2 shadow-[4px_4px_12px_#d0dbd6,-4px_-4px_12px_#ffffff] ${
+                        usersTab === "professionals"
+                          ? "bg-[#e8f9ee] text-[#178c43] border border-[#bfe9cb]"
+                          : "bg-[#f6fefb] text-[#2c5a48] border border-transparent hover:shadow-inner"
                       }`}
                     >
                       Professionals
@@ -1691,41 +1730,43 @@ export default function AdminPanelView() {
                   {usersTab === "students" ? (
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm">
-                        <thead className="bg-slate-50 text-left text-slate-500">
+                        <thead className="bg-[#f6fefb] text-left text-[#178c43]">
                           <tr>
-                            <th className="px-4 py-3">Name</th>
-                            <th className="px-4 py-3">Role</th>
-                            <th className="px-4 py-3">Provider</th>
-                            <th className="px-4 py-3">Joined</th>
-                            <th className="px-4 py-3 text-right">Action</th>
+                            <th className="px-5 py-3 font-semibold">Name</th>
+                            <th className="px-5 py-3 font-semibold">Role</th>
+                            <th className="px-5 py-3 font-semibold">Provider</th>
+                            <th className="px-5 py-3 font-semibold">Joined</th>
+                            <th className="px-5 py-3 font-semibold text-right">Action</th>
                           </tr>
                         </thead>
                         <tbody>
                           {studentsList.map((student) => {
                             const isSelected = selectedStudentId === student.id;
-
                             return (
                               <tr
                                 key={student.id}
                                 onClick={() => openStudentDetails(student.id)}
-                                className={`cursor-pointer border-t border-slate-100 transition ${
-                                  isSelected ? "bg-[#f0fbf4]" : "bg-white hover:bg-slate-50"
+                                className={`cursor-pointer transition duration-150 ${
+                                  isSelected
+                                    ? "bg-[#e8f9ee] shadow-[2px_2px_8px_#d0dbd6,-2px_-2px_8px_#ffffff]"
+                                    : "bg-white hover:bg-[#f6fefb]"
                                 }`}
+                                style={{ borderRadius: '18px', marginBottom: '8px' }}
                               >
-                                <td className="px-4 py-4">
-                                  <div className="font-medium text-slate-800">{student.name}</div>
+                                <td className="px-5 py-4 align-middle">
+                                  <div className="font-semibold text-slate-800">{student.name}</div>
                                   <div className="text-xs text-slate-500">{student.email}</div>
                                 </td>
-                                <td className="px-4 py-4">
-                                  <span className="rounded-full bg-[#eef7ff] px-2.5 py-1 text-xs font-semibold text-[#2563eb]">
+                                <td className="px-5 py-4 align-middle">
+                                  <span className="rounded-full bg-[#eef7ff] px-3 py-1 text-xs font-semibold text-[#2563eb] shadow-sm">
                                     {userDetailsById[student.id]?.role ?? "student"}
                                   </span>
                                 </td>
-                                <td className="px-4 py-4 text-slate-700">{userDetailsById[student.id]?.provider ?? "credentials"}</td>
-                                <td className="px-4 py-4 text-slate-700">{student.joinedAt}</td>
-                                <td className="px-4 py-4">
+                                <td className="px-5 py-4 align-middle text-slate-700">{userDetailsById[student.id]?.provider ?? "credentials"}</td>
+                                <td className="px-5 py-4 align-middle text-slate-700">{student.joinedAt}</td>
+                                <td className="px-5 py-4 align-middle">
                                   <div className="flex justify-end">
-                                    <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600">
+                                    <span className="inline-flex items-center rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-4 py-1.5 text-xs font-semibold text-[#178c43] shadow-sm">
                                       View
                                     </span>
                                   </div>

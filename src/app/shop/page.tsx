@@ -1,7 +1,11 @@
+"use client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
-import { BookOpen, ShoppingBag, Sparkles, Star } from "lucide-react";
+import { BookOpen, Sparkles, Star, ShoppingBag } from "lucide-react";
+import { useState } from "react";
+import ShopSidebar from "@/components/shop/ShopSidebar";
+import ShopProductGrid from "@/components/shop/ShopProductGrid";
 
 const shopItems = [
   {
@@ -10,6 +14,7 @@ const shopItems = [
     description: "Practical worksheets for weekly home routines and progress tracking.",
     price: "₹399",
     badge: "Best Seller",
+    category: "Parent Support",
   },
   {
     id: 2,
@@ -17,6 +22,7 @@ const shopItems = [
     description: "Video lessons, templates, and action plans for focused support.",
     price: "₹699",
     badge: "Popular",
+    category: "ADHD",
   },
   {
     id: 3,
@@ -24,6 +30,7 @@ const shopItems = [
     description: "Reading drills, phonics activities, and structured practice tools.",
     price: "₹549",
     badge: "New",
+    category: "Dyslexia",
   },
   {
     id: 4,
@@ -31,6 +38,7 @@ const shopItems = [
     description: "Visual cards for articulation practice and language development.",
     price: "₹299",
     badge: "Top Rated",
+    category: "Speech Therapy",
   },
   {
     id: 5,
@@ -38,6 +46,7 @@ const shopItems = [
     description: "Book a one-on-one session with a verified professional.",
     price: "₹1,499",
     badge: "Live",
+    category: "Consultation",
   },
   {
     id: 6,
@@ -45,56 +54,72 @@ const shopItems = [
     description: "Templates for teacher communication, observations, and planning.",
     price: "₹449",
     badge: "Featured",
+    category: "School Support",
   },
 ];
 
+const categories = [
+  "Parent Support", "ADHD", "Dyslexia", "Speech Therapy", "Consultation", "School Support"
+];
+const minPrice = 299;
+const maxPrice = 1499;
+
 export default function ShopPage() {
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [price, setPrice] = useState(maxPrice);
+
+  // Filter logic
+  const filteredItems = shopItems.filter(item => {
+    const priceValue = Number(item.price.replace(/[^\d]/g, ""));
+    const categoryMatch = selectedCategory === "All" || item.category === selectedCategory;
+    return categoryMatch && priceValue <= price;
+  });
+
   return (
     <>
       <Navbar />
       <main className="min-h-screen bg-[#eef5f3] ">
         <section className="mx-auto w-full max-w-7xl px-4 py-10 md:px-8 lg:px-10">
-          <div className="relative overflow-hidden rounded-4xl border border-[#d5e9e2] bg-white p-6 shadow-[0_22px_45px_rgba(15,23,42,0.07)] md:p-8">
+          <div className="relative overflow-hidden rounded-4xl border border-[#d5e9e2] bg-gradient-to-br from-[#f7fbfa] via-white to-[#eaf8f3] p-8 md:p-12 shadow-[0_22px_45px_rgba(15,23,42,0.07)]">
             <div className="absolute -right-14 -top-14 h-40 w-40 rounded-full bg-primary/10 blur-2xl" />
             <div className="absolute -bottom-16 -left-16 h-44 w-44 rounded-full bg-[#0f172a]/5 blur-2xl" />
 
-            <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:items-center">
+            <div className="relative grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:items-center">
               <div>
-                <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-                  <Sparkles className="h-3.5 w-3.5" />
+                <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-primary mb-2">
+                  <Sparkles className="h-4 w-4" />
                   Shop
                 </p>
-                <h1 className="mt-2 text-3xl font-bold text-gray-900 md:text-4xl">
+                <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight mb-4">
                   Learning tools, bundles, and expert support
                 </h1>
-                <p className="mt-3 max-w-3xl text-sm leading-7 text-gray-600 md:text-base">
-                  Browse curated resources for parents, learners, and professionals. Each item is designed to
-                  support practical learning and guided progress.
+                <p className="max-w-2xl text-base md:text-lg text-gray-600 mb-7">
+                  Browse curated resources for parents, learners, and professionals. Each item is designed to support practical learning and guided progress.
                 </p>
 
-                <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                  <div className="rounded-2xl border border-[#dbe8e4] bg-[#f7fbfa] p-4 shadow-sm">
-                    <div className="flex items-center gap-2 text-primary">
-                      <ShoppingBag className="h-4 w-4" />
-                      <span className="text-xs font-semibold uppercase tracking-[0.16em]">Products</span>
+                <div className="mt-2 grid gap-4 sm:grid-cols-3">
+                  <div className="rounded-2xl border border-[#dbe8e4] bg-[#f7fbfa] p-5 shadow-sm flex flex-col items-start">
+                    <div className="flex items-center gap-2 text-primary mb-1">
+                      <ShoppingBag className="h-5 w-5" />
+                      <span className="text-xs font-bold uppercase tracking-[0.16em]">Products</span>
                     </div>
-                    <p className="mt-2 text-2xl font-bold text-gray-900">{shopItems.length}</p>
+                    <p className="text-2xl font-extrabold text-gray-900">{shopItems.length}</p>
                     <p className="text-xs text-gray-500">Curated items</p>
                   </div>
-                  <div className="rounded-2xl border border-[#dbe8e4] bg-[#f7fbfa] p-4 shadow-sm">
-                    <div className="flex items-center gap-2 text-primary">
-                      <BookOpen className="h-4 w-4" />
-                      <span className="text-xs font-semibold uppercase tracking-[0.16em]">Resources</span>
+                  <div className="rounded-2xl border border-[#dbe8e4] bg-[#f7fbfa] p-5 shadow-sm flex flex-col items-start">
+                    <div className="flex items-center gap-2 text-primary mb-1">
+                      <BookOpen className="h-5 w-5" />
+                      <span className="text-xs font-bold uppercase tracking-[0.16em]">Resources</span>
                     </div>
-                    <p className="mt-2 text-2xl font-bold text-gray-900">24/7</p>
+                    <p className="text-2xl font-extrabold text-gray-900">24/7</p>
                     <p className="text-xs text-gray-500">On-demand access</p>
                   </div>
-                  <div className="rounded-2xl border border-[#dbe8e4] bg-[#f7fbfa] p-4 shadow-sm">
-                    <div className="flex items-center gap-2 text-primary">
-                      <Star className="h-4 w-4" />
-                      <span className="text-xs font-semibold uppercase tracking-[0.16em]">Trusted</span>
+                  <div className="rounded-2xl border border-[#dbe8e4] bg-[#f7fbfa] p-5 shadow-sm flex flex-col items-start">
+                    <div className="flex items-center gap-2 text-primary mb-1">
+                      <Star className="h-5 w-5" />
+                      <span className="text-xs font-bold uppercase tracking-[0.16em]">Trusted</span>
                     </div>
-                    <p className="mt-2 text-2xl font-bold text-gray-900">Top</p>
+                    <p className="text-2xl font-extrabold text-gray-900">Top</p>
                     <p className="text-xs text-gray-500">Rated by users</p>
                   </div>
                 </div>
@@ -120,37 +145,19 @@ export default function ShopPage() {
             </div>
           </div>
 
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            {shopItems.map((item) => (
-              <article
-                key={item.id}
-                className="rounded-3xl border border-[#dbe8e4] bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-[0_14px_28px_rgba(15,23,42,0.12)]"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <span className="inline-flex rounded-full bg-[#eef7f4] px-3 py-1 text-xs font-semibold text-primary">
-                      {item.badge}
-                    </span>
-                    <h3 className="mt-3 text-lg font-semibold text-gray-900">{item.title}</h3>
-                  </div>
-                  <div className="rounded-2xl bg-primary/10 p-2 text-primary">
-                    <ShoppingBag className="h-5 w-5" />
-                  </div>
-                </div>
-
-                <p className="mt-3 text-sm leading-7 text-gray-600">{item.description}</p>
-
-                <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
-                  <p className="text-xl font-bold text-gray-900">{item.price}</p>
-                  <Link
-                    href="/contact"
-                    className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
-                  >
-                    Buy Now
-                  </Link>
-                </div>
-              </article>
-            ))}
+          <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-[260px_1fr]">
+            {/* Sidebar Filter */}
+            <ShopSidebar
+              categories={categories}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+              minPrice={minPrice}
+              maxPrice={maxPrice}
+              price={price}
+              setPrice={setPrice}
+            />
+            {/* Product Grid */}
+            <ShopProductGrid items={filteredItems} />
           </div>
         </section>
       </main>

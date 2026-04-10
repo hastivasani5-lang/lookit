@@ -41,11 +41,11 @@ export default function AdminLoginView() {
   };
 
   return (
-    <main className="min-h-screen bg-[#eef0fb] px-4 py-8 md:px-8 md:py-12">
-      <section className="mx-auto grid w-full max-w-6xl overflow-hidden rounded-[28px] bg-white shadow-[0_22px_50px_rgba(15,23,42,0.18)] lg:grid-cols-2">
+    <main className="min-h-screen bg-[#eef5f3] px-4 py-8 md:px-8 md:py-12 font-sans">
+      <section className="mx-auto grid w-full max-w-6xl overflow-hidden rounded-[28px] neumorph-admin-card bg-white lg:grid-cols-2">
         <div className="flex flex-col justify-center px-6 py-10 sm:px-10 md:px-14 lg:py-14">
           <div className="mb-10 flex items-center gap-3">
-            <span className="text-2xl font-bold tracking-[0.12em] text-slate-900">LOOKIT</span>
+            <span className="text-2xl font-bold tracking-[0.12em] text-[#2d6a4f]">LOOKIT</span>
           </div>
 
           <h1 className="text-4xl font-semibold leading-tight text-slate-800 sm:text-5xl">Welcome to login system</h1>
@@ -59,7 +59,7 @@ export default function AdminLoginView() {
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder="Admin email"
-                className="h-11 w-full rounded-full bg-[#f3f5fe] px-11 text-sm text-slate-700 outline-none ring-[#1ec28e]/35 transition focus:ring-2"
+                className="h-11 w-full rounded-full bg-[#eef5f3] px-11 text-sm text-[#2c5a48] outline-none shadow-[inset_3px_3px_7px_#d0dbd6,inset_-3px_-3px_7px_#ffffff] transition focus:ring-2"
                 autoComplete="email"
                 required
               />
@@ -72,7 +72,7 @@ export default function AdminLoginView() {
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 placeholder="Password"
-                className="h-11 w-full rounded-full bg-[#f3f5fe] px-11 pr-11 text-sm text-slate-700 outline-none ring-[#1ec28e]/35 transition focus:ring-2"
+                className="h-11 w-full rounded-full bg-[#eef5f3] px-11 pr-11 text-sm text-[#2c5a48] outline-none shadow-[inset_3px_3px_7px_#d0dbd6,inset_-3px_-3px_7px_#ffffff] transition focus:ring-2"
                 autoComplete="current-password"
                 required
               />
@@ -92,7 +92,7 @@ export default function AdminLoginView() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex h-11 min-w-[160px] items-center justify-center rounded-full bg-[#1ec28e] px-8 text-sm font-medium text-white shadow-[0_8px_20px_rgba(30,194,142,0.35)] transition hover:bg-[#18ab7d] disabled:cursor-not-allowed disabled:opacity-70"
+                className="inline-flex h-11 min-w-[160px] items-center justify-center rounded-2xl bg-[#2d6a4f] px-8 text-sm font-semibold text-white shadow-[8px_8px_16px_#d0dbd6,-8px_-8px_16px_#ffffff] transition hover:bg-[#1f5942] disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {isSubmitting ? "Checking..." : "Login"}
               </button>
@@ -101,6 +101,13 @@ export default function AdminLoginView() {
         </div>
 
         <div className="relative hidden min-h-[560px] overflow-hidden bg-[#e6f7ef] lg:block">
+                <style>{`
+                  .neumorph-admin-card {
+                    background: #eef5f3;
+                    box-shadow: 12px 12px 24px #d0dbd6, -12px -12px 24px #ffffff;
+                    transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+                  }
+                `}</style>
           <Image
             src="/jenil.png"
             alt="Admin login visual"

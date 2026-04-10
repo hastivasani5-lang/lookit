@@ -7,5 +7,5 @@ export default async function AdminPage() {
   const cookieStore = await cookies();
   const isLoggedIn = cookieStore.get("admin_session")?.value === "authorized";
 
-  return isLoggedIn ? <AdminPanelView /> : <AdminLoginViewClient />;
+  return isLoggedIn ? <div className="font-sans bg-[#eef5f3]"><AdminPanelView /></div> : <div className="font-sans bg-[#eef5f3]"><AdminLoginViewClient /></div>;
 }

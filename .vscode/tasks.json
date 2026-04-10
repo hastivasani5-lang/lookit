@@ -33,6 +33,18 @@
 			"type": "shell",
 			"command": "git checkout main && git add -A && (git commit -m \"Push latest changes\" || true) && git pull --rebase origin main && git push origin main",
 			"isBackground": false
+		},
+		{
+			"label": "pull-main-latest",
+			"type": "shell",
+			"command": "git checkout main && git pull origin main",
+			"group": "build"
+		},
+		{
+			"label": "build-next-app",
+			"type": "shell",
+			"command": "npm run build",
+			"group": "build"
 		}
 	]
 }

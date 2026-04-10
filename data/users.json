@@ -7,9 +7,9 @@
     "role": "professional",
     "certificates": [],
     "reviews": [],
-    "approvalStatus": "rejected",
+    "approvalStatus": "approved",
     "approvalReviewedBy": "Admin",
-    "approvalReviewedAt": "2026-04-10T02:17:41.212Z",
+    "approvalReviewedAt": "2026-04-10T05:35:37.920Z",
     "provider": "credentials",
     "createdAt": "2026-04-08T09:54:13.741Z"
   },
@@ -21,9 +21,9 @@
     "role": "professional",
     "certificates": [],
     "reviews": [],
-    "approvalStatus": "approved",
+    "approvalStatus": "rejected",
     "approvalReviewedBy": "Admin",
-    "approvalReviewedAt": "2026-04-08T11:26:15.205Z",
+    "approvalReviewedAt": "2026-04-10T05:35:31.282Z",
     "provider": "credentials",
     "createdAt": "2026-04-08T06:33:45.898Z"
   },
@@ -61,7 +61,7 @@
     "reviews": [],
     "approvalStatus": "approved",
     "approvalReviewedBy": "Admin",
-    "approvalReviewedAt": "2026-04-08T11:27:10.526Z",
+    "approvalReviewedAt": "2026-04-10T05:35:37.142Z",
     "provider": "credentials",
     "createdAt": "2026-04-07T06:59:41.762Z"
   },
@@ -81,7 +81,9 @@
     "reviews": [
       "good"
     ],
-    "approvalStatus": "approved",
+    "approvalStatus": "rejected",
+    "approvalReviewedBy": "Admin",
+    "approvalReviewedAt": "2026-04-10T05:35:33.372Z",
     "provider": "credentials",
     "createdAt": "2026-04-07T06:57:54.656Z"
   },
@@ -107,7 +109,7 @@
     "reviews": [],
     "approvalStatus": "approved",
     "approvalReviewedBy": "Admin",
-    "approvalReviewedAt": "2026-04-08T11:27:09.790Z",
+    "approvalReviewedAt": "2026-04-10T05:35:35.999Z",
     "provider": "credentials",
     "createdAt": "2026-04-07T06:50:33.525Z"
   },
@@ -120,8 +122,22 @@
     "certificates": [],
     "reviews": [],
     "profileBoostedUntil": "2026-07-08T11:22:50.319Z",
-    "approvalStatus": "approved",
+    "approvalStatus": "rejected",
+    "approvalReviewedBy": "Admin",
+    "approvalReviewedAt": "2026-04-10T05:35:34.978Z",
     "provider": "credentials",
     "createdAt": "2026-04-07T03:44:59.206Z"
+  },
+  {
+    "id": "2670b15f-43b9-4c1c-820a-45a10b17c43e",
+    "name": "Hasti Vasani",
+    "email": "hastivasani5@gmail.com",
+    "passwordHash": "$2a$10$5Y735.2thGRHHOzQBeoj7eo1xLGMzVl08lTRyDN6fvkDc5q6hyEte",
+    "role": "student",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-10T07:08:22.512Z"
   }
 ]

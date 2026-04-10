@@ -87,7 +87,7 @@ const Courses = () => {
             </div>
 
             {/* LINE */}
-             <div className="mt-4 flex items-center justify-between gap-4">
+            <div className="mt-3 w-full h-px bg-gray-300"></div>
 
           </div>
 
@@ -99,13 +99,10 @@ Available all programs
             </h2>
           </div>
 
-               <button
-                 className="enrol-btn hidden group-hover:flex items-center rounded-full bg-primary px-6 py-2 text-sm text-white hover:bg-[#18ab7d] transition-all duration-200 ml-auto"
-                 style={{ minWidth: 'fit-content' }}
-               >
-                 ENROL NOW →
-               </button>
-             </div>
+        </div>
+
+      </div>
+    
 
         {/* FILTER - Desktop */}
         <div className="mb-12 hidden flex-wrap justify-center gap-4 lg:flex">
@@ -125,17 +122,8 @@ Available all programs
           ))}
         </div>
 
-                {/* ENROL NOW button is now shown only on hover, see above */}
         {/* FILTER - Mobile/Tablet Icon */}
-              <style jsx>{`
-                .enrol-btn {
-                  display: none;
-                }
-                .group:hover .enrol-btn {
-                  display: flex;
-                }
-              `}</style>
-              </div>
+        <div className="mb-8 flex items-center justify-between rounded-2xl border border-gray-200 bg-white px-4 py-3 shadow-sm lg:hidden">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Filter</p>
             <p className="text-sm font-medium text-gray-800">{activeFilter}</p>
@@ -212,41 +200,27 @@ Available all programs
 
   {/* FOOTER (LESSONS + STUDENTS) */}
     
+ <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
- <div className="mt-4 flex items-center justify-between gap-4">
-   <div className="flex items-center gap-12 text-sm group-hover:hidden">
-     <div className="flex items-center gap-2 text-gray-600">
-       <span className="text-blue-500">📄</span>
-       <span>{course.lessons}</span>
-     </div>
-     <div className="flex items-center gap-2 text-gray-600">
-       <span className="text-purple-500">👤</span>
-       <span>{course.students}</span>
-     </div>
-   </div>
-   <button
-     className="enrol-btn opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto group-hover:flex hidden items-center rounded-full bg-primary px-6 py-2 text-sm text-white hover:bg-[#18ab7d] transition-all duration-200 ml-auto"
-     style={{ minWidth: 'fit-content' }}
-   >
-     ENROL NOW →
-   </button>
- </div>
+  <div className="flex flex-wrap items-center gap-4 text-sm">
+    <div className="flex items-center gap-2 text-gray-600">
+      <span className="text-blue-500">📄</span>
+      <span>{course.lessons}</span>
+    </div>
+
+    <div className="flex items-center gap-2 text-gray-600">
+      <span className="text-purple-500">👤</span>
+      <span>{course.students}</span>
+    </div>
+  </div>
+
+  <button className="w-full rounded-full bg-primary px-6 py-2 text-sm text-white hover:bg-[#18ab7d] sm:w-auto">
+    ENROL NOW →
+  </button>
+
+  </div>
 
 
-<style jsx>{`
-  .enrol-btn {
-    opacity: 0;
-    pointer-events: none;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.2s;
-  }
-  .group:hover .enrol-btn {
-    opacity: 1;
-    pointer-events: auto;
-    display: flex;
-  }
-`}</style>
 </div>
 
           ))}

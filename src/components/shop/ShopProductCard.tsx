@@ -16,6 +16,7 @@ interface ShopProductCardProps {
     price: string;
     badge: string;
     category?: string;
+    oldPrice?: string;
   };
   idx: number;
   hideBadge?: boolean;

@@ -1,0 +1,12 @@
+BRANCH: HEAD
+HEAD: 8505f7c
+REBASE: yes
+STATUS
+ M .vscode/tasks.json
+M  data/approval-notifications.json
+M  data/users.json
+A  public/alert.jpg
+A  src/app/alert/page.tsx
+A  src/app/api/footer/route.ts
+M  src/components/Footer.tsx
+?? git-state.txt

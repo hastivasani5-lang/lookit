@@ -22,6 +22,7 @@ export type StoredBook = {
 export type StoredVideo = {
   id: string;
   name: string;
+  mrp: string;
   url: string;
   source: "file" | "youtube";
   sizeLabel: string;
@@ -33,6 +34,7 @@ export type StudentBookActivity = {
   title: string;
   source: string;
   amount: string;
+  accessUrl?: string;
   purchasedAt: string;
 };
 
@@ -40,6 +42,8 @@ export type StudentVideoActivity = {
   id: string;
   title: string;
   provider: string;
+  amount: string;
+  accessUrl?: string;
   watchedAt: string;
 };
 
@@ -212,4 +216,45 @@ export async function getStudentLibrary(studentId: string): Promise<StudentLibra
       watchedVideos: [],
     }
   );
+}
+
+function getOrCreateStudentLibrary(store: LibraryStore, studentId: string): StudentLibrary {
+  if (!store.students[studentId]) {
+    store.students[studentId] = {
+      purchasedBooks: [],
+      watchedVideos: [],
+    };
+  }
+
+  return store.students[studentId];
+}
+
+export async function appendStudentBookActivity(studentId: string, input: Omit<StudentBookActivity, "id" | "purchasedAt">) {
+  const store = await readStore();
+  const library = getOrCreateStudentLibrary(store, studentId);
+
+  const activity: StudentBookActivity = {
+    id: `purchased-book-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    purchasedAt: new Date().toISOString(),
+    ...input,
+  };
+
+  library.purchasedBooks = [activity, ...library.purchasedBooks];
+  await writeStore(store);
+  return activity;
+}
+
+export async function appendStudentVideoActivity(studentId: string, input: Omit<StudentVideoActivity, "id" | "watchedAt">) {
+  const store = await readStore();
+  const library = getOrCreateStudentLibrary(store, studentId);
+
+  const activity: StudentVideoActivity = {
+    id: `watched-video-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    watchedAt: new Date().toISOString(),
+    ...input,
+  };
+
+  library.watchedVideos = [activity, ...library.watchedVideos];
+  await writeStore(store);
+  return activity;
 }

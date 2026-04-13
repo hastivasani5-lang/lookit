@@ -9,8 +9,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import InstructorBanner from "@/components/InstructorBanner";
 import TopRatedProfessionalsSection from "@/components/TopRatedProfessionalsSection";
-import { buildSeedProfessional, type PublicProfessional } from "@/lib/professional-display";
-import { professionals as seedProfessionals } from "@/app/professionals/data";
+import type { PublicProfessional } from "@/lib/professional-display";
 
 const categoryOptions = [
   { label: "All Categories", value: "all" },
@@ -90,18 +89,7 @@ export default function ProfessionalsPage() {
     };
   }, []);
 
-  const liveProfessionalIds = useMemo(
-    () => new Set(liveProfessionals.map((professional) => professional.id)),
-    [liveProfessionals]
-  );
-
-  const professionals = useMemo(() => {
-    const seededProfessionals = seedProfessionals
-      .map(buildSeedProfessional)
-      .filter((professional) => !liveProfessionalIds.has(professional.id));
-
-    return [...liveProfessionals, ...seededProfessionals];
-  }, [liveProfessionalIds, liveProfessionals]);
+  const professionals = useMemo(() => liveProfessionals, [liveProfessionals]);
 
   const filteredProfessionals = useMemo(() => {
     const result = professionals.filter((item) => {
@@ -121,13 +109,6 @@ export default function ProfessionalsPage() {
     });
 
     return result.sort((left, right) => {
-      const leftIsLive = liveProfessionalIds.has(left.id);
-      const rightIsLive = liveProfessionalIds.has(right.id);
-
-      if (leftIsLive !== rightIsLive) {
-        return leftIsLive ? -1 : 1;
-      }
-
       if (sortBy === "rating") {
         return right.rating - left.rating;
       }
@@ -135,7 +116,6 @@ export default function ProfessionalsPage() {
       return right.reviews - left.reviews;
     });
   }, [
-    liveProfessionalIds,
     locationText,
     professionalQuery,
     professionals,

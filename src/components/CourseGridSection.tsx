@@ -362,10 +362,12 @@ export const allOnlinePlatforms: CourseItem[] = [
 
 type CourseGridSectionProps = {
   courses?: CourseItem[];
+  contentType?: "courses" | "books" | "video-learning" | "apps";
 };
 
 export default function CourseGridSection({
   courses = allCourses,
+  contentType = "courses",
 }: CourseGridSectionProps) {
   if (courses.length === 0) {
     return null;
@@ -375,8 +377,19 @@ export default function CourseGridSection({
     <section className="bg-[#f4f6f5] px-2 sm:px-4 md:px-6 lg:px-3 xl:px-2">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 sm:grid-cols-2 xl:grid-cols-3 xl:gap-12">
 
-        {courses.map((course, i) => (
-          <div key={i} className="group">
+        {courses.map((course, i) => {
+          const query = new URLSearchParams({
+            title: course.title,
+            category: course.category,
+          }).toString();
+          const courseHref = contentType === "books"
+            ? `/api/book-link?${query}`
+            : contentType === "video-learning"
+              ? `/api/video-link?${query}`
+            : `/api/course-link?${query}`;
+
+          return (
+          <a key={i} href={courseHref} className="group block" aria-label={`Open ${course.title} on W3Schools`}>
 
             {/* SVG MASK SHAPE */}
             <div className="relative h-64 w-full sm:h-72">
@@ -449,8 +462,8 @@ export default function CourseGridSection({
 </div>
 
             </div>
-          </div>
-        ))}
+          </a>
+        )})}
 
       </div>
     </section>

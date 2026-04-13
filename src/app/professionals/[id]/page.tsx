@@ -1,14 +1,13 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 
 import Navbar from "@/components/Navbar";
 import ProfessionalProfileClient from "@/app/professionals/[id]/ProfessionalProfileClient";
 import Footer from "@/components/Footer";
 import TopRatedProfessionalsSection from "@/components/TopRatedProfessionalsSection";
-import { buildPublicProfessional, buildSeedProfessional } from "@/lib/professional-display";
+import { buildPublicProfessional } from "@/lib/professional-display";
 import { authOptions } from "@/lib/auth";
-import { getUserById } from "@/lib/user-store";
-import { professionals as seedProfessionals } from "@/app/professionals/data";
+import { getProfessionalUsers, getUserById } from "@/lib/user-store";
 import { getProfessionalLibrary } from "@/lib/content-library-store";
 
 type ProfessionalProfilePageProps = {
@@ -20,25 +19,27 @@ type ProfessionalProfilePageProps = {
 export default async function ProfessionalProfilePage({ params }: ProfessionalProfilePageProps) {
   const { id } = await params;
   const session = await getServerSession(authOptions);
-  const user = await getUserById(id);
-  const library = await getProfessionalLibrary(id);
-  const seedProfessional = seedProfessionals.find((item) => String(item.id) === id);
-  const professional =
-    user && user.role === "professional" && user.approvalStatus === "approved"
-      ? buildPublicProfessional(user)
-      : seedProfessional
-        ? buildSeedProfessional(seedProfessional)
-        : null;
-  const hasLibraryItems = library.books.length > 0 || library.videos.length > 0;
-  const topRatedProfessionals = seedProfessionals
-    .map(buildSeedProfessional)
-    .filter((item) => item.id !== String(id))
-    .sort((left, right) => right.rating - left.rating || right.reviews - left.reviews)
-    .slice(0, 8);
 
-  if (!professional) {
+  if (session?.user?.role === "professional" && session.user.id !== id) {
+    redirect(`/professionals/${session.user.id}`);
+  }
+
+  const user = await getUserById(id);
+
+  if (!user || user.role !== "professional" || user.approvalStatus !== "approved") {
     notFound();
   }
+
+  const library = await getProfessionalLibrary(id);
+  const professional = buildPublicProfessional(user);
+  const hasLibraryItems = library.books.length > 0 || library.videos.length > 0;
+  const topRatedProfessionals = session?.user?.role === "professional"
+    ? []
+    : (await getProfessionalUsers())
+        .filter((item) => item.approvalStatus === "approved" && item.id !== user.id)
+        .map((item, index) => buildPublicProfessional(item, index))
+        .sort((left, right) => right.rating - left.rating || right.reviews - left.reviews)
+        .slice(0, 8);
 
   return (
     <>
@@ -51,7 +52,7 @@ export default async function ProfessionalProfilePage({ params }: ProfessionalPr
         books={library.books}
         videos={library.videos}
       />
-      <TopRatedProfessionalsSection professionals={topRatedProfessionals} />
+      {topRatedProfessionals.length > 0 ? <TopRatedProfessionalsSection professionals={topRatedProfessionals} /> : null}
       <Footer />
 
     </>

@@ -48,21 +48,25 @@ function inferCategory(specialization: string, fallback: PublicProfessional["cat
   return fallback;
 }
 
+const PROFILE_PLACEHOLDER_SVG =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'%3E%3Crect width='400' height='500' fill='%23e6f4ef'/%3E%3Ccircle cx='200' cy='170' r='78' fill='%2398b8ab'/%3E%3Crect x='90' y='270' width='220' height='170' rx='85' fill='%2398b8ab'/%3E%3C/svg%3E";
+
 export function buildPublicProfessional(user: AppUser, index = 0): PublicProfessional {
   const fallback = getFallbackProfile(index);
-  const specialization = normalizeSpecialization(user.specialization, fallback.specialization);
-  const location = normalizeSpecialization(user.location, fallback.location);
+  const specialization = normalizeSpecialization(user.specialization, "Professional Specialist");
+  const location = normalizeSpecialization(user.location, "Location not set");
   const reviewsCount = Math.max(user.reviews?.length ?? 0, 0);
+  const derivedRating = reviewsCount > 0 ? Math.min(5, 4 + Math.min(reviewsCount, 10) / 10) : 4.5;
 
   return {
     id: user.id,
     name: user.name,
     specialization,
-    category: inferCategory(specialization, fallback.category),
-    language: fallback.language,
+    category: inferCategory(specialization, "special-ed"),
+    language: "English",
     location,
-    rating: fallback.rating,
-    reviews: reviewsCount > 0 ? reviewsCount * 50 : fallback.reviews,
-    image: getOnlineProfessionalImage(user.id),
+    rating: Number(derivedRating.toFixed(1)),
+    reviews: reviewsCount,
+    image: user.image?.trim() || PROFILE_PLACEHOLDER_SVG,
   };
 }

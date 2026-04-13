@@ -67,6 +67,7 @@ type AddedBook = {
 type AddedVideo = {
   id: string;
   name: string;
+  mrp: string;
   sizeLabel: string;
   url: string;
   source: "file" | "youtube";
@@ -281,6 +282,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   const [bookFormError, setBookFormError] = useState("");
   const [youtubeLinkInput, setYoutubeLinkInput] = useState("");
   const [youtubeLinkError, setYoutubeLinkError] = useState("");
+  const [videoMrpInput, setVideoMrpInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
@@ -608,6 +610,26 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     void loadLibrary();
   }, [isMounted, user.role]);
 
+  useEffect(() => {
+    if (!isMounted || user.role !== "professional") {
+      return;
+    }
+
+    const touchSession = () => {
+      void fetch("/api/professionals/session", {
+        method: "POST",
+        cache: "no-store",
+      }).catch(() => undefined);
+    };
+
+    touchSession();
+    const timer = window.setInterval(touchSession, 60_000);
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [isMounted, user.role]);
+
   const handleBookUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? []);
     if (files.length === 0) {
@@ -668,20 +690,24 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     try {
       const persisted = await Promise.all(
         files.map(async (file) => {
+          const formData = new FormData();
+          formData.append("kind", "book");
+          formData.append("name", trimmedBookName);
+          formData.append("category", trimmedBookCategory);
+          formData.append("mrp", parsedMrp.toFixed(2));
+          formData.append("url", "");
+          formData.append("source", "file");
+          formData.append("fileName", file.name);
+          formData.append("sizeLabel", formatFileSize(file.size));
+          formData.append("imageLink", trimmedBookImageLink);
+
+          if (bookImageFile) {
+            formData.append("imageFile", bookImageFile);
+          }
+
           const response = await fetch("/api/profile/library", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              kind: "book",
-              name: trimmedBookName,
-              category: trimmedBookCategory,
-              mrp: parsedMrp.toFixed(2),
-              imageUrl: trimmedBookImageLink || "/books.png",
-              url: "",
-              source: "file",
-              fileName: file.name,
-              sizeLabel: formatFileSize(file.size),
-            }),
+            body: formData,
           });
 
           const payload = (await response.json().catch(() => ({}))) as { book?: AddedBook };
@@ -802,9 +828,17 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       return;
     }
 
+    const trimmedVideoMrp = videoMrpInput.trim();
+    if (!trimmedVideoMrp) {
+      setYoutubeLinkError("Please enter a video MRP.");
+      event.target.value = "";
+      return;
+    }
+
     const localVideos = files.map((file, index) => ({
       id: `video-${Date.now()}-${index}`,
       name: file.name,
+      mrp: trimmedVideoMrp,
       sizeLabel: formatFileSize(file.size),
       url: URL.createObjectURL(file),
       source: "file" as const,
@@ -821,6 +855,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
             body: JSON.stringify({
               kind: "video",
               name: file.name,
+              mrp: trimmedVideoMrp,
               url: "",
               source: "file",
               sizeLabel: formatFileSize(file.size),
@@ -848,8 +883,14 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
 
   const handleYouTubeAdd = async () => {
     const trimmedLink = youtubeLinkInput.trim();
+    const trimmedMrp = videoMrpInput.trim();
     if (!trimmedLink) {
       setYoutubeLinkError("Please enter a YouTube link.");
+      return;
+    }
+
+    if (!trimmedMrp) {
+      setYoutubeLinkError("Please enter a video MRP.");
       return;
     }
 
@@ -866,6 +907,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
         body: JSON.stringify({
           kind: "video",
           name: "YouTube Video",
+          mrp: trimmedMrp,
           sizeLabel: "YouTube Link",
           url: embedUrl,
           source: "youtube",
@@ -882,29 +924,14 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       setYoutubeLinkError("");
       setAddedVideos((prev) => [payload.video as AddedVideo, ...prev]);
       setYoutubeLinkInput("");
+      setVideoMrpInput("");
     } catch {
       setYoutubeLinkError("Unable to add YouTube video.");
     }
   };
 
-  const handleDeleteBook = async (bookId: string) => {
-    setAddedBooks((currentBooks) => {
-      const bookToRemove = currentBooks.find((book) => book.id === bookId);
-      if (bookToRemove?.imageUrl.startsWith("blob:")) {
-        URL.revokeObjectURL(bookToRemove.imageUrl);
-      }
-      if (bookToRemove?.url.startsWith("blob:")) {
-        URL.revokeObjectURL(bookToRemove.url);
-      }
-
-      return currentBooks.filter((book) => book.id !== bookId);
-    });
-
-    await fetch("/api/profile/library", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ kind: "book", id: bookId }),
-    }).catch(() => undefined);
+  const handleDeleteBook = async (_bookId: string) => {
+    setBookFormError("Books are permanently saved and cannot be deleted.");
   };
 
   const handleDeleteVideo = async (videoId: string) => {
@@ -1091,7 +1118,12 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
           </nav>
 
           <button
-            onClick={() => signOut({ callbackUrl: "/login" })}
+            onClick={async () => {
+              if (user.role === "professional") {
+                await fetch("/api/professionals/session", { method: "DELETE" }).catch(() => undefined);
+              }
+              await signOut({ callbackUrl: "/login" });
+            }}
             className="mt-6 flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
           >
             <LogOut className="h-4 w-4" />
@@ -1316,9 +1348,9 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                                 <button
                                   type="button"
                                   onClick={() => handleDeleteBook(book.id)}
-                                  className="inline-flex rounded-full bg-[#fff1f1] px-3 py-1.5 text-xs font-medium text-[#cc2a2a] transition hover:bg-[#ffe2e2]"
+                                  className="inline-flex rounded-full bg-[#eef7f4] px-3 py-1.5 text-xs font-medium text-[#1ec28e] transition"
                                 >
-                                  Delete
+                                  Saved
                                 </button>
                               </div>
                             </div>
@@ -1352,6 +1384,15 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                     </label>
 
                     <div className="mt-4 flex gap-2">
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={videoMrpInput}
+                        onChange={(event) => setVideoMrpInput(event.target.value)}
+                        placeholder="Video MRP"
+                        className="h-11 w-36 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
+                      />
                       <input
                         type="url"
                         value={youtubeLinkInput}
@@ -1398,6 +1439,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                             )}
                             <div className="space-y-1 p-4">
                               <p className="truncate text-sm font-semibold text-slate-900">{video.name}</p>
+                              <p className="text-sm font-semibold text-[#1ec28e]">MRP ₹{video.mrp || "0.00"}</p>
                               <p className="text-xs text-slate-500">{video.sizeLabel}</p>
                               <button
                                 type="button"

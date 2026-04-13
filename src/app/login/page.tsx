@@ -11,6 +11,9 @@ export default function LoginPage() {
   const [role, setRole] = useState<UserRole>("student");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [otpCode, setOtpCode] = useState("");
+  const [otpChallengeId, setOtpChallengeId] = useState("");
+  const [otpRequested, setOtpRequested] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -62,10 +65,34 @@ export default function LoginPage() {
     setSuccess("");
     setIsSubmitting(true);
 
+    if (!otpRequested) {
+      const response = await fetch("/api/auth/request-login-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, role }),
+      });
+
+      const payload = (await response.json().catch(() => ({}))) as { message?: string; challengeId?: string; email?: string };
+
+      setIsSubmitting(false);
+
+      if (!response.ok || !payload.challengeId) {
+        setError(payload.message || "Unable to send OTP.");
+        return;
+      }
+
+      setOtpChallengeId(payload.challengeId);
+      setOtpRequested(true);
+      setSuccess(`OTP sent to ${payload.email || email}. Please check your inbox.`);
+      return;
+    }
+
     const result = await signIn("credentials", {
       email,
       password,
       role,
+      otpChallengeId,
+      otpCode,
       redirect: false,
     });
 
@@ -77,7 +104,7 @@ export default function LoginPage() {
       } else if (result?.error === "approval-rejected") {
         setError("Your professional account was rejected by the admin.");
       } else {
-        setError("Invalid credentials, role mismatch, or account not found. Please register first.");
+        setError("Invalid credentials, OTP, role mismatch, or account not found.");
       }
       return;
     }
@@ -186,12 +213,25 @@ export default function LoginPage() {
                 </div>
               </div>
 
+              {otpRequested ? (
+                <input
+                  type="text"
+                  value={otpCode}
+                  onChange={(event) => setOtpCode(event.target.value)}
+                  placeholder="Enter OTP"
+                  className="h-12 sm:h-14 w-full rounded-full border border-[#e2e6db] px-4 sm:px-5 text-sm sm:text-base text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  required={otpRequested}
+                />
+              ) : null}
+
               <button
                 type="submit"
                 disabled={isSubmitting}
                 className="flex h-12 sm:h-14 w-full items-center justify-center rounded-full bg-[#1ec28e] text-sm sm:text-base font-semibold text-white transition hover:bg-[#18ab7d] disabled:cursor-not-allowed disabled:opacity-70"
               >
-                {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : "Log in"}
+                {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : otpRequested ? "Verify OTP & Log in" : "Send OTP"}
               </button>
             </form>
 

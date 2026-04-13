@@ -3,6 +3,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { compare } from "bcryptjs";
 import { getUserByEmail, getUserById, recordProfessionalLoginAttempt } from "@/lib/user-store";
+import { markProfessionalLoggedIn } from "@/lib/professional-login-store";
+import { verifyLoginOtpChallenge } from "@/lib/login-otp-store";
 
 const authSecret = process.env.NEXTAUTH_SECRET || "lookit-fallback-secret-change-in-production";
 
@@ -14,9 +16,11 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
         role: { label: "Role", type: "text" },
+        otpChallengeId: { label: "OTP Challenge ID", type: "text" },
+        otpCode: { label: "OTP Code", type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password || !credentials?.role) {
+        if (!credentials?.email || !credentials?.password || !credentials?.role || !credentials?.otpChallengeId || !credentials?.otpCode) {
           return null;
         }
 
@@ -34,9 +38,22 @@ export const authOptions: NextAuthOptions = {
           throw new Error("approval-rejected");
         }
 
+        const otpResult = await verifyLoginOtpChallenge({
+          challengeId: credentials.otpChallengeId,
+          otp: credentials.otpCode,
+        });
+
+        if (!otpResult || otpResult.userId !== user.id || otpResult.email !== user.email || otpResult.role !== user.role) {
+          return null;
+        }
+
         const isPasswordValid = await compare(credentials.password, user.passwordHash);
         if (!isPasswordValid) {
           return null;
+        }
+
+        if (user.role === "professional") {
+          await markProfessionalLoggedIn(user.id);
         }
 
         return {
@@ -85,6 +102,10 @@ export const authOptions: NextAuthOptions = {
 
       user.id = dbUser.id;
       user.role = dbUser.role;
+
+      if (dbUser.role === "professional") {
+        await markProfessionalLoggedIn(dbUser.id);
+      }
 
       return true;
     },

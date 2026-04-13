@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUp, LogOut, Menu, X, Search, ShoppingCart, UserCircle2, Sparkles, Compass, Briefcase, Layers, Store, Info, Mail, Home } from "lucide-react";
+import { ArrowUp, LogOut, Menu, X, Search, ShoppingCart, UserCircle2, Sparkles, Compass, Briefcase, Layers, Store, Info, Mail, Home, LibraryBig } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -208,6 +208,16 @@ const Navbar = () => {
               </div>
             )}
 
+            {isStudent ? (
+              <Link
+                href="/dashboard/students/library"
+                className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-50/80 text-gray-600 transition-all duration-200 hover:bg-emerald-100 hover:text-emerald-600 hover:scale-105"
+                aria-label="Purchased books and videos"
+              >
+                <LibraryBig className="h-4.5 w-4.5" />
+              </Link>
+            ) : null}
+
             {/* Profile / Auth */}
             {isAuthenticated ? (
               <div className="relative" ref={profileMenuRef}>
@@ -251,6 +261,16 @@ const Navbar = () => {
                         <LogOut className="h-4 w-4" />
                         Logout
                       </button>
+
+                      {isStudent ? (
+                        <Link
+                          href="/dashboard/students/library"
+                          className="mt-2 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-emerald-100 bg-emerald-50 text-sm font-semibold text-emerald-700 transition-all duration-200 hover:bg-emerald-100 hover:shadow-sm"
+                          onClick={() => setProfileMenuOpen(false)}
+                        >
+                          My Purchased Books
+                        </Link>
+                      ) : null}
                     </motion.div>
                   )}
                 </AnimatePresence>

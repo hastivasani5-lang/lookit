@@ -82,6 +82,18 @@ type PayoutEntry = {
   status: PayoutStatus;
 };
 
+type AdminPaymentRecord = {
+  id: string;
+  studentName: string;
+  studentEmail: string;
+  professionalName: string;
+  plan: string;
+  amount: string;
+  transactionId: string;
+  paidAt: string;
+  status: "completed";
+};
+
 type UploadView = "professional-uploads" | "student-purchases";
 
 type ProfessionalUploadSummary = {
@@ -452,7 +464,8 @@ export default function AdminPanelView() {
   const [studentDraft, setStudentDraft] = useState<AdminStudent | null>(null);
   const [approvalRequests, setApprovalRequests] = useState<ApprovalRequest[]>(initialApprovalRequests);
   const [reviewEntries, setReviewEntries] = useState(initialReviewEntries);
-  const [payoutEntries] = useState(initialPayoutEntries);
+  const [payoutEntries, setPayoutEntries] = useState(initialPayoutEntries);
+  const [payoutsLoading, setPayoutsLoading] = useState(false);
   const [uploadView, setUploadView] = useState<UploadView>("professional-uploads");
   const [detailModal, setDetailModal] = useState<DetailModalState | null>(null);
   const [categoriesList, setCategoriesList] = useState(initialProfessionalCategories);
@@ -916,6 +929,44 @@ export default function AdminPanelView() {
     };
 
     void loadUploads();
+  }, [activeSection]);
+
+  useEffect(() => {
+    if (activeSection !== "Payouts") {
+      return;
+    }
+
+    const loadPayouts = async () => {
+      setPayoutsLoading(true);
+
+      try {
+        const response = await fetch("/api/admin/payments", { cache: "no-store" });
+        const payload = (await response.json().catch(() => ({}))) as {
+          payments?: AdminPaymentRecord[];
+        };
+
+        if (!response.ok) {
+          return;
+        }
+
+        const dynamicRows = (Array.isArray(payload.payments) ? payload.payments : []).map((payment, index) => ({
+          id: 100000 + index,
+          professionalName: payment.studentName,
+          professionalEmail: payment.studentEmail,
+          plan: `${payment.plan} • ${payment.professionalName}`,
+          amount: payment.amount,
+          transactionId: payment.transactionId,
+          paidAt: new Date(payment.paidAt).toLocaleString(),
+          status: payment.status,
+        } satisfies PayoutEntry));
+
+        setPayoutEntries([...dynamicRows, ...initialPayoutEntries]);
+      } finally {
+        setPayoutsLoading(false);
+      }
+    };
+
+    void loadPayouts();
   }, [activeSection]);
 
   const onLogout = async () => {
@@ -1439,7 +1490,15 @@ export default function AdminPanelView() {
                         </tr>
                       </thead>
                       <tbody>
-                        {payoutEntries.map((entry) => (
+                        {payoutsLoading ? (
+                          <tr>
+                            <td colSpan={7} className="px-4 py-4 text-sm text-slate-500">Loading payments...</td>
+                          </tr>
+                        ) : payoutEntries.length === 0 ? (
+                          <tr>
+                            <td colSpan={7} className="px-4 py-4 text-sm text-slate-500">No payments yet.</td>
+                          </tr>
+                        ) : payoutEntries.map((entry) => (
                           <tr key={entry.id} className="border-t border-slate-100 text-slate-700">
                             <td className="px-4 py-3">
                               <div className="font-medium text-slate-800">{entry.professionalName}</div>

@@ -1,0 +1,139 @@
+{
+  "payments": [
+    {
+      "id": "payment-1776058971980-qiqwht",
+      "studentId": "eb74ca98-e9e1-4ef5-a00e-aeeea4af6f6e",
+      "studentName": "smit",
+      "studentEmail": "smit@gmail.com",
+      "professionalId": "bab9bf38-a318-4580-87d8-8f3a0f56b76e",
+      "professionalName": "jeel",
+      "plan": "1 Item Purchase",
+      "amount": "₹1000.00",
+      "transactionId": "TXN-1776058971980-10COJ",
+      "paidAt": "2026-04-13T05:42:51.980Z",
+      "status": "completed",
+      "items": [
+        {
+          "title": "YouTube Video",
+          "contentType": "video",
+          "price": "₹1000.00"
+        }
+      ]
+    },
+    {
+      "id": "payment-1776058361871-f8bi08",
+      "studentId": "eb74ca98-e9e1-4ef5-a00e-aeeea4af6f6e",
+      "studentName": "smit",
+      "studentEmail": "smit@gmail.com",
+      "professionalId": "bab9bf38-a318-4580-87d8-8f3a0f56b76e",
+      "professionalName": "jeel",
+      "plan": "1 Item Purchase",
+      "amount": "₹1900.00",
+      "transactionId": "TXN-1776058361871-SVCRP",
+      "paidAt": "2026-04-13T05:32:41.871Z",
+      "status": "completed",
+      "items": [
+        {
+          "title": "react",
+          "contentType": "book",
+          "price": "₹1900.00"
+        }
+      ]
+    },
+    {
+      "id": "payment-1776058359491-o3jtfn",
+      "studentId": "eb74ca98-e9e1-4ef5-a00e-aeeea4af6f6e",
+      "studentName": "smit",
+      "studentEmail": "smit@gmail.com",
+      "professionalId": "bab9bf38-a318-4580-87d8-8f3a0f56b76e",
+      "professionalName": "jeel",
+      "plan": "1 Item Purchase",
+      "amount": "₹1900.00",
+      "transactionId": "TXN-1776058359491-4KRK4",
+      "paidAt": "2026-04-13T05:32:39.491Z",
+      "status": "completed",
+      "items": [
+        {
+          "title": "react",
+          "contentType": "book",
+          "price": "₹1900.00"
+        }
+      ]
+    },
+    {
+      "id": "payment-1776056553308-0rwzg8",
+      "studentId": "eb74ca98-e9e1-4ef5-a00e-aeeea4af6f6e",
+      "studentName": "smit",
+      "studentEmail": "smit@gmail.com",
+      "professionalId": "bab9bf38-a318-4580-87d8-8f3a0f56b76e",
+      "professionalName": "jeel",
+      "plan": "1 Item Purchase",
+      "amount": "₹1900.00",
+      "transactionId": "TXN-1776056553308-XUBKV",
+      "paidAt": "2026-04-13T05:02:33.308Z",
+      "status": "completed",
+      "items": [
+        {
+          "title": "react",
+          "contentType": "book",
+          "price": "₹1900.00"
+        }
+      ]
+    },
+    {
+      "id": "payment-1776056548646-7owwr0",
+      "studentId": "eb74ca98-e9e1-4ef5-a00e-aeeea4af6f6e",
+      "studentName": "smit",
+      "studentEmail": "smit@gmail.com",
+      "professionalId": "bab9bf38-a318-4580-87d8-8f3a0f56b76e",
+      "professionalName": "jeel",
+      "plan": "1 Item Purchase",
+      "amount": "₹1900.00",
+      "transactionId": "TXN-1776056548646-TY3DO",
+      "paidAt": "2026-04-13T05:02:28.646Z",
+      "status": "completed",
+      "items": [
+        {
+          "title": "react",
+          "contentType": "book",
+          "price": "₹1900.00"
+        }
+      ]
+    },
+    {
+      "id": "payment-1776055759222-k6yj7r",
+      "studentId": "eb74ca98-e9e1-4ef5-a00e-aeeea4af6f6e",
+      "studentName": "smit",
+      "studentEmail": "smit@gmail.com",
+      "professionalId": "bab9bf38-a318-4580-87d8-8f3a0f56b76e",
+      "professionalName": "jeel",
+      "plan": "4 Items Purchase",
+      "amount": "₹2170.00",
+      "transactionId": "TXN-1776055759222-8XRDH",
+      "paidAt": "2026-04-13T04:49:19.222Z",
+      "status": "completed",
+      "items": [
+        {
+          "title": "frontend",
+          "contentType": "book",
+          "price": "₹50.00"
+        },
+        {
+          "title": "node js",
+          "contentType": "book",
+          "price": "₹120.00"
+        },
+        {
+          "title": "react js",
+          "contentType": "book",
+          "price": "₹1000.00"
+        },
+        {
+          "title": "node js",
+          "contentType": "book",
+          "price": "₹1000.00"
+        }
+      ]
+    }
+  ]
+}

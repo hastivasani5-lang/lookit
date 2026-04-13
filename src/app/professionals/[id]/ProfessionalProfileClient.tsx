@@ -12,6 +12,7 @@ type UploadedBook = {
   name: string;
   category: string;
   mrp: string;
+  imageUrl: string;
   url: string;
   source: "file" | "amazon";
 };
@@ -32,6 +33,7 @@ type ContentItem = {
   price: string;
   url: string;
   contentType: "book" | "video";
+  imageUrl?: string;
 };
 
 type ReviewItem = {
@@ -158,6 +160,7 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
         price: toPriceLabel(book.mrp),
         url: book.url,
         contentType: "book" as const,
+        imageUrl: book.imageUrl,
       })),
     }),
     [liveBooks, liveVideos]
@@ -310,18 +313,43 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
                 ))}
               </div>
 
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              <div className={activeTab === "books" ? "mt-5 overflow-x-auto pb-2" : "mt-5 grid gap-4 sm:grid-cols-2"}>
                 {contentMap[activeTab].length === 0 ? (
                   <p className="rounded-2xl border border-dashed border-gray-300 bg-white p-4 text-sm text-gray-500">
                     No {activeTab} uploaded yet.
                   </p>
                 ) : (
-                  contentMap[activeTab].map((item) => {
+                  <div className={activeTab === "books" ? "flex min-w-max gap-4" : "contents"}>
+                  {contentMap[activeTab].map((item) => {
                     const isFree = item.price === "Free";
                     const hasOpenLink = Boolean(item.url);
 
                     return (
-                      <article key={item.id} className="rounded-2xl border border-gray-200 bg-[#fbfdfc] p-4">
+                      <article
+                        key={item.id}
+                        className={`rounded-2xl border border-gray-200 bg-[#fbfdfc] p-4 ${
+                          activeTab === "books"
+                            ? "w-[calc((100vw-4.5rem)/2)] min-w-[280px] max-w-[360px] md:w-[calc((100vw-8rem)/2)]"
+                            : ""
+                        }`}
+                      >
+                        {activeTab === "books" ? (
+                          <div className="mb-3 overflow-hidden rounded-xl border border-gray-100 bg-white">
+                            {item.imageUrl ? (
+                              <Image
+                                src={item.imageUrl}
+                                alt={item.title}
+                                width={640}
+                                height={360}
+                                className="h-36 w-full object-cover"
+                              />
+                            ) : (
+                              <div className="flex h-36 w-full items-center justify-center bg-[#f6fbf9] text-xs text-gray-500">
+                                No image uploaded
+                              </div>
+                            )}
+                          </div>
+                        ) : null}
                         <div className="flex items-start justify-between gap-3">
                           <div>
                             <h3 className="text-base font-semibold text-gray-900">{item.title}</h3>
@@ -385,7 +413,8 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
                         )}
                       </article>
                     );
-                  })
+                  })}
+                  </div>
                 )}
               </div>
 

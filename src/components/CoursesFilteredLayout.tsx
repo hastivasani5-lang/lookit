@@ -158,7 +158,7 @@ export default function CoursesFilteredLayout({
             onContentTypeChange={setContentType}
           />
 
-          <CourseGridSection courses={filteredCourses} />
+          <CourseGridSection courses={filteredCourses} contentType={contentType} />
         </div>
       </div>
 

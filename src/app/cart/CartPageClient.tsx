@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { clearCartItems, getCartItems, removeCartItem, type CartItem } from "@/lib/cart-store";
+import { getCartItems, removeCartItem, type CartItem } from "@/lib/cart-store";
 
 function parsePrice(value: string) {
   const cleaned = value.replace(/[^\d.]/g, "");
@@ -21,6 +21,7 @@ export default function CartPageClient() {
   const [expiry, setExpiry] = useState("");
   const [cvv, setCvv] = useState("");
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [paymentSuccessMessage, setPaymentSuccessMessage] = useState("Successful");
   const [paymentError, setPaymentError] = useState("");
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
@@ -42,6 +43,7 @@ export default function CartPageClient() {
   const handlePayment = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setPaymentError("");
+    setPaymentSuccess(false);
 
     if (!cardName.trim() || !cardNumber.trim() || !expiry.trim() || !cvv.trim() || cartItems.length === 0) {
       setPaymentSuccess(false);
@@ -71,8 +73,7 @@ export default function CartPageClient() {
         return;
       }
 
-      clearCartItems();
-      setCartItems([]);
+      setPaymentSuccessMessage(payload.message || "Successful");
       setPaymentSuccess(true);
     } catch {
       setPaymentSuccess(false);
@@ -185,7 +186,15 @@ export default function CartPageClient() {
                     ) : null}
 
                     {paymentSuccess ? (
-                      <p className="rounded-xl bg-[#e9f8f2] px-3 py-2 text-sm text-[#0f7a5c]">Payment successful. Your order has been placed.</p>
+                      <div className="space-y-3 rounded-xl bg-[#e9f8f2] px-3 py-3 text-sm text-[#0f7a5c]">
+                        <p>{paymentSuccessMessage}</p>
+                        <Link
+                          href="/dashboard/students/library"
+                          className="inline-flex rounded-full bg-[#0f7a5c] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0d6a50]"
+                        >
+                          View Purchased Books
+                        </Link>
+                      </div>
                     ) : null}
                   </form>
                 </div>

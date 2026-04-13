@@ -1,4 +1,3 @@
-
 "use client";
 
 import { ArrowUp, LogOut, Menu, X, Search, ShoppingCart, UserCircle2, Sparkles, Compass, Briefcase, Layers, Store, Info, Mail, Home, LibraryBig } from "lucide-react";
@@ -45,7 +44,7 @@ const Navbar = () => {
       }
       return "English";
     });
-    const handleLanguageChange = (e) => {
+    const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       setLanguage(e.target.value);
       if (typeof window !== "undefined") {
         localStorage.setItem("site_language", e.target.value);
@@ -175,10 +174,10 @@ const Navbar = () => {
           {/* Logo */}
           <Link href="/" className="group flex items-center gap-2.5">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full blur-md opacity-60 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute inset-0 bg-linear-to-r from-emerald-400 to-teal-400 rounded-full blur-md opacity-60 group-hover:opacity-100 transition-opacity" />
               <Sparkles className="relative h-5 w-5 text-emerald-500 group-hover:rotate-12 transition-transform" />
             </div>
-            <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+            <span className="text-xl font-bold tracking-tight bg-linear-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
               LOOKIT
             </span>
           </Link>
@@ -192,7 +191,7 @@ const Navbar = () => {
                 className="group relative px-4 py-2 text-sm font-medium text-gray-600 transition-all duration-200 hover:text-emerald-600 rounded-full hover:bg-emerald-50/50"
               >
                 <span className="relative z-10">{item.name}</span>
-                <span className="absolute bottom-0 left-1/2 h-0.5 w-0 bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-300 group-hover:w-1/2 group-hover:left-1/4" />
+                <span className="absolute bottom-0 left-1/2 h-0.5 w-0 bg-linear-to-r from-emerald-500 to-teal-500 transition-all duration-300 group-hover:w-1/2 group-hover:left-1/4" />
               </Link>
             ))}
             {/* Language Switcher */}
@@ -223,7 +222,7 @@ const Navbar = () => {
             {isStudent ? (
               <Link href="/cart" className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-50/80 text-gray-600 transition-all duration-200 hover:bg-emerald-100 hover:text-emerald-600 hover:scale-105">
                 <ShoppingCart className="h-4.5 w-4.5" />
-                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-[10px] font-bold text-white shadow-sm transition-transform group-hover:scale-110">
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-linear-to-r from-emerald-500 to-teal-500 text-[10px] font-bold text-white shadow-sm transition-transform group-hover:scale-110">
                   0
                 </span>
               </Link>
@@ -267,7 +266,7 @@ const Navbar = () => {
                       className="absolute right-0 mt-3 w-72 rounded-2xl border border-gray-100/80 bg-white/95 backdrop-blur-xl p-4 shadow-xl"
                     >
                       <div className="flex items-center gap-3 border-b border-gray-100 pb-3">
-                        <div className="h-12 w-12 rounded-full bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center">
+                        <div className="h-12 w-12 rounded-full bg-linear-to-br from-emerald-100 to-teal-100 flex items-center justify-center">
                           {session?.user?.image ? (
                             <Image src={session.user.image} alt="Profile" width={48} height={48} className="h-12 w-12 rounded-full object-cover" />
                           ) : (
@@ -281,7 +280,7 @@ const Navbar = () => {
                       </div>
                       <button
                         onClick={() => signOut({ callbackUrl: "/dashboard/students" })}
-                        className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-sm font-semibold text-white transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+                        className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 text-sm font-semibold text-white transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
                       >
                         <LogOut className="h-4 w-4" />
                         Logout
@@ -303,7 +302,7 @@ const Navbar = () => {
             ) : (
               <Link
                 href="/login"
-                className="hidden rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-md hover:scale-105 active:scale-100 sm:flex"
+                className="hidden rounded-full bg-linear-to-r from-emerald-600 to-teal-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-md hover:scale-105 active:scale-100 sm:flex"
               >
                 Get Started
               </Link>
@@ -343,7 +342,7 @@ const Navbar = () => {
                     />
                     <button
                       onClick={() => runSearch()}
-                      className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-md active:scale-95"
+                      className="rounded-full bg-linear-to-r from-emerald-600 to-teal-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-md active:scale-95"
                     >
                       Search
                     </button>
@@ -363,7 +362,7 @@ const Navbar = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: idx * 0.03 }}
                             onClick={() => { router.push(item.href); setSearchOpen(false); setSearchQuery(""); }}
-                            className="group flex w-full items-center justify-between rounded-xl px-4 py-3 text-left transition-all duration-200 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50"
+                            className="group flex w-full items-center justify-between rounded-xl px-4 py-3 text-left transition-all duration-200 hover:bg-linear-to-r hover:from-emerald-50/50 hover:to-teal-50/50"
                           >
                             <div>
                               <p className="text-sm font-semibold text-gray-800 group-hover:text-emerald-700">{item.label}</p>
@@ -403,7 +402,7 @@ const Navbar = () => {
                   >
                     <Link
                       href={item.href}
-                      className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50 hover:text-emerald-700"
+                      className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-linear-to-r hover:from-emerald-50/50 hover:to-teal-50/50 hover:text-emerald-700"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <item.icon className="h-4.5 w-4.5 text-gray-400 group-hover:text-emerald-500" />
@@ -420,7 +419,7 @@ const Navbar = () => {
                   >
                     <Link
                       href="/login"
-                      className="flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-sm transition-all duration-200 active:scale-95"
+                      className="flex w-full items-center justify-center rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-sm transition-all duration-200 active:scale-95"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       Get Started
@@ -442,7 +441,7 @@ const Navbar = () => {
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl active:scale-95"
+            className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-r from-emerald-600 to-teal-600 text-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl active:scale-95"
             aria-label="Back to top"
           >
             <ArrowUp className="h-5 w-5" />

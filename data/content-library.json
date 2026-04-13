@@ -37,6 +37,26 @@
       "categories": [
         "frontend"
       ]
+    },
+    "e8e23652-faf2-4d88-b5a4-c0078672885e": {
+      "books": [
+        {
+          "name": "Leather Journal C Lock Diary Book, Hand",
+          "category": "Plan Book",
+          "mrp": "449.00",
+          "imageUrl": "/books.png",
+          "url": "https://www.amazon.in/Anshika-International-Leather-Embossed-Patterned/dp/B07FJWBHGJ/ref=sr_1_2?crid=1NEZL631FTHN6&dib=eyJ2IjoiMSJ9.8eQGiweuUdHwTvQok1hJlO_xGw3kdcfX8uE88LsxSmUsM-mNjsAICL5FDxIfa0N0dT1rqMhJLlKJcPTk2zvIvwsaIQysZAMubQZiVVnpkIqjC5h501Hlah6GkiacZ0ZtnlC_4uljmBpsjJUhTAyrn5Xvl_bgstH5K-Iuu-lAzaFemq4H3yMVZtJ7wUMB9r5uPQRBLhPxHMqRvgsVWuG3tQDHfXCBPI0zZVCzn33NcD5n6ViQrc2ASCHFuAiPPK2jMwM7Cx0n2Ggxx35ZgYIQXtZ4R3GeIH8k5A4CoNslmLU.KLU3JWn8-noVJVqdyG8CsWwpEAnOZMECQsy-gW4FXTc&dib_tag=se&keywords=book&qid=1776060568&s=shoes&sprefix=boo%2Cshoes%2C386&sr=1-2",
+          "source": "amazon",
+          "fileName": "Amazon Link",
+          "sizeLabel": "External",
+          "id": "book-1776060623382-ablfve",
+          "createdAt": "2026-04-13T06:10:23.382Z"
+        }
+      ],
+      "videos": [],
+      "categories": [
+        "Plan Book"
+      ]
     }
   },
   "students": {

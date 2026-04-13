@@ -1,5 +1,29 @@
 [
   {
+    "professionalId": "36210bef-31a0-462c-bd78-1162909b1164",
+    "professionalName": "savaj",
+    "professionalEmail": "savaj@gmail.com",
+    "event": "decision",
+    "title": "Approval granted",
+    "message": "Your professional account has been approved. You can now log in.",
+    "status": "approved",
+    "audience": "professional",
+    "id": "60ff8361-83f9-463a-9a5d-d2e86965e109",
+    "createdAt": "2026-04-13T06:07:41.450Z"
+  },
+  {
+    "professionalId": "36210bef-31a0-462c-bd78-1162909b1164",
+    "professionalName": "savaj",
+    "professionalEmail": "savaj@gmail.com",
+    "event": "decision",
+    "title": "Professional approved",
+    "message": "savaj was approved by Admin.",
+    "status": "approved",
+    "audience": "admin",
+    "id": "ba73921f-c597-4907-b8df-924fd4d8627c",
+    "createdAt": "2026-04-13T06:07:41.448Z"
+  },
+  {
     "professionalId": "8aed2221-d2c3-4e8b-ab97-08e5f1247053",
     "professionalName": "smit",
     "professionalEmail": "smit11@gmail.com",

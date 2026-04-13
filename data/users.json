@@ -1,5 +1,17 @@
 [
   {
+    "id": "6200f791-5b70-483b-a35f-33018daa3778",
+    "name": "milan",
+    "email": "nitabengadhiya02@gmail.com",
+    "passwordHash": "$2a$10$nsTsvB9NsF6QOUSChDyDv.vpkb2inTdBmxXD1e37HyE/JTX6mTPyi",
+    "role": "student",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-13T05:52:35.594Z"
+  },
+  {
     "id": "36210bef-31a0-462c-bd78-1162909b1164",
     "name": "savaj",
     "email": "savaj@gmail.com",
@@ -7,7 +19,9 @@
     "role": "professional",
     "certificates": [],
     "reviews": [],
-    "approvalStatus": "pending",
+    "approvalStatus": "approved",
+    "approvalReviewedBy": "Admin",
+    "approvalReviewedAt": "2026-04-13T06:07:41.445Z",
     "provider": "credentials",
     "createdAt": "2026-04-13T05:51:21.087Z"
   },
@@ -244,6 +258,9 @@
     "email": "jenilgadhiya918@gmail.com",
     "passwordHash": "$2a$10$XtZgN2id/g.HvPD8QfaC3eP0dO8QNqiJ9IaSFOiT2FMzQHvtZQNWm",
     "role": "professional",
+    "specialization": "UI/UX Design",
+    "contactNumber": "+91 9191869461",
+    "location": "adajan",
     "certificates": [],
     "reviews": [],
     "profileBoostedUntil": "2026-07-08T11:22:50.319Z",
@@ -252,17 +269,5 @@
     "approvalReviewedAt": "2026-04-13T05:51:52.247Z",
     "provider": "credentials",
     "createdAt": "2026-04-07T03:44:59.206Z"
-  },
-  {
-    "id": "6200f791-5b70-483b-a35f-33018daa3778",
-    "name": "milan",
-    "email": "nitabengadhiya02@gmail.com",
-    "passwordHash": "$2a$10$nsTsvB9NsF6QOUSChDyDv.vpkb2inTdBmxXD1e37HyE/JTX6mTPyi",
-    "role": "student",
-    "certificates": [],
-    "reviews": [],
-    "approvalStatus": "approved",
-    "provider": "credentials",
-    "createdAt": "2026-04-13T05:52:35.594Z"
   }
 ]

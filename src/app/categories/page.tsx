@@ -10,7 +10,7 @@ export default function StudentsPage() {
   return (
     <>
       <Navbar />
-      <main className="overflow-x-hidden">
+      <main className="overflow-x-hidden overflow-y-hidden scrollbar-hide">
         <section data-aos="fade-up">
           <HeroCourses />
         </section>

@@ -113,8 +113,8 @@ Available all programs
               onClick={() => setActiveFilter(item)}
               className={`rounded-full px-5 py-2 text-sm font-medium transition ${
                 activeFilter === item
-                  ? "bg-primary text-white"
-                  : "bg-gray-100 hover:bg-primary/10"
+                  ? "bg-[#1ec28e] text-white hover:bg-[#18ab7d]"
+                  : "bg-gray-100 text-[#1ec28e] hover:bg-[#e6faf4]"
               }`}
             >
               {item}
@@ -131,7 +131,7 @@ Available all programs
           <button
             type="button"
             onClick={() => setIsFilterDrawerOpen(true)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white shadow-sm"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#1ec28e] text-white shadow-sm hover:bg-[#18ab7d] transition"
             aria-label="Open filters"
           >
             <SlidersHorizontal className="h-4 w-4" />
@@ -214,7 +214,7 @@ Available all programs
     </div>
   </div>
 
-  <button className="w-full rounded-full bg-primary px-6 py-2 text-sm text-white hover:bg-[#18ab7d] sm:w-auto">
+  <button className="w-full rounded-full bg-[#1ec28e] px-6 py-2 text-sm text-white font-semibold shadow hover:bg-[#18ab7d] transition sm:w-auto">
     ENROL NOW →
   </button>
 
@@ -254,7 +254,7 @@ Available all programs
               <button
                 type="button"
                 onClick={() => setIsFilterDrawerOpen(false)}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-700"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#1ec28e] text-white hover:bg-[#18ab7d] transition"
                 aria-label="Close"
               >
                 <X className="h-4 w-4" />
@@ -272,8 +272,8 @@ Available all programs
                   }}
                   className={`w-full rounded-xl px-4 py-3 text-left text-sm font-medium transition ${
                     activeFilter === item
-                      ? "bg-primary text-white"
-                      : "bg-gray-100 text-gray-800 hover:bg-primary/10"
+                      ? "bg-[#1ec28e] text-white hover:bg-[#18ab7d]"
+                      : "bg-gray-100 text-[#1ec28e] hover:bg-[#e6faf4]"
                   }`}
                 >
                   {item}

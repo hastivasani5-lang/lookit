@@ -85,7 +85,7 @@ const FeaturedCourse = () => {
                     42% OFF
                   </span>
                 </div>
-                <button className="group flex items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:scale-105 hover:shadow-md">
+                <button className="group flex items-center gap-1.5 rounded-full bg-[#1ec28e] px-5 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:scale-105 hover:bg-[#18ab7d] hover:shadow-md">
                   Enrol Now
                   <svg className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />

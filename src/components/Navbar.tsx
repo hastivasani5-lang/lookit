@@ -1,3 +1,4 @@
+
 "use client";
 
 import { ArrowUp, LogOut, Menu, X, Search, ShoppingCart, UserCircle2, Sparkles, Compass, Briefcase, Layers, Store, Info, Mail, Home, LibraryBig } from "lucide-react";
@@ -37,6 +38,19 @@ const navItems = [
 ];
 
 const Navbar = () => {
+    const languages = ["English", "Hindi", "Gujarati", "Marathi", "Bengali"];
+    const [language, setLanguage] = useState(() => {
+      if (typeof window !== "undefined") {
+        return localStorage.getItem("site_language") || "English";
+      }
+      return "English";
+    });
+    const handleLanguageChange = (e) => {
+      setLanguage(e.target.value);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("site_language", e.target.value);
+      }
+    };
   const router = useRouter();
   const { data: session, status } = useSession();
   const [hasMounted, setHasMounted] = useState(false);
@@ -181,6 +195,17 @@ const Navbar = () => {
                 <span className="absolute bottom-0 left-1/2 h-0.5 w-0 bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-300 group-hover:w-1/2 group-hover:left-1/4" />
               </Link>
             ))}
+            {/* Language Switcher */}
+            <select
+              value={language}
+              onChange={handleLanguageChange}
+              className="ml-4 px-3 py-2 rounded-full border border-gray-200 bg-white text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              aria-label="Select Language"
+            >
+              {languages.map((lang) => (
+                <option key={lang} value={lang}>{lang}</option>
+              ))}
+            </select>
           </nav>
 
           {/* Right Icons */}

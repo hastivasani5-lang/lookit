@@ -45,6 +45,24 @@
 			"type": "shell",
 			"command": "npm run build",
 			"group": "build"
+		},
+		{
+			"label": "push-without-commit-prompt",
+			"type": "shell",
+			"command": "git add -A && (git commit -m \"Auto commit\" || true) && git pull --rebase origin main && git push origin main",
+			"group": "build"
+		},
+		{
+			"label": "push-without-commit-prompt-pwsh",
+			"type": "shell",
+			"command": "git add -A; git commit -m \"Auto commit\"; git pull --rebase origin main; git push origin main",
+			"group": "build"
+		},
+		{
+			"label": "pull-then-push-without-commit-prompt",
+			"type": "shell",
+			"command": "git add -A; git commit -m \"Auto commit\"; git pull origin main --rebase; git push origin main",
+			"group": "build"
 		}
 	]
 }

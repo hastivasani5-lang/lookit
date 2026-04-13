@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { FaStar } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
 import { CreditCard, MapPin, PlayCircle, Star } from "lucide-react";
@@ -247,6 +248,18 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
     setPaymentSuccess(true);
   };
 
+  // Ratings summary data (static for demo, replace with real data as needed)
+  const ratingsSummary = [
+    { label: "Excellent", count: 11, color: "bg-green-500" },
+    { label: "Very Good", count: 7, color: "bg-green-400" },
+    { label: "Good", count: 7, color: "bg-yellow-400" },
+    { label: "Average", count: 0, color: "bg-yellow-500" },
+    { label: "Poor", count: 5, color: "bg-red-500" },
+  ];
+  const totalRatings = 30;
+  const totalReviews = 3;
+  const avgRating = 3.6;
+
   return (
     <main className="min-h-screen bg-[#edf4f2] px-4 pb-12 pt-10 md:px-8 lg:px-10">
       <section className="mx-auto w-full max-w-7xl rounded-[36px] border border-[#dbe8e4] bg-white p-4 shadow-[0_20px_40px_rgba(15,23,42,0.08)] md:p-6 lg:p-8">
@@ -455,6 +468,35 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
                 ) : null}
               </div>
             </section>
+          </div>
+        </div>
+      </section>
+
+      {/* Ratings & Reviews Summary */}
+      <section className="mx-auto mt-8 w-full max-w-3xl">
+        <div className="rounded-xl border bg-white p-6 w-full">
+          <h2 className="text-lg font-semibold mb-4">Product Ratings & Reviews</h2>
+          <div className="flex items-center gap-6 mb-6">
+            <div className="flex flex-col items-center justify-center min-w-[80px]">
+              <span className="text-4xl font-bold text-green-600 flex items-center">
+                {avgRating} <FaStar className="ml-1 text-green-500 text-2xl" />
+              </span>
+              <span className="text-xs text-gray-500 mt-1">{totalRatings} Ratings,<br />{totalReviews} Reviews</span>
+            </div>
+            <div className="flex-1 flex flex-col gap-2">
+              {ratingsSummary.map((r) => (
+                <div key={r.label} className="flex items-center gap-2">
+                  <span className="w-24 text-sm text-gray-700">{r.label}</span>
+                  <div className="flex-1 h-2 rounded bg-gray-200 overflow-hidden">
+                    <div
+                      className={`${r.color} h-2 rounded`}
+                      style={{ width: `${(r.count / totalRatings) * 100}%` }}
+                    ></div>
+                  </div>
+                  <span className="w-8 text-xs text-gray-500 text-right">{r.count}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

@@ -47,11 +47,11 @@ const ShopWhyChoose = () => {
 
           {/* CTA */}
           <div className="mt-8 flex items-center gap-6">
-            <button className="bg-[#1ec28e] text-white px-6 py-3 rounded-full hover:bg-[#18ab7d] transition">
+            <button className="bg-blue-600 text-white px-6 py-3 rounded-full font-semibold shadow hover:bg-blue-700 transition">
               Shop Now →
             </button>
 
-            <button className="underline text-gray-700 hover:text-black">
+            <button className="bg-blue-50 text-blue-600 px-6 py-3 rounded-full font-semibold shadow hover:bg-blue-100 transition">
               View Products
             </button>
           </div>
@@ -66,13 +66,13 @@ const ShopWhyChoose = () => {
 
           {/* Floating Animated Icons */}
           <div className="absolute left-10 top-10 animate-bounce z-10">
-            <Image src="/book-bann.jpg" alt="icon1" width={48} height={48} className="rounded-full shadow-lg" />
+            <Image src="/start.png" alt="icon1" width={48} height={48}  />
           </div>
           <div className="absolute right-10 top-32 animate-pulse z-10">
-            <Image src="/pro1.jpeg" alt="icon2" width={40} height={40} className="rounded-full shadow-md" />
+            <Image src="/hero-arrow.png" alt="icon2" width={40} height={40} />
           </div>
           <div className="absolute left-20 bottom-24 animate-bounce z-10">
-            <Image src="/pro2.jpeg" alt="icon3" width={36} height={36} className="rounded-full shadow-md" />
+            <Image src="/wave.png" alt="icon3" width={45} height={45}  />
           </div>
 
           {/* DISCOUNT BADGE */}
@@ -80,21 +80,7 @@ const ShopWhyChoose = () => {
             50% OFF
           </div>
 
-          {/* PRODUCT CARD */}
-          <div className="absolute bottom-6 right-0 flex items-center gap-3 bg-white px-4 py-3 rounded-xl shadow-xl z-20">
-            <div className="relative w-10 h-10">
-              <Image
-                src="/product1.jpg"
-                alt=""
-                fill
-                className="rounded-md object-cover"
-              />
-            </div>
-            <div>
-              <p className="text-sm font-semibold">$49.00</p>
-              <p className="text-xs text-gray-500">Best Seller</p>
-            </div>
-          </div>
+ 
 
           {/* MAIN IMAGE - moved to bottom, larger, no gap below */}
           <div className="relative z-10 h-[420px] w-[420px] sm:h-[520px] sm:w-[520px] mt-auto">
@@ -107,16 +93,7 @@ const ShopWhyChoose = () => {
             />
           </div>
         </div>
-/* Add custom animation for slow spin */
-<style jsx global>{`
-  @keyframes spin-slow {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  .animate-spin-slow {
-    animation: spin-slow 8s linear infinite;
-  }
-`}</style>
+
 
       </div>
     </section>

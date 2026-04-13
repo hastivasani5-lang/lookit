@@ -7,6 +7,7 @@ import { appendStudentBookActivity, appendStudentVideoActivity } from "@/lib/con
 
 type CheckoutItem = {
   id: string;
+  contentId?: string;
   professionalId: string;
   professionalName: string;
   title: string;
@@ -71,6 +72,7 @@ export async function POST(request: Request) {
     paidAt: new Date().toISOString(),
     status: "completed",
     items: items.map((item) => ({
+      contentId: item.contentId || item.id,
       title: item.title,
       contentType: item.contentType,
       price: item.price,

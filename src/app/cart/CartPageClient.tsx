@@ -8,6 +8,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getCartItems, removeCartItem, type CartItem } from "@/lib/cart-store";
 
+const RAZORPAY_PAYMENT_LINK = "https://razorpay.me/@jenildineshbhaigadhiya";
+
 function parsePrice(value: string) {
   const cleaned = value.replace(/[^\d.]/g, "");
   const amount = Number.parseFloat(cleaned);
@@ -50,6 +52,8 @@ export default function CartPageClient() {
       setPaymentError("Please complete all payment details.");
       return;
     }
+
+    window.open(RAZORPAY_PAYMENT_LINK, "_blank", "noopener,noreferrer");
 
     setIsProcessingPayment(true);
 

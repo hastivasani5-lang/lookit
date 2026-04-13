@@ -1,5 +1,6 @@
 export type CartItem = {
   id: string;
+  contentId?: string;
   professionalId: string;
   professionalName: string;
   title: string;
@@ -33,6 +34,7 @@ function readStorage(): CartItem[] {
             typeof item?.title === "string" &&
             typeof item?.subtitle === "string" &&
             typeof item?.price === "string" &&
+            (item?.contentId === undefined || typeof item?.contentId === "string") &&
             (item?.sourceUrl === undefined || typeof item?.sourceUrl === "string") &&
             (item.contentType === "book" || item.contentType === "video" || item.contentType === "course" || item.contentType === "lecture"),
         )

@@ -75,7 +75,7 @@ export default function Footer() {
               type="button"
               disabled={isSubmitting}
               onClick={() => void handleSubscribe()}
-              className="h-11 rounded-full bg-[#bca582] px-7 text-xs font-semibold tracking-[0.12em] text-white transition hover:bg-[#a58d68] disabled:cursor-not-allowed disabled:opacity-70"
+              className="h-11 rounded-full bg-[#1ec28e] px-7 text-xs font-semibold tracking-[0.12em] text-white transition hover:bg-[#18ab7d] disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isSubmitting ? "CHECKING..." : "SUBSCRIBE"}
             </button>

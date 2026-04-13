@@ -174,6 +174,36 @@ export async function addProfessionalBook(professionalId: string, input: Omit<St
   return book;
 }
 
+export async function getProfessionalBookById(professionalId: string, bookId: string) {
+  const library = await getProfessionalLibrary(professionalId);
+  return library.books.find((book) => book.id === bookId) ?? null;
+}
+
+export async function updateProfessionalBook(
+  professionalId: string,
+  bookId: string,
+  input: Partial<Omit<StoredBook, "id" | "createdAt">>,
+) {
+  const store = await readStore();
+  const library = getOrCreateProfessionalLibrary(store, professionalId);
+  const index = library.books.findIndex((book) => book.id === bookId);
+
+  if (index === -1) {
+    return null;
+  }
+
+  const current = library.books[index];
+  const updated: StoredBook = {
+    ...current,
+    ...input,
+  };
+
+  library.books[index] = updated;
+  library.categories = uniqueCategories([...library.categories, updated.category]);
+  await writeStore(store);
+  return updated;
+}
+
 export async function addProfessionalVideo(professionalId: string, input: Omit<StoredVideo, "id" | "createdAt">) {
   const store = await readStore();
   const library = getOrCreateProfessionalLibrary(store, professionalId);
@@ -188,6 +218,35 @@ export async function addProfessionalVideo(professionalId: string, input: Omit<S
 
   await writeStore(store);
   return video;
+}
+
+export async function getProfessionalVideoById(professionalId: string, videoId: string) {
+  const library = await getProfessionalLibrary(professionalId);
+  return library.videos.find((video) => video.id === videoId) ?? null;
+}
+
+export async function updateProfessionalVideo(
+  professionalId: string,
+  videoId: string,
+  input: Partial<Omit<StoredVideo, "id" | "createdAt">>,
+) {
+  const store = await readStore();
+  const library = getOrCreateProfessionalLibrary(store, professionalId);
+  const index = library.videos.findIndex((video) => video.id === videoId);
+
+  if (index === -1) {
+    return null;
+  }
+
+  const current = library.videos[index];
+  const updated: StoredVideo = {
+    ...current,
+    ...input,
+  };
+
+  library.videos[index] = updated;
+  await writeStore(store);
+  return updated;
 }
 
 export async function deleteProfessionalBook(professionalId: string, bookId: string) {

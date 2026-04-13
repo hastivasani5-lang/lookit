@@ -7,6 +7,8 @@ import { CreditCard, MapPin, PlayCircle, Star } from "lucide-react";
 import type { PublicProfessional } from "@/lib/professional-display";
 import { addCartItem } from "@/lib/cart-store";
 
+const RAZORPAY_PAYMENT_LINK = "https://razorpay.me/@jenildineshbhaigadhiya";
+
 type UploadedBook = {
   id: string;
   name: string;
@@ -183,6 +185,7 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
 
     addCartItem({
       id: `${professional.id}:${item.id}`,
+      contentId: item.id,
       professionalId: professional.id,
       professionalName: professional.name,
       title: item.title,
@@ -195,25 +198,43 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
     setCartItemIds((current) => (current.includes(item.id) ? current : [item.id, ...current]));
   };
 
-  const submitReview = (event: React.FormEvent<HTMLFormElement>) => {
+  const submitReview = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!reviewName.trim() || !reviewText.trim()) {
       return;
     }
 
-    setReviews((prev) => [
-      {
-        id: Date.now(),
-        name: reviewName.trim(),
-        rating: reviewRating,
-        message: reviewText.trim(),
-      },
-      ...prev,
-    ]);
+    try {
+      const response = await fetch("/api/profile/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          professionalId: professional.id,
+          rating: reviewRating,
+          review: reviewText.trim(),
+        }),
+      });
 
-    setReviewName("");
-    setReviewText("");
-    setReviewRating(5);
+      if (!response.ok) {
+        return;
+      }
+
+      setReviews((prev) => [
+        {
+          id: Date.now(),
+          name: reviewName.trim(),
+          rating: reviewRating,
+          message: reviewText.trim(),
+        },
+        ...prev,
+      ]);
+
+      setReviewName("");
+      setReviewText("");
+      setReviewRating(5);
+    } catch {
+      return;
+    }
   };
 
   const submitPayment = (event: React.FormEvent<HTMLFormElement>) => {
@@ -222,6 +243,7 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
       setPaymentSuccess(false);
       return;
     }
+    window.open(RAZORPAY_PAYMENT_LINK, "_blank", "noopener,noreferrer");
     setPaymentSuccess(true);
   };
 
@@ -580,7 +602,7 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
 
             {paymentSuccess ? (
               <p className="rounded-xl bg-[#e9f8f2] px-3 py-2 text-sm text-[#0f7a5c]">
-                Payment successful (demo). Your booking request has been placed.
+                Successful. Your booking request has been placed.
               </p>
             ) : null}
           </form>

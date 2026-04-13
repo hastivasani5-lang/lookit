@@ -1,0 +1,15 @@
+{
+  "reviews": [
+    {
+      "id": "review-1776079877232-pdqg8e",
+      "studentId": "eb74ca98-e9e1-4ef5-a00e-aeeea4af6f6e",
+      "studentName": "smit",
+      "studentEmail": "smit@gmail.com",
+      "professionalId": "bab9bf38-a318-4580-87d8-8f3a0f56b76e",
+      "professionalName": "jeel",
+      "rating": 4,
+      "review": "Sessions were structured and super practical. We saw clear progress in 6 weeks.",
+      "createdAt": "2026-04-13T11:31:17.232Z"
+    }
+  ]
+}

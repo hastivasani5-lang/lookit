@@ -28,6 +28,7 @@ export type PaymentRecord = {
   paidAt: string;
   status: "completed";
   items: Array<{
+    contentId?: string;
     title: string;
     contentType: "book" | "video" | "course" | "lecture";
     price: string;

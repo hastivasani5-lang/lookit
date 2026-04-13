@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Bell,
   BookOpen,
@@ -20,6 +21,7 @@ import {
   Users,
   Video,
 } from "lucide-react";
+import UpgradeTimeline from "@/components/UpgradeTimeline";
 
 type ProfessionalUser = {
   id: string;
@@ -89,10 +91,14 @@ const upgradePlans: Array<{
   { key: "elite", name: "Elite", price: "$59", duration: "3 months boost" },
 ];
 
-const sidebarItems: Array<{ label: string; icon: typeof LayoutGrid; section: DashboardSection }> = [
+const RAZORPAY_PAYMENT_LINK = "https://razorpay.me/@jenildineshbhaigadhiya";
+
+const sidebarItems: Array<{ label: string; icon: typeof LayoutGrid; section?: DashboardSection; href?: string }> = [
   { label: "Overview", icon: LayoutGrid, section: "overview" },
   { label: "Add", icon: Upload, section: "add" },
   { label: "Upgrade Profile", icon: CreditCard, section: "upgrade" },
+  { label: "Purchases", icon: Users, href: "/dashboard/teachers/purchases" },
+  { label: "Reviews", icon: Star, href: "/dashboard/teachers/reviews" },
   { label: "Settings", icon: Settings, section: "settings" },
 ];
 
@@ -251,6 +257,7 @@ const detailVideos = [
 
 export default function ProfessionalDashboard({ user }: ProfessionalDashboardProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isMounted, setIsMounted] = useState(false);
   const [activeSection, setActiveSection] = useState<DashboardSection>("overview");
   const [addContentTab, setAddContentTab] = useState<AddContentTab>("books");
@@ -277,17 +284,31 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   const [bookMrpInput, setBookMrpInput] = useState("");
   const [bookCategoryInput, setBookCategoryInput] = useState("");
   const [bookImageFile, setBookImageFile] = useState<File | null>(null);
+  const [pendingBookFiles, setPendingBookFiles] = useState<File[]>([]);
   const [bookImageLinkInput, setBookImageLinkInput] = useState("");
   const [bookLinkInput, setBookLinkInput] = useState("");
   const [bookFormError, setBookFormError] = useState("");
+  const [isBookFormOpen, setIsBookFormOpen] = useState(false);
+  const [isVideoFormOpen, setIsVideoFormOpen] = useState(false);
   const [youtubeLinkInput, setYoutubeLinkInput] = useState("");
   const [youtubeLinkError, setYoutubeLinkError] = useState("");
   const [videoMrpInput, setVideoMrpInput] = useState("");
+  const [pendingVideoFiles, setPendingVideoFiles] = useState<File[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [hasOpenedRazorpay, setHasOpenedRazorpay] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    const section = searchParams.get("section");
+    if (section === "add" || section === "upgrade" || section === "settings" || section === "overview") {
+      setActiveSection(section);
+      return;
+    }
+    setActiveSection("overview");
+  }, [searchParams]);
 
   useEffect(() => {
     setProfileName(user.name);
@@ -513,6 +534,12 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     setProfileError("");
     setProfileMessage("");
 
+    if (!hasOpenedRazorpay) {
+      setProfileError("Please complete payment from the Razorpay link first, then click Confirm Payment.");
+      setProcessingUpgrade(false);
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("plan", upgradePlan);
@@ -526,17 +553,26 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
 
       if (!response.ok) {
         setProfileError(result.message || "Unable to process payment.");
+        setProcessingUpgrade(false);
         return;
       }
 
       setProfileBoostedUntil(result.user?.profileBoostedUntil ?? null);
-      setProfileMessage(result.message || "Your profile has been upgraded.");
+      setProfileMessage("Successful");
+      setHasOpenedRazorpay(false);
+      setProcessingUpgrade(false);
       router.refresh();
     } catch {
       setProfileError("Unable to process payment.");
-    } finally {
       setProcessingUpgrade(false);
     }
+  };
+
+  const handleOpenRazorpay = () => {
+    window.open(RAZORPAY_PAYMENT_LINK, "_blank", "noopener,noreferrer");
+    setHasOpenedRazorpay(true);
+    setProfileError("");
+    setProfileMessage("");
   };
 
   const avatarSrc = photoPreview || "/person.png";
@@ -630,9 +666,14 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     };
   }, [isMounted, user.role]);
 
-  const handleBookUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files ?? []);
+  const handleBookSave = async () => {
+    const files = pendingBookFiles;
     if (files.length === 0) {
+      if (bookLinkInput.trim()) {
+        await handleAmazonBookAdd();
+      } else {
+        setBookFormError("Please select book files or provide an Amazon link before saving.");
+      }
       return;
     }
 
@@ -643,7 +684,6 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
 
     if (!trimmedBookName || !trimmedBookMrp || !trimmedBookCategory) {
       setBookFormError("Please enter book name, MRP, and category/type before uploading.");
-      event.target.value = "";
       return;
     }
 
@@ -655,19 +695,16 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     } else if (trimmedBookImageLink) {
       if (!parseHttpUrl(trimmedBookImageLink)) {
         setBookFormError("Please provide a valid image link.");
-        event.target.value = "";
         return;
       }
       resolvedBookImageUrl = trimmedBookImageLink;
     } else {
       setBookFormError("Please upload a book image file or provide an image link.");
-      event.target.value = "";
       return;
     }
 
     if (!Number.isFinite(parsedMrp) || parsedMrp <= 0) {
       setBookFormError("Please enter a valid MRP amount.");
-      event.target.value = "";
       return;
     }
 
@@ -730,9 +767,10 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     setBookMrpInput("");
     setBookCategoryInput("");
     setBookImageFile(null);
+    setPendingBookFiles([]);
     setBookImageLinkInput("");
     setBookLinkInput("");
-    event.target.value = "";
+    setIsBookFormOpen(false);
   };
 
   const handleAmazonBookAdd = async () => {
@@ -799,8 +837,10 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     setBookMrpInput("");
     setBookCategoryInput("");
     setBookImageFile(null);
+    setPendingBookFiles([]);
     setBookImageLinkInput("");
     setBookLinkInput("");
+    setIsBookFormOpen(false);
   };
 
   const getYouTubeEmbedUrl = (link: string) => {
@@ -822,8 +862,18 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     }
   };
 
-  const handleVideoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files ?? []);
+  const handleVideoSave = async () => {
+    const files = pendingVideoFiles;
+    if (files.length === 0 && !youtubeLinkInput.trim()) {
+      setYoutubeLinkError("Please select video files or provide a YouTube link before saving.");
+      return;
+    }
+
+    if (files.length === 0 && youtubeLinkInput.trim()) {
+      await handleYouTubeAdd();
+      return;
+    }
+
     if (files.length === 0) {
       return;
     }
@@ -831,7 +881,6 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     const trimmedVideoMrp = videoMrpInput.trim();
     if (!trimmedVideoMrp) {
       setYoutubeLinkError("Please enter a video MRP.");
-      event.target.value = "";
       return;
     }
 
@@ -878,7 +927,9 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       // keep local preview entries even if persistence fails
     }
 
-    event.target.value = "";
+    setPendingVideoFiles([]);
+    setVideoMrpInput("");
+    setIsVideoFormOpen(false);
   };
 
   const handleYouTubeAdd = async () => {
@@ -925,6 +976,8 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       setAddedVideos((prev) => [payload.video as AddedVideo, ...prev]);
       setYoutubeLinkInput("");
       setVideoMrpInput("");
+      setPendingVideoFiles([]);
+      setIsVideoFormOpen(false);
     } catch {
       setYoutubeLinkError("Unable to add YouTube video.");
     }
@@ -1074,9 +1127,9 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   }
 
   return (
-    <main className="h-screen overflow-hidden bg-[#f3f4fb] p-4 md:p-6 lg:p-8">
-      <div className="mx-auto grid h-[calc(100vh-2rem)] max-w-[1600px] grid-cols-1 overflow-hidden rounded-[28px] bg-white shadow-[0_24px_80px_rgba(17,24,39,0.08)] md:h-[calc(100vh-3rem)] lg:h-[calc(100vh-4rem)] lg:grid-cols-[260px_minmax(0,1fr)]">
-        <aside className="flex flex-col border-b border-slate-200 bg-white px-5 py-6 lg:sticky lg:top-0 lg:h-full lg:border-b-0 lg:border-r">
+    <main className="h-screen overflow-hidden bg-[#eef5f3] p-3 sm:p-4 md:p-6">
+      <div className="mx-auto grid h-[calc(100vh-1.5rem)] max-w-[1600px] grid-cols-1 overflow-hidden rounded-[28px] bg-[#eef5f3] shadow-[20px_20px_40px_#d0dbd6,-20px_-20px_40px_#ffffff] md:h-[calc(100vh-2rem)] lg:h-[calc(100vh-3rem)] lg:grid-cols-[260px_minmax(0,1fr)]">
+        <aside className="flex flex-col border-b border-slate-200/70 bg-[#eef5f3] px-5 py-6 lg:sticky lg:top-0 lg:h-full lg:border-b-0 lg:border-r">
           <div className="flex items-center gap-3 px-2 pb-6">
             <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#1ec28e]/10 text-[#1ec28e]">
               <div className="h-5 w-5 rounded-full border-4 border-current border-r-transparent" />
@@ -1087,7 +1140,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
             </div>
           </div>
 
-          <div className="rounded-2xl bg-[#f7faf8] p-4">
+          <div className="rounded-2xl bg-[#eef5f3] p-4 shadow-[8px_8px_16px_#d0dbd6,-8px_-8px_16px_#ffffff]">
             <div className="flex items-center gap-3">
               <Image src={avatarSrc} alt="Profile" width={44} height={44} className="h-11 w-11 rounded-full object-cover" />
               <div className="min-w-0">
@@ -1100,19 +1153,26 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
           <nav className="mt-6 flex-1 space-y-1">
             {sidebarItems.map((item) => {
               const Icon = item.icon;
-              const isActive = activeSection === item.section;
+              const isActive = item.section ? activeSection === item.section : false;
+
+              const sharedClassName = `flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-medium transition ${
+                isActive
+                  ? "bg-[#2d6a4f] text-white shadow-[8px_8px_16px_#d0dbd6,-8px_-8px_16px_#ffffff]"
+                  : "bg-[#eef5f3] text-[#2c5a48] shadow-[3px_3px_6px_#d0dbd6,-3px_-3px_6px_#ffffff] hover:shadow-inner"
+              }`;
 
               return (
-                <button
-                  key={item.label}
-                  onClick={() => setActiveSection(item.section)}
-                  className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-medium transition ${
-                    isActive ? "bg-[#1ec28e]/10 text-[#1ec28e]" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  {item.label}
-                </button>
+                item.href ? (
+                  <Link key={item.label} href={item.href} className={sharedClassName}>
+                    <Icon className="h-4 w-4" />
+                    {item.label}
+                  </Link>
+                ) : (
+                  <button key={item.label} onClick={() => setActiveSection(item.section ?? "overview")} className={sharedClassName}>
+                    <Icon className="h-4 w-4" />
+                    {item.label}
+                  </button>
+                )
               );
             })}
           </nav>
@@ -1124,22 +1184,22 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
               }
               await signOut({ callbackUrl: "/login" });
             }}
-            className="mt-6 flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
+            className="mt-6 flex items-center gap-3 rounded-xl bg-[#eef5f3] px-4 py-3 text-sm font-medium text-[#2c5a48] shadow-[3px_3px_6px_#d0dbd6,-3px_-3px_6px_#ffffff] transition hover:shadow-inner"
           >
             <LogOut className="h-4 w-4" />
             Log Out
           </button>
         </aside>
 
-  <section className="h-full overflow-y-auto bg-[#f7f8fd] px-4 py-5 md:px-6 lg:px-8">
-          <div className="flex flex-col gap-4 rounded-[24px] bg-white px-5 py-4 shadow-sm md:flex-row md:items-center md:justify-between">
+    <section className="h-full overflow-y-auto bg-[#eef5f3] px-4 py-5 md:px-6 lg:px-8">
+      <div className="flex flex-col gap-4 rounded-[24px] bg-[#eef5f3] px-5 py-4 shadow-[12px_12px_24px_#d0dbd6,-12px_-12px_24px_#ffffff] md:flex-row md:items-center md:justify-between">
             <div>
               <h2 className="text-xl font-semibold text-slate-900">Welcome!</h2>
               <p className="text-sm text-slate-500">Welcome back, it’s explore now!</p>
             </div>
 
             <div className="flex w-full max-w-3xl items-center gap-3 md:w-auto md:flex-1 md:justify-end">
-              <div className="flex h-12 flex-1 items-center gap-3 rounded-full border border-slate-200 bg-white px-4 md:max-w-xl">
+              <div className="flex h-12 flex-1 items-center gap-3 rounded-full border-none bg-[#f6fefb] px-4 shadow-[inset_4px_4px_12px_#d0dbd6,inset_-4px_-4px_12px_#ffffff] md:max-w-xl">
                 <Search className="h-4 w-4 text-slate-400" />
                 <input
                   type="text"
@@ -1150,7 +1210,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                 />
               </div>
 
-              <button className="grid h-11 w-11 place-items-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm">
+              <button className="grid h-11 w-11 place-items-center rounded-full border-none bg-[#f6fefb] text-[#1ec28e] shadow-[3px_3px_8px_#d0dbd6,-3px_-3px_8px_#ffffff]">
                 <Bell className="h-4 w-4" />
               </button>
             </div>
@@ -1227,92 +1287,125 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
               {addContentTab === "books" ? (
                 <>
                   <div className="rounded-[24px] bg-white p-6 shadow-sm">
-                    <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                    <div className="flex items-center justify-between gap-3">
                       <div>
                         <h3 className="text-lg font-semibold text-slate-900">Add Books</h3>
-                        <p className="text-sm text-slate-500">Enter details and upload book files.</p>
+                        <p className="text-sm text-slate-500">Click Add+ to open the book form.</p>
                       </div>
-                      <BookOpen className="h-5 w-5 text-[#1ec28e]" />
-                    </div>
-
-                    <div className="mt-5 grid gap-3 md:grid-cols-3">
-                      <input
-                        type="text"
-                        value={bookNameInput}
-                        onChange={(event) => setBookNameInput(event.target.value)}
-                        placeholder="Book name"
-                        className="h-11 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
-                      />
-                      <input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={bookMrpInput}
-                        onChange={(event) => setBookMrpInput(event.target.value)}
-                        placeholder="MRP"
-                        className="h-11 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
-                      />
-                      <input
-                        type="text"
-                        value={bookCategoryInput}
-                        onChange={(event) => setBookCategoryInput(event.target.value)}
-                        placeholder="Category / Type"
-                        className="h-11 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
-                      />
-                    </div>
-
-                    <div className="mt-3 grid gap-3 md:grid-cols-2">
-                      <label className="flex h-11 cursor-pointer items-center justify-between rounded-xl border border-dashed border-slate-300 px-3 text-sm text-slate-600 transition hover:border-[#1ec28e] hover:bg-[#f7faf8]">
-                        <span className="truncate">{bookImageFile ? bookImageFile.name : "Upload book image file"}</span>
-                        <span className="rounded-full bg-[#effaf6] px-2.5 py-1 text-xs font-medium text-[#1ec28e]">Browse</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(event) => setBookImageFile(event.target.files?.[0] ?? null)}
-                        />
-                      </label>
-
-                      <input
-                        type="url"
-                        value={bookImageLinkInput}
-                        onChange={(event) => setBookImageLinkInput(event.target.value)}
-                        placeholder="Or paste Google image link"
-                        className="h-11 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
-                      />
-                    </div>
-
-                    <div className="mt-3 grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
-                      <input
-                        type="url"
-                        value={bookLinkInput}
-                        onChange={(event) => setBookLinkInput(event.target.value)}
-                        placeholder="Paste Amazon book link"
-                        className="h-11 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
-                      />
                       <button
                         type="button"
-                        onClick={handleAmazonBookAdd}
-                        className="inline-flex h-11 items-center justify-center rounded-xl bg-[#1ec28e] px-4 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
+                        onClick={() => setIsBookFormOpen((current) => !current)}
+                        className="inline-flex h-10 items-center justify-center rounded-xl bg-[#1ec28e] px-4 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
                       >
-                        Add Amazon Book
+                        {isBookFormOpen ? "Close" : "Add+"}
                       </button>
                     </div>
-
-                    <label className="mt-5 flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-2xl border border-dashed border-slate-300 px-4 text-sm text-slate-600 transition hover:border-[#1ec28e] hover:bg-[#f7faf8]">
-                      <span>Choose books to upload</span>
-                      <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-medium text-[#1ec28e]">Browse</span>
-                      <input
-                        type="file"
-                        multiple
-                        accept=".pdf,.doc,.docx,.ppt,.pptx,.txt"
-                        className="hidden"
-                        onChange={handleBookUpload}
-                      />
-                    </label>
-
-                    {bookFormError && <p className="mt-3 text-xs font-medium text-red-600">{bookFormError}</p>}
                   </div>
+
+                  {isBookFormOpen ? (
+                    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/35 p-4 backdrop-blur-sm">
+                      <div className="w-full max-w-4xl rounded-[24px] bg-white p-6 shadow-2xl">
+                        <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                          <div>
+                            <h3 className="text-lg font-semibold text-slate-900">Add Books</h3>
+                            <p className="text-sm text-slate-500">Enter details and upload book files.</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setIsBookFormOpen(false)}
+                            className="inline-flex rounded-xl bg-[#f2f5f4] px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-[#e8eeec]"
+                          >
+                            Close
+                          </button>
+                        </div>
+
+                        <div className="mt-5 grid gap-3 md:grid-cols-3">
+                          <input
+                            type="text"
+                            value={bookNameInput}
+                            onChange={(event) => setBookNameInput(event.target.value)}
+                            placeholder="Book name"
+                            className="h-11 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
+                          />
+                          <div className="relative h-11 rounded-xl border border-slate-200 focus-within:border-[#1ec28e]">
+                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-500">$</span>
+                            <input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={bookMrpInput}
+                              onChange={(event) => setBookMrpInput(event.target.value)}
+                              placeholder="MRP"
+                              className="h-11 w-full rounded-xl border-0 bg-transparent pl-8 pr-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400"
+                            />
+                          </div>
+                          <input
+                            type="text"
+                            value={bookCategoryInput}
+                            onChange={(event) => setBookCategoryInput(event.target.value)}
+                            placeholder="Category / Type"
+                            className="h-11 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
+                          />
+                        </div>
+
+                        <div className="mt-3 grid gap-3 md:grid-cols-2">
+                          <label className="flex h-11 cursor-pointer items-center justify-between rounded-xl border border-dashed border-slate-300 px-3 text-sm text-slate-600 transition hover:border-[#1ec28e] hover:bg-[#f7faf8]">
+                            <span className="truncate">{bookImageFile ? bookImageFile.name : "Upload book image file"}</span>
+                            <span className="rounded-full bg-[#effaf6] px-2.5 py-1 text-xs font-medium text-[#1ec28e]">Browse</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(event) => setBookImageFile(event.target.files?.[0] ?? null)}
+                            />
+                          </label>
+
+                          <input
+                            type="url"
+                            value={bookImageLinkInput}
+                            onChange={(event) => setBookImageLinkInput(event.target.value)}
+                            placeholder="Or paste Google image link"
+                            className="h-11 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
+                          />
+                        </div>
+
+                        <div className="mt-3 grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
+                          <input
+                            type="url"
+                            value={bookLinkInput}
+                            onChange={(event) => setBookLinkInput(event.target.value)}
+                            placeholder="Paste Amazon book link"
+                            className="h-11 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
+                          />
+                          <div className="h-11" />
+                        </div>
+
+                        <label className="mt-5 flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-2xl border border-dashed border-slate-300 px-4 text-sm text-slate-600 transition hover:border-[#1ec28e] hover:bg-[#f7faf8]">
+                          <span>{pendingBookFiles.length > 0 ? `${pendingBookFiles.length} file(s) selected` : "Choose books to upload"}</span>
+                          <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-medium text-[#1ec28e]">Browse</span>
+                          <input
+                            type="file"
+                            multiple
+                            accept=".pdf,.doc,.docx,.ppt,.pptx,.txt"
+                            className="hidden"
+                            onChange={(event) => setPendingBookFiles(Array.from(event.target.files ?? []))}
+                          />
+                        </label>
+
+                        <div className="mt-4 flex justify-end">
+                          <button
+                            type="button"
+                            onClick={handleBookSave}
+                            className="inline-flex h-11 items-center justify-center rounded-xl bg-[#1ec28e] px-5 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
+                          >
+                            Save
+                          </button>
+                        </div>
+
+                        {bookFormError && <p className="mt-3 text-xs font-medium text-red-600">{bookFormError}</p>}
+                      </div>
+                    </div>
+                  ) : null}
 
                   <div className="rounded-[24px] bg-white p-6 shadow-sm">
                     <div className="mb-4 flex items-center justify-between gap-3">
@@ -1325,34 +1418,23 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                     {addedBooks.length === 0 ? (
                       <p className="rounded-2xl bg-[#f7faf8] px-4 py-3 text-sm text-slate-500">No books uploaded yet.</p>
                     ) : (
-                      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                      <div className="space-y-3">
                         {addedBooks.map((book) => (
-                          <article key={book.id} className="overflow-hidden rounded-2xl border border-slate-100 bg-[#f7faf8]">
-                            <img src={book.imageUrl} alt={book.name} className="h-44 w-full object-cover" />
-                            <div className="space-y-2 p-4">
-                              <p className="line-clamp-2 text-sm font-semibold text-slate-900">{book.name}</p>
+                          <article key={book.id} className="flex flex-col gap-3 rounded-2xl border border-slate-100 bg-[#f7faf8] p-4 sm:flex-row sm:items-center">
+                            <img src={book.imageUrl} alt={book.name} className="h-24 w-full rounded-xl object-cover sm:w-36" />
+                            <div className="min-w-0 flex-1 space-y-1">
+                              <p className="truncate text-sm font-semibold text-slate-900">{book.name}</p>
                               <p className="text-xs text-slate-500">{book.category}</p>
                               <p className="text-sm font-semibold text-[#1ec28e]">MRP ₹{book.mrp}</p>
-                              <p className="truncate text-xs text-slate-500">
-                                {book.source === "amazon" ? "Amazon Link" : book.fileName} • {book.sizeLabel}
-                              </p>
-                              <div className="flex items-center gap-2 pt-1">
-                                <a
-                                  href={book.url}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="inline-flex rounded-full bg-white px-3 py-1.5 text-xs font-medium text-[#1ec28e] transition hover:bg-[#effaf6]"
-                                >
-                                  View Book
-                                </a>
-                                <button
-                                  type="button"
-                                  onClick={() => handleDeleteBook(book.id)}
-                                  className="inline-flex rounded-full bg-[#eef7f4] px-3 py-1.5 text-xs font-medium text-[#1ec28e] transition"
-                                >
-                                  Saved
-                                </button>
-                              </div>
+                              <p className="truncate text-xs text-slate-500">{book.source === "amazon" ? "Amazon Link" : book.fileName} • {book.sizeLabel}</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Link
+                                href={`/dashboard/teachers/books/${book.id}`}
+                                className="inline-flex rounded-full bg-white px-3 py-1.5 text-xs font-medium text-[#1ec28e] transition hover:bg-[#effaf6]"
+                              >
+                                View
+                              </Link>
                             </div>
                           </article>
                         ))}
@@ -1363,54 +1445,86 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
               ) : (
                 <>
                   <div className="rounded-[24px] bg-white p-6 shadow-sm">
-                    <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                    <div className="flex items-center justify-between gap-3">
                       <div>
                         <h3 className="text-lg font-semibold text-slate-900">Add Videos</h3>
-                        <p className="text-sm text-slate-500">Upload tutorial or course videos.</p>
+                        <p className="text-sm text-slate-500">Click Add+ to open the video form.</p>
                       </div>
-                      <Video className="h-5 w-5 text-[#1ec28e]" />
-                    </div>
-
-                    <label className="mt-5 flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-2xl border border-dashed border-slate-300 px-4 text-sm text-slate-600 transition hover:border-[#1ec28e] hover:bg-[#f7faf8]">
-                      <span>Choose videos to upload</span>
-                      <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-medium text-[#1ec28e]">Browse</span>
-                      <input
-                        type="file"
-                        multiple
-                        accept="video/*"
-                        className="hidden"
-                        onChange={handleVideoUpload}
-                      />
-                    </label>
-
-                    <div className="mt-4 flex gap-2">
-                      <input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={videoMrpInput}
-                        onChange={(event) => setVideoMrpInput(event.target.value)}
-                        placeholder="Video MRP"
-                        className="h-11 w-36 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
-                      />
-                      <input
-                        type="url"
-                        value={youtubeLinkInput}
-                        onChange={(event) => setYoutubeLinkInput(event.target.value)}
-                        placeholder="Paste YouTube link"
-                        className="h-11 flex-1 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
-                      />
                       <button
                         type="button"
-                        onClick={handleYouTubeAdd}
-                        className="h-11 rounded-xl bg-[#1ec28e] px-4 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
+                        onClick={() => setIsVideoFormOpen((current) => !current)}
+                        className="inline-flex h-10 items-center justify-center rounded-xl bg-[#1ec28e] px-4 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
                       >
-                        Add Link
+                        {isVideoFormOpen ? "Close" : "Add+"}
                       </button>
                     </div>
-
-                    {youtubeLinkError && <p className="mt-3 text-xs font-medium text-red-600">{youtubeLinkError}</p>}
                   </div>
+
+                  {isVideoFormOpen ? (
+                    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/35 p-4 backdrop-blur-sm">
+                      <div className="w-full max-w-3xl rounded-[24px] bg-white p-6 shadow-2xl">
+                        <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                          <div>
+                            <h3 className="text-lg font-semibold text-slate-900">Add Videos</h3>
+                            <p className="text-sm text-slate-500">Enter details and save videos.</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setIsVideoFormOpen(false)}
+                            className="inline-flex rounded-xl bg-[#f2f5f4] px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-[#e8eeec]"
+                          >
+                            Close
+                          </button>
+                        </div>
+
+                        <label className="mt-5 flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-2xl border border-dashed border-slate-300 px-4 text-sm text-slate-600 transition hover:border-[#1ec28e] hover:bg-[#f7faf8]">
+                          <span>{pendingVideoFiles.length > 0 ? `${pendingVideoFiles.length} file(s) selected` : "Choose videos to upload"}</span>
+                          <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-medium text-[#1ec28e]">Browse</span>
+                          <input
+                            type="file"
+                            multiple
+                            accept="video/*"
+                            className="hidden"
+                            onChange={(event) => setPendingVideoFiles(Array.from(event.target.files ?? []))}
+                          />
+                        </label>
+
+                        <div className="mt-4 flex gap-2">
+                          <div className="relative h-11 w-36 rounded-xl border border-slate-200 focus-within:border-[#1ec28e]">
+                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-500">$</span>
+                            <input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={videoMrpInput}
+                              onChange={(event) => setVideoMrpInput(event.target.value)}
+                              placeholder="MRP"
+                              className="h-11 w-full rounded-xl border-0 bg-transparent pl-8 pr-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400"
+                            />
+                          </div>
+                          <input
+                            type="url"
+                            value={youtubeLinkInput}
+                            onChange={(event) => setYoutubeLinkInput(event.target.value)}
+                            placeholder="Paste YouTube link"
+                            className="h-11 flex-1 rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
+                          />
+                        </div>
+
+                        <div className="mt-4 flex justify-end">
+                          <button
+                            type="button"
+                            onClick={handleVideoSave}
+                            className="inline-flex h-11 items-center justify-center rounded-xl bg-[#1ec28e] px-5 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
+                          >
+                            Save
+                          </button>
+                        </div>
+
+                        {youtubeLinkError && <p className="mt-3 text-xs font-medium text-red-600">{youtubeLinkError}</p>}
+                      </div>
+                    </div>
+                  ) : null}
 
                   <div className="rounded-[24px] bg-white p-6 shadow-sm">
                     <div className="mb-4 flex items-center justify-between gap-3">
@@ -1423,31 +1537,34 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                     {addedVideos.length === 0 ? (
                       <p className="rounded-2xl bg-[#f7faf8] px-4 py-3 text-sm text-slate-500">No videos uploaded yet.</p>
                     ) : (
-                      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                      <div className="space-y-3">
                         {addedVideos.map((video) => (
-                          <article key={video.id} className="overflow-hidden rounded-2xl border border-slate-100 bg-[#f7faf8]">
-                            {video.source === "youtube" ? (
-                              <iframe
-                                className="aspect-video w-full bg-black"
-                                src={video.url}
-                                title={video.name}
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                              />
-                            ) : (
-                              <video src={video.url} controls className="aspect-video w-full bg-black" />
-                            )}
-                            <div className="space-y-1 p-4">
+                          <article key={video.id} className="flex flex-col gap-3 rounded-2xl border border-slate-100 bg-[#f7faf8] p-4 sm:flex-row sm:items-center">
+                            <div className="w-full overflow-hidden rounded-xl bg-black sm:w-40">
+                              {video.source === "youtube" ? (
+                                <iframe
+                                  className="aspect-video w-full"
+                                  src={video.url}
+                                  title={video.name}
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                />
+                              ) : (
+                                <video src={video.url} controls className="aspect-video w-full" />
+                              )}
+                            </div>
+                            <div className="min-w-0 flex-1 space-y-1">
                               <p className="truncate text-sm font-semibold text-slate-900">{video.name}</p>
                               <p className="text-sm font-semibold text-[#1ec28e]">MRP ₹{video.mrp || "0.00"}</p>
                               <p className="text-xs text-slate-500">{video.sizeLabel}</p>
-                              <button
-                                type="button"
-                                onClick={() => handleDeleteVideo(video.id)}
-                                className="inline-flex rounded-full bg-[#fff1f1] px-3 py-1.5 text-xs font-medium text-[#cc2a2a] transition hover:bg-[#ffe2e2]"
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Link
+                                href={`/dashboard/teachers/videos/${video.id}`}
+                                className="inline-flex rounded-full bg-white px-3 py-1.5 text-xs font-medium text-[#1ec28e] transition hover:bg-[#effaf6]"
                               >
-                                Delete
-                              </button>
+                                View
+                              </Link>
                             </div>
                           </article>
                         ))}
@@ -1458,12 +1575,13 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
               )}
             </div>
           ) : activeSection === "upgrade" ? (
-            <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-              <form onSubmit={handleUpgradeSubmit} className="rounded-[24px] bg-white p-6 shadow-sm">
+            <div className="mt-6 space-y-6">
+              <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+                <form onSubmit={handleUpgradeSubmit} className="rounded-[24px] bg-white p-6 shadow-sm">
                 <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-4">
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900">Upgrade Profile</h3>
-                    <p className="text-sm text-slate-500">Pay to rank higher than other professionals.</p>
+                    <p className="text-sm text-slate-500">Pay with Razorpay to rank higher than other professionals.</p>
                   </div>
                   <CreditCard className="h-5 w-5 text-[#1ec28e]" />
                 </div>
@@ -1514,6 +1632,28 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                   />
                 </div>
 
+                <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-sm font-semibold text-slate-900">Razorpay payment</p>
+                  <p className="mt-1 text-xs text-slate-500">Open payment link, complete payment, then confirm below.</p>
+                  <div className="mt-3 flex flex-wrap items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={handleOpenRazorpay}
+                      className="inline-flex h-10 items-center rounded-full bg-[#1ec28e] px-4 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
+                    >
+                      Pay Now
+                    </button>
+                    <a
+                      href={RAZORPAY_PAYMENT_LINK}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-medium text-slate-500 underline-offset-2 hover:text-slate-700 hover:underline"
+                    >
+                      {RAZORPAY_PAYMENT_LINK}
+                    </a>
+                  </div>
+                </div>
+
                 <div className="mt-6 rounded-2xl bg-[#f7faf8] p-4 text-sm text-slate-600">
                   <p className="font-semibold text-slate-900">What you get</p>
                   <ul className="mt-3 space-y-2">
@@ -1537,11 +1677,12 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                   <button
                     type="submit"
                     disabled={processingUpgrade}
-                    className="inline-flex h-12 items-center gap-2 rounded-full bg-[#1ec28e] px-5 text-sm font-medium text-white transition hover:bg-[#18ab7d] disabled:cursor-not-allowed disabled:opacity-70"
+                    className="inline-flex h-12 items-center gap-2 rounded-full border border-[#1ec28e] bg-white px-5 text-sm font-medium text-[#1ec28e] transition hover:bg-[#effaf6] disabled:cursor-not-allowed disabled:opacity-70"
                   >
                     <CreditCard className="h-4 w-4" />
-                    {processingUpgrade ? "Processing..." : "Pay & Upgrade"}
+                    {processingUpgrade ? "Confirming..." : "Confirm Payment"}
                   </button>
+                  <span className="text-xs text-slate-500">{hasOpenedRazorpay ? "Payment link opened. After payment, click Confirm Payment." : "Open Razorpay link first."}</span>
                 </div>
               </form>
 
@@ -1557,7 +1698,10 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                       <button
                         key={plan.key}
                         type="button"
-                        onClick={() => setUpgradePlan(plan.key)}
+                        onClick={() => {
+                          setUpgradePlan(plan.key);
+                          setHasOpenedRazorpay(false);
+                        }}
                         className={`rounded-2xl border p-4 text-left transition ${
                           isSelected
                             ? "border-[#1ec28e] bg-[#effaf6]"
@@ -1587,8 +1731,17 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                   <p className="font-semibold text-slate-900">Ranking benefit</p>
                   <p className="mt-2">Upgraded profiles appear higher than standard professionals in search and discovery lists.</p>
                 </div>
-              </aside>
-            </div>
+                </aside>
+              </div>
+
+              {profileBoostedUntil ? (
+                <div className="rounded-[24px] bg-white p-6 shadow-sm">
+                  <h4 className="text-base font-semibold text-slate-900">Upgrade timeline</h4>
+                  <p className="mt-1 text-sm text-slate-500">Live remaining duration for your active profile boost.</p>
+                  <UpgradeTimeline boostedUntil={profileBoostedUntil} />
+                </div>
+              ) : null}
+              </div>
           ) : activeSection === "settings" ? (
             <div className="mt-6 grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
               <div className="rounded-[24px] bg-white p-6 shadow-sm">

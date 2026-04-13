@@ -1,3 +1,14 @@
 {
-  "challenges": []
+  "challenges": [
+    {
+      "challengeId": "6e8c861d-1396-47a2-9279-35a36c751b6c",
+      "userId": "e8e23652-faf2-4d88-b5a4-c0078672885e",
+      "email": "jenilgadhiya918@gmail.com",
+      "role": "professional",
+      "otpHash": "$2a$10$73hAbpIwT4vm/8lWdNNO3e/JObwhZleafelX0vzSEYgfhefJ3T88q",
+      "attempts": 0,
+      "expiresAt": "2026-04-13T06:52:17.076Z",
+      "createdAt": "2026-04-13T06:42:17.076Z"
+    }
+  ]
 }

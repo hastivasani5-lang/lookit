@@ -4,7 +4,6 @@ import GoogleProvider from "next-auth/providers/google";
 import { compare } from "bcryptjs";
 import { getUserByEmail, getUserById, recordProfessionalLoginAttempt } from "@/lib/user-store";
 import { markProfessionalLoggedIn } from "@/lib/professional-login-store";
-import { verifyLoginOtpChallenge } from "@/lib/login-otp-store";
 
 const authSecret = process.env.NEXTAUTH_SECRET || "lookit-fallback-secret-change-in-production";
 
@@ -16,11 +15,9 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
         role: { label: "Role", type: "text" },
-        otpChallengeId: { label: "OTP Challenge ID", type: "text" },
-        otpCode: { label: "OTP Code", type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password || !credentials?.role || !credentials?.otpChallengeId || !credentials?.otpCode) {
+        if (!credentials?.email || !credentials?.password || !credentials?.role) {
           return null;
         }
 
@@ -36,15 +33,6 @@ export const authOptions: NextAuthOptions = {
         if (user.role === "professional" && user.approvalStatus === "rejected") {
           await recordProfessionalLoginAttempt(user, "rejected");
           throw new Error("approval-rejected");
-        }
-
-        const otpResult = await verifyLoginOtpChallenge({
-          challengeId: credentials.otpChallengeId,
-          otp: credentials.otpCode,
-        });
-
-        if (!otpResult || otpResult.userId !== user.id || otpResult.email !== user.email || otpResult.role !== user.role) {
-          return null;
         }
 
         const isPasswordValid = await compare(credentials.password, user.passwordHash);

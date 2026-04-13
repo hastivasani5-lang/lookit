@@ -1,167 +1,32 @@
 "use client";
 import Navbar from "@/components/Navbar";
+import ShopWhyChoose from "@/components/ShopWhyChoose";
+import TopCategories from "@/components/TopCategories"; 
+import About from "@/components/About";
+import StudentsViewing from "@/components/StudentsViewing";
 import Footer from "@/components/Footer";
-import Link from "next/link";
-import { BookOpen, Sparkles, Star, ShoppingBag } from "lucide-react";
-import { useState } from "react";
-import ShopSidebar from "@/components/shop/ShopSidebar";
-import ShopProductGrid from "@/components/shop/ShopProductGrid";
 
-const shopItems = [
-  {
-    id: 1,
-    title: "Parent Support Workbook",
-    description: "Practical worksheets for weekly home routines and progress tracking.",
-    price: "₹399",
-    badge: "Best Seller",
-    category: "Parent Support",
-  },
-  {
-    id: 2,
-    title: "ADHD Learning Bundle",
-    description: "Video lessons, templates, and action plans for focused support.",
-    price: "₹699",
-    badge: "Popular",
-    category: "ADHD",
-  },
-  {
-    id: 3,
-    title: "Dyslexia Practice Kit",
-    description: "Reading drills, phonics activities, and structured practice tools.",
-    price: "₹549",
-    badge: "New",
-    category: "Dyslexia",
-  },
-  {
-    id: 4,
-    title: "Speech Therapy Flashcards",
-    description: "Visual cards for articulation practice and language development.",
-    price: "₹299",
-    badge: "Top Rated",
-    category: "Speech Therapy",
-  },
-  {
-    id: 5,
-    title: "Expert Consultation Pass",
-    description: "Book a one-on-one session with a verified professional.",
-    price: "₹1,499",
-    badge: "Live",
-    category: "Consultation",
-  },
-  {
-    id: 6,
-    title: "School Support Toolkit",
-    description: "Templates for teacher communication, observations, and planning.",
-    price: "₹449",
-    badge: "Featured",
-    category: "School Support",
-  },
-];
-
-const categories = [
-  "Parent Support", "ADHD", "Dyslexia", "Speech Therapy", "Consultation", "School Support"
-];
-const minPrice = 299;
-const maxPrice = 1499;
-
-export default function ShopPage() {
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [price, setPrice] = useState(maxPrice);
-
-  // Filter logic
-  const filteredItems = shopItems.filter(item => {
-    const priceValue = Number(item.price.replace(/[^\d]/g, ""));
-    const categoryMatch = selectedCategory === "All" || item.category === selectedCategory;
-    return categoryMatch && priceValue <= price;
-  });
-
+export default function StudentsPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-[#eef5f3] ">
-        <section className="mx-auto w-full max-w-7xl px-4 py-10 md:px-8 lg:px-10">
-          <div className="relative overflow-hidden rounded-4xl border border-[#d5e9e2] bg-gradient-to-br from-[#f7fbfa] via-white to-[#eaf8f3] p-8 md:p-12 shadow-[0_22px_45px_rgba(15,23,42,0.07)]">
-            <div className="absolute -right-14 -top-14 h-40 w-40 rounded-full bg-primary/10 blur-2xl" />
-            <div className="absolute -bottom-16 -left-16 h-44 w-44 rounded-full bg-[#0f172a]/5 blur-2xl" />
-
-            <div className="relative grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:items-center">
-              <div>
-                <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-primary mb-2">
-                  <Sparkles className="h-4 w-4" />
-                  Shop
-                </p>
-                <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight mb-4">
-                  Learning tools, bundles, and expert support
-                </h1>
-                <p className="max-w-2xl text-base md:text-lg text-gray-600 mb-7">
-                  Browse curated resources for parents, learners, and professionals. Each item is designed to support practical learning and guided progress.
-                </p>
-
-                <div className="mt-2 grid gap-4 sm:grid-cols-3">
-                  <div className="rounded-2xl border border-[#dbe8e4] bg-[#f7fbfa] p-5 shadow-sm flex flex-col items-start">
-                    <div className="flex items-center gap-2 text-primary mb-1">
-                      <ShoppingBag className="h-5 w-5" />
-                      <span className="text-xs font-bold uppercase tracking-[0.16em]">Products</span>
-                    </div>
-                    <p className="text-2xl font-extrabold text-gray-900">{shopItems.length}</p>
-                    <p className="text-xs text-gray-500">Curated items</p>
-                  </div>
-                  <div className="rounded-2xl border border-[#dbe8e4] bg-[#f7fbfa] p-5 shadow-sm flex flex-col items-start">
-                    <div className="flex items-center gap-2 text-primary mb-1">
-                      <BookOpen className="h-5 w-5" />
-                      <span className="text-xs font-bold uppercase tracking-[0.16em]">Resources</span>
-                    </div>
-                    <p className="text-2xl font-extrabold text-gray-900">24/7</p>
-                    <p className="text-xs text-gray-500">On-demand access</p>
-                  </div>
-                  <div className="rounded-2xl border border-[#dbe8e4] bg-[#f7fbfa] p-5 shadow-sm flex flex-col items-start">
-                    <div className="flex items-center gap-2 text-primary mb-1">
-                      <Star className="h-5 w-5" />
-                      <span className="text-xs font-bold uppercase tracking-[0.16em]">Trusted</span>
-                    </div>
-                    <p className="text-2xl font-extrabold text-gray-900">Top</p>
-                    <p className="text-xs text-gray-500">Rated by users</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="relative overflow-hidden rounded-4xl border border-[#dbe8e4] bg-linear-to-br from-[#eaf8f3] via-white to-[#edf6f4] p-4 shadow-[0_16px_35px_rgba(15,23,42,0.08)]">
-                <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-primary/10 blur-2xl" />
-                <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-[#0f172a]/5 blur-2xl" />
-                <div className="relative space-y-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Featured Bundle</p>
-                  <h2 className="text-2xl font-bold text-gray-900">Start with a parent + learner pack</h2>
-                  <p className="text-sm leading-7 text-gray-600">
-                    A simple mix of worksheets, videos, and practical tools for home support.
-                  </p>
-                  <Link
-                    href="/professionals"
-                    className="inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
-                  >
-                    Explore Experts
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-[260px_1fr]">
-            {/* Sidebar Filter */}
-            <ShopSidebar
-              categories={categories}
-              selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
-              minPrice={minPrice}
-              maxPrice={maxPrice}
-              price={price}
-              setPrice={setPrice}
-            />
-            {/* Product Grid */}
-            <ShopProductGrid items={filteredItems} />
-          </div>
+      <main className="overflow-x-hidden">
+        <section data-aos="fade-up">
+          <ShopWhyChoose />
+        </section>
+        <section data-aos="fade-up" data-aos-delay="100">
+          <TopCategories />
+        </section>
+        <section data-aos="fade-up" data-aos-delay="200">
+          <About />
+        </section>
+        <section data-aos="fade-up" data-aos-delay="300">
+          <StudentsViewing />
+        </section>
+        <section data-aos="fade-up" data-aos-delay="100">
+          <Footer />
         </section>
       </main>
-      <Footer />
     </>
   );
 }

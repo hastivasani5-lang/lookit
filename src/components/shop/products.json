@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "title": "Parent Support Workbook",
+    "description": "Practical worksheets for weekly home routines and progress tracking.",
+    "price": 399,
+    "oldPrice": 499,
+    "discount": "20% OFF",
+    "rating": 5,
+    "image": "/uploads/certificates/parent-support.png"
+  },
+  {
+    "id": 2,
+    "title": "ADHD Learning Bundle",
+    "description": "Video lessons, templates, and action plans for focused support.",
+    "price": 699,
+    "oldPrice": 899,
+    "discount": "22% OFF",
+    "rating": 4,
+    "image": "/uploads/certificates/adhd-bundle.png"
+  },
+  {
+    "id": 3,
+    "title": "Dyslexia Practice Kit",
+    "description": "Reading drills, phonics activities, and structured practice tools.",
+    "price": 549,
+    "oldPrice": 649,
+    "discount": "15% OFF",
+    "rating": 4,
+    "image": "/uploads/certificates/dyslexia-kit.png"
+  },
+  {
+    "id": 4,
+    "title": "Speech Therapy Flashcards",
+    "description": "Visual cards for articulation practice and language development.",
+    "price": 299,
+    "oldPrice": 399,
+    "discount": "25% OFF",
+    "rating": 5,
+    "image": "/uploads/certificates/speech-flashcards.png"
+  },
+  {
+    "id": 5,
+    "title": "Expert Consultation Pass",
+    "description": "Book a one-on-one session with a verified professional.",
+    "price": 1499,
+    "oldPrice": 1999,
+    "discount": "25% OFF",
+    "rating": 5,
+    "image": "/uploads/certificates/consultation-pass.png"
+  },
+  {
+    "id": 6,
+    "title": "School Support Toolkit",
+    "description": "Templates for teacher communication, observations, and planning.",
+    "price": 449,
+    "oldPrice": 599,
+    "discount": "20% OFF",
+    "rating": 4,
+    "image": "/uploads/certificates/school-toolkit.png"
+  }
+]

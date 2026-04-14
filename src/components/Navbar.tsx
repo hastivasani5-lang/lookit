@@ -37,19 +37,7 @@ const navItems = [
 ];
 
 const Navbar = () => {
-    const languages = ["English", "Hindi", "Gujarati", "Marathi", "Bengali"];
-    const [language, setLanguage] = useState(() => {
-      if (typeof window !== "undefined") {
-        return localStorage.getItem("site_language") || "English";
-      }
-      return "English";
-    });
-    const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setLanguage(e.target.value);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("site_language", e.target.value);
-      }
-    };
+    // ...existing code...
   const router = useRouter();
   const { data: session, status } = useSession();
   const [hasMounted, setHasMounted] = useState(false);
@@ -194,17 +182,7 @@ const Navbar = () => {
                 <span className="absolute bottom-0 left-1/2 h-0.5 w-0 bg-linear-to-r from-emerald-500 to-teal-500 transition-all duration-300 group-hover:w-1/2 group-hover:left-1/4" />
               </Link>
             ))}
-            {/* Language Switcher */}
-            <select
-              value={language}
-              onChange={handleLanguageChange}
-              className="ml-4 px-3 py-2 rounded-full border border-gray-200 bg-white text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-              aria-label="Select Language"
-            >
-              {languages.map((lang) => (
-                <option key={lang} value={lang}>{lang}</option>
-              ))}
-            </select>
+            {/* Language Switcher removed as requested */}
           </nav>
 
           {/* Right Icons */}

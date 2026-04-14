@@ -61,6 +61,7 @@ export function ensureDbSchema() {
           certificates TEXT[] NOT NULL DEFAULT '{}',
           reviews TEXT[] NOT NULL DEFAULT '{}',
           profile_boosted_until TIMESTAMPTZ,
+          profile_upgrade_tier TEXT CHECK (profile_upgrade_tier IN ('starter', 'pro', 'premium', 'top')),
           approval_status TEXT NOT NULL DEFAULT 'approved' CHECK (approval_status IN ('pending', 'approved', 'rejected')),
           approval_reviewed_by TEXT,
           approval_reviewed_at TIMESTAMPTZ,
@@ -100,6 +101,12 @@ export function ensureDbSchema() {
         db.query(`
           ALTER TABLE users
           ADD COLUMN IF NOT EXISTS approval_note TEXT;
+        `),
+      )
+      .then(() =>
+        db.query(`
+          ALTER TABLE users
+          ADD COLUMN IF NOT EXISTS profile_upgrade_tier TEXT;
         `),
       )
       .then(() => undefined);

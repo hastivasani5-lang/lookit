@@ -16,6 +16,19 @@ type ProfessionalProfilePageProps = {
   }>;
 };
 
+function hasActiveProfileUpgrade(profileBoostedUntil?: string) {
+  if (!profileBoostedUntil) {
+    return false;
+  }
+
+  const boostedUntil = new Date(profileBoostedUntil);
+  if (Number.isNaN(boostedUntil.getTime())) {
+    return false;
+  }
+
+  return boostedUntil.getTime() > Date.now();
+}
+
 export default async function ProfessionalProfilePage({ params }: ProfessionalProfilePageProps) {
   const { id } = await params;
   const session = await getServerSession(authOptions);
@@ -36,7 +49,13 @@ export default async function ProfessionalProfilePage({ params }: ProfessionalPr
   const topRatedProfessionals = session?.user?.role === "professional"
     ? []
     : (await getProfessionalUsers())
-        .filter((item) => item.approvalStatus === "approved" && item.id !== user.id)
+        .filter(
+          (item) =>
+            item.approvalStatus === "approved" &&
+            item.id !== user.id &&
+            hasActiveProfileUpgrade(item.profileBoostedUntil) &&
+            item.profileUpgradeTier === "top",
+        )
         .map((item, index) => buildPublicProfessional(item, index))
         .sort((left, right) => right.rating - left.rating || right.reviews - left.reviews)
         .slice(0, 8);

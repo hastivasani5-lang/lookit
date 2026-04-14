@@ -84,6 +84,7 @@ export const products: ProductOrVideo[] = [
 const ProductGrid = () => {
   const [activeTab, setActiveTab] = useState("books");
   const [page, setPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
   const itemsPerPage = 6;
 
   const handleTab = (tab: string) => {
@@ -92,8 +93,18 @@ const ProductGrid = () => {
   };
 
   const items = activeTab === "books" ? products : videos;
-  const totalPages = Math.ceil(items.length / itemsPerPage);
-  const paginatedItems = items.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+  const normalizedSearch = searchQuery.trim().toLowerCase();
+  const filteredItems = items.filter((item) => {
+    if (!normalizedSearch) {
+      return true;
+    }
+
+    return item.title.toLowerCase().includes(normalizedSearch);
+  });
+
+  const totalPages = Math.max(1, Math.ceil(filteredItems.length / itemsPerPage));
+  const currentPage = Math.min(page, totalPages);
+  const paginatedItems = filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <div className="flex-1">
@@ -124,6 +135,11 @@ const ProductGrid = () => {
         <input
           type="text"
           placeholder="Search here"
+          value={searchQuery}
+          onChange={(event) => {
+            setSearchQuery(event.target.value);
+            setPage(1);
+          }}
           className="border px-4 py-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1ec28e]"
         />
       </div>
@@ -184,7 +200,7 @@ const ProductGrid = () => {
         <div className="flex justify-center items-center gap-2 mt-8">
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
+            disabled={currentPage === 1}
             className="px-3 py-1 rounded bg-gray-100 text-gray-600 disabled:opacity-50"
           >
             Prev
@@ -194,7 +210,7 @@ const ProductGrid = () => {
               key={idx + 1}
               onClick={() => setPage(idx + 1)}
               className={`px-3 py-1 rounded ${
-                page === idx + 1 ? "bg-[#1ec28e] text-white" : "bg-gray-100 text-gray-600"
+                currentPage === idx + 1 ? "bg-[#1ec28e] text-white" : "bg-gray-100 text-gray-600"
               }`}
             >
               {idx + 1}
@@ -202,7 +218,7 @@ const ProductGrid = () => {
           ))}
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages}
+            disabled={currentPage === totalPages}
             className="px-3 py-1 rounded bg-gray-100 text-gray-600 disabled:opacity-50"
           >
             Next

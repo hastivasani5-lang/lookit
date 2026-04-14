@@ -1,5 +1,6 @@
 export type UserRole = "student" | "professional";
 export type ProfessionalApprovalStatus = "pending" | "approved" | "rejected";
+export type ProfileUpgradeTier = "starter" | "pro" | "premium" | "top";
 
 export interface AppUser {
   id: string;
@@ -14,6 +15,7 @@ export interface AppUser {
   certificates?: string[];
   reviews?: string[];
   profileBoostedUntil?: string;
+  profileUpgradeTier?: ProfileUpgradeTier;
   approvalStatus: ProfessionalApprovalStatus;
   approvalReviewedBy?: string;
   approvalReviewedAt?: string;

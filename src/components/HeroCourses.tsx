@@ -1,8 +1,19 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function HeroCourses() {
+  const router = useRouter();
+  const [searchText, setSearchText] = useState("");
+
+  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const query = searchText.trim();
+    router.push(query ? `/directory?search=${encodeURIComponent(query)}` : "/directory");
+  };
+
   return (
     <section className="bg-[#f3f7f6] px-6 md:px-16 py-16">
       <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-center">
@@ -24,16 +35,24 @@ export default function HeroCourses() {
 
           {/* ================= SEARCH BAR ================= */}
           <div className="mt-6">
-            <div className="flex items-center bg-white rounded-md shadow-sm overflow-hidden w-full max-w-md">
+            <form
+              onSubmit={handleSearch}
+              className="flex items-center bg-white rounded-md shadow-sm overflow-hidden w-full max-w-md"
+            >
               <input
                 type="text"
                 placeholder="What do you want to learn today?"
+                value={searchText}
+                onChange={(event) => setSearchText(event.target.value)}
                 className="flex-1 px-4 py-3 text-sm outline-none"
               />
-              <button className="bg-[#1ec28e] text-white px-5 py-3 text-sm font-medium hover:bg-[#18a97a]">
+              <button
+                type="submit"
+                className="bg-[#1ec28e] text-white px-5 py-3 text-sm font-medium hover:bg-[#18a97a]"
+              >
                 Search Now
               </button>
-            </div>
+            </form>
           </div>
 
           {/* ================= SUPPORT ================= */}

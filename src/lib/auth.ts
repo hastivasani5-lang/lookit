@@ -14,19 +14,14 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
-        role: { label: "Role", type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password || !credentials?.role) {
+        if (!credentials?.email || !credentials?.password) {
           return null;
         }
 
         const user = await getUserByEmail(credentials.email);
         if (!user || !user.passwordHash) {
-          return null;
-        }
-
-        if (user.role !== credentials.role) {
           return null;
         }
 

@@ -6,6 +6,7 @@ import { signIn } from "next-auth/react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { UserRole } from "@/types/auth";
+import SiteLogo from "@/components/SiteLogo";
 
 export default function LoginPage() {
   const [role, setRole] = useState<UserRole>("student");
@@ -77,12 +78,18 @@ export default function LoginPage() {
       } else if (result?.error === "approval-rejected") {
         setError("Your professional account was rejected by the admin.");
       } else {
-        setError("Invalid credentials, OTP, role mismatch, or account not found.");
+        setError("Invalid email or password.");
       }
       return;
     }
 
-    window.location.href = role === "professional" ? "/dashboard/teachers" : "/dashboard/students";
+    const sessionResponse = await fetch("/api/auth/session", { cache: "no-store" });
+    const sessionPayload = (await sessionResponse.json().catch(() => null)) as
+      | { user?: { role?: UserRole } }
+      | null;
+    const resolvedRole = sessionPayload?.user?.role === "professional" ? "professional" : "student";
+
+    window.location.href = resolvedRole === "professional" ? "/dashboard/teachers" : "/dashboard/students";
   };
 
   const handleGoogleLogin = async () => {
@@ -118,7 +125,7 @@ export default function LoginPage() {
 
         <div className="flex flex-1 items-center justify-center bg-white px-4 sm:px-6 py-8 md:py-10 lg:px-10">
           <div className="w-full max-w-[420px] text-center">
-            <p className="mx-auto mb-4 text-2xl font-bold tracking-[0.12em] text-slate-900 sm:mb-6">LOOKIT</p>
+            <SiteLogo size="auth" priority className="mx-auto mb-4 sm:mb-6" />
 
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold leading-[0.96] tracking-tight text-slate-900">Log in</h1>
 

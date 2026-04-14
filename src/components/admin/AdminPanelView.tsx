@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import SiteLogo from "@/components/SiteLogo";
 
 import type { ProfessionalNotification } from "@/types/notifications";
 
@@ -487,10 +488,78 @@ export default function AdminPanelView() {
   const [studentUploadRows, setStudentUploadRows] = useState<StudentActivitySummary[]>([]);
   const [uploadsLoading, setUploadsLoading] = useState(false);
   const [adminProfileOpen, setAdminProfileOpen] = useState(false);
+  const [globalSearchQuery, setGlobalSearchQuery] = useState("");
 
   const selectedStudent = studentsList.find((student) => student.id === selectedStudentId) ?? null;
   const selectedStudentMeta = selectedStudent ? userDetailsById[selectedStudent.id] : null;
   const editingStudent = studentsList.find((student) => student.id === editingStudentId) ?? null;
+
+  const handleGlobalSearch = () => {
+    const query = globalSearchQuery.trim().toLowerCase();
+    if (!query) {
+      return;
+    }
+
+    const menuMatch = menuItems.find((item) => item.label.toLowerCase().includes(query));
+    if (menuMatch) {
+      setActiveSection(menuMatch.label);
+      return;
+    }
+
+    const studentMatch = studentsList.find((student) => `${student.name} ${student.email}`.toLowerCase().includes(query));
+    if (studentMatch) {
+      setActiveSection("Users");
+      setUsersTab("students");
+      setSelectedStudentId(studentMatch.id);
+      return;
+    }
+
+    const professionalMatch = professionalUsers.find((professional) =>
+      `${professional.name} ${professional.email} ${professional.specialization}`.toLowerCase().includes(query),
+    );
+    if (professionalMatch) {
+      setActiveSection("Users");
+      setUsersTab("professionals");
+      return;
+    }
+
+    if (approvalRequests.some((request) => `${request.name} ${request.email} ${request.specialization}`.toLowerCase().includes(query))) {
+      setActiveSection("Approvals");
+      return;
+    }
+
+    if (reviewEntries.some((review) => `${review.userName} ${review.professionalName} ${review.review}`.toLowerCase().includes(query))) {
+      setActiveSection("Reviews");
+      return;
+    }
+
+    if (categoriesList.some((category) => `${category.name} ${category.type} ${category.description}`.toLowerCase().includes(query))) {
+      setActiveSection("Categories");
+      return;
+    }
+
+    if (
+      professionalUploadRows.some((upload) => `${upload.name} ${upload.email} ${upload.categories.join(" ")}`.toLowerCase().includes(query)) ||
+      studentUploadRows.some((upload) => `${upload.name} ${upload.email}`.toLowerCase().includes(query))
+    ) {
+      setActiveSection("Uploads");
+      return;
+    }
+
+    if (payoutEntries.some((payout) => `${payout.professionalName} ${payout.professionalEmail} ${payout.transactionId}`.toLowerCase().includes(query))) {
+      setActiveSection("Payouts");
+      return;
+    }
+
+    if (
+      notifications.some((notification) =>
+        `${notification.professionalName} ${notification.summary} ${notification.details ?? ""}`.toLowerCase().includes(query),
+      ) ||
+      contactMessages.some((message) => `${message.name} ${message.email} ${message.subject} ${message.message}`.toLowerCase().includes(query))
+    ) {
+      setActiveSection("Alerts");
+    }
+  };
 
   const updateApprovalStatus = async (professionalId: string, status: Exclude<ApprovalStatus, "pending">) => {
     try {
@@ -979,7 +1048,7 @@ export default function AdminPanelView() {
       <section className="flex min-h-[calc(100vh-1.5rem)] w-full overflow-hidden rounded-[28px] neumorph-admin-main bg-[#eef5f3] font-sans">
         <aside className="fixed left-0 top-0 z-30 h-full w-[250px] border-r border-slate-100 bg-[#eef5f3] px-4 py-5 flex flex-col neumorph-admin-sidebar">
           <div className="pb-6">
-            <span className="text-2xl font-bold tracking-[0.12em] text-slate-900">LOOKIT</span>
+            <SiteLogo size="sidebar" priority />
           </div>
 
           <nav className="space-y-2">
@@ -1052,6 +1121,14 @@ export default function AdminPanelView() {
             <input
               type="text"
               placeholder="Search anything here..."
+              value={globalSearchQuery}
+              onChange={(event) => setGlobalSearchQuery(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  handleGlobalSearch();
+                }
+              }}
               className="h-11 w-full max-w-xs rounded-2xl border-none bg-[#f6fefb] px-4 text-sm text-slate-800 shadow-[inset_4px_4px_12px_#d0dbd6,inset_-4px_-4px_12px_#ffffff] outline-none focus:ring-2 focus:ring-[#1ec28e] transition"
               style={{ boxShadow: 'inset 4px 4px 12px #d0dbd6, inset -4px -4px 12px #ffffff' }}
             />

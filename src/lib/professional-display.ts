@@ -12,6 +12,8 @@ export type PublicProfessional = {
   rating: number;
   reviews: number;
   image: string;
+  profileBoostedUntil?: string;
+  profileUpgradeTier?: AppUser["profileUpgradeTier"];
 };
 
 export function buildSeedProfessional(professional: SeedProfessional): PublicProfessional {
@@ -25,6 +27,8 @@ export function buildSeedProfessional(professional: SeedProfessional): PublicPro
     rating: professional.rating,
     reviews: professional.reviews,
     image: getOnlineProfessionalImage(professional.id),
+    profileBoostedUntil: undefined,
+    profileUpgradeTier: undefined,
   };
 }
 
@@ -68,5 +72,7 @@ export function buildPublicProfessional(user: AppUser, index = 0): PublicProfess
     rating: Number(derivedRating.toFixed(1)),
     reviews: reviewsCount,
     image: user.image?.trim() || PROFILE_PLACEHOLDER_SVG,
+    profileBoostedUntil: user.profileBoostedUntil,
+    profileUpgradeTier: user.profileUpgradeTier,
   };
 }

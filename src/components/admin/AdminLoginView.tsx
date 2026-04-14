@@ -4,6 +4,7 @@ import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+import SiteLogo from "@/components/SiteLogo";
 
 export default function AdminLoginView() {
   const router = useRouter();
@@ -45,7 +46,7 @@ export default function AdminLoginView() {
       <section className="mx-auto grid w-full max-w-6xl overflow-hidden rounded-[28px] neumorph-admin-card bg-white lg:grid-cols-2">
         <div className="flex flex-col justify-center px-6 py-10 sm:px-10 md:px-14 lg:py-14">
           <div className="mb-10 flex items-center gap-3">
-            <span className="text-2xl font-bold tracking-[0.12em] text-[#2d6a4f]">LOOKIT</span>
+            <SiteLogo size="admin" priority />
           </div>
 
           <h1 className="text-4xl font-semibold leading-tight text-slate-800 sm:text-5xl">Welcome to login system</h1>

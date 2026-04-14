@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 
 import { authOptions } from "@/lib/auth";
 import { updateUserProfile } from "@/lib/user-store";
+import type { ProfileUpgradeTier } from "@/types/auth";
 
 export const runtime = "nodejs";
 
@@ -16,13 +17,23 @@ export async function POST(request: Request) {
 
     const formData = await request.formData();
     const plan = typeof formData.get("plan") === "string" ? formData.get("plan")?.toString() : "pro";
-    const months = plan === "elite" ? 3 : plan === "premium" ? 2 : plan === "pro" ? 1 : 1;
+    const normalizedTier: ProfileUpgradeTier =
+      plan === "elite" || plan === "top"
+        ? "top"
+        : plan === "premium"
+          ? "premium"
+          : plan === "starter"
+            ? "starter"
+            : "pro";
+
+    const months = normalizedTier === "top" ? 3 : normalizedTier === "premium" ? 2 : normalizedTier === "pro" ? 1 : 1;
     const boostedUntil = new Date();
     boostedUntil.setMonth(boostedUntil.getMonth() + months);
 
     const updatedUser = await updateUserProfile({
       id: session.user.id,
       profileBoostedUntil: boostedUntil.toISOString(),
+      profileUpgradeTier: normalizedTier,
     });
 
     return NextResponse.json({

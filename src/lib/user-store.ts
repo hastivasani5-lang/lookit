@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { promises as fs } from "fs";
 import { hash } from "bcryptjs";
-import type { AppUser, ProfessionalApprovalStatus, UserRole } from "@/types/auth";
+import type { AppUser, ProfessionalApprovalStatus, ProfileUpgradeTier, UserRole } from "@/types/auth";
 import {
   appendAdminApprovalNotification,
   appendProfessionalApprovalNotification,
@@ -26,6 +26,7 @@ type UserRow = {
   certificates: string[] | null;
   reviews: string[] | null;
   profile_boosted_until: Date | null;
+  profile_upgrade_tier: ProfileUpgradeTier | null;
   approval_status: ProfessionalApprovalStatus | null;
   approval_reviewed_by: string | null;
   approval_reviewed_at: Date | null;
@@ -58,6 +59,13 @@ function normalizeParsedUsers(parsed: unknown): AppUser[] {
             ? user.reviews.filter((value: unknown): value is string => typeof value === "string")
             : [],
           profileBoostedUntil: typeof user.profileBoostedUntil === "string" ? user.profileBoostedUntil : undefined,
+          profileUpgradeTier:
+            user.profileUpgradeTier === "starter" ||
+            user.profileUpgradeTier === "pro" ||
+            user.profileUpgradeTier === "premium" ||
+            user.profileUpgradeTier === "top"
+              ? user.profileUpgradeTier
+              : undefined,
           approvalStatus:
             user.approvalStatus === "pending" || user.approvalStatus === "approved" || user.approvalStatus === "rejected"
               ? user.approvalStatus
@@ -115,11 +123,11 @@ async function seedPostgresUsersFromJsonIfNeeded() {
           INSERT INTO users (
             id, name, email, password_hash, role, image, specialization, contact_number, location,
             certificates, reviews, profile_boosted_until, approval_status, approval_reviewed_by,
-            approval_reviewed_at, approval_note, provider, created_at
+            approval_reviewed_at, approval_note, profile_upgrade_tier, provider, created_at
           )
           VALUES (
             $1, $2, $3, $4, $5, $6, $7, $8, $9,
-            $10, $11, $12, $13, $14, $15, $16, $17, $18
+            $10, $11, $12, $13, $14, $15, $16, $17, $18, $19
           )
           ON CONFLICT (id) DO NOTHING
         `,
@@ -140,6 +148,7 @@ async function seedPostgresUsersFromJsonIfNeeded() {
           user.approvalReviewedBy ?? null,
           user.approvalReviewedAt ?? null,
           user.approvalNote ?? null,
+          user.profileUpgradeTier ?? null,
           user.provider,
           user.createdAt,
         ],
@@ -164,6 +173,7 @@ function normalizeUser(user: Partial<AppUser> & Pick<AppUser, "id" | "name" | "e
     certificates: user.certificates ?? [],
     reviews: user.reviews ?? [],
     profileBoostedUntil: user.profileBoostedUntil,
+    profileUpgradeTier: user.profileUpgradeTier,
     approvalStatus: user.approvalStatus ?? "approved",
     approvalReviewedBy: user.approvalReviewedBy,
     approvalReviewedAt: user.approvalReviewedAt,
@@ -187,6 +197,7 @@ function mapRowToUser(row: UserRow): AppUser {
     certificates: row.certificates ?? [],
     reviews: row.reviews ?? [],
     profileBoostedUntil: row.profile_boosted_until ? row.profile_boosted_until.toISOString() : undefined,
+    profileUpgradeTier: row.profile_upgrade_tier ?? undefined,
     approvalStatus: row.approval_status ?? "approved",
     approvalReviewedBy: row.approval_reviewed_by ?? undefined,
     approvalReviewedAt: row.approval_reviewed_at ? row.approval_reviewed_at.toISOString() : undefined,
@@ -560,6 +571,7 @@ export async function updateUserProfile(input: {
   certificates?: string[];
   reviews?: string[];
   profileBoostedUntil?: string | null;
+  profileUpgradeTier?: ProfileUpgradeTier | null;
 }) {
   if (!isPostgresConfigured()) {
     const users = await readUsers();
@@ -606,6 +618,10 @@ export async function updateUserProfile(input: {
         input.profileBoostedUntil === undefined
           ? currentUser.profileBoostedUntil
           : input.profileBoostedUntil ?? undefined,
+      profileUpgradeTier:
+        input.profileUpgradeTier === undefined
+          ? currentUser.profileUpgradeTier
+          : input.profileUpgradeTier ?? undefined,
     };
 
     users[index] = updatedUser;
@@ -682,6 +698,10 @@ export async function updateUserProfile(input: {
       input.profileBoostedUntil === undefined
         ? currentUser.profileBoostedUntil
         : input.profileBoostedUntil ?? undefined,
+    profileUpgradeTier:
+      input.profileUpgradeTier === undefined
+        ? currentUser.profileUpgradeTier
+        : input.profileUpgradeTier ?? undefined,
   };
 
   const result = await db.query<UserRow>(
@@ -696,7 +716,8 @@ export async function updateUserProfile(input: {
         location = $7,
         certificates = $8,
         reviews = $9,
-        profile_boosted_until = $10
+        profile_boosted_until = $10,
+        profile_upgrade_tier = $11
       WHERE id = $1
       RETURNING *
     `,
@@ -711,6 +732,7 @@ export async function updateUserProfile(input: {
       updatedUser.certificates ?? [],
       updatedUser.reviews ?? [],
       updatedUser.profileBoostedUntil ?? null,
+      updatedUser.profileUpgradeTier ?? null,
     ],
   );
 

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import SiteLogo from "@/components/SiteLogo";
 
 export default function DashboardLoginPage() {
   const [email, setEmail] = useState("");
@@ -22,7 +23,7 @@ export default function DashboardLoginPage() {
   return (
     <main className="min-h-screen bg-[#f4f7f6] px-4 pt-28 pb-12">
       <div className="mx-auto w-full max-w-md rounded-3xl border border-gray-200 bg-white p-7 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-        <p className="mb-4 text-2xl font-bold tracking-[0.12em] text-slate-900">LOOKIT</p>
+        <SiteLogo size="auth" priority className="mb-4" />
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1ec28e]">Welcome Back</p>
         <h1 className="mt-2 text-3xl font-bold text-gray-900">Login to EducateX</h1>
         <p className="mt-2 text-sm text-gray-500">Enter your details to continue.</p>

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { BookOpen, GraduationCap, MapPin, Search, SlidersHorizontal, Sparkles, Star, Users, X } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
@@ -43,6 +44,7 @@ const languageOptions = [
 ] as const;
 
 export default function ProfessionalsPage() {
+  const searchParams = useSearchParams();
   const resultsRef = useRef<HTMLDivElement | null>(null);
   const [liveProfessionals, setLiveProfessionals] = useState<PublicProfessional[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -54,6 +56,19 @@ export default function ProfessionalsPage() {
   const [sortBy, setSortBy] = useState("popular");
   const [visibleCount, setVisibleCount] = useState(6);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+
+  useEffect(() => {
+    const search = searchParams.get("search")?.trim() ?? "";
+    const location = searchParams.get("location")?.trim() ?? "";
+
+    if (search) {
+      setProfessionalQuery(search);
+    }
+
+    if (location) {
+      setLocationText(location);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     let isActive = true;
@@ -90,6 +105,23 @@ export default function ProfessionalsPage() {
   }, []);
 
   const professionals = useMemo(() => liveProfessionals, [liveProfessionals]);
+
+  const topUpgradedProfessionals = useMemo(
+    () =>
+      professionals.filter((item) => {
+        if (item.profileUpgradeTier !== "top" || !item.profileBoostedUntil) {
+          return false;
+        }
+
+        const boostedUntil = new Date(item.profileBoostedUntil);
+        if (Number.isNaN(boostedUntil.getTime())) {
+          return false;
+        }
+
+        return boostedUntil.getTime() > Date.now();
+      }),
+    [professionals],
+  );
 
   const filteredProfessionals = useMemo(() => {
     const result = professionals.filter((item) => {
@@ -223,7 +255,7 @@ export default function ProfessionalsPage() {
 
 
 
-          <TopRatedProfessionalsSection professionals={professionals} embedded />
+          <TopRatedProfessionalsSection professionals={topUpgradedProfessionals} embedded />
 
           <div ref={resultsRef} className="grid gap-8 lg:grid-cols-[295px_minmax(0,1fr)] lg:items-start">
             <aside className="hidden self-start rounded-3xl border border-[#dbe8e4] bg-white p-5 shadow-sm lg:sticky lg:top-24 lg:z-20 lg:block lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto hide-scrollbar">

@@ -1,12 +1,13 @@
 "use client";
 
-import { ArrowUp, LogOut, Menu, X, Search, ShoppingCart, UserCircle2, Sparkles, Compass, Briefcase, Layers, Store, Info, Mail, Home, LibraryBig } from "lucide-react";
+import { ArrowUp, LogOut, Menu, X, Search, ShoppingCart, UserCircle2, Compass, Briefcase, Layers, Store, Info, Mail, Home, LibraryBig } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import SiteLogo from "@/components/SiteLogo";
 
 type SearchProfessional = {
   id: string;
@@ -160,14 +161,8 @@ const Navbar = () => {
       <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-xl shadow-sm transition-all duration-300 border-b border-white/20">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-8">
           {/* Logo */}
-          <Link href="/" className="group flex items-center gap-2.5">
-            <div className="relative">
-              <div className="absolute inset-0 bg-linear-to-r from-emerald-400 to-teal-400 rounded-full blur-md opacity-60 group-hover:opacity-100 transition-opacity" />
-              <Sparkles className="relative h-5 w-5 text-emerald-500 group-hover:rotate-12 transition-transform" />
-            </div>
-            <span className="text-xl font-bold tracking-tight bg-linear-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-              LOOKIT
-            </span>
+          <Link href="/" className="group flex items-center">
+            <SiteLogo size="nav" priority />
           </Link>
 
           {/* Desktop Nav - Redesigned with pill style */}

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import SiteLogo from "@/components/SiteLogo";
 
 const footerPages = [
   { label: "Home", href: "/" },
@@ -84,6 +85,7 @@ export default function Footer() {
 
         <div className="grid gap-10 border-b border-white/10 pb-10 md:grid-cols-2 lg:grid-cols-3">
           <div>
+            <SiteLogo size="footer" onDark className="mb-4" />
             <h3 className="mb-4 text-2xl font-semibold text-white">Get in Touch</h3>
             <p className="mb-4 text-base leading-relaxed text-[#9aa4b2]">
               Educate the ultimate destination for We are committed to transforming without standards
@@ -136,7 +138,7 @@ export default function Footer() {
 
         <div className="flex flex-col items-center justify-between gap-4 pt-8 md:flex-row">
           <p className="text-base text-[#8b95a4]">
-            © 2025 <span className="text-primary">Educate</span>. Designed By Dream IT Solution
+            © 2025 <span className="text-primary">Lookit</span>. Designed By Dream IT Solution
           </p>
 
           <div className="flex gap-3">

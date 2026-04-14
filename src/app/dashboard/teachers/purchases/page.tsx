@@ -7,6 +7,7 @@ import { Bell, BookOpen, Clock3, RefreshCcw, Video, Users } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProfessionalSidebar from "@/components/ProfessionalSidebar";
+import { Suspense } from "react";
 
 type PurchaseRow = {
   id: string;
@@ -101,7 +102,9 @@ export default function TeacherPurchasesPage() {
       <Navbar />
       <main className="min-h-screen bg-[#eef5f3] px-3 pb-12 pt-28 sm:px-4 md:px-6 lg:px-8">
         <section className="mx-auto grid w-full max-w-[1600px] gap-5 lg:grid-cols-[260px_minmax(0,1fr)]">
-          <ProfessionalSidebar />
+          <Suspense>
+            <ProfessionalSidebar />
+          </Suspense>
 
           <div className="rounded-[28px] bg-[#eef5f3] p-4 shadow-[20px_20px_40px_#d0dbd6,-20px_-20px_40px_#ffffff] md:p-6">
           <div className="flex flex-col gap-4 rounded-[24px] bg-[#eef5f3] px-5 py-4 shadow-[12px_12px_24px_#d0dbd6,-12px_-12px_24px_#ffffff] md:flex-row md:items-center md:justify-between">

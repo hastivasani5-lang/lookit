@@ -70,7 +70,14 @@ const WhyChoose = () => {
 
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:justify-start">
 
-            <button className="rounded-full bg-[#1ec28e] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#18ab7d] sm:px-7">
+            <button
+              className="rounded-full bg-[#1ec28e] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#18ab7d] sm:px-7"
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  window.location.href = '/get-started';
+                }
+              }}
+            >
               GET STARTED →
             </button>
 

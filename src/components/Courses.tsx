@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { SlidersHorizontal, X } from "lucide-react";
+import { SlidersHorizontal, X, FileText, User } from "lucide-react";
 
 const courses = [
   {
@@ -67,6 +68,10 @@ const Courses = () => {
     const filtered = courses.filter((course) => course.category.toLowerCase() === activeFilter.toLowerCase());
     return filtered.length > 0 ? filtered : courses;
   }, [activeFilter]);
+
+  const router = useRouter();
+  const getCourseSlug = (title: string) =>
+    title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
   return (
     <section className="relative overflow-hidden bg-white px-4 py-20 md:px-8 lg:px-10">
@@ -200,25 +205,36 @@ Available all programs
 
   {/* FOOTER (LESSONS + STUDENTS) */}
     
- <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
-  <div className="flex flex-wrap items-center gap-4 text-sm">
-    <div className="flex items-center gap-2 text-gray-600">
-      <span className="text-blue-500">📄</span>
-      <span>{course.lessons}</span>
-    </div>
 
-    <div className="flex items-center gap-2 text-gray-600">
-      <span className="text-purple-500">👤</span>
-      <span>{course.students}</span>
-    </div>
-  </div>
 
-  <button className="w-full rounded-full bg-[#1ec28e] px-6 py-2 text-sm text-white font-semibold shadow hover:bg-[#18ab7d] transition sm:w-auto">
-    ENROL NOW →
-  </button>
-
-  </div>
+ <div className="mt-4 min-h-[48px] relative">
+   {/* Lessons + Students row: visible by default, hidden on group-hover */}
+   <div className="flex items-center justify-between gap-4 text-base transition-opacity duration-200 group-hover:opacity-0 group-hover:pointer-events-none">
+     <div className="flex items-center gap-8">
+       <div className="flex items-center gap-2">
+         <FileText size={20} className="text-[#f7a400]" />
+         <span className="font-bold text-black">{parseInt(course.lessons)}</span>
+         <span className="ml-1 text-gray-500 font-normal">Lessons</span>
+       </div>
+       <div className="flex items-center gap-2">
+         <User size={20} className="text-[#f7a400]" />
+         <span className="font-bold text-black">{parseInt(course.students)}</span>
+         <span className="ml-1 text-gray-500 font-normal">Students</span>
+       </div>
+     </div>
+   </div>
+   {/* ENROL NOW button: hidden by default, centered and visible on group-hover */}
+   <div className="absolute inset-0 flex items-center justify-center opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-200">
+     <button
+       className="rounded-full bg-[#1ec28e] px-6 py-2 text-sm text-white font-semibold shadow hover:bg-[#18ab7d] transition whitespace-nowrap"
+       style={{ minWidth: 140 }}
+      onClick={() => router.push('/enroll-now')}
+     >
+       ENROL NOW →
+     </button>
+   </div>
+ </div>
 
 
 </div>

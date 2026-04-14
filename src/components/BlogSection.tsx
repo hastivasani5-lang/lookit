@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 
 const blogs = [
   {
@@ -125,7 +126,8 @@ Updates Educate Blog
               </h3>
 
               {/* BUTTON */}
-              <button
+              <Link
+                href={`/blog/${blog.id}`}
                 className={`flex items-center justify-between w-full px-5 py-3 rounded-full border text-sm font-medium transition ${
                   blog.color === "blue"
                     ? "border-[#22a6df] text-[#22a6df] hover:bg-[#1a7fa6] hover:border-[#1a7fa6]"
@@ -136,7 +138,7 @@ Updates Educate Blog
               >
                 Continue Reading
                 <span className="transition group-hover:translate-x-1">→</span>
-              </button>
+              </Link>
 
             </div>
           ))}

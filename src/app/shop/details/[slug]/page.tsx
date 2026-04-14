@@ -11,6 +11,18 @@ export default function DetailsPage() {
   const { slug } = useParams();
   const [qty, setQty] = useState(1);
 
+  if (!slug || typeof slug !== "string") {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center text-2xl font-bold text-gray-500">
+          Invalid product slug
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   const book = products.find(
     (p) =>
       p.title.toLowerCase().replace(/\s+/g, "-") === slug.toLowerCase()

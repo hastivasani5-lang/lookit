@@ -5,7 +5,14 @@ import Link from "next/link";
 
 import { useState } from "react";
 
-const videos = [
+type ProductOrVideo = {
+  title: string;
+  price: number;
+  image: string;
+  oldPrice?: number;
+};
+
+const videos: ProductOrVideo[] = [
   {
     title: "React Basics",
     price: 120,
@@ -23,7 +30,7 @@ const videos = [
   },
 ];
 
-export const products = [
+export const products: ProductOrVideo[] = [
   {
     title: "George Orwell",
     price: 60,

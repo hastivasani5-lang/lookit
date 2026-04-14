@@ -1,7 +1,7 @@
 import os from "os";
 import path from "path";
 
-const LOCAL_DATA_DIR = path.join(process.cwd(), "data");
+const LOCAL_DATA_DIR = path.join(/*turbopackIgnore: true*/ process.cwd(), "data");
 const VERCEL_DATA_DIR = path.join(os.tmpdir(), "lookit-data");
 
 export function getDataDir() {

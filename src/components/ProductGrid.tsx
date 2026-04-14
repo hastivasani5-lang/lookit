@@ -79,7 +79,7 @@ const ProductGrid = () => {
   const [page, setPage] = useState(1);
   const itemsPerPage = 6;
 
-  const handleTab = (tab) => {
+  const handleTab = (tab: string) => {
     setActiveTab(tab);
     setPage(1);
   };

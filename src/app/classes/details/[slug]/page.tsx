@@ -39,6 +39,17 @@ const classes = [
 
 export default function ClassDetailsPage() {
   const { slug } = useParams();
+  if (!slug || typeof slug !== "string") {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center text-2xl font-bold text-gray-500">
+          Invalid class slug
+        </div>
+        <Footer />
+      </div>
+    );
+  }
   const cls = classes.find(
     (c) => c.title.toLowerCase().replace(/\s+/g, "-") === slug.toLowerCase()
   );

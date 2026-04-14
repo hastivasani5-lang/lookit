@@ -1,30 +1,31 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 
 const classes = [
   {
     title: "The Complete Digital Marketing Course",
     rating: "4.6",
-    image: "/classes/class1.png",
+    image: "/pro1.jpeg",
     tag: "Beginner",
   },
   {
     title: "The Business Startup Guide to Become an Entrepreneur",
     rating: "4.8",
-    image: "/classes/class2.png",
+    image: "/pro2.jpeg",
     tag: "Beginner",
   },
   {
     title: "Best Way to Learn German Language: Full Beginner",
     rating: "4.9",
-    image: "/classes/class3.png",
+    image: "/pro3.jpeg",
     tag: "Beginner",
   },
   {
     title: "Complete Web & Mobile Designer in 2023: UI/UX",
     rating: "4.7",
-    image: "/classes/class4.png",
+    image: "/pro4.jpeg",
     tag: "Beginner",
   },
 ];
@@ -45,13 +46,13 @@ const PopularClasses = () => {
               key={i}
               className="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition"
             >
-               <div className="relative">
+              <div className="relative w-full h-[180px]">
                 <Image
                   src={item.image}
-                  alt={item.title}
-                  width={300}
-                  height={180}
+                  alt="Popular class image"
+                  fill
                   className="rounded-lg object-cover"
+                  style={{ objectFit: 'cover' }}
                 />
                 {/* Tag */}
                 <span className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
@@ -66,9 +67,12 @@ const PopularClasses = () => {
                 <span className="text-yellow-400">★★★★★</span>
                 <span className="text-gray-600">{item.rating}</span>
               </div>
-               <button className="mt-4 w-full border border-gray-200 rounded-lg py-2 text-sm text-gray-700 hover:bg-[#1ec28e] hover:text-white transition">
+              <Link
+                href={`/classes/details/${item.title.toLowerCase().replace(/\s+/g, "-")}`}
+                className="mt-4 w-full block border border-gray-200 rounded-lg py-2 text-sm text-gray-700 text-center hover:bg-[#1ec28e] hover:text-white transition"
+              >
                 Start Learning
-              </button>
+              </Link>
             </div>
           ))}
         </div>

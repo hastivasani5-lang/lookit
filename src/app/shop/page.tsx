@@ -17,14 +17,12 @@ export default function ShopPage() {
       <CategoriesRow />
       <section className="bg-[#eef5f3] min-h-screen px-4 md:px-10 lg:px-16 py-10">
       <div className="flex flex-col lg:flex-row gap-8">
-        {/* Sidebar - fixed on large screens */}
-        <div className="relative lg:min-h-[70vh]">
+         <div className="relative lg:min-h-[70vh]">
           <div className="lg:sticky lg:top-24">
             <Sidebar />
           </div>
         </div>
-        {/* Products - scrollable */}
-        <div className="flex-1 overflow-y-auto  pr-2 ">
+         <div className="flex-1 overflow-y-auto  pr-2 ">
           <ProductGrid />
         </div>
       </div>

@@ -1,6 +1,7 @@
     "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 
 import { useState } from "react";
 
@@ -22,7 +23,7 @@ const videos = [
   },
 ];
 
-const products = [
+export const products = [
   {
     title: "George Orwell",
     price: 60,
@@ -125,9 +126,9 @@ const ProductGrid = () => {
         {paginatedItems.map((item, i) => (
           <div
             key={i}
-            className="bg-white p-4 rounded-xl border hover:shadow-md transition"
+            className="bg-white p-4 rounded-xl border hover:shadow-md transition relative group cursor-pointer"
           >
-            <div className="bg-[#f4f4f4] rounded-lg p-4 flex justify-center">
+            <div className="bg-[#f4f4f4] rounded-lg p-4 flex justify-center relative overflow-hidden">
               <Image
                 src={item.image}
                 alt={item.title}
@@ -137,26 +138,35 @@ const ProductGrid = () => {
               />
             </div>
 
-            <h3 className="mt-4 font-semibold text-gray-800">
-              {item.title}
-            </h3>
-
-            {/* Stars */}
-            <div className="text-yellow-400 text-sm mt-1">
-              ★★★★★ <span className="text-gray-400 text-xs">(4.5)</span>
-            </div>
-
-            {/* Price */}
-            <div className="mt-2 flex items-center gap-2">
-              <span className="text-[#1ec28e] font-semibold">
-                ${item.price}
-              </span>
-
-              {item.oldPrice && (
-                <span className="line-through text-gray-400 text-sm">
-                  ${item.oldPrice}
-                </span>
-              )}
+            {/* Info section hidden on hover, button shown in its place */}
+            <div className="min-h-[90px] flex flex-col items-center justify-center relative">
+              <div className={"transition-opacity w-full " + ("group-hover:opacity-0" )}>
+                <h3 className="mt-4 font-semibold text-gray-800 text-center">
+                  {item.title}
+                </h3>
+                {/* Stars */}
+                <div className="text-yellow-400 text-sm mt-1 text-center">
+                  ★★★★★ <span className="text-gray-400 text-xs">(4.5)</span>
+                </div>
+                {/* Price */}
+                <div className="mt-2 flex items-center gap-2 justify-center">
+                  <span className="text-[#1ec28e] font-semibold">
+                    ${item.price}
+                  </span>
+                  {item.oldPrice && (
+                    <span className="line-through text-gray-400 text-sm">
+                      ${item.oldPrice}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <Link
+                href={`/shop/details/${item.title.toLowerCase().replace(/\s+/g, "-")}`}
+                className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 px-4 py-2 rounded-lg bg-[#1ec28e] text-white font-semibold text-sm opacity-0 group-hover:opacity-100 transition-opacity shadow-lg text-center"
+                tabIndex={-1}
+              >
+                View Details
+              </Link>
             </div>
           </div>
         ))}

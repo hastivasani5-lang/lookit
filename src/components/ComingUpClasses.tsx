@@ -35,29 +35,6 @@ export default function ComingUpClasses() {
       accentClass: "from-[#ec5db2] to-[#cc3f94]",
       badgeClass: "bg-[#dc4fa4]",
     },
-    "use client";
-
-    import React, { useEffect, useRef } from "react";
-    import { BarChart3, Monitor, Rocket, Search } from "lucide-react";
-
-    export default function ComingUpClasses() {
-      const sliderRef = useRef<HTMLDivElement>(null);
-
-      const upcomingCourses = [
-        {
-          title: "AI for Everyone",
-          description: "From beginner level to advanced practical workflows.",
-          icon: Monitor,
-          accentClass: "from-[#3d6fdf] to-[#2d55bf]",
-          badgeClass: "bg-[#3d6fdf]",
-        },
-        {
-          title: "Advanced Web Development",
-          description: "Build modern full-stack projects with real deployment.",
-          icon: Rocket,
-          accentClass: "from-[#48c4d8] to-[#2ea3be]",
-          badgeClass: "bg-[#41bfd4]",
-        },
         {
           title: "Digital Marketing Mastery",
           description: "Learn SEO, ads, and growth strategies that convert.",

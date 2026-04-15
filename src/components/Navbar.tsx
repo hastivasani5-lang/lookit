@@ -219,7 +219,14 @@ const Navbar = () => {
             {isAuthenticated ? (
               <div className="relative" ref={profileMenuRef}>
                 <button
-                  onClick={() => setProfileMenuOpen((o) => !o)}
+                  onClick={() => {
+                    if (isStudent) {
+                      setProfileMenuOpen(false);
+                      router.push("/dashboard/students/profile");
+                      return;
+                    }
+                    setProfileMenuOpen((o) => !o);
+                  }}
                   className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-100 bg-white shadow-sm transition-all duration-200 hover:shadow-md hover:scale-105 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                 >
                   {session?.user?.image ? (

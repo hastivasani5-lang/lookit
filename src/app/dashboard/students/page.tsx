@@ -32,7 +32,6 @@ export default function StudentsPage() {
           <Courses />
         <WhyChoose />
         <FeaturedCourse />
-        <PreciousFeaturesSection />
         <Instructors />
         <Testimonials />
         <BlogSection />

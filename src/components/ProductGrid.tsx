@@ -1,230 +1,280 @@
-    "use client";
+"use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-import { useState } from "react";
+import { addCartItem, getCartItems } from "@/lib/cart-store";
+import type { ShopCatalogItem } from "@/lib/shop-catalog";
 
-type ProductOrVideo = {
-  title: string;
-  price: number;
-  image: string;
-  oldPrice?: number;
+type ContentTab = "book" | "video";
+
+type ProductGridProps = {
+  selectedMaxPrice?: number | null;
+  onPriceBoundsChange?: (bounds: { min: number; max: number }) => void;
 };
 
-const videos: ProductOrVideo[] = [
-  {
-    title: "React Basics",
-    price: 120,
-    image: "/videos/video1.jpg",
-  },
-  {
-    title: "Next.js Crash Course",
-    price: 150,
-    image: "/videos/video2.jpg",
-  },
-  {
-    title: "Tailwind Mastery",
-    price: 100,
-    image: "/videos/video3.jpg",
-  },
-];
+const itemsPerPage = 6;
 
-export const products: ProductOrVideo[] = [
-  {
-    title: "George Orwell",
-    price: 60,
-    image: "/books/book1.jpg",
-  },
-  {
-    title: "Moby-Dick",
-    price: 60,
-    oldPrice: 100,
-    image: "/books/book2.jpg",
-  },
-  {
-    title: "Brave New World",
-    price: 40,
-    image: "/books/book3.jpg",
-  },
-  {
-    title: "The Hobbit",
-    price: 40,
-    oldPrice: 100,
-    image: "/books/book4.jpg",
-  },
-  {
-    title: "A Game of Thrones",
-    price: 80,
-    image: "/books/book5.jpg",
-  },
-  {
-    title: "Neuromancer",
-    price: 60,
-    image: "/books/book6.jpg",
-  },
-  {
-    title: "Big Little Lies",
-    price: 50,
-    image: "/books/book7.jpg",
-  },
-  {
-    title: "The Reversal",
-    price: 70,
-    oldPrice: 100,
-    image: "/books/book8.jpg",
-  },
-  {
-    title: "Sharp Objects",
-    price: 60,
-    image: "/books/book9.jpg",
-  },
-];
+function placeholderImageFor(contentType: ContentTab) {
+  return contentType === "book" ? "/instructor.avif" : "/instructor.avif";
+}
 
-const ProductGrid = () => {
-  const [activeTab, setActiveTab] = useState("books");
+const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps) => {
+  const [activeTab, setActiveTab] = useState<ContentTab>("book");
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const itemsPerPage = 6;
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const [catalogItems, setCatalogItems] = useState<ShopCatalogItem[]>([]);
+  const [cartItemIds, setCartItemIds] = useState<string[]>([]);
+  const lastSentBoundsRef = useRef<{ min: number; max: number } | null>(null);
 
-  const handleTab = (tab: string) => {
-    setActiveTab(tab);
-    setPage(1);
-  };
+  useEffect(() => {
+    let isActive = true;
 
-  const items = activeTab === "books" ? products : videos;
-  const normalizedSearch = searchQuery.trim().toLowerCase();
-  const filteredItems = items.filter((item) => {
-    if (!normalizedSearch) {
-      return true;
+    const loadCatalog = async () => {
+      setIsLoading(true);
+      setLoadError("");
+
+      try {
+        const response = await fetch("/api/shop/items", { cache: "no-store" });
+        const payload = (await response.json().catch(() => ({}))) as { items?: ShopCatalogItem[] };
+
+        if (!isActive) {
+          return;
+        }
+
+        if (!response.ok) {
+          setLoadError("Unable to load shop items right now.");
+          setCatalogItems([]);
+          return;
+        }
+
+        setCatalogItems(Array.isArray(payload.items) ? payload.items : []);
+      } catch {
+        if (isActive) {
+          setLoadError("Unable to load shop items right now.");
+          setCatalogItems([]);
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void loadCatalog();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    setCartItemIds(getCartItems().map((item) => item.id));
+
+    const handleStorage = () => setCartItemIds(getCartItems().map((item) => item.id));
+    window.addEventListener("storage", handleStorage);
+
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
+  useEffect(() => {
+    if (!onPriceBoundsChange) {
+      return;
     }
 
-    return item.title.toLowerCase().includes(normalizedSearch);
-  });
+    const tabItems = catalogItems.filter((item) => item.contentType === activeTab);
+    const maxAmount = tabItems.reduce((max, item) => Math.max(max, item.amount), 0);
+    const nextBounds = {
+      min: 0,
+      max: Math.max(Math.ceil(maxAmount), 0),
+    };
+
+    const previous = lastSentBoundsRef.current;
+    if (previous && previous.min === nextBounds.min && previous.max === nextBounds.max) {
+      return;
+    }
+
+    lastSentBoundsRef.current = nextBounds;
+
+    onPriceBoundsChange(nextBounds);
+  }, [activeTab, catalogItems, onPriceBoundsChange]);
+
+  const filteredItems = useMemo(() => {
+    const normalizedSearch = searchQuery.trim().toLowerCase();
+    const maxAllowedPrice = typeof selectedMaxPrice === "number" ? selectedMaxPrice : Number.POSITIVE_INFINITY;
+
+    return catalogItems.filter((item) => {
+      if (item.contentType !== activeTab) {
+        return false;
+      }
+
+      if (item.amount > maxAllowedPrice) {
+        return false;
+      }
+
+      if (!normalizedSearch) {
+        return true;
+      }
+
+      return (
+        item.title.toLowerCase().includes(normalizedSearch) ||
+        item.professionalName.toLowerCase().includes(normalizedSearch) ||
+        item.category.toLowerCase().includes(normalizedSearch)
+      );
+    });
+  }, [activeTab, catalogItems, searchQuery, selectedMaxPrice]);
 
   const totalPages = Math.max(1, Math.ceil(filteredItems.length / itemsPerPage));
   const currentPage = Math.min(page, totalPages);
   const paginatedItems = filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
+  const handleAddToCart = (item: ShopCatalogItem) => {
+    addCartItem({
+      id: item.id,
+      contentId: item.contentId,
+      professionalId: item.professionalId,
+      professionalName: item.professionalName,
+      title: item.title,
+      subtitle: item.subtitle,
+      price: item.price,
+      sourceUrl: item.sourceUrl,
+      contentType: item.contentType,
+    });
+
+    setCartItemIds((current) => (current.includes(item.id) ? current : [item.id, ...current]));
+  };
+
+  const handleTab = (tab: ContentTab) => {
+    setActiveTab(tab);
+    setPage(1);
+  };
+
   return (
     <div className="flex-1">
-      {/* Top Bar */}
-      <div className="flex justify-between items-center mb-6 gap-2">
+      <div className="mb-6 flex items-center justify-between gap-2">
         <div className="flex gap-2">
           <button
-            className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${
-              activeTab === "books"
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              activeTab === "book"
                 ? "bg-[#1ec28e] text-white hover:bg-[#169e6d]"
                 : "bg-[#e5f8f2] text-[#1ec28e] hover:bg-[#c7f0e3]"
             }`}
-            onClick={() => handleTab("books")}
+            onClick={() => handleTab("book")}
           >
             Books
           </button>
           <button
-            className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${
-              activeTab === "videos"
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              activeTab === "video"
                 ? "bg-[#1ec28e] text-white hover:bg-[#169e6d]"
                 : "bg-[#e5f8f2] text-[#1ec28e] hover:bg-[#c7f0e3]"
             }`}
-            onClick={() => handleTab("videos")}
+            onClick={() => handleTab("video")}
           >
             Videos
           </button>
         </div>
         <input
           type="text"
-          placeholder="Search here"
+          placeholder="Search title, category, professional"
           value={searchQuery}
           onChange={(event) => {
             setSearchQuery(event.target.value);
             setPage(1);
           }}
-          className="border px-4 py-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1ec28e]"
+          className="rounded-lg border px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-[#1ec28e]"
         />
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {paginatedItems.map((item, i) => (
-          <div
-            key={i}
-            className="bg-white p-4 rounded-xl border hover:shadow-md transition relative group cursor-pointer"
-          >
-            <div className="bg-[#f4f4f4] rounded-lg p-4 flex justify-center relative overflow-hidden">
-              <Image
-                src={item.image}
-                alt={item.title}
-                width={120}
-                height={160}
-                className="object-contain"
-              />
-            </div>
+      {isLoading ? (
+        <div className="rounded-xl border bg-white p-8 text-center text-sm text-gray-500">Loading items...</div>
+      ) : loadError ? (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-8 text-center text-sm text-red-600">{loadError}</div>
+      ) : paginatedItems.length === 0 ? (
+        <div className="rounded-xl border border-dashed bg-white p-8 text-center text-sm text-gray-500">
+          No {activeTab === "book" ? "books" : "videos"} added by professionals yet.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
+          {paginatedItems.map((item) => {
+            const imageSrc = item.imageUrl || placeholderImageFor(item.contentType);
+            const isInCart = cartItemIds.includes(item.id);
 
-            {/* Info section hidden on hover, button shown in its place */}
-            <div className="min-h-[90px] flex flex-col items-center justify-center relative">
-              <div className={"transition-opacity w-full " + ("group-hover:opacity-0" )}>
-                <h3 className="mt-4 font-semibold text-gray-800 text-center">
-                  {item.title}
-                </h3>
-                {/* Stars */}
-                <div className="text-yellow-400 text-sm mt-1 text-center">
-                  ★★★★★ <span className="text-gray-400 text-xs">(4.5)</span>
+            return (
+              <div
+                key={item.id}
+                className="group relative cursor-pointer rounded-xl border bg-white p-4 transition hover:shadow-md"
+              >
+                <div className="relative flex justify-center overflow-hidden rounded-lg bg-[#f4f4f4] p-4">
+                  <img
+                    src={imageSrc}
+                    alt={item.title}
+                    className="h-40 w-full object-contain"
+                    loading="lazy"
+                  />
                 </div>
-                {/* Price */}
-                <div className="mt-2 flex items-center gap-2 justify-center">
-                  <span className="text-[#1ec28e] font-semibold">
-                    ${item.price}
-                  </span>
-                  {item.oldPrice && (
-                    <span className="line-through text-gray-400 text-sm">
-                      ${item.oldPrice}
-                    </span>
-                  )}
+
+                <div className="mt-4 min-h-[125px]">
+                  <h3 className="text-center font-semibold text-gray-800">{item.title}</h3>
+                  <p className="mt-1 line-clamp-2 text-center text-xs text-gray-500">{item.subtitle}</p>
+                  <p className="mt-1 text-center text-xs text-gray-500">By {item.professionalName}</p>
+                  <div className="mt-2 flex items-center justify-center gap-2">
+                    <span className="font-semibold text-[#1ec28e]">{item.price}</span>
+                  </div>
+                </div>
+
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleAddToCart(item)}
+                    className="rounded-lg bg-[#1ec28e] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[#169e6d]"
+                  >
+                    {isInCart ? "Added" : "Add Cart"}
+                  </button>
+                  <Link
+                    href={`/shop/details/${item.slug}`}
+                    className="rounded-lg border border-[#1ec28e] px-3 py-2 text-center text-sm font-semibold text-[#1ec28e] transition hover:bg-[#1ec28e] hover:text-white"
+                  >
+                    View Details
+                  </Link>
                 </div>
               </div>
-              <Link
-                href={`/shop/details/${item.title.toLowerCase().replace(/\s+/g, "-")}`}
-                className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 px-4 py-2 rounded-lg bg-[#1ec28e] text-white font-semibold text-sm opacity-0 group-hover:opacity-100 transition-opacity shadow-lg text-center"
-                tabIndex={-1}
-              >
-                View Details
-              </Link>
-            </div>
-          </div>
-        ))}
-      </div>
+            );
+          })}
+        </div>
+      )}
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-8">
+      {totalPages > 1 ? (
+        <div className="mt-8 flex items-center justify-center gap-2">
           <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            onClick={() => setPage((prev) => Math.max(1, prev - 1))}
             disabled={currentPage === 1}
-            className="px-3 py-1 rounded bg-gray-100 text-gray-600 disabled:opacity-50"
+            className="rounded bg-gray-100 px-3 py-1 text-gray-600 disabled:opacity-50"
           >
             Prev
           </button>
-          {Array.from({ length: totalPages }, (_, idx) => (
+          {Array.from({ length: totalPages }, (_, index) => (
             <button
-              key={idx + 1}
-              onClick={() => setPage(idx + 1)}
-              className={`px-3 py-1 rounded ${
-                currentPage === idx + 1 ? "bg-[#1ec28e] text-white" : "bg-gray-100 text-gray-600"
+              key={index + 1}
+              onClick={() => setPage(index + 1)}
+              className={`rounded px-3 py-1 ${
+                currentPage === index + 1 ? "bg-[#1ec28e] text-white" : "bg-gray-100 text-gray-600"
               }`}
             >
-              {idx + 1}
+              {index + 1}
             </button>
           ))}
           <button
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
             disabled={currentPage === totalPages}
-            className="px-3 py-1 rounded bg-gray-100 text-gray-600 disabled:opacity-50"
+            className="rounded bg-gray-100 px-3 py-1 text-gray-600 disabled:opacity-50"
           >
             Next
           </button>
         </div>
-      )}
+      ) : null}
     </div>
   );
 };

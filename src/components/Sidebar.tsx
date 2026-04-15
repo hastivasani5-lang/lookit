@@ -1,6 +1,13 @@
 "use client";
 
-const Sidebar = () => {
+type SidebarProps = {
+  minPrice: number;
+  maxPrice: number;
+  selectedMaxPrice: number;
+  onPriceChange: (value: number) => void;
+};
+
+const Sidebar = ({ minPrice, maxPrice, selectedMaxPrice, onPriceChange }: SidebarProps) => {
   const categories = [
     { name: "Historical Fiction", count: 18 },
     { name: "Mystery and Thriller", count: 15 },
@@ -38,13 +45,19 @@ const Sidebar = () => {
 
         <input
           type="range"
-          min="0"
-          max="330"
+          min={minPrice}
+          max={Math.max(maxPrice, minPrice)}
+          value={Math.min(selectedMaxPrice, Math.max(maxPrice, minPrice))}
+          onChange={(event) => onPriceChange(Number(event.target.value))}
+          disabled={maxPrice <= minPrice}
           className="w-full accent-[#1ec28e]"
         />
 
         <div className="mt-3 text-sm text-gray-500">
-          $70 - $330
+          ₹{minPrice.toFixed(2)} - ₹{Math.max(selectedMaxPrice, minPrice).toFixed(2)}
+        </div>
+        <div className="mt-1 text-xs text-gray-400">
+          Max available: ₹{Math.max(maxPrice, minPrice).toFixed(2)}
         </div>
       </div>
     </div>

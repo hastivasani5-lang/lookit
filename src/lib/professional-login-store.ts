@@ -108,3 +108,7 @@ export async function markProfessionalLoggedOut(professionalId: string) {
 		await writeStore({ professionalIds: nextIds });
 	}
 }
+
+export async function removeProfessionalLogin(professionalId: string) {
+	await markProfessionalLoggedOut(professionalId);
+}

@@ -82,3 +82,12 @@ export async function getProfessionalNotifications() {
   const notifications = await readNotifications();
   return notifications.sort((left, right) => right.createdAt.localeCompare(left.createdAt));
 }
+
+export async function deleteProfessionalNotificationsByProfessionalId(professionalId: string) {
+  const notifications = await readNotifications();
+  const filtered = notifications.filter((notification) => notification.professionalId !== professionalId);
+
+  if (filtered.length !== notifications.length) {
+    await writeNotifications(filtered);
+  }
+}

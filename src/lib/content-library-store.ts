@@ -263,6 +263,17 @@ export async function deleteProfessionalVideo(professionalId: string, videoId: s
   await writeStore(store);
 }
 
+export async function deleteProfessionalLibrary(professionalId: string) {
+  const store = await readStore();
+
+  if (!store.professionals[professionalId]) {
+    return;
+  }
+
+  delete store.professionals[professionalId];
+  await writeStore(store);
+}
+
 export async function getAllLibraries() {
   return readStore();
 }
@@ -316,4 +327,15 @@ export async function appendStudentVideoActivity(studentId: string, input: Omit<
   library.watchedVideos = [activity, ...library.watchedVideos];
   await writeStore(store);
   return activity;
+}
+
+export async function deleteStudentLibrary(studentId: string) {
+  const store = await readStore();
+
+  if (!store.students[studentId]) {
+    return;
+  }
+
+  delete store.students[studentId];
+  await writeStore(store);
 }

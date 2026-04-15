@@ -9,11 +9,19 @@ import {
   appendProfessionalApprovalNotification,
 } from "./approval-notifications-store";
 import { appendProfessionalNotification } from "@/lib/notifications-store";
+import { deleteProfessionalNotificationsByProfessionalId } from "@/lib/notifications-store";
+import { deletePaymentsByProfessionalId, deletePaymentsByStudentId } from "@/lib/payment-store";
+import { deleteProfessionalLibrary, deleteStudentLibrary } from "@/lib/content-library-store";
+import { deleteReviewsByProfessionalId, deleteReviewsByStudentId } from "@/lib/reviews-store";
 import { ensureDbSchema, getDbPool, isPostgresConfigured } from "@/lib/db";
 import { getDataDir, getDataFile } from "@/lib/storage-path";
+import { deleteThemeSettingsForUser } from "./theme-persistence";
+import { markProfessionalLoggedOut } from "./professional-login-store";
 
 const DATA_DIR = getDataDir();
 const USERS_FILE = getDataFile("users.json");
+const DELETED_USERS_FILE = getDataFile("deleted-users.json");
+const DELETED_USERS_DB_KEY = "deleted-users";
 const execFileAsync = promisify(execFile);
 
 type UserRow = {
@@ -39,6 +47,14 @@ type UserRow = {
 };
 
 let postgresUsersSeedPromise: Promise<void> | null = null;
+
+type DeletedUsersStore = {
+  ids: string[];
+};
+
+const defaultDeletedUsersStore: DeletedUsersStore = {
+  ids: [],
+};
 
 function normalizeParsedUsers(parsed: unknown): AppUser[] {
   return Array.isArray(parsed)
@@ -115,6 +131,9 @@ async function seedPostgresUsersFromJsonIfNeeded() {
     } catch {
       usersFromJson = [];
     }
+
+    const deletedUserIds = new Set(await readDeletedUserIds());
+    usersFromJson = usersFromJson.filter((user) => !deletedUserIds.has(user.id));
 
     if (usersFromJson.length === 0) {
       return;
@@ -291,6 +310,72 @@ async function ensureUsersFile() {
   }
 }
 
+async function ensureDeletedUsersFile() {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+
+  try {
+    await fs.access(DELETED_USERS_FILE);
+  } catch {
+    await fs.writeFile(DELETED_USERS_FILE, JSON.stringify(defaultDeletedUsersStore, null, 2), "utf-8");
+  }
+}
+
+async function readDeletedUserIds(): Promise<string[]> {
+  if (isPostgresConfigured()) {
+    await ensureDbSchema();
+    const db = getDbPool();
+    const result = await db.query<{ data: unknown }>(`SELECT data FROM app_data WHERE key = $1 LIMIT 1`, [DELETED_USERS_DB_KEY]);
+
+    if (result.rows.length === 0) {
+      return [];
+    }
+
+    const parsed = result.rows[0].data as Partial<DeletedUsersStore>;
+    return Array.isArray(parsed?.ids) ? parsed.ids.filter((value): value is string => typeof value === "string") : [];
+  }
+
+  await ensureDeletedUsersFile();
+  const raw = await fs.readFile(DELETED_USERS_FILE, "utf-8");
+
+  try {
+    const parsed = JSON.parse(raw) as Partial<DeletedUsersStore>;
+    return Array.isArray(parsed.ids) ? parsed.ids.filter((value): value is string => typeof value === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+async function writeDeletedUserIds(ids: string[]) {
+  const nextIds = Array.from(new Set(ids.map((id) => id.trim()).filter(Boolean)));
+
+  if (isPostgresConfigured()) {
+    await ensureDbSchema();
+    const db = getDbPool();
+
+    await db.query(
+      `
+        INSERT INTO app_data (key, data, updated_at)
+        VALUES ($1, $2::jsonb, NOW())
+        ON CONFLICT (key)
+        DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()
+      `,
+      [DELETED_USERS_DB_KEY, JSON.stringify({ ids: nextIds })],
+    );
+    return;
+  }
+
+  await fs.writeFile(DELETED_USERS_FILE, JSON.stringify({ ids: nextIds }, null, 2), "utf-8");
+}
+
+async function markUserDeleted(userId: string) {
+  const deletedUserIds = await readDeletedUserIds();
+
+  if (!deletedUserIds.includes(userId)) {
+    deletedUserIds.unshift(userId);
+    await writeDeletedUserIds(deletedUserIds);
+  }
+}
+
 async function readUsers(): Promise<AppUser[]> {
   await ensureUsersFile();
   const raw = await fs.readFile(USERS_FILE, "utf-8");
@@ -298,7 +383,7 @@ async function readUsers(): Promise<AppUser[]> {
   try {
     const parsed = JSON.parse(raw);
     const users = normalizeParsedUsers(parsed);
-    return recoverUsersAfterPullIfNeeded(users);
+    return recoverUsersAfterPullIfNeeded(users, await readDeletedUserIds());
   } catch {
     return [];
   }
@@ -321,10 +406,10 @@ async function readUsersFromGitRef(ref: string): Promise<AppUser[]> {
   }
 }
 
-async function recoverUsersAfterPullIfNeeded(currentUsers: AppUser[]) {
+async function recoverUsersAfterPullIfNeeded(currentUsers: AppUser[], deletedUserIds: string[]) {
   const isLocalDev = !process.env.VERCEL;
   if (!isLocalDev || currentUsers.length > 1) {
-    return currentUsers;
+    return currentUsers.filter((user) => !deletedUserIds.includes(user.id));
   }
 
   const recoveredFromOrigHead = await readUsersFromGitRef("ORIG_HEAD");
@@ -337,7 +422,12 @@ async function recoverUsersAfterPullIfNeeded(currentUsers: AppUser[]) {
 
   const mergedByEmail = new Map<string, AppUser>();
 
+  const deletedIds = new Set(deletedUserIds);
+
   for (const user of [...recoveredUsers, ...currentUsers]) {
+    if (deletedIds.has(user.id)) {
+      continue;
+    }
     mergedByEmail.set(user.email.toLowerCase(), user);
   }
 
@@ -369,7 +459,9 @@ export async function getUserByEmail(email: string) {
     [email.toLowerCase().trim()],
   );
 
-  if (result.rows.length > 0) {
+  const deletedUserIds = new Set(await readDeletedUserIds());
+
+  if (result.rows.length > 0 && !deletedUserIds.has(result.rows[0].id)) {
     return mapRowToUser(result.rows[0]);
   }
 
@@ -396,7 +488,9 @@ export async function getUserById(id: string) {
 
   const result = await db.query<UserRow>(`SELECT * FROM users WHERE id = $1 LIMIT 1`, [id]);
 
-  if (result.rows.length > 0) {
+  const deletedUserIds = new Set(await readDeletedUserIds());
+
+  if (result.rows.length > 0 && !deletedUserIds.has(result.rows[0].id)) {
     return mapRowToUser(result.rows[0]);
   }
 
@@ -424,14 +518,18 @@ export async function getAllUsers() {
   const result = await db.query<UserRow>(`SELECT * FROM users ORDER BY created_at DESC`);
   const dbUsers = result.rows.map(mapRowToUser);
   const fallbackUsers = await readUsers();
+  const deletedUserIds = new Set(await readDeletedUserIds());
 
-  if (fallbackUsers.length === 0) {
-    return dbUsers;
+  const filteredDbUsers = dbUsers.filter((user) => !deletedUserIds.has(user.id));
+  const filteredFallbackUsers = fallbackUsers.filter((user) => !deletedUserIds.has(user.id));
+
+  if (filteredFallbackUsers.length === 0) {
+    return filteredDbUsers;
   }
 
   const mergedByEmail = new Map<string, AppUser>();
 
-  for (const user of [...fallbackUsers, ...dbUsers]) {
+  for (const user of [...filteredFallbackUsers, ...filteredDbUsers]) {
     mergedByEmail.set(user.email.toLowerCase(), user);
   }
 
@@ -517,6 +615,44 @@ export async function setProfessionalApproval(
   });
 
   return updatedUser;
+}
+
+export async function deleteUserById(userId: string) {
+  const user = await getUserById(userId);
+
+  if (!user) {
+    return null;
+  }
+
+  await deleteThemeSettingsForUser(userId);
+
+  if (user.role === "professional") {
+    await Promise.all([
+      deleteProfessionalLibrary(userId),
+      deleteReviewsByProfessionalId(userId),
+      deletePaymentsByProfessionalId(userId),
+      deleteProfessionalNotificationsByProfessionalId(userId),
+      markProfessionalLoggedOut(userId),
+    ]);
+  } else {
+    await Promise.all([deleteStudentLibrary(userId), deleteReviewsByStudentId(userId), deletePaymentsByStudentId(userId)]);
+  }
+
+  if (!isPostgresConfigured()) {
+    const users = await readUsers();
+    const filteredUsers = users.filter((entry) => entry.id !== userId);
+
+    if (filteredUsers.length !== users.length) {
+      await writeUsers(filteredUsers);
+    }
+  } else {
+    await ensureDbSchema();
+    const db = getDbPool();
+    await db.query(`DELETE FROM users WHERE id = $1`, [userId]);
+  }
+
+  await markUserDeleted(userId);
+  return user;
 }
 
 export async function recordProfessionalLoginAttempt(user: AppUser, reason: "pending" | "rejected") {

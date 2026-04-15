@@ -1,5 +1,17 @@
 [
   {
+    "id": "41349c58-ef78-4611-b5a1-195081967e12",
+    "name": "gadhiya jenil",
+    "email": "jenilgadhiya@gmail.com",
+    "passwordHash": "$2a$10$b.7hyesSmNlCSbWIiYzSPu2LomsJaus8F.Ig8Om6Hh6dSG8HWwr9y",
+    "role": "student",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-15T09:02:42.356Z"
+  },
+  {
     "id": "bfba66da-a920-49cf-b90f-fc7ce1222d3a",
     "name": "jeel",
     "email": "jeel@gmail.com",
@@ -12,20 +24,10 @@
     "reviews": [],
     "profileBoostedUntil": "2026-05-15T08:57:39.675Z",
     "profileUpgradeTier": "starter",
-    "approvalStatus": "pending",
+    "approvalStatus": "approved",
+    "approvalReviewedBy": "Admin",
+    "approvalReviewedAt": "2026-04-15T09:15:18.458Z",
     "provider": "credentials",
     "createdAt": "2026-04-15T07:35:30.230Z"
-  },
-  {
-    "id": "a75987bf-1ba7-4d6a-91d3-ebfc3544e619",
-    "name": "smit",
-    "email": "smit@gmail.com",
-    "passwordHash": "$2a$10$bkv5zZmFhLOH7gQ1wUcMzuTJhowH9onXMc5La8juhdvqNdtEf63fG",
-    "role": "student",
-    "certificates": [],
-    "reviews": [],
-    "approvalStatus": "approved",
-    "provider": "credentials",
-    "createdAt": "2026-04-15T07:55:16.142Z"
   }
 ]

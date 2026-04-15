@@ -108,3 +108,23 @@ export async function appendPayment(payment: PaymentRecord) {
   await writeStore(store);
   return payment;
 }
+
+export async function deletePaymentsByStudentId(studentId: string) {
+  const store = await readStore();
+  const filtered = store.payments.filter((payment) => payment.studentId !== studentId);
+
+  if (filtered.length !== store.payments.length) {
+    store.payments = filtered;
+    await writeStore(store);
+  }
+}
+
+export async function deletePaymentsByProfessionalId(professionalId: string) {
+  const store = await readStore();
+  const filtered = store.payments.filter((payment) => payment.professionalId !== professionalId);
+
+  if (filtered.length !== store.payments.length) {
+    store.payments = filtered;
+    await writeStore(store);
+  }
+}

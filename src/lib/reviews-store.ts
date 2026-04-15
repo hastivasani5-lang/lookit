@@ -99,3 +99,23 @@ export async function addReview(review: ReviewRecord) {
   await writeStore(store);
   return review;
 }
+
+export async function deleteReviewsByStudentId(studentId: string) {
+  const store = await readStore();
+  const filtered = store.reviews.filter((review) => review.studentId !== studentId);
+
+  if (filtered.length !== store.reviews.length) {
+    store.reviews = filtered;
+    await writeStore(store);
+  }
+}
+
+export async function deleteReviewsByProfessionalId(professionalId: string) {
+  const store = await readStore();
+  const filtered = store.reviews.filter((review) => review.professionalId !== professionalId);
+
+  if (filtered.length !== store.reviews.length) {
+    store.reviews = filtered;
+    await writeStore(store);
+  }
+}

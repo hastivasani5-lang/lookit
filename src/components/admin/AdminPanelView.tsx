@@ -174,6 +174,7 @@ type AdminUserDetails = {
 
 type AdminProfessionalUser = {
   id: number;
+  backendId: string;
   name: string;
   email: string;
   provider: "credentials" | "google";
@@ -760,16 +761,80 @@ export default function AdminPanelView() {
     closeEditStudent();
   };
 
-  const deleteStudent = (studentId: number) => {
-    setStudentsList((currentStudents) => currentStudents.filter((student) => student.id !== studentId));
+  const deleteStudent = async (studentId: number) => {
+    const userDetails = userDetailsById[studentId];
 
-    if (selectedStudentId === studentId) {
-      const remainingStudents = studentsList.filter((student) => student.id !== studentId);
-      setSelectedStudentId(remainingStudents[0]?.id ?? null);
+    if (!userDetails?.backendId) {
+      return;
     }
 
-    if (editingStudentId === studentId) {
-      closeEditStudent();
+    const confirmed = window.confirm("Delete this student permanently?");
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/admin/users", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: userDetails.backendId }),
+      });
+
+      if (!response.ok) {
+        return;
+      }
+
+      setStudentsList((currentStudents) => currentStudents.filter((student) => student.id !== studentId));
+      setUserDetailsById((currentDetails) => {
+        const nextDetails = { ...currentDetails };
+        delete nextDetails[studentId];
+        return nextDetails;
+      });
+
+      if (selectedStudentId === studentId) {
+        const remainingStudents = studentsList.filter((student) => student.id !== studentId);
+        setSelectedStudentId(remainingStudents[0]?.id ?? null);
+      }
+
+      if (editingStudentId === studentId) {
+        closeEditStudent();
+      }
+    } catch {
+      return;
+    }
+  };
+
+  const deleteProfessional = async (backendId: string) => {
+    const professional = professionalUsers.find((entry) => entry.backendId === backendId);
+
+    if (!professional) {
+      return;
+    }
+
+    const confirmed = window.confirm("Delete this professional permanently?");
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/admin/users", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: backendId }),
+      });
+
+      if (!response.ok) {
+        return;
+      }
+
+      setProfessionalUsers((currentProfessionals) => currentProfessionals.filter((entry) => entry.backendId !== backendId));
+      setApprovalRequests((currentRequests) => currentRequests.filter((request) => request.id !== backendId));
+
+      if (detailModal?.title === "Professional Details" && detailModal.subtitle === professional.email) {
+        setDetailModal(null);
+      }
+    } catch {
+      return;
     }
   };
 
@@ -941,6 +1006,7 @@ export default function AdminPanelView() {
 
         const mappedProfessionals: AdminProfessionalUser[] = professionalUsers.map((user, index) => ({
           id: index + 1,
+          backendId: user.id,
           name: user.name,
           email: user.email,
           provider: user.provider,
@@ -1907,13 +1973,33 @@ export default function AdminPanelView() {
                                   <td className="px-5 py-4 align-middle text-slate-700">{student.joinedAt}</td>
                                   <td className="px-5 py-4 align-middle">
                                     <div className="flex justify-end gap-2">
-                                      <button className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-slate-50">
+                                      <button
+                                        type="button"
+                                        onClick={(event) => {
+                                          event.stopPropagation();
+                                        }}
+                                        className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                                      >
                                         <PencilLine className="h-3.5 w-3.5" />
                                       </button>
-                                      <button className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-green-200 bg-green-50 text-green-600 hover:bg-green-100">
+                                      <button
+                                        type="button"
+                                        onClick={(event) => {
+                                          event.stopPropagation();
+                                          openStudentDetails(student.id);
+                                        }}
+                                        className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-green-200 bg-green-50 text-green-600 hover:bg-green-100"
+                                      >
                                         <Eye className="h-3.5 w-3.5" />
                                       </button>
-                                      <button className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-red-200 bg-red-50 text-red-600 hover:bg-red-100">
+                                      <button
+                                        type="button"
+                                        onClick={(event) => {
+                                          event.stopPropagation();
+                                          void deleteStudent(student.id);
+                                        }}
+                                        className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-red-200 bg-red-50 text-red-600 hover:bg-red-100"
+                                      >
                                         <Trash2 className="h-3.5 w-3.5" />
                                       </button>
                                     </div>
@@ -2014,13 +2100,51 @@ export default function AdminPanelView() {
                                 <td className="px-4 py-4 text-slate-700">{professional.joinedAt}</td>
                                 <td className="px-4 py-4">
                                   <div className="flex justify-end gap-2">
-                                    <button className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-slate-50">
+                                    <button
+                                      type="button"
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                      }}
+                                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                                    >
                                       <PencilLine className="h-3.5 w-3.5" />
                                     </button>
-                                    <button className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-green-200 bg-green-50 text-green-600 hover:bg-green-100">
+                                    <button
+                                      type="button"
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                        openDetailModal({
+                                          title: "Professional Details",
+                                          subtitle: professional.email,
+                                          entries: [
+                                            { label: "Name", value: professional.name },
+                                            { label: "Email", value: professional.email },
+                                            { label: "Provider", value: professional.provider },
+                                            { label: "Specialization", value: professional.specialization || "-" },
+                                            { label: "Contact Number", value: professional.contactNumber || "-" },
+                                            { label: "Location", value: professional.location || "-" },
+                                            { label: "Certificates", value: String(professional.certificatesCount) },
+                                            { label: "Reviews", value: String(professional.reviewsCount) },
+                                            {
+                                              label: "Profile Boosted Until",
+                                              value: professional.profileBoostedUntil ? new Date(professional.profileBoostedUntil).toLocaleString() : "-",
+                                            },
+                                            { label: "Joined", value: professional.joinedAt },
+                                          ],
+                                        });
+                                      }}
+                                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-green-200 bg-green-50 text-green-600 hover:bg-green-100"
+                                    >
                                       <Eye className="h-3.5 w-3.5" />
                                     </button>
-                                    <button className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-red-200 bg-red-50 text-red-600 hover:bg-red-100">
+                                    <button
+                                      type="button"
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                        void deleteProfessional(professional.backendId);
+                                      }}
+                                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-red-200 bg-red-50 text-red-600 hover:bg-red-100"
+                                    >
                                       <Trash2 className="h-3.5 w-3.5" />
                                     </button>
                                   </div>

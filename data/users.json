@@ -22,5 +22,17 @@
     "approvalStatus": "pending",
     "provider": "credentials",
     "createdAt": "2026-04-15T10:03:59.578Z"
+  },
+  {
+    "id": "95637b47-30c2-4410-8797-0169770ae5bd",
+    "name": "Hasti Vasani",
+    "email": "hastivasani723@gmail.com",
+    "passwordHash": "$2a$10$7OSi88ObuWKm3iGr0NuCrus1o23M4i57gU2gR9G5LO6Fv9yy7XIyG",
+    "role": "student",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-15T10:42:35.329Z"
   }
 ]

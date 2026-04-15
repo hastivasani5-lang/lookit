@@ -77,7 +77,7 @@ export default function ProfessionalSidebar() {
       <button
         onClick={async () => {
           await fetch("/api/professionals/session", { method: "DELETE" }).catch(() => undefined);
-          await signOut({ callbackUrl: "/login" });
+          await signOut({ callbackUrl: "/" });
         }}
         className="mt-6 flex items-center gap-3 rounded-xl bg-[#eef5f3] px-4 py-3 text-sm font-medium text-[#2c5a48] shadow-[3px_3px_6px_#d0dbd6,-3px_-3px_6px_#ffffff] transition hover:shadow-inner"
       >

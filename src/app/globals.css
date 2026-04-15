@@ -6,6 +6,16 @@
 
 :root {
   --primary-color: #1ec28e;
+  --page-background: #f4f8f7;
+  --page-foreground: #0f172a;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
 }
 
 html,
@@ -21,6 +31,9 @@ body {
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: none;
   scrollbar-width: none;
+  background-color: var(--page-background);
+  color: var(--page-foreground);
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 html {

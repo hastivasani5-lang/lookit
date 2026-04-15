@@ -252,7 +252,7 @@ const Navbar = () => {
                         </div>
                       </div>
                       <button
-                        onClick={() => signOut({ callbackUrl: "/dashboard/students" })}
+                        onClick={() => signOut({ callbackUrl: "/" })}
                         className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 text-sm font-semibold text-white transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
                       >
                         <LogOut className="h-4 w-4" />

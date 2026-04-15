@@ -489,6 +489,9 @@ export default function AdminPanelView() {
   const [uploadsLoading, setUploadsLoading] = useState(false);
   const [adminProfileOpen, setAdminProfileOpen] = useState(false);
   const [globalSearchQuery, setGlobalSearchQuery] = useState("");
+  const [studentsCurrentPage, setStudentsCurrentPage] = useState(1);
+  const [professionalsCurrentPage, setProfessionalsCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   const selectedStudent = studentsList.find((student) => student.id === selectedStudentId) ?? null;
   const selectedStudentMeta = selectedStudent ? userDetailsById[selectedStudent.id] : null;
@@ -1864,112 +1867,205 @@ export default function AdminPanelView() {
                   {usersError ? <p className="px-4 py-3 text-sm text-red-600">{usersError}</p> : null}
 
                   {usersTab === "students" ? (
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead className="bg-[#f6fefb] text-left text-[#178c43]">
-                          <tr>
-                            <th className="px-5 py-3 font-semibold">Name</th>
-                            <th className="px-5 py-3 font-semibold">Role</th>
-                            <th className="px-5 py-3 font-semibold">Provider</th>
-                            <th className="px-5 py-3 font-semibold">Joined</th>
-                            <th className="px-5 py-3 font-semibold text-right">Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {studentsList.map((student) => {
-                            const isSelected = selectedStudentId === student.id;
-                            return (
-                              <tr
-                                key={student.id}
-                                onClick={() => openStudentDetails(student.id)}
-                                className={`cursor-pointer transition duration-150 ${
-                                  isSelected
-                                    ? "bg-[#e8f9ee] shadow-[2px_2px_8px_#d0dbd6,-2px_-2px_8px_#ffffff]"
-                                    : "bg-white hover:bg-[#f6fefb]"
-                                }`}
-                                style={{ borderRadius: '18px', marginBottom: '8px' }}
-                              >
-                                <td className="px-5 py-4 align-middle">
-                                  <div className="font-semibold text-slate-800">{student.name}</div>
-                                  <div className="text-xs text-slate-500">{student.email}</div>
-                                </td>
-                                <td className="px-5 py-4 align-middle">
-                                  <span className="rounded-full bg-[#eef7ff] px-3 py-1 text-xs font-semibold text-[#2563eb] shadow-sm">
-                                    {userDetailsById[student.id]?.role ?? "student"}
-                                  </span>
-                                </td>
-                                <td className="px-5 py-4 align-middle text-slate-700">{userDetailsById[student.id]?.provider ?? "credentials"}</td>
-                                <td className="px-5 py-4 align-middle text-slate-700">{student.joinedAt}</td>
-                                <td className="px-5 py-4 align-middle">
-                                  <div className="flex justify-end">
-                                    <span className="inline-flex items-center rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-4 py-1.5 text-xs font-semibold text-[#178c43] shadow-sm">
-                                      View
+                    <div>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead className="bg-[#f6fefb] text-left text-[#178c43]">
+                            <tr>
+                              <th className="px-5 py-3 font-semibold">MEMBER</th>
+                              <th className="px-5 py-3 font-semibold">NAME</th>
+                              <th className="px-5 py-3 font-semibold">MEMBERSHIP STATUS</th>
+                              <th className="px-5 py-3 font-semibold">MEMBER SINCE</th>
+                              <th className="px-5 py-3 font-semibold text-right">ACTION</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {studentsList.slice((studentsCurrentPage - 1) * ITEMS_PER_PAGE, studentsCurrentPage * ITEMS_PER_PAGE).map((student) => {
+                              const isSelected = selectedStudentId === student.id;
+                              return (
+                                <tr
+                                  key={student.id}
+                                  onClick={() => openStudentDetails(student.id)}
+                                  className={`cursor-pointer transition duration-150 border-b border-slate-100 ${
+                                    isSelected ? "bg-[#e8f9ee]" : "bg-white hover:bg-slate-50"
+                                  }`}
+                                >
+                                  <td className="px-5 py-4 align-middle">
+                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center text-white font-semibold">
+                                      {student.name.charAt(0).toUpperCase()}
+                                    </div>
+                                  </td>
+                                  <td className="px-5 py-4 align-middle">
+                                    <div className="font-semibold text-slate-800">{student.name}</div>
+                                    <div className="text-xs text-slate-500">{student.email}</div>
+                                  </td>
+                                  <td className="px-5 py-4 align-middle">
+                                    <span className="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+                                      Active
                                     </span>
+                                  </td>
+                                  <td className="px-5 py-4 align-middle text-slate-700">{student.joinedAt}</td>
+                                  <td className="px-5 py-4 align-middle">
+                                    <div className="flex justify-end gap-2">
+                                      <button className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-slate-50">
+                                        <PencilLine className="h-3.5 w-3.5" />
+                                      </button>
+                                      <button className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-green-200 bg-green-50 text-green-600 hover:bg-green-100">
+                                        <Eye className="h-3.5 w-3.5" />
+                                      </button>
+                                      <button className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-red-200 bg-red-50 text-red-600 hover:bg-red-100">
+                                        <Trash2 className="h-3.5 w-3.5" />
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                      <div className="flex items-center justify-between border-t border-slate-100 px-4 py-4">
+                        <div className="text-sm text-slate-600">
+                          Showing {Math.min((studentsCurrentPage - 1) * ITEMS_PER_PAGE + 1, studentsList.length)} to {Math.min(studentsCurrentPage * ITEMS_PER_PAGE, studentsList.length)} of {studentsList.length} entries
+                        </div>
+                        <div className="flex gap-2">
+                          {studentsCurrentPage > 1 && (
+                            <button
+                              onClick={() => setStudentsCurrentPage(p => p - 1)}
+                              className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50"
+                            >
+                              Previous
+                            </button>
+                          )}
+                          {Array.from({ length: Math.ceil(studentsList.length / ITEMS_PER_PAGE) }, (_, i) => i + 1).map((page) => (
+                            <button
+                              key={page}
+                              onClick={() => setStudentsCurrentPage(page)}
+                              className={`h-8 w-8 rounded-lg text-sm font-semibold transition ${
+                                page === studentsCurrentPage
+                                  ? "bg-[#6366f1] text-white"
+                                  : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                              }`}
+                            >
+                              {page}
+                            </button>
+                          ))}
+                          {studentsCurrentPage < Math.ceil(studentsList.length / ITEMS_PER_PAGE) && (
+                            <button
+                              onClick={() => setStudentsCurrentPage(p => p + 1)}
+                              className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50"
+                            >
+                              Next
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead className="bg-slate-50 text-left text-slate-500">
+                            <tr>
+                              <th className="px-4 py-3 font-semibold">MEMBER</th>
+                              <th className="px-4 py-3 font-semibold">NAME</th>
+                              <th className="px-4 py-3 font-semibold">SPECIALIZATION</th>
+                              <th className="px-4 py-3 font-semibold">MEMBER SINCE</th>
+                              <th className="px-4 py-3 text-right font-semibold">ACTION</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {professionalUsers.slice((professionalsCurrentPage - 1) * ITEMS_PER_PAGE, professionalsCurrentPage * ITEMS_PER_PAGE).map((professional) => (
+                              <tr
+                                key={professional.id}
+                                className="cursor-pointer border-b border-slate-100 bg-white transition hover:bg-slate-50"
+                                onClick={() =>
+                                  openDetailModal({
+                                    title: "Professional Details",
+                                    subtitle: professional.email,
+                                    entries: [
+                                      { label: "Name", value: professional.name },
+                                      { label: "Email", value: professional.email },
+                                      { label: "Provider", value: professional.provider },
+                                      { label: "Specialization", value: professional.specialization || "-" },
+                                      { label: "Contact Number", value: professional.contactNumber || "-" },
+                                      { label: "Location", value: professional.location || "-" },
+                                      { label: "Certificates", value: String(professional.certificatesCount) },
+                                      { label: "Reviews", value: String(professional.reviewsCount) },
+                                      {
+                                        label: "Profile Boosted Until",
+                                        value: professional.profileBoostedUntil ? new Date(professional.profileBoostedUntil).toLocaleString() : "-",
+                                      },
+                                      { label: "Joined", value: professional.joinedAt },
+                                    ],
+                                  })
+                                }
+                              >
+                                <td className="px-4 py-4">
+                                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-300 to-blue-400 flex items-center justify-center text-white font-semibold">
+                                    {professional.name.charAt(0).toUpperCase()}
+                                  </div>
+                                </td>
+                                <td className="px-4 py-4">
+                                  <div className="font-medium text-slate-800">{professional.name}</div>
+                                  <div className="text-xs text-slate-500">{professional.email}</div>
+                                </td>
+                                <td className="px-4 py-4 text-slate-700">{professional.specialization || "-"}</td>
+                                <td className="px-4 py-4 text-slate-700">{professional.joinedAt}</td>
+                                <td className="px-4 py-4">
+                                  <div className="flex justify-end gap-2">
+                                    <button className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-slate-50">
+                                      <PencilLine className="h-3.5 w-3.5" />
+                                    </button>
+                                    <button className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-green-200 bg-green-50 text-green-600 hover:bg-green-100">
+                                      <Eye className="h-3.5 w-3.5" />
+                                    </button>
+                                    <button className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-red-200 bg-red-50 text-red-600 hover:bg-red-100">
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </button>
                                   </div>
                                 </td>
                               </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead className="bg-slate-50 text-left text-slate-500">
-                          <tr>
-                            <th className="px-4 py-3">Name</th>
-                            <th className="px-4 py-3">Specialization</th>
-                            <th className="px-4 py-3">Provider</th>
-                            <th className="px-4 py-3">Joined</th>
-                            <th className="px-4 py-3 text-right">Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {professionalUsers.map((professional) => (
-                            <tr
-                              key={professional.id}
-                              className="cursor-pointer border-t border-slate-100 bg-white transition hover:bg-slate-50"
-                              onClick={() =>
-                                openDetailModal({
-                                  title: "Professional Details",
-                                  subtitle: professional.email,
-                                  entries: [
-                                    { label: "Name", value: professional.name },
-                                    { label: "Email", value: professional.email },
-                                    { label: "Provider", value: professional.provider },
-                                    { label: "Specialization", value: professional.specialization || "-" },
-                                    { label: "Contact Number", value: professional.contactNumber || "-" },
-                                    { label: "Location", value: professional.location || "-" },
-                                    { label: "Certificates", value: String(professional.certificatesCount) },
-                                    { label: "Reviews", value: String(professional.reviewsCount) },
-                                    {
-                                      label: "Profile Boosted Until",
-                                      value: professional.profileBoostedUntil ? new Date(professional.profileBoostedUntil).toLocaleString() : "-",
-                                    },
-                                    { label: "Joined", value: professional.joinedAt },
-                                  ],
-                                })
-                              }
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      <div className="flex items-center justify-between border-t border-slate-100 px-4 py-4">
+                        <div className="text-sm text-slate-600">
+                          Showing {Math.min((professionalsCurrentPage - 1) * ITEMS_PER_PAGE + 1, professionalUsers.length)} to {Math.min(professionalsCurrentPage * ITEMS_PER_PAGE, professionalUsers.length)} of {professionalUsers.length} entries
+                        </div>
+                        <div className="flex gap-2">
+                          {professionalsCurrentPage > 1 && (
+                            <button
+                              onClick={() => setProfessionalsCurrentPage(p => p - 1)}
+                              className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50"
                             >
-                              <td className="px-4 py-4">
-                                <div className="font-medium text-slate-800">{professional.name}</div>
-                                <div className="text-xs text-slate-500">{professional.email}</div>
-                              </td>
-                              <td className="px-4 py-4 text-slate-700">{professional.specialization || "-"}</td>
-                              <td className="px-4 py-4 text-slate-700">{professional.provider}</td>
-                              <td className="px-4 py-4 text-slate-700">{professional.joinedAt}</td>
-                              <td className="px-4 py-4">
-                                <div className="flex justify-end">
-                                  <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600">
-                                    View
-                                  </span>
-                                </div>
-                              </td>
-                            </tr>
+                              Previous
+                            </button>
+                          )}
+                          {Array.from({ length: Math.ceil(professionalUsers.length / ITEMS_PER_PAGE) }, (_, i) => i + 1).map((page) => (
+                            <button
+                              key={page}
+                              onClick={() => setProfessionalsCurrentPage(page)}
+                              className={`h-8 w-8 rounded-lg text-sm font-semibold transition ${
+                                page === professionalsCurrentPage
+                                  ? "bg-[#6366f1] text-white"
+                                  : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                              }`}
+                            >
+                              {page}
+                            </button>
                           ))}
-                        </tbody>
-                      </table>
+                          {professionalsCurrentPage < Math.ceil(professionalUsers.length / ITEMS_PER_PAGE) && (
+                            <button
+                              onClick={() => setProfessionalsCurrentPage(p => p + 1)}
+                              className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50"
+                            >
+                              Next
+                            </button>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>

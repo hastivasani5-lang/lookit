@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 
 import AOSInit from "@/components/AOSInit";
+import FloatingSettingsButton from "@/components/FloatingSettingsButton";
 import GuestLoginPrompt from "@/components/GuestLoginPrompt";
 import SessionProviderClient from "@/components/SessionProviderClient";
 import "./globals.css";
@@ -32,6 +33,7 @@ export default function RootLayout({
         <SessionProviderClient>
           <AOSInit />
           <GuestLoginPrompt />
+          <FloatingSettingsButton />
           {children}
         </SessionProviderClient>
       </body>

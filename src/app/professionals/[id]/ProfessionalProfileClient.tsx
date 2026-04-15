@@ -78,6 +78,18 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
   const [liveCategories, setLiveCategories] = useState<string[]>(categories);
   const [activeTab, setActiveTab] = useState<ContentTab>("videos");
   const [cartItemIds, setCartItemIds] = useState<string[]>([]);
+  // Professional profile details from localStorage
+  const [savedFirstName, setSavedFirstName] = useState("");
+  const [savedLastName, setSavedLastName] = useState("");
+  const [savedAddress, setSavedAddress] = useState("");
+  const [savedCity, setSavedCity] = useState("");
+  const [savedPostalCode, setSavedPostalCode] = useState("");
+  const [savedCountry, setSavedCountry] = useState("");
+  const [savedFacebook, setSavedFacebook] = useState("");
+  const [savedGoogle, setSavedGoogle] = useState("");
+  const [savedTwitter, setSavedTwitter] = useState("");
+  const [savedPinterest, setSavedPinterest] = useState("");
+  const [savedAboutMe, setSavedAboutMe] = useState("");
   const [reviews, setReviews] = useState<ReviewItem[]>([
     {
       id: 1,
@@ -144,6 +156,32 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
     return () => {
       isActive = false;
     };
+  }, [professional.id]);
+
+  // Load saved professional profile data from localStorage
+  useEffect(() => {
+    if (!professional.id) return;
+
+    const STORAGE_KEY = `professional-profile-${professional.id}`;
+    try {
+      const savedData = localStorage.getItem(STORAGE_KEY);
+      if (savedData) {
+        const parsed = JSON.parse(savedData) as Record<string, string>;
+        setSavedFirstName(parsed.firstName || "");
+        setSavedLastName(parsed.lastName || "");
+        setSavedAddress(parsed.address || "");
+        setSavedCity(parsed.city || "");
+        setSavedPostalCode(parsed.postalCode || "");
+        setSavedCountry(parsed.country || "");
+        setSavedFacebook(parsed.facebook || "");
+        setSavedGoogle(parsed.google || "");
+        setSavedTwitter(parsed.twitter || "");
+        setSavedPinterest(parsed.pinterest || "");
+        setSavedAboutMe(parsed.aboutMe || "");
+      }
+    } catch {
+      // Silently fail if localStorage read fails
+    }
   }, [professional.id]);
 
   const contentMap: Record<ContentTab, ContentItem[]> = useMemo(
@@ -329,6 +367,96 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
                 with personalized support plans, practical sessions, and measurable progress.
               </p>
             </div>
+
+            {(savedAboutMe || savedAddress || savedCity || savedCountry || savedFacebook || savedGoogle || savedTwitter || savedPinterest) && (
+              <div className="rounded-3xl border border-[#dbe8e4] bg-white p-6 shadow-sm md:p-8">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Professional Details</h2>
+
+                {/* Personal Details */}
+                {(savedFirstName || savedLastName || savedAddress || savedCity || savedPostalCode || savedCountry) && (
+                  <div className="mb-6">
+                    <h3 className="font-semibold text-gray-800 mb-3 text-sm">Contact Information</h3>
+                    <div className="grid gap-3 text-sm text-gray-600">
+                      {(savedFirstName || savedLastName) && (
+                        <p>
+                          <span className="font-medium text-gray-700">Name: </span>
+                          {[savedFirstName, savedLastName].filter(Boolean).join(" ")}
+                        </p>
+                      )}
+                      {savedAddress && (
+                        <p>
+                          <span className="font-medium text-gray-700">Address: </span>
+                          {savedAddress}
+                        </p>
+                      )}
+                      {(savedCity || savedPostalCode || savedCountry) && (
+                        <p>
+                          <span className="font-medium text-gray-700">Location: </span>
+                          {[savedCity, savedPostalCode, savedCountry].filter(Boolean).join(", ")}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* About Me */}
+                {savedAboutMe && (
+                  <div className="mb-6 pb-6 border-b border-gray-100">
+                    <h3 className="font-semibold text-gray-800 mb-3 text-sm">About</h3>
+                    <p className="text-sm leading-6 text-gray-600 whitespace-pre-wrap">{savedAboutMe}</p>
+                  </div>
+                )}
+
+                {/* Social Links */}
+                {(savedFacebook || savedGoogle || savedTwitter || savedPinterest) && (
+                  <div>
+                    <h3 className="font-semibold text-gray-800 mb-3 text-sm">Connect</h3>
+                    <div className="flex flex-wrap gap-3">
+                      {savedFacebook && (
+                        <a
+                          href={savedFacebook}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 rounded-full bg-[#f0f7f5] px-4 py-2 text-sm font-medium text-[#1ec28e] transition hover:bg-[#1ec28e] hover:text-white"
+                        >
+                          Facebook
+                        </a>
+                      )}
+                      {savedGoogle && (
+                        <a
+                          href={savedGoogle}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 rounded-full bg-[#f0f7f5] px-4 py-2 text-sm font-medium text-[#1ec28e] transition hover:bg-[#1ec28e] hover:text-white"
+                        >
+                          Google
+                        </a>
+                      )}
+                      {savedTwitter && (
+                        <a
+                          href={savedTwitter}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 rounded-full bg-[#f0f7f5] px-4 py-2 text-sm font-medium text-[#1ec28e] transition hover:bg-[#1ec28e] hover:text-white"
+                        >
+                          Twitter
+                        </a>
+                      )}
+                      {savedPinterest && (
+                        <a
+                          href={savedPinterest}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 rounded-full bg-[#f0f7f5] px-4 py-2 text-sm font-medium text-[#1ec28e] transition hover:bg-[#1ec28e] hover:text-white"
+                        >
+                          Pinterest
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             <section className="rounded-3xl border border-[#dbe8e4] bg-white p-5 shadow-sm md:p-6" data-aos="fade-up">
               <div className="flex flex-wrap gap-2 border-b border-gray-200 pb-4">

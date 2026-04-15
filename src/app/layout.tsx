@@ -4,6 +4,7 @@ import AOSInit from "@/components/AOSInit";
 import FloatingSettingsButton from "@/components/FloatingSettingsButton";
 import GuestLoginPrompt from "@/components/GuestLoginPrompt";
 import SessionProviderClient from "@/components/SessionProviderClient";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -30,12 +31,14 @@ export default function RootLayout({
         <link rel="icon" href="/logo.png" />
       </head>
       <body className="min-h-full flex flex-col">
-        <SessionProviderClient>
-          <AOSInit />
-          <GuestLoginPrompt />
-          <FloatingSettingsButton />
-          {children}
-        </SessionProviderClient>
+        <ThemeProvider>
+          <SessionProviderClient>
+            <AOSInit />
+            <GuestLoginPrompt />
+            <FloatingSettingsButton />
+            {children}
+          </SessionProviderClient>
+        </ThemeProvider>
       </body>
     </html>
   );

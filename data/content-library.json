@@ -48,6 +48,26 @@
       "categories": [
         "Plan Book"
       ]
+    },
+    "bfba66da-a920-49cf-b90f-fc7ce1222d3a": {
+      "books": [
+        {
+          "name": "React js",
+          "category": "Design",
+          "mrp": "100.00",
+          "imageUrl": "/uploads/books/bfba66da-a920-49cf-b90f-fc7ce1222d3a-1776243428143-zvsn4m.png",
+          "url": "",
+          "source": "file",
+          "fileName": "2.React Js.pdf",
+          "sizeLabel": "1.4 MB",
+          "id": "book-1776243428146-fgony8",
+          "createdAt": "2026-04-15T08:57:08.146Z"
+        }
+      ],
+      "videos": [],
+      "categories": [
+        "Design"
+      ]
     }
   },
   "students": {

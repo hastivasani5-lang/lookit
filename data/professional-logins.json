@@ -1,10 +1,5 @@
-﻿{
-    "professionalIds":  [
-                            "ab43fff4-0e69-4b55-96d3-dceca99a244b",
-                            "22b40c83-c506-4606-a092-0131d7ba13a6",
-                            "11f40abe-ac32-4e33-8281-c7cd20d74dc0",
-                            "e8e23652-faf2-4d88-b5a4-c0078672885e",
-                            "bab9bf38-a318-4580-87d8-8f3a0f56b76e",
-                            "6df879d9-2948-4731-a01d-9f603e6fd1f7"
-                        ]
+{
+  "professionalIds": [
+    "bfba66da-a920-49cf-b90f-fc7ce1222d3a"
+  ]
 }

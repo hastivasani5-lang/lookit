@@ -6,6 +6,7 @@
 
 :root {
   --primary-color: #1ec28e;
+  --primary-rgb: 30, 194, 142;
   --page-background: #f4f8f7;
   --page-foreground: #0f172a;
 }

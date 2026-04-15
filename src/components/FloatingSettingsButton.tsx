@@ -4,13 +4,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { ChevronLeft, Palette, RefreshCcw, Settings, SunMoon, Type, X } from "lucide-react";
-
-type Direction = "ltr" | "rtl";
-type ThemeMode = "light" | "dark";
-
-const STORAGE_KEY = "lookit-settings";
-const DEFAULT_PRIMARY = "#6c63ff";
-const DEFAULT_BACKGROUND = "#0f172a";
+import { useTheme } from "@/components/ThemeProvider";
 
 const demoLinks = [
   { label: "View Demo", href: "/" },
@@ -18,80 +12,12 @@ const demoLinks = [
   { label: "Our Portfolio", href: "/pages" },
 ];
 
-const colorPresets = ["#6c63ff", "#1ec28e", "#f97316", "#ec4899"];
-
-function readStoredSettings() {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-
-    if (!raw) {
-      return null;
-    }
-
-    return JSON.parse(raw) as {
-      direction?: Direction;
-      themeMode?: ThemeMode;
-      primaryColor?: string;
-      backgroundColor?: string;
-    };
-  } catch {
-    return null;
-  }
-}
+const colorPresets = ["#1ec28e", "#6c63ff", "#f97316", "#ec4899"];
 
 export default function FloatingSettingsButton() {
+  const { settings, setThemeMode, setPrimaryColor, setBackgroundColor, setDirection, resetToDefaults, isLoaded } =
+    useTheme();
   const [isOpen, setIsOpen] = useState(false);
-  const [direction, setDirection] = useState<Direction>("ltr");
-  const [themeMode, setThemeMode] = useState<ThemeMode>("light");
-  const [primaryColor, setPrimaryColor] = useState(DEFAULT_PRIMARY);
-  const [backgroundColor, setBackgroundColor] = useState(DEFAULT_BACKGROUND);
-  const [hasInitialized, setHasInitialized] = useState(false);
-
-  useEffect(() => {
-    const storedSettings = readStoredSettings();
-
-    if (storedSettings) {
-      if (storedSettings.direction) {
-        setDirection(storedSettings.direction);
-      }
-
-      if (storedSettings.themeMode) {
-        setThemeMode(storedSettings.themeMode);
-      }
-
-      if (storedSettings.primaryColor) {
-        setPrimaryColor(storedSettings.primaryColor);
-      }
-
-      if (storedSettings.backgroundColor) {
-        setBackgroundColor(storedSettings.backgroundColor);
-      }
-    }
-
-    setHasInitialized(true);
-  }, []);
-
-  useEffect(() => {
-    if (!hasInitialized) {
-      return;
-    }
-
-    const nextSettings = { direction, themeMode, primaryColor, backgroundColor };
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextSettings));
-
-    document.documentElement.setAttribute("dir", direction);
-    document.documentElement.dataset.theme = themeMode;
-    document.documentElement.style.setProperty("--primary-color", primaryColor);
-    document.documentElement.style.setProperty("--page-background", themeMode === "dark" ? backgroundColor : "#f4f8f7");
-    document.documentElement.style.setProperty("--page-foreground", themeMode === "dark" ? "#c7ced8" : "#0f172a");
-    document.body.style.backgroundColor = themeMode === "dark" ? backgroundColor : "#f4f8f7";
-    document.body.style.color = themeMode === "dark" ? "#c7ced8" : "#0f172a";
-    document.body.style.direction = direction;
-  }, [backgroundColor, direction, hasInitialized, primaryColor, themeMode]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -105,28 +31,6 @@ export default function FloatingSettingsButton() {
       document.body.style.overflow = previousOverflow;
     };
   }, [isOpen]);
-
-  const resetAllStyles = () => {
-    const nextDirection: Direction = "ltr";
-    const nextTheme: ThemeMode = "light";
-    const nextPrimary = DEFAULT_PRIMARY;
-    const nextBackground = DEFAULT_BACKGROUND;
-
-    setDirection(nextDirection);
-    setThemeMode(nextTheme);
-    setPrimaryColor(nextPrimary);
-    setBackgroundColor(nextBackground);
-
-    window.localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({
-        direction: nextDirection,
-        themeMode: nextTheme,
-        primaryColor: nextPrimary,
-        backgroundColor: nextBackground,
-      }),
-    );
-  };
 
   return (
     <>
@@ -201,14 +105,14 @@ export default function FloatingSettingsButton() {
               <div className="space-y-4 px-5 py-4">
                 <ToggleRow
                   label="LTR Version"
-                  active={direction === "ltr"}
+                  active={settings.direction === "ltr"}
                   onToggle={() => setDirection("ltr")}
                   accentColor="#6c63ff"
                   icon={<Type className="h-4 w-4" />}
                 />
                 <ToggleRow
                   label="RTL Version"
-                  active={direction === "rtl"}
+                  active={settings.direction === "rtl"}
                   onToggle={() => setDirection("rtl")}
                   accentColor="#6c63ff"
                   icon={<ChevronLeft className="h-4 w-4" />}
@@ -223,14 +127,14 @@ export default function FloatingSettingsButton() {
               <div className="space-y-4 px-5 py-4">
                 <ToggleRow
                   label="Light Theme"
-                  active={themeMode === "light"}
+                  active={settings.themeMode === "light"}
                   onToggle={() => setThemeMode("light")}
                   accentColor="#6c63ff"
                   icon={<SunMoon className="h-4 w-4" />}
                 />
                 <ToggleRow
                   label="Dark Theme"
-                  active={themeMode === "dark"}
+                  active={settings.themeMode === "dark"}
                   onToggle={() => setThemeMode("dark")}
                   accentColor="#6c63ff"
                   icon={<Palette className="h-4 w-4" />}
@@ -245,13 +149,13 @@ export default function FloatingSettingsButton() {
               <div className="space-y-4 px-5 py-4">
                 <ColorRow
                   label="Primary Color"
-                  value={primaryColor}
+                  value={settings.primaryColor}
                   onChange={setPrimaryColor}
                   presets={colorPresets}
                 />
                 <ColorRow
                   label="Background Color"
-                  value={backgroundColor}
+                  value={settings.backgroundColor}
                   onChange={setBackgroundColor}
                   presets={["#0f172a", "#111827", "#1f2937", "#334155"]}
                 />
@@ -265,7 +169,7 @@ export default function FloatingSettingsButton() {
               <div className="px-5 py-5">
                 <button
                   type="button"
-                  onClick={resetAllStyles}
+                  onClick={resetToDefaults}
                   className="flex h-14 w-full items-center justify-center rounded-2xl bg-[#f43f5e] text-base font-semibold text-white transition hover:bg-[#e11d48]"
                 >
                   <RefreshCcw className="mr-2 h-4 w-4" />

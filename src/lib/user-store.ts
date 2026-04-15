@@ -1,6 +1,8 @@
 import { randomUUID } from "crypto";
 import { promises as fs } from "fs";
 import { hash } from "bcryptjs";
+import { execFile } from "child_process";
+import { promisify } from "util";
 import type { AppUser, ProfessionalApprovalStatus, ProfileUpgradeTier, UserRole } from "@/types/auth";
 import {
   appendAdminApprovalNotification,
@@ -12,6 +14,7 @@ import { getDataDir, getDataFile } from "@/lib/storage-path";
 
 const DATA_DIR = getDataDir();
 const USERS_FILE = getDataFile("users.json");
+const execFileAsync = promisify(execFile);
 
 type UserRow = {
   id: string;
@@ -207,6 +210,51 @@ function mapRowToUser(row: UserRow): AppUser {
   };
 }
 
+async function upsertFallbackUserToPostgres(user: AppUser) {
+  if (!isPostgresConfigured()) {
+    return;
+  }
+
+  await ensureDbSchema();
+  const db = getDbPool();
+
+  await db.query(
+    `
+      INSERT INTO users (
+        id, name, email, password_hash, role, image, specialization, contact_number, location,
+        certificates, reviews, profile_boosted_until, approval_status, approval_reviewed_by,
+        approval_reviewed_at, approval_note, profile_upgrade_tier, provider, created_at
+      )
+      VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9,
+        $10, $11, $12, $13, $14, $15, $16, $17, $18, $19
+      )
+      ON CONFLICT (email) DO NOTHING
+    `,
+    [
+      user.id,
+      user.name,
+      user.email.toLowerCase().trim(),
+      user.passwordHash ?? null,
+      user.role,
+      user.image ?? null,
+      user.specialization ?? null,
+      user.contactNumber ?? null,
+      user.location ?? null,
+      user.certificates ?? [],
+      user.reviews ?? [],
+      user.profileBoostedUntil ?? null,
+      user.approvalStatus ?? getDefaultApprovalStatus(user.role),
+      user.approvalReviewedBy ?? null,
+      user.approvalReviewedAt ?? null,
+      user.approvalNote ?? null,
+      user.profileUpgradeTier ?? null,
+      user.provider,
+      user.createdAt,
+    ],
+  );
+}
+
 function getDefaultApprovalStatus(role: UserRole): ProfessionalApprovalStatus {
   return role === "professional" ? "pending" : "approved";
 }
@@ -249,10 +297,57 @@ async function readUsers(): Promise<AppUser[]> {
 
   try {
     const parsed = JSON.parse(raw);
-    return normalizeParsedUsers(parsed);
+    const users = normalizeParsedUsers(parsed);
+    return recoverUsersAfterPullIfNeeded(users);
   } catch {
     return [];
   }
+}
+
+async function readUsersFromGitRef(ref: string): Promise<AppUser[]> {
+  try {
+    const { stdout } = await execFileAsync(
+      "git",
+      ["show", `${ref}:data/users.json`],
+      {
+        cwd: process.cwd(),
+        maxBuffer: 1024 * 1024 * 4,
+      },
+    );
+
+    return normalizeParsedUsers(JSON.parse(stdout));
+  } catch {
+    return [];
+  }
+}
+
+async function recoverUsersAfterPullIfNeeded(currentUsers: AppUser[]) {
+  const isLocalDev = !process.env.VERCEL;
+  if (!isLocalDev || currentUsers.length > 1) {
+    return currentUsers;
+  }
+
+  const recoveredFromOrigHead = await readUsersFromGitRef("ORIG_HEAD");
+  const recoveredFromHeadReflog = recoveredFromOrigHead.length > 0 ? [] : await readUsersFromGitRef("HEAD@{1}");
+  const recoveredUsers = recoveredFromOrigHead.length > 0 ? recoveredFromOrigHead : recoveredFromHeadReflog;
+
+  if (recoveredUsers.length === 0) {
+    return currentUsers;
+  }
+
+  const mergedByEmail = new Map<string, AppUser>();
+
+  for (const user of [...recoveredUsers, ...currentUsers]) {
+    mergedByEmail.set(user.email.toLowerCase(), user);
+  }
+
+  const mergedUsers = Array.from(mergedByEmail.values());
+
+  if (mergedUsers.length > currentUsers.length) {
+    await writeUsers(mergedUsers);
+  }
+
+  return mergedUsers;
 }
 
 async function writeUsers(users: AppUser[]) {
@@ -274,11 +369,19 @@ export async function getUserByEmail(email: string) {
     [email.toLowerCase().trim()],
   );
 
-  if (result.rows.length === 0) {
+  if (result.rows.length > 0) {
+    return mapRowToUser(result.rows[0]);
+  }
+
+  const fallbackUsers = await readUsers();
+  const fallbackUser = fallbackUsers.find((user) => user.email.toLowerCase() === email.toLowerCase().trim());
+
+  if (!fallbackUser) {
     return null;
   }
 
-  return mapRowToUser(result.rows[0]);
+  await upsertFallbackUserToPostgres(fallbackUser);
+  return fallbackUser;
 }
 
 export async function getUserById(id: string) {
@@ -293,11 +396,19 @@ export async function getUserById(id: string) {
 
   const result = await db.query<UserRow>(`SELECT * FROM users WHERE id = $1 LIMIT 1`, [id]);
 
-  if (result.rows.length === 0) {
+  if (result.rows.length > 0) {
+    return mapRowToUser(result.rows[0]);
+  }
+
+  const fallbackUsers = await readUsers();
+  const fallbackUser = fallbackUsers.find((user) => user.id === id);
+
+  if (!fallbackUser) {
     return null;
   }
 
-  return mapRowToUser(result.rows[0]);
+  await upsertFallbackUserToPostgres(fallbackUser);
+  return fallbackUser;
 }
 
 export async function getAllUsers() {
@@ -311,7 +422,22 @@ export async function getAllUsers() {
   const db = getDbPool();
 
   const result = await db.query<UserRow>(`SELECT * FROM users ORDER BY created_at DESC`);
-  return result.rows.map(mapRowToUser);
+  const dbUsers = result.rows.map(mapRowToUser);
+  const fallbackUsers = await readUsers();
+
+  if (fallbackUsers.length === 0) {
+    return dbUsers;
+  }
+
+  const mergedByEmail = new Map<string, AppUser>();
+
+  for (const user of [...fallbackUsers, ...dbUsers]) {
+    mergedByEmail.set(user.email.toLowerCase(), user);
+  }
+
+  return Array.from(mergedByEmail.values()).sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
 }
 
 export async function getProfessionalUsers() {

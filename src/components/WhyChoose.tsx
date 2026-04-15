@@ -1,8 +1,121 @@
 "use client";
 
 import Image from "next/image";
+import { BookOpen, Globe, GraduationCap, Users } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+type TimelineStat = {
+  id: string;
+  label: string;
+  value: number;
+  icon: React.ReactNode;
+};
 
 const WhyChoose = () => {
+  const timelineRef = useRef<HTMLDivElement | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const [isTimelineInView, setIsTimelineInView] = useState(false);
+
+  const stats: TimelineStat[] = useMemo(
+    () => [
+      {
+        id: "learners",
+        label: "Total Learners",
+        value: 2569,
+        icon: <Users className="h-5 w-5" />,
+      },
+      {
+        id: "graduates",
+        label: "Total Graduates",
+        value: 1765,
+        icon: <GraduationCap className="h-5 w-5" />,
+      },
+      {
+        id: "countries",
+        label: "Total Countries",
+        value: 846,
+        icon: <Globe className="h-5 w-5" />,
+      },
+      {
+        id: "courses",
+        label: "Total Courses",
+        value: 7253,
+        icon: <BookOpen className="h-5 w-5" />,
+      },
+    ],
+    [],
+  );
+
+  const [counterValues, setCounterValues] = useState<Record<string, number>>(() =>
+    stats.reduce((acc, item) => {
+      acc[item.id] = 0;
+      return acc;
+    }, {} as Record<string, number>),
+  );
+
+  useEffect(() => {
+    const observedElement = timelineRef.current;
+    if (!observedElement) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsTimelineInView(entry.isIntersecting);
+      },
+      { threshold: 0.35 },
+    );
+
+    observer.observe(observedElement);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+
+    if (!isTimelineInView) {
+      setCounterValues(
+        stats.reduce((acc, item) => {
+          acc[item.id] = 0;
+          return acc;
+        }, {} as Record<string, number>),
+      );
+      return;
+    }
+
+    const startTimestamp = performance.now();
+    const duration = 1400;
+
+    const animate = (timestamp: number) => {
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+
+      setCounterValues(
+        stats.reduce((acc, item) => {
+          acc[item.id] = Math.floor(item.value * progress);
+          return acc;
+        }, {} as Record<string, number>),
+      );
+
+      if (progress < 1) {
+        animationFrameRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    animationFrameRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [isTimelineInView, stats]);
+
   return (
     <section className="relative overflow-hidden bg-[#eef5f3] px-4 py-12 sm:py-16 md:px-8 lg:px-16 lg:py-20">
       <div className="absolute right-4 top-6 hidden animate-float-slow sm:right-8 sm:top-8 md:block lg:right-10 lg:top-10">
@@ -137,6 +250,31 @@ const WhyChoose = () => {
 
         </div>
 
+      </div>
+
+      <div ref={timelineRef} className="relative mt-10 -mx-4 overflow-hidden bg-[#e9e7fb] py-16 sm:mt-14 sm:-mx-8 sm:py-20 md:-mx-8 lg:mt-16 lg:-mx-16 lg:py-24">
+        <div className="pointer-events-none absolute inset-0 opacity-40">
+          <div className="absolute left-[6%] top-[10%] h-5 w-5 rounded-full bg-[#d9d7f5]" />
+          <div className="absolute right-[12%] top-[16%] h-14 w-14 rounded-full bg-[#d9d7f5]" />
+          <div className="absolute left-[48%] top-[48%] h-28 w-28 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#d9d7f5]" />
+          <div className="absolute right-[6%] bottom-[18%] h-5 w-5 rounded-full bg-[#d9d7f5]" />
+        </div>
+
+        <div className="relative mx-auto max-w-[1280px] px-5 sm:px-8 lg:px-10">
+          <div className="grid grid-cols-1 gap-10 text-center sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+            {stats.map((stat) => (
+              <article key={stat.id} className="flex flex-col items-center justify-center">
+                <div className="mb-4 flex h-[64px] w-[64px] items-center justify-center rounded-[10px] bg-[#6366f1] text-white shadow-[0_8px_18px_rgba(99,102,241,0.24)]">
+                  {stat.icon}
+                </div>
+                <h3 className="text-[24px] font-semibold leading-tight text-[#21254a] md:text-[28px]">{stat.label}</h3>
+                <p className="mt-2 text-[42px] font-bold leading-none text-[#1d2240] md:text-[50px]">
+                  {counterValues[stat.id] ?? 0}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );

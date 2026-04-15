@@ -25,7 +25,7 @@ export default function ProfessionalSidebar() {
     pathname.startsWith("/dashboard/teachers/videos");
 
   return (
-    <aside className="flex flex-col rounded-[24px] bg-[#eef5f3] p-5 shadow-[12px_12px_24px_#d0dbd6,-12px_-12px_24px_#ffffff] lg:sticky lg:top-28 lg:h-[calc(100vh-8rem)]">
+    <aside className="flex h-full flex-col rounded-[24px] bg-[#eef5f3] p-5 shadow-[12px_12px_24px_#d0dbd6,-12px_-12px_24px_#ffffff] lg:sticky lg:top-3 lg:h-[calc(100vh-2.5rem)]">
       <div className="flex items-center gap-3 px-2 pb-6">
         <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#1ec28e]/10 text-[#1ec28e]">
           <div className="h-5 w-5 rounded-full border-4 border-current border-r-transparent" />

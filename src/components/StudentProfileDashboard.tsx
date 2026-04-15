@@ -230,8 +230,8 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
   };
 
   return (
-    <section className="mx-auto w-full max-w-7xl">
-      <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+    <section className="h-full w-full p-3 md:p-4">
+      <div className="grid h-full gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
         <aside className="rounded-2xl border border-[#dbe8e4] bg-white shadow-[0_20px_40px_rgba(15,23,42,0.08)]">
           <div className="border-b border-[#e8eeec] px-6 py-6 text-center">
             <div className="mx-auto mb-4 grid h-26 w-26 place-items-center overflow-hidden rounded-full border-4 border-[#e9f8f2] bg-[#eef6f3] text-3xl font-bold text-[#2c5a48]">
@@ -258,23 +258,6 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
             <p className="flex items-center gap-2"><Globe className="h-4 w-4 text-primary" />{editWebsite}</p>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 border-t border-[#e8eeec] px-5 py-4">
-            <button
-              type="button"
-              onClick={() => setActiveTab("courses")}
-              className="rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-white transition hover:bg-[#18ab7d]"
-            >
-              Chat
-            </button>
-            <button
-              type="button"
-              onClick={() => window.location.assign("/contact")}
-              className="rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-white transition hover:bg-[#18ab7d]"
-            >
-              Contact Me
-            </button>
-          </div>
-
           <div className="px-5 pb-5">
             <button
               type="button"
@@ -288,7 +271,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
           </div>
         </aside>
 
-        <div className="space-y-6">
+        <div className="h-full overflow-y-auto space-y-6 pr-1">
           <article className="rounded-2xl border border-[#dbe8e4] bg-white p-5 shadow-[0_20px_40px_rgba(15,23,42,0.08)] md:p-6">
             <div className="flex flex-wrap items-center gap-2">
               {tabItems.map((tab) => (

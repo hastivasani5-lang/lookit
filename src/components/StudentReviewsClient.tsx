@@ -224,7 +224,6 @@ export default function StudentReviewsClient({ professionals }: StudentReviewsCl
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-sm font-semibold text-slate-900">{entry.professionalName}</p>
-                    <p className="text-xs text-slate-500">{entry.studentName}</p>
                   </div>
                   <span className="inline-flex items-center gap-1 rounded-full bg-[#e8f9ee] px-3 py-1 text-xs font-semibold text-[#178c43]">
                     <Star className="h-3.5 w-3.5" />

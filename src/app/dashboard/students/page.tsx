@@ -1,4 +1,5 @@
 "use client";
+import dynamic from "next/dynamic";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Features from "@/components/Features";
@@ -12,6 +13,10 @@ import Testimonials from "@/components/Testimonials";
 import BlogSection from "@/components/BlogSection";
 import Footer from "@/components/Footer";
 
+const PreciousFeaturesSection = dynamic(() => import("@/components/PreciousFeaturesSection"), {
+  ssr: false,
+});
+
 export default function StudentsPage() {
   return (
     <>
@@ -24,6 +29,7 @@ export default function StudentsPage() {
         <Courses />
         <WhyChoose />
         <FeaturedCourse />
+        <PreciousFeaturesSection />
         <Instructors />
         <Testimonials />
         <BlogSection />

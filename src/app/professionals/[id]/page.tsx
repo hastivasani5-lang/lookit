@@ -39,7 +39,7 @@ export default async function ProfessionalProfilePage({ params }: ProfessionalPr
 
   const user = await getUserById(id);
 
-  if (!user || user.role !== "professional" || user.approvalStatus !== "approved") {
+  if (!user || user.role !== "professional" || user.approvalStatus === "rejected") {
     notFound();
   }
 

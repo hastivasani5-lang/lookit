@@ -13,7 +13,7 @@ export async function GET() {
   if (session?.user?.id && session.user.role === "professional") {
     const professional = await getUserById(session.user.id);
 
-    if (!professional || professional.role !== "professional" || professional.approvalStatus !== "approved") {
+    if (!professional || professional.role !== "professional" || professional.approvalStatus === "rejected") {
       return NextResponse.json({ professionals: [] });
     }
 
@@ -23,9 +23,11 @@ export async function GET() {
   }
 
   const professionals = await getProfessionalUsers();
-  const approvedProfessionals = professionals.filter((user) => user.role === "professional" && user.approvalStatus === "approved");
+  const visibleProfessionals = professionals.filter(
+    (user) => user.role === "professional" && user.approvalStatus !== "rejected",
+  );
 
   return NextResponse.json({
-    professionals: approvedProfessionals.map((user, index) => buildPublicProfessional(user, index)),
+    professionals: visibleProfessionals.map((user, index) => buildPublicProfessional(user, index)),
   });
 }

@@ -1264,8 +1264,8 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   }
 
   return (
-    <main className="h-screen overflow-hidden bg-[#eef5f3] p-3 sm:p-4 md:p-6">
-      <div className="mx-auto grid h-[calc(100vh-1.5rem)] max-w-[1600px] grid-cols-1 overflow-hidden rounded-[28px] bg-[#eef5f3] shadow-[20px_20px_40px_#d0dbd6,-20px_-20px_40px_#ffffff] md:h-[calc(100vh-2rem)] lg:h-[calc(100vh-3rem)] lg:grid-cols-[260px_minmax(0,1fr)]">
+    <main className="h-screen w-full overflow-hidden bg-[#eef5f3]">
+      <div className="grid h-full w-full grid-cols-1 overflow-hidden bg-[#eef5f3] shadow-[20px_20px_40px_#d0dbd6,-20px_-20px_40px_#ffffff] lg:grid-cols-[260px_minmax(0,1fr)]">
         <aside className="flex flex-col border-b border-slate-200/70 bg-[#eef5f3] px-5 py-6 lg:sticky lg:top-0 lg:h-full lg:border-b-0 lg:border-r">
           <div className="flex items-center gap-3 px-2 pb-6">
             <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#1ec28e]/10 text-[#1ec28e]">
@@ -1328,7 +1328,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
           </button>
         </aside>
 
-    <section className="h-full overflow-y-auto bg-[#eef5f3] px-4 py-5 md:px-6 lg:px-8">
+    <section className="h-full overflow-y-auto bg-[#eef5f3] px-3 py-4 md:px-4 lg:px-5">
       <div className="flex flex-col gap-4 rounded-[24px] bg-[#eef5f3] px-5 py-4 shadow-[12px_12px_24px_#d0dbd6,-12px_-12px_24px_#ffffff] md:flex-row md:items-center md:justify-between">
             <div>
               <h2 className="text-xl font-semibold text-slate-900">Welcome!</h2>

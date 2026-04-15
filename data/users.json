@@ -272,5 +272,17 @@
     "approvalReviewedAt": "2026-04-13T05:51:52.247Z",
     "provider": "credentials",
     "createdAt": "2026-04-07T03:44:59.206Z"
+  },
+  {
+    "id": "6df879d9-2948-4731-a01d-9f603e6fd1f7",
+    "name": "yug",
+    "email": "yug@gmail.com",
+    "passwordHash": "$2a$10$7PW8NSihO9S6lQQjghT8Ne5g8vn4kSgZ3V3Aahcw5sFMB1hg86rYC",
+    "role": "professional",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "pending",
+    "provider": "credentials",
+    "createdAt": "2026-04-15T06:39:40.111Z"
   }
 ]

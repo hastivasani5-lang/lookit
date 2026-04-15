@@ -4,8 +4,6 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Bell, BookOpen, Clock3, RefreshCcw, Video, Users } from "lucide-react";
 
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import ProfessionalSidebar from "@/components/ProfessionalSidebar";
 import { Suspense } from "react";
 
@@ -36,7 +34,9 @@ function formatDate(value: string) {
 }
 
 export default function TeacherPurchasesPage() {
+  const ITEMS_PER_PAGE = 10;
   const [purchases, setPurchases] = useState<PurchaseRow[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [uniqueStudentsCount, setUniqueStudentsCount] = useState(0);
   const [totalPurchases, setTotalPurchases] = useState(0);
   const [booksCount, setBooksCount] = useState(0);
@@ -87,6 +87,13 @@ export default function TeacherPurchasesPage() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [purchases]);
+
+  const totalPages = Math.max(1, Math.ceil(purchases.length / ITEMS_PER_PAGE));
+  const paginatedPurchases = purchases.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
   const summaryCards = useMemo(
     () => [
       { label: "Students", value: uniqueStudentsCount, icon: Users, tone: "text-[#178c43]" },
@@ -99,14 +106,13 @@ export default function TeacherPurchasesPage() {
 
   return (
     <>
-      <Navbar />
-      <main className="min-h-screen bg-[#eef5f3] px-3 pb-12 pt-28 sm:px-4 md:px-6 lg:px-8">
-        <section className="mx-auto grid w-full max-w-[1600px] gap-5 lg:grid-cols-[260px_minmax(0,1fr)]">
+      <main className="h-screen w-full overflow-hidden bg-[#eef5f3]">
+        <section className="grid h-full w-full gap-4 p-3 md:p-4 lg:grid-cols-[260px_minmax(0,1fr)] lg:p-5">
           <Suspense>
             <ProfessionalSidebar />
           </Suspense>
 
-          <div className="rounded-[28px] bg-[#eef5f3] p-4 shadow-[20px_20px_40px_#d0dbd6,-20px_-20px_40px_#ffffff] md:p-6">
+          <div className="h-full overflow-y-auto rounded-[24px] bg-[#eef5f3] p-4 shadow-[20px_20px_40px_#d0dbd6,-20px_-20px_40px_#ffffff] md:p-6">
           <div className="flex flex-col gap-4 rounded-[24px] bg-[#eef5f3] px-5 py-4 shadow-[12px_12px_24px_#d0dbd6,-12px_-12px_24px_#ffffff] md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#2c5a48]">Professional Dashboard</p>
@@ -190,7 +196,7 @@ export default function TeacherPurchasesPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {purchases.map((purchase) => (
+                    {paginatedPurchases.map((purchase) => (
                       <tr key={purchase.id} className="border-t border-slate-100 text-slate-700">
                         <td className="px-4 py-3 font-medium text-slate-900">{purchase.studentName}</td>
                         <td className="px-4 py-3">{purchase.itemTitle}</td>
@@ -212,6 +218,35 @@ export default function TeacherPurchasesPage() {
                 </table>
               </div>
             )}
+
+            {!loading && purchases.length > ITEMS_PER_PAGE ? (
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                <p className="text-xs text-slate-500">
+                  Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, purchases.length)} of {purchases.length}
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                    className="rounded-full bg-white px-4 py-2 text-xs font-semibold text-[#2c5a48] shadow-[3px_3px_8px_#d0dbd6,-3px_-3px_8px_#ffffff] transition enabled:hover:shadow-inner disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-xs font-semibold text-slate-600">
+                    Page {currentPage} / {totalPages}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                    className="rounded-full bg-white px-4 py-2 text-xs font-semibold text-[#2c5a48] shadow-[3px_3px_8px_#d0dbd6,-3px_-3px_8px_#ffffff] transition enabled:hover:shadow-inner disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            ) : null}
           </div>
 
           <div className="mt-6 flex flex-wrap gap-3">
@@ -222,7 +257,6 @@ export default function TeacherPurchasesPage() {
           </div>
         </section>
       </main>
-      <Footer />
     </>
   );
 }

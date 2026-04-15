@@ -1,5 +1,17 @@
 [
   {
+    "professionalId": "6df879d9-2948-4731-a01d-9f603e6fd1f7",
+    "professionalName": "yug",
+    "professionalEmail": "yug@gmail.com",
+    "event": "registration",
+    "title": "New professional registered",
+    "message": "yug has registered and is waiting for approval.",
+    "status": "pending",
+    "audience": "admin",
+    "id": "fef264d6-4e16-4d52-97e9-09682f4aaa5a",
+    "createdAt": "2026-04-15T06:39:40.112Z"
+  },
+  {
     "professionalId": "36210bef-31a0-462c-bd78-1162909b1164",
     "professionalName": "savaj",
     "professionalEmail": "savaj@gmail.com",

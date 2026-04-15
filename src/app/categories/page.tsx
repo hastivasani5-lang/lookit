@@ -1,12 +1,12 @@
 "use client";
 import Navbar from "@/components/Navbar";
 import HeroCourses from "@/components/HeroCourses";
-import TopCategories from "@/components/TopCategories"; 
+import TopCategories from "@/components/TopCategories";
 import About from "@/components/About";
 import StudentsViewing from "@/components/StudentsViewing";
 import Footer from "@/components/Footer";
 
-export default function StudentsPage() {
+export default function CategoriesPage() {
   return (
     <>
       <Navbar />

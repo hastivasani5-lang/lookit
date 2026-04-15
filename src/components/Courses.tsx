@@ -1,4 +1,6 @@
+
 "use client";
+import React from "react";
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -44,6 +46,37 @@ const courses = [
 const filterOptions = ["All Categorize", "Wordpress", "Business", "Networking", "Finance", "Designing"];
 
 const Courses = () => {
+    // Upcoming courses data
+    const upcomingCourses = [
+      {
+        title: "AI for Everyone: Beginner to Pro",
+        instructor: "Priya Sharma",
+        startDate: "25 April 2026",
+        seats: 30,
+      },
+      {
+        title: "Advanced Web Development Bootcamp",
+        instructor: "Rahul Mehta",
+        startDate: "2 May 2026",
+        seats: 20,
+      },
+      {
+        title: "Digital Marketing Mastery",
+        instructor: "Sana Khan",
+        startDate: "10 May 2026",
+        seats: 25,
+      },
+      // Add more upcoming courses here as needed
+    ];
+
+    // Slider scroll logic
+    const sliderRef = React.useRef<HTMLDivElement>(null);
+    const scrollSlider = (dir: 'left' | 'right') => {
+      if (!sliderRef.current) return;
+      const scrollAmount = 320; // px
+      if (dir === 'left') sliderRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      else sliderRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    };
   const [activeFilter, setActiveFilter] = useState("All Categorize");
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
 
@@ -130,6 +163,41 @@ Available all programs
         {/* FILTER - Mobile/Tablet Icon */}
         <div className="mb-8 flex items-center justify-between rounded-2xl border border-gray-200 bg-white px-4 py-3 shadow-sm lg:hidden">
           <div>
+              {/* UPCOMING COURSES SLIDER SECTION */}
+              <div className="mx-auto mb-12 max-w-7xl text-center lg:text-left">
+                <div className="flex flex-col items-center justify-between gap-6 lg:flex-row lg:items-center">
+                  <div className="w-full lg:w-1/2" data-aos="fade-right">
+                    <div className="flex items-center justify-center gap-2 text-sm text-[#1ec28e] lg:justify-start">
+                      <span className="h-2 w-2 rounded-full bg-[#1ec28e]"></span>
+                      UPCOMING COURSES
+                    </div>
+                    <div className="mt-3 w-full h-px bg-[#1ec28e]/30"></div>
+                  </div>
+                  <div className="w-full lg:w-1/2 flex items-center justify-end gap-2" data-aos="fade-left">
+                    <h3 className="text-xl font-semibold leading-tight text-gray-800 md:text-2xl lg:text-right">
+                      Upcoming & Trending Classes
+                    </h3>
+                    {/* Slider buttons */}
+                    <button onClick={() => scrollSlider('left')} className="ml-2 rounded-full bg-[#e6faf4] text-[#1ec28e] p-2 shadow hover:bg-[#1ec28e] hover:text-white transition" aria-label="Scroll left">
+                      <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                    <button onClick={() => scrollSlider('right')} className="rounded-full bg-[#e6faf4] text-[#1ec28e] p-2 shadow hover:bg-[#1ec28e] hover:text-white transition" aria-label="Scroll right">
+                      <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                  </div>
+                </div>
+                {/* Upcoming Courses Slider */}
+                <div ref={sliderRef} className="mt-8 flex gap-6 overflow-x-auto scrollbar-hide py-2 px-1 snap-x snap-mandatory">
+                  {upcomingCourses.map((course, idx) => (
+                    <div key={idx} className="min-w-[320px] max-w-xs bg-[#f6faf9] rounded-xl p-6 shadow hover:shadow-lg transition snap-center flex-shrink-0">
+                      <h4 className="text-lg font-bold text-[#1e2a55] mb-2">{course.title}</h4>
+                      <p className="text-gray-600 mb-2">Instructor: {course.instructor}</p>
+                      <p className="text-sm text-gray-500 mb-2">Starts: {course.startDate}</p>
+                      <p className="text-xs text-[#1ec28e] font-semibold">Seats Available: {course.seats}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Filter</p>
             <p className="text-sm font-medium text-gray-800">{activeFilter}</p>
           </div>

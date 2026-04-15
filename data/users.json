@@ -34,5 +34,29 @@
     "approvalStatus": "approved",
     "provider": "credentials",
     "createdAt": "2026-04-15T10:42:35.329Z"
+  },
+  {
+    "id": "57e1cb20-dfcb-434a-a6f9-20967c877577",
+    "name": "milan savaj",
+    "email": "milansavaj@gmail.com",
+    "passwordHash": "$2a$10$S/OkXfXoIUrDdrrV1xvpc.MqhJUE3V17NmBUgfsSgqoxe3wyXSJN.",
+    "role": "student",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-15T10:54:43.147Z"
+  },
+  {
+    "id": "799f5c60-2c56-4b51-bef3-8230a1968c18",
+    "name": "Hasti Vasani",
+    "email": "abc3@gmail.com",
+    "passwordHash": "$2a$10$L/YJKJYGy7Fz8MS3NUP.ce/fJISWgyp473cfO4gNSTa655y5QT0Ea",
+    "role": "professional",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "pending",
+    "provider": "credentials",
+    "createdAt": "2026-04-15T10:55:09.073Z"
   }
 ]

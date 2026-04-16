@@ -7,8 +7,7 @@ import Features from "@/components/Features";
 import About from "@/components/About";
 import Marquee from "@/components/Marquee";
 import WhyChoose from "@/components/WhyChoose";
-import Courses from "@/components/Courses";
-import Cominup from "@/components/Cominup";
+ import Cominup from "@/components/Cominup";
 import FeaturedCourse from "@/components/FeaturedCourse";
 import Instructors from "@/components/Instructors";
 import Testimonials from "@/components/Testimonials";
@@ -24,8 +23,7 @@ export default function StudentsPage() {
         <Features />
         <About />
         <Marquee />
-        <Courses />
-        <Cominup />
+         <Cominup />
         <WhyChoose />
         <FeaturedCourse />
         <Instructors />

@@ -3,7 +3,8 @@ import Navbar from "@/components/Navbar";
 import HeroCourses from "@/components/HeroCourses";
 import TopCategories from "@/components/TopCategories";
 import About from "@/components/About";
-import StudentsViewing from "@/components/StudentsViewing";
+// import StudentsViewing from "@/components/StudentsViewing";
+import Courses from "@/components/Courses";
 import Footer from "@/components/Footer";
 
 export default function CategoriesPage() {
@@ -21,7 +22,10 @@ export default function CategoriesPage() {
           <About />
         </section>
         <section data-aos="fade-up" data-aos-delay="300">
-          <StudentsViewing />
+          {/* <StudentsViewing /> */}
+        </section>
+        <section data-aos="fade-up" data-aos-delay="400">
+          <Courses />
         </section>
         <section data-aos="fade-up" data-aos-delay="100">
           <Footer />

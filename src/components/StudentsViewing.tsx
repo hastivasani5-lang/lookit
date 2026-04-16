@@ -226,7 +226,7 @@ export default function StudentsViewing() {
           <h2 className="text-2xl md:text-3xl font-bold text-[#1e2a55]">
             All{" "}
             <span className="relative inline-block">
-              Categories Courses
+              Latest Courses
               <span className="absolute left-0 -bottom-1 w-full h-[3px] bg-[#1ec28e]"></span>
             </span>
           </h2>

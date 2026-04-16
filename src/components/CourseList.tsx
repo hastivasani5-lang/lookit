@@ -34,9 +34,9 @@ export default function CourseList() {
       {/* Top Bar */}
       <div className="bg-[#f8f8fc] rounded-2xl p-8 flex flex-col md:flex-row md:items-center md:justify-between border-2 border-[#ededf7] shadow mb-6">
         <div className="flex flex-col gap-2 w-full md:w-auto">
-          <span className="text-lg font-semibold text-[#23235f]">Sort By:</span>
+          <span className="text-lg font-semibold text-dark">Sort By:</span>
           <select
-            className="mt-1 px-6 py-3 rounded-xl border-2 border-[#b3b6f7] bg-white text-[#23235f] font-medium focus:outline-none focus:ring-2 focus:ring-[#4f5bd5] transition w-full md:w-64 shadow-sm"
+            className="mt-1 px-2 py-2 rounded-xl border-1 border-[#009966]  bg-white text-dark font-medium focus:outline-none transition w-full md:w-64 shadow-sm"
             value={sort}
             onChange={e => setSort(e.target.value)}
           >
@@ -49,23 +49,23 @@ export default function CourseList() {
         <div className="flex gap-4 mt-6 md:mt-0">
           <button
             type="button"
-            className={`p-3 rounded-xl border-2 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#4f5bd5] ${view === "list" ? "bg-white border-[#4f5bd5] text-[#4f5bd5] shadow-md" : "bg-[#f8f8fc] border-[#ededf7] text-[#23235f]"}`}
+            className={`p-3 rounded-xl border-1 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#009966] ${view === "list" ? "bg-white border-[#009966] text-[#009966] shadow-md" : "bg-[#f8f8fc] border-[#ededf7] text-[#007a53]"}`}
             onClick={() => setView("list")}
             aria-label="List View"
             aria-pressed={view === "list"}
-            style={{ minWidth: 56, minHeight: 56 }}
+            style={{ minWidth: 46, minHeight: 46 }}
           >
-            <svg width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="9" width="16" height="2.5" rx="1" fill={view === "list" ? "#4f5bd5" : "#b3b6f7"}/><rect x="6" y="14" width="16" height="2.5" rx="1" fill={view === "list" ? "#4f5bd5" : "#b3b6f7"}/><rect x="6" y="19" width="16" height="2.5" rx="1" fill={view === "list" ? "#4f5bd5" : "#b3b6f7"}/></svg>
+            <svg width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="9" width="16" height="2.5" rx="1" fill={view === "list" ? "#009966" : "#b3b6f7"}/><rect x="6" y="14" width="16" height="2.5" rx="1" fill={view === "list" ? "#009966" : "#b3b6f7"}/><rect x="6" y="19" width="16" height="2.5" rx="1" fill={view === "list" ? "#009966" : "#b3b6f7"}/></svg>
           </button>
           <button
             type="button"
-            className={`p-3 rounded-xl border-2 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#4f5bd5] ${view === "grid" ? "bg-white border-[#4f5bd5] text-[#4f5bd5] shadow-md" : "bg-[#f8f8fc] border-[#ededf7] text-[#23235f]"}`}
+            className={`p-3 rounded-xl border-1 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#009966] ${view === "grid" ? "bg-white border-[#009966] text-[#009966] shadow-md" : "bg-[#f8f8fc] border-[#ededf7] text-[#007a53]"}`}
             onClick={() => setView("grid")}
             aria-label="Grid View"
             aria-pressed={view === "grid"}
-            style={{ minWidth: 56, minHeight: 56 }}
+            style={{ minWidth: 46, minHeight: 46 }}
           >
-            <svg width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="6" width="5" height="5" rx="1" fill={view === "grid" ? "#4f5bd5" : "#b3b6f7"}/><rect x="17" y="6" width="5" height="5" rx="1" fill={view === "grid" ? "#4f5bd5" : "#b3b6f7"}/><rect x="6" y="17" width="5" height="5" rx="1" fill={view === "grid" ? "#4f5bd5" : "#b3b6f7"}/><rect x="17" y="17" width="5" height="5" rx="1" fill={view === "grid" ? "#4f5bd5" : "#b3b6f7"}/></svg>
+            <svg width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="6" width="5" height="5" rx="1" fill={view === "grid" ? "#009966" : "#b3b6f7"}/><rect x="17" y="6" width="5" height="5" rx="1" fill={view === "grid" ? "#009966" : "#b3b6f7"}/><rect x="6" y="17" width="5" height="5" rx="1" fill={view === "grid" ? "#009966" : "#b3b6f7"}/><rect x="17" y="17" width="5" height="5" rx="1" fill={view === "grid" ? "#009966" : "#b3b6f7"}/></svg>
           </button>
         </div>
       </div>

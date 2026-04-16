@@ -131,12 +131,20 @@ export default function TopRatedProfessionalsSection({ professionals, embedded =
                   </div>
                 </div>
 
-                <Link
-                  href={`/professionals/${item.id}`}
-                  className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:scale-[1.02] hover:shadow-md active:scale-95"
-                >
-                  View Profile
-                </Link>
+                <div className="mt-4 flex w-full gap-2">
+                  <Link
+                    href={`/professionals/${item.id}`}
+                    className="flex-1 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:scale-[1.02] hover:shadow-md active:scale-95"
+                  >
+                    View Profile
+                  </Link>
+                  <button
+                    type="button"
+                    className="flex-1 inline-flex items-center justify-center rounded-full border border-emerald-600 bg-white px-4 py-2 text-sm font-semibold text-emerald-700 shadow-sm transition-all hover:bg-emerald-50 hover:border-teal-600 hover:text-teal-700 active:scale-95"
+                  >
+                    Follow
+                  </button>
+                </div>
               </div>
             </article>
           ))}

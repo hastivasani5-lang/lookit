@@ -416,12 +416,20 @@ export default function ProfessionalsContent() {
                         </p>
                       </div>
 
-                      <Link
-                        href={`/professionals/${item.id}`}
-                        className="mt-auto block w-full rounded-full bg-primary px-4 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
-                      >
-                        View Profile
-                      </Link>
+                      <div className="mt-auto flex w-full gap-2">
+                        <Link
+                          href={`/professionals/${item.id}`}
+                          className="flex-1 rounded-full bg-primary px-4 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+                        >
+                          View Profile
+                        </Link>
+                        <button
+                          type="button"
+                          className="flex-1 rounded-full border border-primary bg-white px-4 py-2.5 text-center text-sm font-semibold text-primary transition hover:bg-[#e6f7f0] hover:border-[#18ab7d]"
+                        >
+                          Follow
+                        </button>
+                      </div>
                     </div>
                   </article>
                 ))}

@@ -63,6 +63,16 @@
 			"type": "shell",
 			"command": "git add -A; git commit -m \"Auto commit\"; git pull origin main --rebase; git push origin main",
 			"group": "build"
+		},
+		{
+			"label": "push-all-gradient-button-updates",
+			"type": "shell",
+			"command": "git add -A && git commit -m \"Apply emerald-teal gradient to all main buttons\" || true && git pull --rebase origin main && git push origin main"
+		},
+		{
+			"label": "push-all-gradient-button-updates-pwsh",
+			"type": "shell",
+			"command": "git add -A; git commit -m \"Apply emerald-teal gradient to all main buttons\"; git pull --rebase origin main; git push origin main"
 		}
 	]
 }

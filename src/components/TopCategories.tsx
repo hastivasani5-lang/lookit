@@ -1,20 +1,21 @@
 "use client";
 
 import { Brush, Code, Heart, Lightbulb, Briefcase, DollarSign, Megaphone, Camera, Database, Dumbbell, Music, GraduationCap } from "lucide-react";
+import Link from "next/link";
 
 const categories = [
-  { title: "Art & Design", icon: Brush },
-  { title: "Development", icon: Code },
-  { title: "Lifestyle", icon: Heart },
-  { title: "Personal Development", icon: Lightbulb },
-  { title: "Business", icon: Briefcase },
-  { title: "Finance", icon: DollarSign },
-  { title: "Marketing", icon: Megaphone },
-  { title: "Photography", icon: Camera },
-  { title: "Data Science", icon: Database },
-  { title: "Health & Fitness", icon: Dumbbell },
-  { title: "Music", icon: Music },
-  { title: "Teaching & Academics", icon: GraduationCap },
+  { title: "Art & Design", slug: "art-design", icon: Brush },
+  { title: "Development", slug: "development", icon: Code },
+  { title: "Lifestyle", slug: "lifestyle", icon: Heart },
+  { title: "Personal Development", slug: "personal-development", icon: Lightbulb },
+  { title: "Business", slug: "business", icon: Briefcase },
+  { title: "Finance", slug: "finance", icon: DollarSign },
+  { title: "Marketing", slug: "marketing", icon: Megaphone },
+  { title: "Photography", slug: "photography", icon: Camera },
+  { title: "Data Science", slug: "data-science", icon: Database },
+  { title: "Health & Fitness", slug: "health-fitness", icon: Dumbbell },
+  { title: "Music", slug: "music", icon: Music },
+  { title: "Teaching & Academics", slug: "teaching-academics", icon: GraduationCap },
 ];
 
 export default function TopCategories() {
@@ -36,17 +37,19 @@ export default function TopCategories() {
           {categories.map((cat, index) => {
             const Icon = cat.icon;
             return (
-              <div
+              <Link
+                href={`/categories/${cat.slug}`}
                 key={index}
-                className="flex items-center gap-4 bg-[#f5f7fa] px-5 py-4 rounded-lg hover:shadow-md hover:bg-white transition cursor-pointer border"
+                className="flex items-center gap-4 bg-[#f5f7fa] px-5 py-4 rounded-lg hover:shadow-md hover:bg-white transition cursor-pointer border no-underline"
+                prefetch={false}
               >
                 <div className="text-[#1ec28e]">
                   <Icon size={22} />
                 </div>
-                <p className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-gray-700">
                   {cat.title}
-                </p>
-              </div>
+                </span>
+              </Link>
             );
           })}
 

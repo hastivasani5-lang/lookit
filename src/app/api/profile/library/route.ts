@@ -33,6 +33,7 @@ type AddVideoPayload = {
   url: string;
   source: "file" | "youtube";
   sizeLabel: string;
+  level?: string;
 };
 
 type DeletePayload = {
@@ -188,6 +189,7 @@ export async function POST(request: Request) {
       url: payload.url?.trim() || "",
       source: payload.source === "youtube" ? "youtube" : "file",
       sizeLabel: payload.sizeLabel?.trim() || "-",
+      level: payload.level?.trim() || "",
     });
 
     return NextResponse.json({ video });

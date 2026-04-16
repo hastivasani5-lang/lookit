@@ -22,7 +22,9 @@
           "source": "youtube",
           "sizeLabel": "YouTube Link",
           "id": "video-1776058665828-6pfb4f",
-          "createdAt": "2026-04-13T05:37:45.828Z"
+          "createdAt": "2026-04-13T05:37:45.828Z",
+          "isPopular": false,
+          "level": ""
         }
       ],
       "categories": [
@@ -87,12 +89,36 @@
       "videos": [
         {
           "name": "YouTube Video",
+          "mrp": "100",
+          "url": "https://www.youtube.com/embed/J-1Is13MKPw",
+          "source": "youtube",
+          "sizeLabel": "YouTube Link",
+          "level": "Advanced",
+          "isPopular": false,
+          "id": "video-1776318556539-bo6niz",
+          "createdAt": "2026-04-16T05:49:16.539Z"
+        },
+        {
+          "name": "YouTube Video",
+          "mrp": "1000",
+          "url": "https://www.youtube.com/embed/Ed0_aZa_IEc",
+          "source": "youtube",
+          "sizeLabel": "YouTube Link",
+          "level": "Advanced",
+          "isPopular": false,
+          "id": "video-1776317633343-0jmizy",
+          "createdAt": "2026-04-16T05:33:53.343Z"
+        },
+        {
+          "name": "YouTube Video",
           "mrp": "999",
           "url": "https://www.youtube.com/embed/Hm37OiYib6k",
           "source": "youtube",
           "sizeLabel": "YouTube Link",
           "id": "video-1776255205351-v9tjhm",
-          "createdAt": "2026-04-15T12:13:25.351Z"
+          "createdAt": "2026-04-15T12:13:25.351Z",
+          "isPopular": false,
+          "level": ""
         }
       ],
       "categories": [
@@ -122,7 +148,9 @@
           "source": "youtube",
           "sizeLabel": "YouTube Link",
           "id": "video-1776255333252-76dur1",
-          "createdAt": "2026-04-15T12:15:33.252Z"
+          "createdAt": "2026-04-15T12:15:33.252Z",
+          "isPopular": false,
+          "level": ""
         }
       ],
       "categories": [
@@ -147,12 +175,25 @@
       "videos": [
         {
           "name": "YouTube Video",
+          "mrp": "100",
+          "url": "https://www.youtube.com/embed/GvraqWq5NqI",
+          "source": "youtube",
+          "sizeLabel": "YouTube Link",
+          "level": "Advanced",
+          "isPopular": false,
+          "id": "video-1776318124442-w61zqi",
+          "createdAt": "2026-04-16T05:42:04.442Z"
+        },
+        {
+          "name": "YouTube Video",
           "mrp": "199",
           "url": "https://www.youtube.com/embed/zNsLxGbJt-A",
           "source": "youtube",
           "sizeLabel": "YouTube Link",
           "id": "video-1776255478532-390wh7",
-          "createdAt": "2026-04-15T12:17:58.532Z"
+          "createdAt": "2026-04-15T12:17:58.532Z",
+          "isPopular": false,
+          "level": ""
         }
       ],
       "categories": [
@@ -182,7 +223,9 @@
           "source": "youtube",
           "sizeLabel": "YouTube Link",
           "id": "video-1776255666279-1l0bkz",
-          "createdAt": "2026-04-15T12:21:06.279Z"
+          "createdAt": "2026-04-15T12:21:06.279Z",
+          "isPopular": false,
+          "level": ""
         }
       ],
       "categories": [
@@ -212,7 +255,9 @@
           "source": "youtube",
           "sizeLabel": "YouTube Link",
           "id": "video-1776255773277-d4qkrk",
-          "createdAt": "2026-04-15T12:22:53.277Z"
+          "createdAt": "2026-04-15T12:22:53.277Z",
+          "isPopular": false,
+          "level": ""
         }
       ],
       "categories": [
@@ -237,12 +282,25 @@
       "videos": [
         {
           "name": "YouTube Video",
+          "mrp": "1000",
+          "url": "https://www.youtube.com/embed/u8ipnwmLTmI",
+          "source": "youtube",
+          "sizeLabel": "YouTube Link",
+          "level": "Advanced",
+          "isPopular": false,
+          "id": "video-1776318063909-kw5hdy",
+          "createdAt": "2026-04-16T05:41:03.909Z"
+        },
+        {
+          "name": "YouTube Video",
           "mrp": "149",
           "url": "https://www.youtube.com/embed/zNsLxGbJt-A",
           "source": "youtube",
           "sizeLabel": "YouTube Link",
           "id": "video-1776255894545-cgl939",
-          "createdAt": "2026-04-15T12:24:54.545Z"
+          "createdAt": "2026-04-15T12:24:54.545Z",
+          "isPopular": false,
+          "level": ""
         }
       ],
       "categories": [
@@ -272,7 +330,9 @@
           "source": "youtube",
           "sizeLabel": "YouTube Link",
           "id": "video-1776256025729-h6pjls",
-          "createdAt": "2026-04-15T12:27:05.729Z"
+          "createdAt": "2026-04-15T12:27:05.729Z",
+          "isPopular": false,
+          "level": ""
         }
       ],
       "categories": [
@@ -302,7 +362,9 @@
           "source": "youtube",
           "sizeLabel": "YouTube Link",
           "id": "video-1776256118975-8rhznu",
-          "createdAt": "2026-04-15T12:28:38.975Z"
+          "createdAt": "2026-04-15T12:28:38.975Z",
+          "isPopular": false,
+          "level": ""
         }
       ],
       "categories": [
@@ -332,7 +394,9 @@
           "source": "youtube",
           "sizeLabel": "YouTube Link",
           "id": "video-1776256247693-pv2vkj",
-          "createdAt": "2026-04-15T12:30:47.693Z"
+          "createdAt": "2026-04-15T12:30:47.693Z",
+          "isPopular": false,
+          "level": ""
         }
       ],
       "categories": [
@@ -357,12 +421,25 @@
       "videos": [
         {
           "name": "YouTube Video",
+          "mrp": "1200",
+          "url": "https://www.youtube.com/embed/SfTuxHCgbf4",
+          "source": "youtube",
+          "sizeLabel": "YouTube Link",
+          "level": "Advanced",
+          "isPopular": false,
+          "id": "video-1776318183774-2i1c33",
+          "createdAt": "2026-04-16T05:43:03.774Z"
+        },
+        {
+          "name": "YouTube Video",
           "mrp": "1000",
           "url": "https://www.youtube.com/embed/-IClQZozEaM",
           "source": "youtube",
           "sizeLabel": "YouTube Link",
           "id": "video-1776256354756-rxx5mb",
-          "createdAt": "2026-04-15T12:32:34.756Z"
+          "createdAt": "2026-04-15T12:32:34.756Z",
+          "isPopular": false,
+          "level": ""
         }
       ],
       "categories": [

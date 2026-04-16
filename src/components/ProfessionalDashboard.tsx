@@ -76,8 +76,10 @@ type AddedVideo = {
   mrp: string;
   sizeLabel: string;
   url: string;
+  level?: string;
   category?: string;
   source: "file" | "youtube";
+  isPopular: boolean;
 };
 
 type FeaturedPage = 1 | 2 | 3;
@@ -712,8 +714,11 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
           videos?: AddedVideo[];
         };
 
-        setAddedBooks(Array.isArray(payload.books) ? payload.books : []);
-        setAddedVideos(Array.isArray(payload.videos) ? payload.videos : []);
+        const nextBooks = Array.isArray(payload.books) ? payload.books : [];
+        const nextVideos = Array.isArray(payload.videos) ? payload.videos : [];
+
+        setAddedBooks(nextBooks);
+        setAddedVideos(nextVideos);
       } catch {
         setAddedBooks([]);
         setAddedVideos([]);
@@ -968,7 +973,9 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       mrp: trimmedVideoMrp,
       sizeLabel: formatFileSize(file.size),
       url: URL.createObjectURL(file),
+      level: videoLevelInput.trim(),
       source: "file" as const,
+      isPopular: false,
     }));
 
     setAddedVideos((prev) => [...localVideos, ...prev]);
@@ -986,6 +993,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
               url: "",
               source: "file",
               sizeLabel: formatFileSize(file.size),
+              level: videoLevelInput.trim(),
             }),
           });
 
@@ -1040,6 +1048,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
           sizeLabel: "YouTube Link",
           url: embedUrl,
           source: "youtube",
+          level: videoLevelInput.trim(),
         }),
       });
 

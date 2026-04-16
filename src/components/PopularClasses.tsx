@@ -2,35 +2,47 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
-const classes = [
-  {
-    title: "The Complete Digital Marketing Course",
-    rating: "4.6",
-    image: "/pro1.jpeg",
-    tag: "Beginner",
-  },
-  {
-    title: "The Business Startup Guide to Become an Entrepreneur",
-    rating: "4.8",
-    image: "/pro2.jpeg",
-    tag: "Beginner",
-  },
-  {
-    title: "Best Way to Learn German Language: Full Beginner",
-    rating: "4.9",
-    image: "/pro3.jpeg",
-    tag: "Beginner",
-  },
-  {
-    title: "Complete Web & Mobile Designer in 2023: UI/UX",
-    rating: "4.7",
-    image: "/pro4.jpeg",
-    tag: "Beginner",
-  },
-];
+type PopularClass = {
+  id: string;
+  title: string;
+  rating: string;
+  image: string;
+  tag: string;
+  slug: string;
+};
 
 const PopularClasses = () => {
+  const [classes, setClasses] = useState<PopularClass[]>([]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadPopularClasses = async () => {
+      try {
+        const response = await fetch("/api/classes/popular", { cache: "no-store" });
+        const payload = (await response.json().catch(() => ({}))) as { classes?: PopularClass[] };
+
+        if (!isMounted || !response.ok) {
+          return;
+        }
+
+        setClasses(Array.isArray(payload.classes) ? payload.classes : []);
+      } catch {
+        if (isMounted) {
+          setClasses([]);
+        }
+      }
+    };
+
+    void loadPopularClasses();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <section className="px-4 md:px-10 lg:px-16 py-12">
       <div className="rounded-2xl bg-gradient-to-r from-[#34d399] via-[#22c1c3] to-[#3b82f6] p-6 md:p-10">
@@ -41,9 +53,9 @@ const PopularClasses = () => {
 
         {/* Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {classes.map((item, i) => (
+          {classes.map((item) => (
             <div
-              key={i}
+              key={item.id}
               className="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition"
             >
               <div className="relative w-full h-[180px]">
@@ -51,6 +63,7 @@ const PopularClasses = () => {
                   src={item.image}
                   alt="Popular class image"
                   fill
+                  unoptimized
                   className="rounded-lg object-cover"
                   style={{ objectFit: 'cover' }}
                 />
@@ -68,7 +81,7 @@ const PopularClasses = () => {
                 <span className="text-gray-600">{item.rating}</span>
               </div>
               <Link
-                href={`/classes/details/${item.title.toLowerCase().replace(/\s+/g, "-")}`}
+                href={`/classes/details/${item.slug}`}
                 className="mt-4 w-full block border border-gray-200 rounded-lg py-2 text-sm text-gray-700 text-center hover:bg-[#1ec28e] hover:text-white transition"
               >
                 Start Learning

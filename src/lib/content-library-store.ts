@@ -26,6 +26,8 @@ export type StoredVideo = {
   url: string;
   source: "file" | "youtube";
   sizeLabel: string;
+  level: string;
+  isPopular: boolean;
   createdAt: string;
 };
 
@@ -68,6 +70,33 @@ const defaultStore: LibraryStore = {
   students: {},
 };
 
+function normalizeProfessionalLibrary(library: Partial<ProfessionalLibrary> | undefined): ProfessionalLibrary {
+  const books = Array.isArray(library?.books) ? (library.books as StoredBook[]) : [];
+  const categories = Array.isArray(library?.categories)
+    ? library.categories.filter((value): value is string => typeof value === "string")
+    : [];
+  const videos = Array.isArray(library?.videos)
+    ? library.videos.map((video) => ({
+        ...(video as StoredVideo),
+        level: typeof (video as StoredVideo).level === "string" ? (video as StoredVideo).level : "",
+        isPopular: typeof (video as StoredVideo).isPopular === "boolean" ? (video as StoredVideo).isPopular : false,
+      }))
+    : [];
+
+  return {
+    books,
+    videos,
+    categories,
+  };
+}
+
+function normalizeStudentLibrary(library: Partial<StudentLibrary> | undefined): StudentLibrary {
+  return {
+    purchasedBooks: Array.isArray(library?.purchasedBooks) ? (library.purchasedBooks as StudentBookActivity[]) : [],
+    watchedVideos: Array.isArray(library?.watchedVideos) ? (library.watchedVideos as StudentVideoActivity[]) : [],
+  };
+}
+
 async function ensureLibraryFile() {
   await fs.mkdir(DATA_DIR, { recursive: true });
   try {
@@ -91,9 +120,19 @@ async function readStore(): Promise<LibraryStore> {
     }
 
     const parsed = result.rows[0].data as Partial<LibraryStore>;
+    const professionals = Object.fromEntries(
+      Object.entries(parsed?.professionals ?? {}).map(([professionalId, library]) => [
+        professionalId,
+        normalizeProfessionalLibrary(library),
+      ]),
+    );
+    const students = Object.fromEntries(
+      Object.entries(parsed?.students ?? {}).map(([studentId, library]) => [studentId, normalizeStudentLibrary(library)]),
+    );
+
     return {
-      professionals: parsed?.professionals ?? {},
-      students: parsed?.students ?? {},
+      professionals,
+      students,
     };
   }
 
@@ -102,9 +141,19 @@ async function readStore(): Promise<LibraryStore> {
 
   try {
     const parsed = JSON.parse(raw) as Partial<LibraryStore>;
+    const professionals = Object.fromEntries(
+      Object.entries(parsed?.professionals ?? {}).map(([professionalId, library]) => [
+        professionalId,
+        normalizeProfessionalLibrary(library),
+      ]),
+    );
+    const students = Object.fromEntries(
+      Object.entries(parsed?.students ?? {}).map(([studentId, library]) => [studentId, normalizeStudentLibrary(library)]),
+    );
+
     return {
-      professionals: parsed.professionals ?? {},
-      students: parsed.students ?? {},
+      professionals,
+      students,
     };
   } catch {
     return defaultStore;
@@ -204,12 +253,17 @@ export async function updateProfessionalBook(
   return updated;
 }
 
-export async function addProfessionalVideo(professionalId: string, input: Omit<StoredVideo, "id" | "createdAt">) {
+export async function addProfessionalVideo(
+  professionalId: string,
+  input: Omit<StoredVideo, "id" | "createdAt" | "isPopular" | "level"> & { isPopular?: boolean; level?: string },
+) {
   const store = await readStore();
   const library = getOrCreateProfessionalLibrary(store, professionalId);
 
   const video: StoredVideo = {
     ...input,
+    level: input.level ?? "",
+    isPopular: input.isPopular ?? false,
     id: `video-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     createdAt: new Date().toISOString(),
   };

@@ -1,49 +1,53 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-const classes = [
-  {
-    title: "The Complete Digital Marketing Course",
-    rating: "4.6",
-    image: "/classes/class1.png",
-    tag: "Beginner",
-    video: "/videos/video1.mp4",
-    videoCount: 7,
-  },
-  {
-    title: "The Business Startup Guide to Become an Entrepreneur",
-    rating: "4.8",
-    image: "/classes/class2.png",
-    tag: "Beginner",
-    video: "/videos/video2.mp4",
-    videoCount: 10,
-  },
-  {
-    title: "Best Way to Learn German Language: Full Beginner",
-    rating: "4.9",
-    image: "/classes/class3.png",
-    tag: "Beginner",
-    video: "/videos/video3.mp4",
-    videoCount: 5,
-  },
-  {
-    title: "Complete Web & Mobile Designer in 2023: UI/UX",
-    rating: "4.7",
-    image: "/classes/class4.png",
-    tag: "Beginner",
-    video: "/videos/video4.mp4",
-    videoCount: 12,
-  },
-];
+type ClassCard = {
+  id: string;
+  title: string;
+  rating: string;
+  image: string;
+  tag: string;
+  slug: string;
+  videoCount: number;
+};
 
 
 export default function ClassesPage() {
+  const [classes, setClasses] = useState<ClassCard[]>([]);
   const [modal, setModal] = useState<{open: boolean, video?: string, title?: string}>({open: false});
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadClasses = async () => {
+      try {
+        const response = await fetch("/api/classes/advanced", { cache: "no-store" });
+        const payload = (await response.json().catch(() => ({}))) as { classes?: ClassCard[] };
+
+        if (!isMounted || !response.ok) {
+          return;
+        }
+
+        setClasses(Array.isArray(payload.classes) ? payload.classes : []);
+      } catch {
+        if (isMounted) {
+          setClasses([]);
+        }
+      }
+    };
+
+    void loadClasses();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col bg-[#f6faf9]">
       <Navbar />
@@ -51,10 +55,10 @@ export default function ClassesPage() {
         <section className="px-4 md:px-10 lg:px-16 py-12">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-10 text-center">All Classes</h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
-            {classes.map((item, i) => (
+            {classes.map((item) => (
               <Link
-                key={i}
-                href={`/classes/watch/${item.title.toLowerCase().replace(/\s+/g, "-")}`}
+                key={item.id}
+                href={`/classes/watch/${item.slug}`}
                 className="bg-white rounded-2xl p-6 shadow hover:shadow-xl transition flex flex-col items-center group border border-transparent hover:border-primary cursor-pointer"
               >
                 <div className="relative w-full h-45 mb-4 flex items-center justify-center">
@@ -62,6 +66,7 @@ export default function ClassesPage() {
                     src={item.image}
                     width={300}
                     height={180}
+                    unoptimized
                     className="rounded-xl object-cover w-full h-full"
                     alt={item.title}
                   />

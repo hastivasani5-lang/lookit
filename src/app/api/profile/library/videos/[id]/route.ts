@@ -80,23 +80,27 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
     name?: string;
     mrp?: string;
     url?: string;
+    isPopular?: boolean;
   };
 
   const payload = {
     name: typeof body.name === "string" ? body.name.trim() : undefined,
     mrp: typeof body.mrp === "string" ? body.mrp.trim() : undefined,
     url: typeof body.url === "string" ? body.url.trim() : undefined,
+    isPopular: typeof body.isPopular === "boolean" ? body.isPopular : undefined,
   };
 
   const updateInput: {
     name?: string;
     mrp?: string;
     url?: string;
+    isPopular?: boolean;
   } = {};
 
   if (payload.name) updateInput.name = payload.name;
   if (payload.mrp) updateInput.mrp = payload.mrp;
   if (payload.url) updateInput.url = payload.url;
+  if (typeof payload.isPopular === "boolean") updateInput.isPopular = payload.isPopular;
 
   if (payload.mrp && (!Number.isFinite(Number(payload.mrp)) || Number(payload.mrp) <= 0)) {
     return NextResponse.json({ message: "Please provide a valid MRP." }, { status: 400 });

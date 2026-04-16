@@ -4,41 +4,76 @@ import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import VideoSlider from "@/components/VideoSlider";
+import { useEffect, useState } from "react";
 
-// Dummy classes data (same as in PopularClasses)
-const classes = [
-  {
-    title: "The Complete Digital Marketing Course",
-    rating: "4.6",
-    image: "/classes/class1.png",
-    tag: "Beginner",
-    description: "Master digital marketing with this comprehensive course covering SEO, social media, and more.",
-  },
-  {
-    title: "The Business Startup Guide to Become an Entrepreneur",
-    rating: "4.8",
-    image: "/classes/class2.png",
-    tag: "Beginner",
-    description: "Learn how to start and grow your own business from scratch with expert guidance.",
-  },
-  {
-    title: "Best Way to Learn German Language: Full Beginner",
-    rating: "4.9",
-    image: "/classes/class3.png",
-    tag: "Beginner",
-    description: "Start speaking German quickly with this beginner-friendly language course.",
-  },
-  {
-    title: "Complete Web & Mobile Designer in 2023: UI/UX",
-    rating: "4.7",
-    image: "/classes/class4.png",
-    tag: "Beginner",
-    description: "Become a professional web and mobile designer with hands-on UI/UX projects.",
-  },
-];
+type InstructorVideo = {
+  title: string;
+  url: string;
+  thumb: string;
+};
+
+type ClassDetails = {
+  title: string;
+  rating: string;
+  image: string;
+  tag: string;
+  description: string;
+  videos: InstructorVideo[];
+};
 
 export default function ClassDetailsPage() {
   const { slug } = useParams();
+  const [cls, setCls] = useState<ClassDetails | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    if (!slug || typeof slug !== "string") {
+      setLoading(false);
+      setNotFound(true);
+      return;
+    }
+
+    let isMounted = true;
+
+    const loadClass = async () => {
+      setLoading(true);
+      setNotFound(false);
+
+      try {
+        const response = await fetch(`/api/classes/popular/${slug}`, { cache: "no-store" });
+        const payload = (await response.json().catch(() => ({}))) as { classItem?: ClassDetails };
+
+        if (!isMounted) {
+          return;
+        }
+
+        if (!response.ok || !payload.classItem) {
+          setCls(null);
+          setNotFound(true);
+          return;
+        }
+
+        setCls(payload.classItem);
+      } catch {
+        if (isMounted) {
+          setCls(null);
+          setNotFound(true);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadClass();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [slug]);
+
   if (!slug || typeof slug !== "string") {
     return (
       <div className="min-h-screen flex flex-col">
@@ -50,11 +85,20 @@ export default function ClassDetailsPage() {
       </div>
     );
   }
-  const cls = classes.find(
-    (c) => c.title.toLowerCase().replace(/\s+/g, "-") === slug.toLowerCase()
-  );
 
-  if (!cls) return (
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center text-2xl font-bold text-gray-500">
+          Loading class details...
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (notFound || !cls) return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <div className="flex-1 flex items-center justify-center text-2xl font-bold text-gray-500">
@@ -77,6 +121,7 @@ export default function ClassDetailsPage() {
                 alt={cls.title}
                 width={220}
                 height={300}
+                unoptimized
                 className="rounded-xl object-contain"
               />
             </div>
@@ -100,7 +145,7 @@ export default function ClassDetailsPage() {
             {/* Instructor Videos Slider */}
             <div className="mt-2">
               <h3 className="text-lg font-semibold mb-4 text-gray-800">Instructor Videos</h3>
-              <VideoSlider />
+              <VideoSlider videos={cls.videos} />
             </div>
           </div>
         </div>

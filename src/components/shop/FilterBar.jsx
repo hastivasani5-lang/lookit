@@ -1,14 +1,25 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 const categories = ["All", "Parent Support", "ADHD", "Dyslexia", "Speech Therapy", "Consultation", "School Support"];
 
-export default function FilterBar() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
-  const [price, setPrice] = useState([0, 1500]);
+  const [price, setPrice] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = window.localStorage.getItem("shopPriceRange");
+      if (saved) return JSON.parse(saved);
+    }
+    return [0, 1000];
+  });
   const [sort, setSort] = useState("default");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("shopPriceRange", JSON.stringify(price));
+    }
+  }, [price]);
 
   return (
     <motion.div
@@ -34,25 +45,27 @@ export default function FilterBar() {
             <option key={cat} value={cat}>{cat}</option>
           ))}
         </select>
-        <div className="flex items-center gap-2">
-          <span className="text-gray-500 text-sm">₹{price[0]}</span>
-          <input
-            type="range"
-            min={0}
-            max={1500}
-            value={price[0]}
-            onChange={e => setPrice([+e.target.value, price[1]])}
-            className="accent-indigo-500"
-          />
-          <input
-            type="range"
-            min={0}
-            max={1500}
-            value={price[1]}
-            onChange={e => setPrice([price[0], +e.target.value])}
-            className="accent-indigo-500"
-          />
-          <span className="text-gray-500 text-sm">₹{price[1]}</span>
+        <div className="w-full flex justify-center">
+          <div className="flex items-center gap-2 w-full max-w-md justify-center">
+            <span className="text-gray-500 text-sm">₹{price[0]}</span>
+            <input
+              type="range"
+              min={0}
+              max={1500}
+              value={price[0]}
+              onChange={e => setPrice([+e.target.value, price[1]])}
+              className="accent-indigo-500"
+            />
+            <input
+              type="range"
+              min={0}
+              max={1500}
+              value={price[1]}
+              onChange={e => setPrice([price[0], +e.target.value])}
+              className="accent-indigo-500"
+            />
+            <span className="text-gray-500 text-sm">₹{price[1]}</span>
+          </div>
         </div>
         <select
           value={sort}

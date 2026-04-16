@@ -252,30 +252,6 @@ const WhyChoose = () => {
 
       </div>
 
-      <div ref={timelineRef} className="relative mt-10 -mx-4 overflow-hidden bg-[#e9e7fb] py-16 sm:mt-14 sm:-mx-8 sm:py-20 md:-mx-8 lg:mt-16 lg:-mx-16 lg:py-24">
-        <div className="pointer-events-none absolute inset-0 opacity-40">
-          <div className="absolute left-[6%] top-[10%] h-5 w-5 rounded-full bg-[#d9d7f5]" />
-          <div className="absolute right-[12%] top-[16%] h-14 w-14 rounded-full bg-[#d9d7f5]" />
-          <div className="absolute left-[48%] top-[48%] h-28 w-28 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#d9d7f5]" />
-          <div className="absolute right-[6%] bottom-[18%] h-5 w-5 rounded-full bg-[#d9d7f5]" />
-        </div>
-
-        <div className="relative mx-auto max-w-[1280px] px-5 sm:px-8 lg:px-10">
-          <div className="grid grid-cols-1 gap-10 text-center sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-            {stats.map((stat) => (
-              <article key={stat.id} className="flex flex-col items-center justify-center">
-                <div className="mb-4 flex h-[64px] w-[64px] items-center justify-center rounded-[10px] bg-[#6366f1] text-white shadow-[0_8px_18px_rgba(99,102,241,0.24)]">
-                  {stat.icon}
-                </div>
-                <h3 className="text-[24px] font-semibold leading-tight text-[#21254a] md:text-[28px]">{stat.label}</h3>
-                <p className="mt-2 text-[42px] font-bold leading-none text-[#1d2240] md:text-[50px]">
-                  {counterValues[stat.id] ?? 0}
-                </p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </div>
     </section>
   );
 };

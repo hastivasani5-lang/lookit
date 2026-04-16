@@ -90,49 +90,48 @@ export default function CartPageClient() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-[#edf4f2] px-4 pb-14 pt-28 md:px-8 lg:px-10">
-        <section className="mx-auto w-full max-w-6xl">
-          <div className="rounded-4xl border border-[#dbe8e4] bg-white p-6 shadow-[0_22px_45px_rgba(15,23,42,0.07)] md:p-8">
-            <div className="flex flex-wrap items-start justify-between gap-4">
+      <main className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-2 pb-16 pt-10 md:px-8 lg:px-10">
+          <section className="w-full max-w-screen-2xl mx-auto px-2 md:px-8">
+            <div className="rounded-3xl bg-white/70 backdrop-blur-xl shadow-2xl border border-emerald-100 p-2 md:p-8">
+            <div className="flex flex-wrap items-center justify-between gap-6 border-b border-emerald-100 pb-6">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Cart</p>
-                <h1 className="mt-2 text-3xl font-bold text-gray-900 md:text-4xl">Your Cart</h1>
-                <p className="mt-3 max-w-3xl text-sm leading-7 text-gray-600 md:text-base">Review the items you added and proceed to payment when you are ready.</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">Cart</p>
+                <h1 className="mt-2 text-3xl font-extrabold text-gray-900 md:text-4xl drop-shadow-sm">Your Cart</h1>
+                <p className="mt-3 max-w-2xl text-sm leading-7 text-gray-600 md:text-base">Review your items and checkout securely.</p>
               </div>
-
-              <div className="rounded-2xl bg-[#f7fbfa] px-4 py-3 text-right shadow-sm">
+              <div className="rounded-xl bg-gradient-to-r from-emerald-100 to-teal-100 px-6 py-4 text-right shadow-md">
                 <p className="text-xs text-gray-500">Total</p>
-                <p className="text-2xl font-bold text-gray-900">₹{totalAmount.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-emerald-700">₹{totalAmount.toFixed(2)}</p>
               </div>
             </div>
 
             {cartItems.length === 0 ? (
-              <div className="mt-8 rounded-2xl border border-dashed border-gray-300 bg-white p-8 text-center text-sm text-gray-600">
+              <div className="mt-10 rounded-2xl border border-dashed border-emerald-200 bg-white/80 p-10 text-center text-base text-gray-600 shadow-inner">
+                <span className="block text-4xl mb-2">🛒</span>
                 Your cart is empty.
-                <div className="mt-4">
-                  <Link href="/professionals" className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#18ab7d]">
+                <div className="mt-6">
+                  <Link href="/professionals" className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-2.5 text-base font-semibold text-white shadow-md transition hover:scale-105 hover:shadow-lg">
                     Browse Professionals
                   </Link>
                 </div>
               </div>
             ) : (
-              <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
-                <div className="space-y-4">
+              <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_400px]">
+                <div className="space-y-6">
                   {cartItems.map((item) => (
-                    <article key={item.id} className="rounded-3xl border border-[#dbe8e4] bg-white p-5 shadow-sm">
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <article key={item.id} className="rounded-2xl border border-emerald-100 bg-white/90 p-6 shadow-md hover:shadow-lg transition-all">
+                      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">{item.contentType}</p>
-                          <h2 className="mt-1 text-lg font-semibold text-gray-900">{item.title}</h2>
+                          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-600">{item.contentType}</p>
+                          <h2 className="mt-1 text-lg font-bold text-gray-900">{item.title}</h2>
                           <p className="mt-1 text-sm text-gray-600">{item.subtitle}</p>
-                          <p className="mt-3 text-sm text-gray-500">Professional: {item.professionalName}</p>
-                          <p className="text-sm font-semibold text-primary">{item.price}</p>
+                          <p className="mt-3 text-sm text-gray-500">Professional: <span className="font-semibold text-emerald-700">{item.professionalName}</span></p>
+                          <p className="mt-2 text-base font-bold text-emerald-700">{item.price}</p>
                         </div>
-
                         <button
                           type="button"
                           onClick={() => handleRemove(item.id)}
-                          className="inline-flex w-fit rounded-full bg-[#fff1f1] px-4 py-2 text-sm font-semibold text-[#cc2a2a] transition hover:bg-[#ffe2e2]"
+                          className="inline-flex w-fit rounded-full bg-gradient-to-r from-red-100 to-rose-100 px-5 py-2 text-sm font-semibold text-red-700 shadow transition hover:bg-red-200 hover:scale-105"
                         >
                           Remove
                         </button>
@@ -141,60 +140,60 @@ export default function CartPageClient() {
                   ))}
                 </div>
 
-                <div className="rounded-3xl border border-[#dbe8e4] bg-white p-6 shadow-sm md:p-8">
-                  <h2 className="text-xl font-semibold text-gray-900">Payment Checkout</h2>
-                  <p className="mt-2 text-sm text-gray-600">Proceed with payment for the items in your cart.</p>
+                <div className="rounded-2xl border border-emerald-100 bg-white/90 p-8 shadow-lg">
+                  <h2 className="text-xl font-bold text-gray-900 mb-2">Payment Checkout</h2>
+                  <p className="mb-4 text-sm text-gray-600">Securely pay for your items below.</p>
 
-                  <form onSubmit={handlePayment} className="mt-5 space-y-3">
+                  <form onSubmit={handlePayment} className="space-y-4">
                     <input
                       type="text"
                       value={cardName}
                       onChange={(event) => setCardName(event.target.value)}
                       placeholder="Card holder name"
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none transition focus:border-primary"
+                      className="w-full rounded-xl border border-gray-200 px-4 py-3 text-base outline-none transition focus:border-emerald-400 bg-white/80"
                     />
                     <input
                       type="text"
                       value={cardNumber}
                       onChange={(event) => setCardNumber(event.target.value)}
                       placeholder="Card number"
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none transition focus:border-primary"
+                      className="w-full rounded-xl border border-gray-200 px-4 py-3 text-base outline-none transition focus:border-emerald-400 bg-white/80"
                     />
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-4">
                       <input
                         type="text"
                         value={expiry}
                         onChange={(event) => setExpiry(event.target.value)}
                         placeholder="MM/YY"
-                        className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none transition focus:border-primary"
+                        className="w-full rounded-xl border border-gray-200 px-4 py-3 text-base outline-none transition focus:border-emerald-400 bg-white/80"
                       />
                       <input
                         type="password"
                         value={cvv}
                         onChange={(event) => setCvv(event.target.value)}
                         placeholder="CVV"
-                        className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none transition focus:border-primary"
+                        className="w-full rounded-xl border border-gray-200 px-4 py-3 text-base outline-none transition focus:border-emerald-400 bg-white/80"
                       />
                     </div>
 
                     <button
                       type="submit"
                       disabled={isProcessingPayment}
-                      className="w-full rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+                      className="w-full rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-3 text-base font-semibold text-white shadow-md transition hover:scale-105 hover:shadow-lg disabled:opacity-60"
                     >
                       {isProcessingPayment ? "Processing..." : "Pay Now"}
                     </button>
 
                     {paymentError ? (
-                      <p className="rounded-xl bg-[#fff1f1] px-3 py-2 text-sm text-[#cc2a2a]">{paymentError}</p>
+                      <p className="rounded-xl bg-red-50 px-4 py-3 text-base text-red-700 shadow-inner">{paymentError}</p>
                     ) : null}
 
                     {paymentSuccess ? (
-                      <div className="space-y-3 rounded-xl bg-[#e9f8f2] px-3 py-3 text-sm text-[#0f7a5c]">
+                      <div className="space-y-3 rounded-xl bg-emerald-50 px-4 py-4 text-base text-emerald-700 shadow-inner">
                         <p>{paymentSuccessMessage}</p>
                         <Link
                           href="/dashboard/students/library"
-                          className="inline-flex rounded-full bg-[#0f7a5c] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0d6a50]"
+                          className="inline-flex rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-2 text-base font-semibold text-white shadow-md transition hover:scale-105 hover:shadow-lg"
                         >
                           View Purchased Books
                         </Link>

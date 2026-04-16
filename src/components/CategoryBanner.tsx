@@ -2,9 +2,8 @@ import React from "react";
 
 export default function CategoryBanner() {
   return (
-    <div className="w-full bg-[#f8f8fc] py-12 px-4 flex flex-col items-center justify-center relative">
-      <h1 className="text-3xl md:text-4xl font-bold mb-4 text-[#1e2a55] text-center drop-shadow">2000+ Best Courses Available Here!</h1>
-      <form className="flex flex-col md:flex-row gap-2 md:gap-4 w-full max-w-5xl mb-6 bg-white rounded-xl p-4 shadow border border-[#d1f5e0] items-center" style={{boxShadow: '0 2px 12px 0 rgba(0,0,0,0.03)'}}>
+    <div className="w-full bg-[#e6efed] py-12 px-4 flex flex-col items-center justify-center relative">
+       <form className="flex flex-col md:flex-row gap-2 md:gap-4 w-full max-w-5xl mb-6 bg-white rounded-xl p-4 shadow border border-[#d1f5e0] items-center" style={{boxShadow: '0 2px 12px 0 rgba(0,0,0,0.03)'}}>
         {/* Category */}
         <div className="flex flex-col items-start flex-1 min-w-[180px] mx-1">
           <label className="text-xs font-bold text-[#009966] mb-1 tracking-wider">CATEGORY</label>

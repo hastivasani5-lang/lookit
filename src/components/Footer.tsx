@@ -52,7 +52,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="mt-28 bg-[#0b111a] px-4 pb-10 text-[#c7ced8] md:px-8 lg:px-12">
+    <footer className=" bg-[#0b111a] px-4 pb-10 text-[#c7ced8] md:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
         <div className="-translate-y-1/2">
           <div className="mx-auto flex w-full max-w-2xl items-center rounded-full border border-white/10 bg-white px-2 py-1.5 shadow-[0_15px_40px_rgba(2,8,23,0.35)]">

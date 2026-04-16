@@ -60,7 +60,7 @@ type ApprovalRequest = {
 };
 
 type ReviewEntry = {
-  id: number;
+  id: string;
   userName: string;
   professionalName: string;
   professionalDetails: string;
@@ -68,6 +68,18 @@ type ReviewEntry = {
   rating: number;
   createdAt: string;
   flagged: boolean;
+};
+
+type AdminReviewRecord = {
+  id: string;
+  studentId: string;
+  studentName: string;
+  studentEmail: string;
+  professionalId: string;
+  professionalName: string;
+  rating: number;
+  review: string;
+  createdAt: string;
 };
 
 type PayoutStatus = "pending" | "completed";
@@ -225,48 +237,7 @@ const initialApprovalRequests: ApprovalRequest[] = [
   },
 ];
 
-const initialReviewEntries: ReviewEntry[] = [
-  {
-    id: 1,
-    userName: "Avery Stone",
-    professionalName: "Dr. Maya Patel",
-    professionalDetails: "Mathematics Tutor · 8 years experience · Online",
-    review: "Excellent explanations and very patient. My grades improved within weeks.",
-    rating: 5,
-    createdAt: "Today",
-    flagged: false,
-  },
-  {
-    id: 2,
-    userName: "Noah Kim",
-    professionalName: "Jordan Reed",
-    professionalDetails: "Career Coach · Interview Prep · San Francisco",
-    review: "This was a waste of time and the coach was useless.",
-    rating: 1,
-    createdAt: "Yesterday",
-    flagged: true,
-  },
-  {
-    id: 3,
-    userName: "Lina Gomez",
-    professionalName: "Priya Shah",
-    professionalDetails: "Physics Instructor · Exam Preparation · Hybrid",
-    review: "Very helpful and organized. The session notes were clear and easy to follow.",
-    rating: 5,
-    createdAt: "2 days ago",
-    flagged: false,
-  },
-  {
-    id: 4,
-    userName: "Ethan Brooks",
-    professionalName: "Michael Chen",
-    professionalDetails: "Coding Mentor · JavaScript & React · Remote",
-    review: "Terrible experience. The professional was rude and completely incompetent.",
-    rating: 1,
-    createdAt: "3 days ago",
-    flagged: true,
-  },
-];
+const initialReviewEntries: ReviewEntry[] = [];
 
 const initialPayoutEntries: PayoutEntry[] = [
   {
@@ -466,6 +437,8 @@ export default function AdminPanelView() {
   const [studentDraft, setStudentDraft] = useState<AdminStudent | null>(null);
   const [approvalRequests, setApprovalRequests] = useState<ApprovalRequest[]>(initialApprovalRequests);
   const [reviewEntries, setReviewEntries] = useState(initialReviewEntries);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [reviewsError, setReviewsError] = useState("");
   const [payoutEntries, setPayoutEntries] = useState(initialPayoutEntries);
   const [payoutsLoading, setPayoutsLoading] = useState(false);
   const [uploadView, setUploadView] = useState<UploadView>("professional-uploads");
@@ -617,8 +590,22 @@ export default function AdminPanelView() {
     { total: 0, pending: 0, approved: 0, rejected: 0 },
   );
 
-  const deleteReview = (id: number) => {
-    setReviewEntries((currentReviews) => currentReviews.filter((review) => review.id !== id));
+  const deleteReview = async (id: string) => {
+    try {
+      const response = await fetch("/api/admin/reviews", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviewId: id }),
+      });
+
+      if (!response.ok) {
+        return;
+      }
+
+      setReviewEntries((currentReviews) => currentReviews.filter((review) => review.id !== id));
+    } catch {
+      return;
+    }
   };
 
   const reviewCounts = reviewEntries.reduce(
@@ -837,6 +824,60 @@ export default function AdminPanelView() {
       return;
     }
   };
+
+  useEffect(() => {
+    if (activeSection !== "Reviews") {
+      return;
+    }
+
+    const loadReviews = async () => {
+      setReviewsLoading(true);
+      setReviewsError("");
+
+      try {
+        const response = await fetch("/api/admin/reviews", { cache: "no-store" });
+        const payload = (await response.json().catch(() => ({}))) as {
+          message?: string;
+          reviews?: AdminReviewRecord[];
+        };
+
+        if (!response.ok) {
+          setReviewEntries([]);
+          setReviewsError(payload.message || "Unable to load reviews.");
+          return;
+        }
+
+        const blockedWords = ["waste of time", "useless", "terrible", "rude", "incompetent"];
+        const records = Array.isArray(payload.reviews) ? payload.reviews : [];
+
+        setReviewEntries(
+          records.map((entry) => {
+            const message = typeof entry.review === "string" ? entry.review : "";
+            const normalized = message.toLowerCase();
+            const isFlagged = blockedWords.some((word) => normalized.includes(word));
+
+            return {
+              id: entry.id,
+              userName: entry.studentName,
+              professionalName: entry.professionalName,
+              professionalDetails: entry.studentEmail,
+              review: message,
+              rating: entry.rating,
+              createdAt: new Date(entry.createdAt).toLocaleString(),
+              flagged: isFlagged,
+            };
+          }),
+        );
+      } catch {
+        setReviewEntries([]);
+        setReviewsError("Unable to load reviews.");
+      } finally {
+        setReviewsLoading(false);
+      }
+    };
+
+    void loadReviews();
+  }, [activeSection]);
 
   useEffect(() => {
     if (activeSection !== "Alerts") {
@@ -1486,7 +1527,19 @@ export default function AdminPanelView() {
                   </div>
 
                   <ul className="mt-5 flex flex-col gap-3">
-                    {reviewEntries.map((review) => (
+                    {reviewsError ? (
+                      <li className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{reviewsError}</li>
+                    ) : null}
+
+                    {reviewsLoading ? (
+                      <li className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">Loading reviews...</li>
+                    ) : null}
+
+                    {!reviewsLoading && reviewEntries.length === 0 ? (
+                      <li className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">No reviews found.</li>
+                    ) : null}
+
+                    {!reviewsLoading && reviewEntries.map((review) => (
                       <li
                         key={review.id}
                         className={`flex flex-wrap items-center gap-4 rounded-2xl neumorph-admin-card p-4 shadow-[4px_4px_16px_#d0dbd6,-4px_-4px_16px_#ffffff] ${review.flagged ? "bg-[#fff1f1]" : "bg-white"}`}
@@ -1511,7 +1564,7 @@ export default function AdminPanelView() {
                         <div className="flex flex-1 justify-end min-w-[120px]">
                           <button
                             type="button"
-                            onClick={() => deleteReview(review.id)}
+                            onClick={() => void deleteReview(review.id)}
                             className="inline-flex items-center gap-1 rounded-full border border-[#f5c1c1] bg-[#ffe7e7] px-3 py-1.5 text-xs font-semibold text-[#cc2a2a] transition hover:bg-[#ffdcdc]"
                           >
                             <Trash2 className="h-3.5 w-3.5" />

@@ -119,3 +119,16 @@ export async function deleteReviewsByProfessionalId(professionalId: string) {
     await writeStore(store);
   }
 }
+
+export async function deleteReviewById(reviewId: string) {
+  const store = await readStore();
+  const filtered = store.reviews.filter((review) => review.id !== reviewId);
+
+  if (filtered.length === store.reviews.length) {
+    return false;
+  }
+
+  store.reviews = filtered;
+  await writeStore(store);
+  return true;
+}

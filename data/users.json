@@ -259,8 +259,6 @@
     "name": "asd",
     "email": "asd@gmail.com",
     "passwordHash": "$2a$10$HNZquKiE.EJSdHZQmcDsmOA3Ey3O/qZcDn5D8nWRtusTBFQeBPhnK",
-
-   
     "role": "student",
     "certificates": [],
     "reviews": [],
@@ -273,12 +271,47 @@
     "name": "Hasti Vasani",
     "email": "abc@gmail.com",
     "passwordHash": "$2a$10$Nz35.c0QNALLJbdWYYjAiubNSwk858I46o18G7iwdVjCPd.sjyoIG",
-
     "role": "professional",
     "certificates": [],
     "reviews": [],
     "approvalStatus": "pending",
     "provider": "credentials",
-     "createdAt": "2026-04-16T12:00:12.631Z"
+    "createdAt": "2026-04-16T12:00:12.631Z"
+  },
+  {
+    "id": "333e445e-438b-4bdd-9e7f-e3dad15918e2",
+    "name": "aeshu vaviya",
+    "email": "aeshuvaviya@gmail.com",
+    "passwordHash": "$2a$10$KoxIZTRrorzKdeC5NHCRM.LyrlC/Z64.imLJrX0deOatyRwX96g8K",
+    "role": "student",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-17T04:09:38.579Z"
+  },
+  {
+    "id": "c4e1f977-624a-499a-8470-18ad2ee3642d",
+    "name": "aeshu1 vaviya",
+    "email": "aeshu1vaviya@gmail.com",
+    "passwordHash": "$2a$10$pQwMNlgl4QGP6qEO6F/SkOY1N0rn9UQ.NAT37M3R.U4kzeO6HdAea",
+    "role": "student",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-17T04:13:41.180Z"
+  },
+  {
+    "id": "7fef6d75-1b77-4bdf-a41c-68f6294084c5",
+    "name": "ak vaviya",
+    "email": "akvaviya@gmail.com",
+    "passwordHash": "$2a$10$VMccqtA84xPFAc/RrGd1X.X6I3flJucTALL09ImtmGPoyUK48mE7.",
+    "role": "professional",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "pending",
+    "provider": "credentials",
+    "createdAt": "2026-04-17T04:14:41.338Z"
   }
 ]

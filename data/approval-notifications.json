@@ -1,6 +1,17 @@
 [
   {
-
+    "professionalId": "7fef6d75-1b77-4bdf-a41c-68f6294084c5",
+    "professionalName": "ak vaviya",
+    "professionalEmail": "akvaviya@gmail.com",
+    "event": "registration",
+    "title": "New professional registered",
+    "message": "ak vaviya has registered and is waiting for approval.",
+    "status": "pending",
+    "audience": "admin",
+    "id": "cbd68d1c-4ffc-4d6e-b973-cbd431db0f47",
+    "createdAt": "2026-04-17T04:14:41.346Z"
+  },
+  {
     "professionalId": "1c5adc52-4304-4584-b7ee-59fe4c4316a5",
     "professionalName": "Hasti Vasani",
     "professionalEmail": "abc@gmail.com",
@@ -119,8 +130,6 @@
     "audience": "admin",
     "id": "f416ce60-8747-4d1f-9a8b-dad3bfffc62f",
     "createdAt": "2026-04-16T11:30:38.359Z"
-
-   
   },
   {
     "professionalId": "ed48d754-9605-41cb-bcb3-3fd8531b16dd",

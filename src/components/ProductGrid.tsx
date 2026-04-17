@@ -20,7 +20,8 @@ function placeholderImageFor(contentType: ContentTab) {
 }
 
 const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps) => {
-  const [activeTab, setActiveTab] = useState<ContentTab>("book");
+  // Always show both books and videos by default (on first render)
+  const [activeTab, setActiveTab] = useState<ContentTab | "all">(() => "all");
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -83,41 +84,35 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps
     if (!onPriceBoundsChange) {
       return;
     }
-
-    const tabItems = catalogItems.filter((item) => item.contentType === activeTab);
+    // For 'all', consider all items; otherwise, filter by tab
+    const tabItems = activeTab === "all" ? catalogItems : catalogItems.filter((item) => item.contentType === activeTab);
     const maxAmount = tabItems.reduce((max, item) => Math.max(max, item.amount), 0);
     const nextBounds = {
       min: 0,
       max: Math.max(Math.ceil(maxAmount), 0),
     };
-
     const previous = lastSentBoundsRef.current;
     if (previous && previous.min === nextBounds.min && previous.max === nextBounds.max) {
       return;
     }
-
     lastSentBoundsRef.current = nextBounds;
-
     onPriceBoundsChange(nextBounds);
   }, [activeTab, catalogItems, onPriceBoundsChange]);
 
   const filteredItems = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
-    const maxAllowedPrice = typeof selectedMaxPrice === "number" ? selectedMaxPrice : Number.POSITIVE_INFINITY;
-
+    // If price bounds are 0-0, ignore price filter and show all items
+    const ignorePrice = !selectedMaxPrice || selectedMaxPrice === 0;
     return catalogItems.filter((item) => {
-      if (item.contentType !== activeTab) {
+      if (activeTab !== "all" && item.contentType !== activeTab) {
         return false;
       }
-
-      if (item.amount > maxAllowedPrice) {
+      if (!ignorePrice && item.amount > selectedMaxPrice) {
         return false;
       }
-
       if (!normalizedSearch) {
         return true;
       }
-
       return (
         item.title.toLowerCase().includes(normalizedSearch) ||
         item.professionalName.toLowerCase().includes(normalizedSearch) ||
@@ -146,7 +141,7 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps
     setCartItemIds((current) => (current.includes(item.id) ? current : [item.id, ...current]));
   };
 
-  const handleTab = (tab: ContentTab) => {
+  const handleTab = (tab: ContentTab | "all") => {
     setActiveTab(tab);
     setPage(1);
   };
@@ -155,6 +150,16 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps
     <div className="flex-1">
       <div className="mb-6 flex items-center justify-between gap-2">
         <div className="flex gap-2">
+          <button
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              activeTab === "all"
+                ? "bg-[#1ec28e] text-white hover:bg-[#169e6d]"
+                : "bg-[#e5f8f2] text-[#1ec28e] hover:bg-[#c7f0e3]"
+            }`}
+            onClick={() => handleTab("all")}
+          >
+            All
+          </button>
           <button
             className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
               activeTab === "book"

@@ -106,6 +106,7 @@ const sidebarItems: Array<{ label: string; icon: typeof LayoutGrid; section?: Da
   { label: "Upgrade Profile", icon: CreditCard, section: "upgrade" },
   { label: "Purchases", icon: Users, href: "/dashboard/teachers/purchases" },
   { label: "Reviews", icon: Star, href: "/dashboard/teachers/reviews" },
+  { label: "Follow", icon: Users, href: "/dashboard/professional/follow" },
   { label: "Settings", icon: Settings, section: "settings" },
 ];
 

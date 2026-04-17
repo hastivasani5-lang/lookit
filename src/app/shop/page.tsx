@@ -9,11 +9,12 @@ import WhyUpskill from "@/components/WhyUpskill";
 import Footer from "@/components/Footer";
 import { useCallback, useState } from "react";
 
+
 export default function ShopPage() {
   const [priceBounds, setPriceBounds] = useState({ min: 0, max: 0 });
   const [selectedMaxPrice, setSelectedMaxPrice] = useState<number | null>(null);
 
-  const handlePriceBoundsChange = useCallback((nextBounds: { min: number; max: number }) => {
+const handlePriceBoundsChange = useCallback((nextBounds: { min: number; max: number }) => {
     setPriceBounds((currentBounds) => {
       if (currentBounds.min === nextBounds.min && currentBounds.max === nextBounds.max) {
         return currentBounds;
@@ -22,7 +23,7 @@ export default function ShopPage() {
       return nextBounds;
     });
 
-    setSelectedMaxPrice((current) => {
+   setSelectedMaxPrice((current) => {
       if (current === null) {
         return nextBounds.max;
       }

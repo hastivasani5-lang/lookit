@@ -39,6 +39,26 @@
       "categories": [
         "Technology"
       ]
+    },
+    "76da43c0-08fb-4cb3-87d5-f47a2019cc61": {
+      "books": [
+        {
+          "name": "web",
+          "category": "Technology",
+          "mrp": "12.00",
+          "imageUrl": "/uploads/books/76da43c0-08fb-4cb3-87d5-f47a2019cc61-1776423085522-3vxt8m.png",
+          "url": "",
+          "source": "file",
+          "fileName": "lookit 1.pdf",
+          "sizeLabel": "5.4 KB",
+          "id": "book-1776423085530-inj56s",
+          "createdAt": "2026-04-17T10:51:25.530Z"
+        }
+      ],
+      "videos": [],
+      "categories": [
+        "Technology"
+      ]
     }
   },
   "students": {}

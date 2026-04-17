@@ -73,6 +73,42 @@
 			"label": "push-all-gradient-button-updates-pwsh",
 			"type": "shell",
 			"command": "git add -A; git commit -m \"Apply emerald-teal gradient to all main buttons\"; git pull --rebase origin main; git push origin main"
+		},
+		{
+			"label": "pull-main-latest",
+			"type": "shell",
+			"command": "git checkout main && git pull origin main",
+			"group": "build"
+		},
+		{
+			"label": "pull-main-latest-pwsh",
+			"type": "shell",
+			"command": "git checkout main; git pull origin main",
+			"group": "build"
+		},
+		{
+			"label": "push-without-commit-prompt-pwsh",
+			"type": "shell",
+			"command": "git add -A; git commit -m \"Auto commit\"; git pull --rebase origin main; git push origin main",
+			"group": "build"
+		},
+		{
+			"label": "pull-main-latest-pwsh",
+			"type": "shell",
+			"command": "git checkout main; git pull origin main",
+			"group": "build"
+		},
+		{
+			"label": "push-without-commit-prompt-pwsh",
+			"type": "shell",
+			"command": "git add -A; git commit -m \"Auto commit\"; git pull --rebase origin main; git push origin main",
+			"group": "build"
+		},
+		{
+			"label": "push-without-commit-prompt-pwsh",
+			"type": "shell",
+			"command": "git add -A; git commit -m \"Auto commit\"; git pull --rebase origin main; git push origin main",
+			"group": "build"
 		}
 	]
 }

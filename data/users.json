@@ -315,5 +315,41 @@
     "approvalStatus": "pending",
     "provider": "credentials",
     "createdAt": "2026-04-17T04:14:41.338Z"
+  },
+  {
+    "id": "76da43c0-08fb-4cb3-87d5-f47a2019cc61",
+    "name": "Hasti",
+    "email": "hast@gmail.com",
+    "passwordHash": "$2a$10$o4y/gGCh1sfskI1jQgsXAO0YiTAGUaoUoITbSTWn8rZyWXVjatg8m",
+    "role": "professional",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "pending",
+    "provider": "credentials",
+    "createdAt": "2026-04-17T10:35:33.000Z"
+  },
+  {
+    "id": "14db6872-20af-4eea-a8f9-5cd31e07c75c",
+    "name": "Hasti Vasani",
+    "email": "mvasani723@gmail.com",
+    "passwordHash": "$2a$10$Heb7XBRsbmLmRUkFExN3Muv8JAtoZDWI9KkEW0aI0j6pLe4XeDD0m",
+    "role": "student",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-17T12:12:05.733Z"
+  },
+  {
+    "id": "3d2b350b-4bd9-4253-8cfb-26d7f10665df",
+    "name": "Hasti Vasani",
+    "email": "aspire@gmail.com",
+    "passwordHash": "$2a$10$oMYN1xrxvnu1Ku/vSwavE.t9.FZfvNfQrel5cPF8x7tBN4vijsGsi",
+    "role": "professional",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "pending",
+    "provider": "credentials",
+    "createdAt": "2026-04-17T12:12:56.945Z"
   }
 ]

@@ -1,9 +1,9 @@
 "use client";
-
+ 
 import { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-
+ 
 const testimonialSlides = [
   {
     title: "Impressive Learning!",
@@ -33,61 +33,62 @@ const testimonialSlides = [
     rating: "★★★★☆",
   },
 ];
-
+ 
 const Testimonials = () => {
   const [activeSlide, setActiveSlide] = useState(0);
-
+ 
   const goPrev = () => {
     setActiveSlide((prev) => (prev === 0 ? testimonialSlides.length - 1 : prev - 1));
   };
-
+ 
   const goNext = () => {
     setActiveSlide((prev) => (prev === testimonialSlides.length - 1 ? 0 : prev + 1));
   };
-
+ 
   const currentSlide = testimonialSlides[activeSlide];
-
+ 
   return (
-    <section className="relative overflow-hidden bg-[#e6efed] px-4 py-12 md:px-10 lg:px-16">
-
+    <section className="relative overflow-hidden bg-[#e6efed] px-4 py-6 md:px-10 lg:px-16">
+ 
       <div className="mx-auto mb-16 max-w-7xl text-center lg:text-left">
-        
+       
         <div className="flex flex-col items-center justify-between gap-6 lg:flex-row lg:items-center">
-
+ 
           {/* LEFT */}
           <div className="w-full lg:w-1/2" data-aos="fade-right">
-            
+           
             <div className="flex items-center justify-center gap-2 text-sm text-gray-500 lg:justify-start">
               <span className="w-2 h-2 bg-[#1ec28e] rounded-full"></span>
-              INSTRUCTORS
-            </div>
+              TESTIMONIALS
 
+            </div>
+ 
             {/* LINE */}
             <div className="mt-3 w-full h-px bg-gray-300"></div>
-
+ 
           </div>
-
+ 
           {/* RIGHT */}
           <div className="w-full lg:w-1/2" data-aos="fade-left">
             <h2 className="text-2xl font-bold leading-tight text-gray-900 md:text-4xl lg:text-right">
-            Introducing the Educators and
+Real Experiences From Our
  <br />
-Professional Instructor
+Dedicated Learners
             </h2>
           </div>
-
+ 
         </div>
-
+ 
       </div>
-
+ 
    {/* MAIN */}
 <div className="mb-9 grid items-center gap-12 lg:grid-cols-2">
-
+ 
   {/* LEFT */}
   <div className="relative flex justify-center" data-aos="fade-right">
-
+ 
     <div className="relative h-[360px] w-full max-w-[340px] sm:h-[420px] sm:max-w-[420px]">
-
+ 
       {/* MAP */}
       <div className="absolute inset-0 opacity-20">
         <Image
@@ -98,10 +99,10 @@ Professional Instructor
           className="object-contain"
         />
       </div>
-
+ 
       {/* ✅ GREEN HALF CIRCLE */}
       <div className="absolute left-1/2 top-[80px] h-[220px] w-[220px] -translate-x-1/2 rounded-full bg-[#1ec28e] sm:top-[60px] sm:h-[300px] sm:w-[300px]"></div>
-
+ 
       {/* MAIN IMAGE */}
       <Image
         src="/girls.png"
@@ -110,7 +111,7 @@ Professional Instructor
         height={360}
         className="absolute bottom-0 left-1/2 z-10 h-auto w-[220px] -translate-x-1/2 sm:w-[300px]"
       />
-
+ 
       {/* AVATAR TOP */}
       <motion.div
         animate={{ y: [0, -8, 0] }}
@@ -119,7 +120,7 @@ Professional Instructor
       >
         <Image src="/pro1.jpeg" fill sizes="48px" alt="" />
       </motion.div>
-
+ 
       {/* AVATAR LEFT BOTTOM */}
       <motion.div
         animate={{ y: [0, 10, 0] }}
@@ -128,7 +129,7 @@ Professional Instructor
       >
         <Image src="/pro2.jpeg" fill sizes="48px" alt="" />
       </motion.div>
-
+ 
       {/* AVATAR RIGHT */}
       <motion.div
         animate={{ x: [0, 8, 0] }}
@@ -137,13 +138,13 @@ Professional Instructor
       >
         <Image src="/pro3.jpeg" fill sizes="48px" alt="" />
       </motion.div>
-
+ 
     </div>
   </div>
-
+ 
   {/* RIGHT */}
   <div className="mb-8 flex flex-col gap-6 text-center lg:text-left" data-aos="fade-left" data-aos-delay="120">
-
+ 
     {/* CARD */}
     <motion.div
       key={activeSlide}
@@ -154,25 +155,25 @@ Professional Instructor
       data-aos="fade-up"
       data-aos-delay="180"
     >
-
+ 
       <div className="flex items-center gap-2 mb-4">
         <span className="text-[#1ec28e] text-2xl">❝</span>
         <h3 className="font-semibold text-lg text-[#0f172a]">
           {currentSlide.title}
         </h3>
       </div>
-
+ 
       <p className="text-gray-600 text-sm leading-relaxed mb-6">
         {currentSlide.description}
       </p>
-
+ 
       <div className="text-orange-500 text-base font-medium">{currentSlide.rating}</div>
-
+ 
     </motion.div>
-
+ 
     {/* USER */}
     <div className="flex max-w-[520px] flex-col gap-4 sm:flex-row sm:items-center sm:justify-between" data-aos="fade-up" data-aos-delay="260">
-
+ 
       <div className="flex items-center justify-center gap-3 sm:justify-start">
         <motion.div
           key={currentSlide.image}
@@ -188,7 +189,7 @@ Professional Instructor
           <p className="text-sm text-gray-500">{currentSlide.role}</p>
         </div>
       </div>
-
+ 
       <div className="flex items-center justify-center gap-3 sm:ml-auto sm:justify-end">
         <button
           onClick={goPrev}
@@ -205,27 +206,27 @@ Professional Instructor
           →
         </button>
       </div>
-
+ 
     </div>
-
+ 
   </div>
-
+ 
 </div>
+ 
 
-        {/* CTA */}
-{/* CTA */}
+  {/* CTA */}
   <div className="relative mt-6 md:mt-[-60px]">
-
-  
-
+ 
+ 
+ 
   <div className="relative flex flex-col items-center justify-between gap-6 rounded-[24px] bg-[#1ec28e] px-6 py-6 text-center md:flex-row md:px-10 md:py-8 md:text-left">
-
+ 
     {/* TEXT */}
     <h3 className="text-white text-lg md:text-2xl font-semibold text-center md:text-left">
       Learn Anytime, Anywhere <br />
       Start Your Free Trial!
     </h3>
-
+ 
     {/* CALL */}
     <div className="flex items-center justify-center gap-3 text-white md:justify-start">
       <div className="w-10 h-10 bg-white text-[#1ec28e] rounded-full flex items-center justify-center">
@@ -236,7 +237,7 @@ Professional Instructor
         <p className="font-semibold text-sm">+123 (4567) 890</p>
       </div>
     </div>
-
+ 
     {/* TRUST */}
     <div className="bg-white rounded-lg px-4 py-2 flex items-center gap-2 shadow">
       <span className="text-green-500">★</span>
@@ -247,14 +248,14 @@ Professional Instructor
         </p>
       </div>
     </div>
-
+ 
   </div>
-
+ 
 </div>
-
-    
+   
     </section>
   );
 };
-
+ 
 export default Testimonials;
+ 

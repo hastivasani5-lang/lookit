@@ -33,7 +33,7 @@ const blogs = [
 export default function BlogSection() {
   return (
     <section
-      className=" py-20 px-4 md:px-10 lg:px-16"
+      className="bg-white py-20 px-4 md:px-10 lg:px-16"
       data-aos="fade-up"
       data-aos-duration="900"
     >

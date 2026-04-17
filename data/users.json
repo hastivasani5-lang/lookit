@@ -274,6 +274,8 @@
     "role": "professional",
     "certificates": [],
     "reviews": [],
+    "profileBoostedUntil": "2026-05-17T04:05:17.658Z",
+    "profileUpgradeTier": "pro",
     "approvalStatus": "pending",
     "provider": "credentials",
     "createdAt": "2026-04-16T12:00:12.631Z"

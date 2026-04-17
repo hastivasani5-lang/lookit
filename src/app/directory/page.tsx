@@ -6,8 +6,8 @@ import Navbar from "@/components/Navbar";
 import PageBanner from "@/components/PageBanner";
 import StatsSection from "@/components/StatsSection";
 import CoursesFilteredLayout from "@/components/CoursesFilteredLayout";
-import CoursesInstructorsSection from "@/components/CoursesInstructorsSection";
-import CoursesPromoBanner from "@/components/CoursesPromoBanner";
+ import CoursesPromoBanner from "@/components/CoursesPromoBanner";
+import StepFlow from "@/components/StepFlow";
 import Footer from "@/components/Footer";
 
 function DirectoryPageContent() {
@@ -20,7 +20,7 @@ function DirectoryPageContent() {
       <StatsSection />
       <CoursesFilteredLayout searchQuery={searchQuery} />
       <CoursesPromoBanner />
-      <CoursesInstructorsSection />
+      <StepFlow />
       <Footer />
     </main>
   );

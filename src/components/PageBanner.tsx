@@ -101,7 +101,7 @@ export default function PageBanner() {
             type="submit"
             whileTap={{ scale: 0.9 }}
             whileHover={{ scale: 1.05 }}
-            className="rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+            className="rounded-xl bg-primary px-6 py-3 text-sm font-semibold text- bg-[#e6efed] transition hover:bg-[#18ab7d]"
           >
             Search
           </motion.button>

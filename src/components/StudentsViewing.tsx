@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Star } from "lucide-react";
+import { Star, ChevronLeft, ChevronRight, BookOpen, Users } from "lucide-react";
 import { useState } from "react";
 
 const courses = [
@@ -202,13 +202,25 @@ const courses = [
     badge: "HOT",
     category: "Development",
   },
-
 ];
+
+// Helper to get badge styling based on badge text
+const getBadgeStyle = (badge: string) => {
+  const lower = badge.toLowerCase();
+  if (lower.includes("featured")) return "bg-gradient-to-r from-amber-500 to-orange-500";
+  if (lower.includes("-")) return "bg-gradient-to-r from-red-500 to-rose-500";
+  if (lower.includes("new")) return "bg-gradient-to-r from-emerald-500 to-teal-500";
+  if (lower.includes("hot")) return "bg-gradient-to-r from-orange-500 to-red-600";
+  return "bg-gradient-to-r from-blue-500 to-indigo-500";
+};
 
 export default function StudentsViewing() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 8;
   const totalPages = Math.ceil(courses.length / pageSize);
+
+  const handlePrev = () => setCurrentPage((p) => Math.max(1, p - 1));
+  const handleNext = () => setCurrentPage((p) => Math.min(totalPages, p + 1));
 
   const paginatedCourses = courses.slice(
     (currentPage - 1) * pageSize,
@@ -216,110 +228,152 @@ export default function StudentsViewing() {
   );
 
   return (
-    <section className="bg-[#f7f9fb] px-6 md:px-16 py-20">
+    <section className="bg-gradient-to-b from-[#f7f9fb] to-white px-6 md:px-16 py-20">
       <div className="max-w-7xl mx-auto">
-
         {/* ================= HEADER ================= */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
-
-          {/* 🔥 UPDATED TITLE */}
           <h2 className="text-2xl md:text-3xl font-bold text-[#1e2a55]">
             All{" "}
             <span className="relative inline-block">
               Latest Courses
-              <span className="absolute left-0 -bottom-1 w-full h-[3px] bg-[#1ec28e]"></span>
+              <span className="absolute left-0 -bottom-1 w-full h-[3px] bg-[#1ec28e] rounded-full"></span>
             </span>
           </h2>
-
-          {/* 🔥 CLEAN FILTERS */}
-          <div className="flex gap-4 text-sm text-gray-500 flex-wrap">
-            <button className="bg-[#1ec28e] text-white font-semibold px-4 py-2 rounded-full shadow hover:bg-[#18ab7d] transition">All</button>
-            <button className="bg-[#1ec28e] text-white font-semibold px-4 py-2 rounded-full shadow hover:bg-[#18ab7d] transition">Design</button>
-            <button className="bg-[#1ec28e] text-white font-semibold px-4 py-2 rounded-full shadow hover:bg-[#18ab7d] transition">Development</button>
-            <button className="bg-[#1ec28e] text-white font-semibold px-4 py-2 rounded-full shadow hover:bg-[#18ab7d] transition">Business</button>
-            <button className="bg-[#1ec28e] text-white font-semibold px-4 py-2 rounded-full shadow hover:bg-[#18ab7d] transition">Marketing</button>
+          <div className="flex gap-2">
+            <button
+              onClick={handlePrev}
+              disabled={currentPage === 1}
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-white border border-gray-200 text-[#1e2a55] shadow-sm hover:bg-[#1ec28e] hover:text-white hover:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-[#1e2a55]"
+              aria-label="Previous"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              onClick={handleNext}
+              disabled={currentPage === totalPages}
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-white border border-gray-200 text-[#1e2a55] shadow-sm hover:bg-[#1ec28e] hover:text-white hover:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-[#1e2a55]"
+              aria-label="Next"
+            >
+              <ChevronRight size={20} />
+            </button>
           </div>
-
         </div>
 
-        {/* ================= GRID ================= */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {/* ================= ENHANCED GRID ================= */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7">
           {paginatedCourses.map((course, index) => (
             <div
               key={index}
-              className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition"
+              className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-gray-100"
             >
-              {/* IMAGE */}
-              <div className="relative">
+              {/* IMAGE CONTAINER WITH ZOOM EFFECT */}
+              <div className="relative overflow-hidden bg-gray-100">
                 <Image
                   src={course.image}
-                  alt=""
+                  alt={course.title}
                   width={400}
                   height={250}
-                  className="w-full h-[180px] object-cover"
+                  className="w-full h-[190px] object-cover transition-transform duration-500 group-hover:scale-105"
                 />
 
+                {/* BADGE WITH GRADIENT */}
                 {course.badge && (
-                  <span className="absolute top-3 left-3 bg-[#ff5b5b] text-white text-xs px-2 py-1 rounded">
+                  <span
+                    className={`absolute top-3 left-3 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-md ${getBadgeStyle(
+                      course.badge
+                    )}`}
+                  >
                     {course.badge}
                   </span>
                 )}
+
+                {/* OVERLAY ON HOVER */}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+
+                {/* QUICK ACTION BUTTON (HOVER) */}
+                <button className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm text-[#1e2a55] p-1.5 rounded-full opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-md hover:bg-[#1ec28e] hover:text-white">
+                  <BookOpen size={16} />
+                </button>
               </div>
 
-              {/* CONTENT */}
+              {/* CONTENT WITH ENHANCED TYPOGRAPHY */}
               <div className="p-4">
-                <h3 className="text-sm font-semibold text-[#1e2a55] line-clamp-2">
+                <h3 className="text-base font-bold text-[#1e2a55] line-clamp-2 group-hover:text-[#1ec28e] transition-colors duration-200">
                   {course.title}
                 </h3>
 
-                <p className="text-xs text-gray-400 mt-1">
-                  {course.author}
-                </p>
-
-                <p className="text-[#1ec28e] font-bold mt-2">
-                  {course.price}
-                </p>
-
-                <div className="flex items-center gap-1 mt-2">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      size={14}
-                      className="text-yellow-400 fill-yellow-400"
-                    />
-                  ))}
-                  <span className="text-xs text-gray-400">(5)</span>
+                {/* AUTHOR WITH ICON */}
+                <div className="flex items-center gap-1.5 mt-1.5">
+                  <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center">
+                    <Users size={10} className="text-gray-500" />
+                  </div>
+                  <p className="text-xs text-gray-500 font-medium">
+                    {course.author}
+                  </p>
                 </div>
+
+                {/* PRICE AND RATING ROW */}
+                <div className="flex items-center justify-between mt-3">
+                  <div>
+                    {course.price === "$0" ? (
+                      <span className="text-lg font-extrabold bg-gradient-to-r from-[#1ec28e] to-emerald-600 bg-clip-text text-transparent">
+                        Free
+                      </span>
+                    ) : (
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-lg font-extrabold text-[#1e2a55]">
+                          {course.price}
+                        </span>
+                        {course.price === "$45.00" && (
+                          <span className="text-xs text-gray-400 line-through">
+                            $89.00
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* RATING WITH CUSTOM STARS */}
+                  <div className="flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded-full">
+                    <div className="flex items-center gap-0.5">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          size={12}
+                          className="text-amber-400 fill-amber-400"
+                        />
+                      ))}
+                    </div>
+                    <span className="text-[10px] font-semibold text-gray-600 ml-0.5">
+                      5.0
+                    </span>
+                  </div>
+                </div>
+
+                {/* DIVIDER */}
+                <div className="border-t border-gray-100 my-3"></div>
+
+                {/* ENROLL BUTTON */}
+                <button className="w-full py-2 rounded-lg text-sm font-semibold transition-all duration-300 bg-gray-50 text-[#1e2a55] hover:bg-[#1ec28e] hover:text-white group/btn flex items-center justify-center gap-2">
+                  <span>Enroll Now</span>
+                  <svg
+                    className="w-3.5 h-3.5 transition-transform duration-300 group-hover/btn:translate-x-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </button>
               </div>
             </div>
           ))}
         </div>
-
-        {/* ================= PAGINATION ================= */}
-        <div className="flex justify-center items-center gap-4 mt-10">
-          <button
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
-            className="px-4 py-2 rounded-full bg-[#1ec28e] text-white font-semibold shadow disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#18ab7d] transition"
-          >
-            Previous
-          </button>
-
-          <span className="text-sm font-semibold">
-            Page {currentPage} of {totalPages}
-          </span>
-
-          <button
-            onClick={() =>
-              setCurrentPage((p) => Math.min(totalPages, p + 1))
-            }
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 rounded-full bg-[#1ec28e] text-white font-semibold shadow disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#18ab7d] transition"
-          >
-            Next
-          </button>
-        </div>
-
       </div>
     </section>
   );

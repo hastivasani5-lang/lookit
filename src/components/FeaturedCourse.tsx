@@ -14,14 +14,14 @@ const FeaturedCourse = () => {
       </div>
 
       <div className="relative mx-auto max-w-6xl">
-        <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
+        <div className="grid gap-6 lg:grid-cols-2 lg:gap-8 items-stretch">
           {/* LEFT SIDE - VIDEO THUMBNAIL */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-            className="group relative h-56 overflow-hidden rounded-xl shadow-md sm:h-64 md:h-72 lg:h-80"
+            className="group relative h-56 sm:h-64 md:h-72 lg:h-80 min-h-full overflow-hidden rounded-xl shadow-md"
           >
             <Image
               src="/offer-video.png"
@@ -45,7 +45,7 @@ const FeaturedCourse = () => {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             viewport={{ once: true }}
-            className="relative overflow-hidden rounded-xl bg-white shadow-lg"
+            className="relative overflow-hidden rounded-xl bg-white shadow-lg h-56 sm:h-64 md:h-72 lg:h-80 min-h-full flex flex-col"
           >
             <div className="relative z-10 p-5 sm:p-6 md:p-7">
               {/* Category */}

@@ -196,8 +196,8 @@ Professional Instructor
         <Image
           src="/start.png"
           alt="icon"
-          width={60}
-          height={60}
+          width={180}
+          height={180}
           className="h-auto w-auto"
         />
       </motion.div>

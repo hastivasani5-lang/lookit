@@ -419,7 +419,7 @@ export default function ProfessionalsContent() {
                       <div className="mt-auto flex w-full gap-2">
                         <Link
                           href={`/professionals/${item.id}`}
-                          className="flex-1 rounded-full bg-primary px-4 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+                          className="flex-1 rounded-full bg-primary px-4 py-2.5 text-center text-sm font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 text-white transition"
                         >
                           View Profile
                         </Link>

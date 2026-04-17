@@ -41,6 +41,13 @@ export async function GET() {
 
   const payments = await getPayments();
 
+
+  // Only show purchases from today (not last 24h, but same calendar date)
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = today.getMonth();
+  const dd = today.getDate();
+
   const purchases = payments
     .filter((payment) => payment.professionalId === professionalId && payment.status === "completed")
     .flatMap((payment) =>
@@ -59,6 +66,10 @@ export async function GET() {
           amount: item.price,
         } satisfies PurchaseRow)),
     )
+    .filter((purchase) => {
+      const d = new Date(purchase.purchaseTime);
+      return d.getFullYear() === yyyy && d.getMonth() === mm && d.getDate() === dd;
+    })
     .sort((left, right) => new Date(right.purchaseTime).getTime() - new Date(left.purchaseTime).getTime());
 
   const uniqueStudentsCount = new Set(purchases.map((purchase) => purchase.studentId)).size;

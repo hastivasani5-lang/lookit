@@ -61,7 +61,7 @@ export default async function AdminStudentActivityDetailsPage({ params }: { para
                   </tr>
                 </thead>
                 <tbody>
-                  {library.purchasedBooks.map((book) => (
+                  {library.purchasedBooks.slice(0, 10).map((book) => (
                     <tr key={book.id} className="border-t border-slate-100 text-slate-700">
                       <td className="px-4 py-3 font-medium text-slate-800">{book.title}</td>
                       <td className="px-4 py-3">{book.source}</td>
@@ -90,7 +90,7 @@ export default async function AdminStudentActivityDetailsPage({ params }: { para
                   </tr>
                 </thead>
                 <tbody>
-                  {library.watchedVideos.map((video) => (
+                  {library.watchedVideos.slice(0, 10).map((video) => (
                     <tr key={video.id} className="border-t border-slate-100 text-slate-700">
                       <td className="px-4 py-3 font-medium text-slate-800">{video.title}</td>
                       <td className="px-4 py-3">{video.provider}</td>

@@ -64,7 +64,6 @@ export async function GET() {
   }
 
   const library = await getProfessionalLibrary(professionalId);
-
   return NextResponse.json({
     books: library.books,
     videos: library.videos,

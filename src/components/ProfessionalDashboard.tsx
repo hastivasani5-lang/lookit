@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -7,6 +8,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Bell,
+  Calendar as CalendarIcon,
   BookOpen,
   ChevronRight,
   CreditCard,
@@ -26,6 +28,7 @@ import {
   Video,
 } from "lucide-react";
 import UpgradeTimeline from "@/components/UpgradeTimeline";
+import NotificationModal from "./NotificationModal";
 
 type ProfessionalUser = {
   id: string;
@@ -112,25 +115,25 @@ const sidebarItems: Array<{ label: string; icon: typeof LayoutGrid; section?: Da
 
 const overviewCards = [
   {
-    title: "Business Analytics",
+    title: "Total User",
     description: "Invest in your future with our business analysis course",
     icon: LayoutGrid,
     iconBg: "bg-[#eef5ff] text-[#5067d9]",
   },
   {
-    title: "Design",
+    title: "Total Book",
     description: "Invest in your future with our design strategy course",
     icon: BookOpen,
     iconBg: "bg-[#effaf6] text-[#1ec28e]",
   },
   {
-    title: "Currency",
+    title: "Total Video",
     description: "Invest in your future with our finance and currency course",
     icon: CreditCard,
     iconBg: "bg-[#f0f7ff] text-[#5067d9]",
   },
   {
-    title: "Sale Marketing",
+    title: "Running Plan",
     description: "Invest in your future with our marketing course",
     icon: Users,
     iconBg: "bg-[#fff4e8] text-[#f59e0b]",
@@ -326,6 +329,49 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   const [videoLevelInput, setVideoLevelInput] = useState("");
   const [videoCoursePackageInput, setVideoCoursePackageInput] = useState<"30days" | "60days" | "6months" | "1year">("30days");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  // Notification data states
+  const [notificationFollowers, setNotificationFollowers] = useState<any[]>([]);
+  const [notificationBooksVideos, setNotificationBooksVideos] = useState<any[]>([]);
+  const [notificationPurchases, setNotificationPurchases] = useState<any[]>([]);
+
+  // Fetch notification data when notification sidebar opens
+  useEffect(() => {
+    if (!isNotificationOpen) return;
+    async function fetchNotifications() {
+      // Followers (not implemented in follows.json, so leave empty or mock)
+      setNotificationFollowers([]);
+
+      // Books and videos added by professional
+      try {
+        const res = await fetch('/data/content-library.json');
+        const data = await res.json();
+        const prof = data.professionals?.[user.id];
+        const books = prof?.books?.map((b: any) => ({ id: b.id, message: `Book added: ${b.name}` })) || [];
+        const videos = prof?.videos?.map((v: any) => ({ id: v.id, message: `Video added: ${v.name}` })) || [];
+        setNotificationBooksVideos([...books, ...videos]);
+      } catch {
+        setNotificationBooksVideos([]);
+      }
+
+      // Purchases by students
+      try {
+        const res = await fetch('/data/payments.json');
+        const data = await res.json();
+        const purchases = (data.payments || [])
+          .filter((p: any) => p.professionalId === user.id)
+          .flatMap((p: any) => (p.items || []).map((item: any) => ({
+            id: `${p.id}-${item.contentId}`,
+            message: `${p.studentName} bought ${item.title} (${item.contentType})`
+          })));
+        setNotificationPurchases(purchases);
+      } catch {
+        setNotificationPurchases([]);
+      }
+    }
+    fetchNotifications();
+  }, [isNotificationOpen, user.id]);
   const [hasOpenedRazorpay, setHasOpenedRazorpay] = useState(false);
   const [likedBookIds, setLikedBookIds] = useState<Set<string>>(new Set());
   const [likedVideoIds, setLikedVideoIds] = useState<Set<string>>(new Set());
@@ -405,97 +451,108 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   }, [user.id]);
 
   const featuredContent = useMemo(() => {
-    if (featuredPage === 2) {
-      return (
-        <div className="grid gap-4 lg:grid-cols-3">
-          {coursePageTwo.map((video, index) => (
-            <article key={`${video.title}-${index}`} className="overflow-hidden rounded-[22px] bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-              <div className="relative aspect-video bg-slate-950">
-                <iframe
-                  className="h-full w-full"
-                  src={`https://www.youtube.com/embed/${video.youtubeId}`}
-                  title={video.title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-              <div className="space-y-3 p-4">
-                <span className="inline-flex rounded-full bg-[#1ec28e]/10 px-3 py-1 text-xs font-medium text-[#1ec28e]">
-                  {video.tag}
-                </span>
-                <h4 className="text-sm font-semibold leading-5 text-slate-900">{video.title}</h4>
-                <p className="text-xs text-slate-500">{video.academy}</p>
-              </div>
-            </article>
-          ))}
-        </div>
-      );
-    }
+    // Helper to check if a date is within the last 24 hours
+    const isToday = (createdAt: string) => {
+      if (!createdAt) return false;
+      const now = new Date();
+      const created = new Date(createdAt);
+      return now.getTime() - created.getTime() < 24 * 60 * 60 * 1000 && now.getDate() === created.getDate() && now.getMonth() === created.getMonth() && now.getFullYear() === created.getFullYear();
+    };
 
-    if (featuredPage === 3) {
-      return (
-        <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
-          {coursePageThree.map((course, index) => (
-            <article key={`${course.title}-${index}`} className="overflow-hidden rounded-[22px] bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-              <div className="relative h-44 overflow-hidden">
-                <Image src={course.image} alt={course.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1536px) 50vw, 33vw" className="object-cover" />
-                <div className="absolute left-4 top-4 rounded-full bg-[#1ec28e] px-3 py-1 text-xs font-medium text-white">
-                  {course.tag}
-                </div>
-                <button className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-full bg-white/95 text-[#1ec28e] shadow-sm">
-                  <Heart className="h-4 w-4" />
-                </button>
-              </div>
-              <div className="space-y-4 p-4">
-                <h4 className="text-sm font-semibold leading-5 text-slate-900">{course.title}</h4>
-                <div className="flex items-center justify-between text-xs text-slate-500">
-                  <span>{course.academy}</span>
-                  <span className="flex items-center gap-1 text-amber-500">
-                    <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                    4.8
-                  </span>
-                </div>
-                <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs text-slate-500">
-                  <span>{course.lessons}</span>
-                  <span className="text-sm font-semibold text-[#1ec28e]">$59.00</span>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-      );
-    }
+    // Filter books/videos to only those added today
+    const todaysBooks = addedBooks.filter((b) => isToday((b as any).createdAt));
+    const todaysVideos = addedVideos.filter((v) => isToday((v as any).createdAt));
 
-    return (
-      <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
-        {coursePageOne.map((course, index) => (
-          <article key={`${course.title}-${index}`} className="overflow-hidden rounded-[22px] bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-            <div className="relative h-44 overflow-hidden">
-              <Image src={course.image} alt={course.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1536px) 50vw, 33vw" className="object-cover" />
-              <div className="absolute left-4 top-4 rounded-full bg-[#1ec28e] px-3 py-1 text-xs font-medium text-white">
-                {course.tag}
-              </div>
-              <button className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-full bg-white/95 text-[#1ec28e] shadow-sm">
-                <Heart className="h-4 w-4" />
-              </button>
+    const getListItem = (
+      item: any,
+      index: number,
+      isVideo: boolean = false
+    ) => {
+      // Fallbacks for image src and alt
+      const imageSrc = item.image || item.imageUrl || "/books.png";
+      const imageAlt = item.title || item.name || "Book or Video";
+      // Determine open URL for book or video
+      let openUrl = "";
+      if (isVideo) {
+        // For YouTube or file videos
+        openUrl = item.url || (item.youtubeId ? `https://www.youtube.com/watch?v=${item.youtubeId}` : "");
+      } else {
+        // For books: prefer file URL if present, else Amazon/external
+        if (item.source === "file" && item.fileName && item.url && item.url.startsWith("blob:")) {
+          // Local file upload (blob URL)
+          openUrl = item.url;
+        } else if (item.source === "file" && item.url && (item.url.endsWith(".pdf") || item.url.startsWith("/uploads/"))) {
+          // Uploaded PDF or server file
+          openUrl = item.url;
+        } else if (item.source === "amazon" && item.url) {
+          // Amazon/external link
+          openUrl = item.url;
+        } else if (item.url) {
+          openUrl = item.url;
+        } else if (item.imageUrl && (item.imageUrl.endsWith(".pdf") || item.imageUrl.startsWith("/uploads/"))) {
+          openUrl = item.imageUrl;
+        } else {
+          openUrl = "";
+        }
+      }
+      const handleClick = (e: React.MouseEvent) => {
+        if (openUrl) {
+          window.open(openUrl, "_blank", "noopener,noreferrer");
+        }
+      };
+      return (
+        <li
+          key={`${item.title || item.name}-${index}`}
+          className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-slate-50 transition"
+          onClick={handleClick}
+          tabIndex={0}
+          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') handleClick(e as any); }}
+          role="button"
+          aria-label={`Open ${isVideo ? 'video' : 'book'}: ${item.title || item.name}`}
+        >
+          <div className={`relative ${isVideo ? "h-14 w-24" : "h-14 w-20"} flex-shrink-0 overflow-hidden rounded-xl bg-slate-100`}>
+            {isVideo ? (
+              <iframe
+                className="h-full w-full rounded-xl"
+                src={`https://www.youtube.com/embed/${item.youtubeId}`}
+                title={item.title || item.name || "Video"}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
+              <Image src={imageSrc} alt={imageAlt} fill sizes="(max-width: 768px) 100vw, (max-width: 1536px) 50vw, 33vw" className="object-cover" />
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="rounded-full bg-[#1ec28e]/10 px-2 py-0.5 text-xs font-medium text-[#1ec28e]">{item.tag || ""}</span>
+              <span className="text-xs text-slate-500">{item.academy || ""}</span>
             </div>
-            <div className="space-y-4 p-4">
-              <h4 className="text-sm font-semibold leading-5 text-slate-900">{course.title}</h4>
-              <div className="flex items-center justify-between text-xs text-slate-500">
-                <span>{course.academy}</span>
+            <h4 className="mt-1 text-sm font-semibold leading-5 text-slate-900 truncate">{item.title || item.name}</h4>
+            {isVideo ? null : (
+              <div className="flex items-center gap-4 text-xs text-slate-500 mt-1">
+                <span>{item.lessons}</span>
                 <span className="flex items-center gap-1 text-amber-500">
                   <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
                   4.5
                 </span>
-              </div>
-              <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs text-slate-500">
-                <span>{course.lessons}</span>
                 <span className="text-sm font-semibold text-[#1ec28e]">$49.00</span>
               </div>
-            </div>
-          </article>
-        ))}
-      </div>
+            )}
+          </div>
+        </li>
+      );
+    };
+
+    // Show only today's books/videos in the featured list
+    return (
+      <ul className="divide-y divide-slate-100 bg-white rounded-[22px] shadow-sm">
+        {todaysVideos.map((video, index) => getListItem(video, index, true))}
+        {todaysBooks.map((book, index) => getListItem(book, index, false))}
+        {todaysVideos.length === 0 && todaysBooks.length === 0 && (
+          <li className="px-4 py-6 text-center text-slate-500">No featured content added today.</li>
+        )}
+      </ul>
     );
   }, [featuredPage]);
 
@@ -1357,9 +1414,50 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                 />
               </div>
 
-              <button className="grid h-11 w-11 place-items-center rounded-full border-none bg-[#f6fefb] text-[#1ec28e] shadow-[3px_3px_8px_#d0dbd6,-3px_-3px_8px_#ffffff]">
+              <button
+                className="grid h-11 w-11 place-items-center rounded-full border-none bg-[#f6fefb] text-[#1ec28e] shadow-[3px_3px_8px_#d0dbd6,-3px_-3px_8px_#ffffff]"
+                onClick={() => setIsNotificationOpen(true)}
+                aria-label="Notifications"
+              >
                 <Bell className="h-4 w-4" />
               </button>
+                    {/* Notification Modal */}
+                    {isNotificationOpen && (
+                      <NotificationModal
+                        isOpen={isNotificationOpen}
+                        onClose={() => setIsNotificationOpen(false)}
+                        notifications={notificationFollowers}
+                        section2={notificationBooksVideos}
+                        section3={notificationPurchases}
+                      />
+                    )}
+              <button
+                className="grid h-11 w-11 place-items-center rounded-full border-none bg-[#f6fefb] text-[#1ec28e] shadow-[3px_3px_8px_#d0dbd6,-3px_-3px_8px_#ffffff]"
+                onClick={() => setIsCalendarOpen(true)}
+                aria-label="Open calendar"
+              >
+                <CalendarIcon className="h-4 w-4" />
+              </button>
+                  {/* Calendar Modal */}
+                  {isCalendarOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md transition-all">
+                      <div className="bg-gradient-to-br from-[#f6fefb] to-[#e0f7ef] rounded-3xl shadow-2xl px-0 py-0 w-full max-w-md relative border border-[#d1f5e0]">
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e0f7ef] bg-white rounded-t-3xl">
+                          <div className="text-xl font-bold text-[#1ec28e] tracking-wide">Calendar</div>
+                          <button
+                            className="text-3xl text-gray-400 hover:text-[#1ec28e] transition-colors"
+                            onClick={() => setIsCalendarOpen(false)}
+                            aria-label="Close calendar"
+                          >
+                            ×
+                          </button>
+                        </div>
+                        <div className="flex justify-center items-center p-6">
+                          {typeof window !== 'undefined' && require('./FullCalendarModalContent').default && React.createElement(require('./FullCalendarModalContent').default)}
+                        </div>
+                      </div>
+                    </div>
+                  )}
             </div>
           </div>
 

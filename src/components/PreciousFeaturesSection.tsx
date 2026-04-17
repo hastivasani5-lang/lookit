@@ -1,19 +1,18 @@
 import Image from "next/image";
-import Link from "next/link";
 import { Check } from "lucide-react";
 
 const leftFeatures = [
-  "Online Classes",
-  "Books Online/Offline",
-  "Long Term Courses",
-  "Cooking Classes",
+  "Verified Professionals",
+  "Advanced Search Filters",
+  "Trusted Reviews & Ratings",
+  "Special Needs Support",
 ];
 
 const rightFeatures = [
-  "Offline Classes",
-  "Short Term Courses",
-  "Music Classes",
-  "Networking Courses",
+  "Easy Profile Browsing",
+  "Location-Based Search",
+  "Secure User Experience",
+  "Personalized Learning Support",
 ];
 
 export default function PreciousFeaturesSection() {
@@ -36,13 +35,11 @@ export default function PreciousFeaturesSection() {
       <div className="relative mx-auto grid w-full max-w-[1080px] items-center gap-4 lg:grid-cols-[1.1fr_0.9fr] lg:gap-3">
         <div>
           <h2 className="text-3xl font-bold leading-tight sm:text-4xl lg:text-[48px]">
-            The predicious Features for you
+            The Key Features of Lookit
           </h2>
 
           <p className="mt-3 max-w-3xl text-base leading-7 text-black/70 sm:text-lg lg:text-[18px] lg:leading-[1.75]">
-            Many desktop publishing packages and web page editors now use Lorem Ipsum as their default
-            model text, and a search for will uncover many web sites still in their infancy. Various versions
-            have evolved over the years, sometimes by accident, sometimes on purpose
+            Lookit connects students and parents with trusted education professionals, making it easy to find and connect with reliable learning support.
           </p>
 
           <div className="mt-6 grid gap-x-6 gap-y-4 sm:grid-cols-2">
@@ -69,32 +66,45 @@ export default function PreciousFeaturesSection() {
             </div>
           </div>
 
-          <div className="mt-7 flex flex-wrap gap-4">
-            <Link
-              href="/get-started"
-              className="inline-flex items-center rounded-lg bg-[#ef5350] px-6 py-3 text-base font-semibold text-black transition hover:bg-[#e54845]"
-            >
-              Start Learning
-            </Link>
-            <Link
-              href="/courses"
-              className="inline-flex items-center rounded-lg bg-[#1ec28e] px-6 py-3 text-base font-semibold text-black transition hover:bg-[#18ab7d]"
-            >
-              View More
-            </Link>
-          </div>
         </div>
 
-        <div className="relative mx-auto w-full max-w-[300px] self-end lg:max-w-[360px]">
-          <Image
-            src="/girls.png"
-            alt="Student"
-            width={360}
-            height={430}
-            className="h-auto w-full object-contain"
-            priority={false}
-          />
-        </div>
+        {/* MAIN IMAGE */}
+                 <div className="relative h-[260px] w-[260px] animate-float sm:h-[320px] sm:w-[320px] md:h-[380px] md:w-[380px] lg:h-[420px] lg:w-[420px]">
+                   <Image
+                     src="/img1.png"
+                     alt="students"
+                     fill
+                     sizes="(max-width: 640px) 260px, (max-width: 768px) 320px, (max-width: 1024px) 380px, 420px"
+                     className="object-contain"
+                   />
+                 </div>
+       
+                 {/* DOTS */}
+                 <div className="absolute right-3 top-8 hidden grid-cols-4 gap-1 sm:grid sm:right-10 sm:top-12 lg:right-20">
+                   {Array.from({ length: 12 }).map((_, i) => (
+                     <span key={i} className="w-1.5 h-1.5 bg-[#1ec28e] rounded-full"></span>
+                   ))}
+                 </div>
+       
+                 {/* STAR */}
+                 <div className="absolute bottom-14 left-2 hidden h-10 w-10 items-center justify-center rounded-full border border-[#1ec28e]/55 text-lg text-[#1ec28e] animate-pulse sm:flex sm:bottom-20 sm:left-6 sm:h-12 sm:w-12 sm:text-xl lg:bottom-24 lg:left-10">
+                   *
+                 </div>
+       
+                 {/* EXPERIENCE CARD */}
+                 <div className="absolute bottom-4 right-2 flex items-center gap-3 rounded-xl bg-white px-3 py-2 shadow-lg animate-float sm:bottom-8 sm:right-0 sm:px-5 sm:py-2.5 lg:bottom-16 lg:px-6 lg:py-3">
+       
+                   <div className="w-10 h-10 bg-[#1ec28e] text-white rounded-full flex items-center justify-center">
+                     ★
+                   </div>
+       
+                   <div>
+                     <p className="font-bold text-lg text-gray-900">26+</p>
+                     <p className="text-xs text-gray-500">Years of Experiences</p>
+                   </div>
+       
+                 </div>
+       
       </div>
     </section>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { GraduationCap, BookOpen, MonitorPlay } from "lucide-react";
+import { Brain, ShieldCheck, Network } from "lucide-react";
 
 const FeaturesStrip = () => {
   return (
@@ -11,14 +11,14 @@ const FeaturesStrip = () => {
         {/* ITEM 1 */}
         <div className="flex items-start gap-4">
           <div className="text-[#1ec28e]">
-            <GraduationCap size={40} strokeWidth={1.5} />
+            <Brain size={40} strokeWidth={1.5} />
           </div>
           <div>
             <h3 className="text-lg font-semibold text-gray-800">
-              Scholarship Facility
+              Specialized Learning Support
             </h3>
             <p className="text-gray-500 text-sm mt-1 leading-6">
-              The ultimate destination knowledge We are committed to learn
+             Connect with experts supporting needs like speech therapy, ADHD, and dyslexia.
             </p>
           </div>
         </div>
@@ -26,14 +26,14 @@ const FeaturesStrip = () => {
         {/* ITEM 2 */}
         <div className="flex items-start gap-4">
           <div className="text-[#ff7a2f]">
-            <BookOpen size={40} strokeWidth={1.5} />
+            <ShieldCheck size={40} strokeWidth={1.5} />
           </div>
           <div>
             <h3 className="text-lg font-semibold text-gray-800">
-              Book & Library Store
+             Trusted Platform
             </h3>
             <p className="text-gray-500 text-sm mt-1 leading-6">
-              The ultimate destination knowledge We are committed to learn
+              A reliable platform connecting users with trusted education professionals and services.
             </p>
           </div>
         </div>
@@ -41,14 +41,14 @@ const FeaturesStrip = () => {
         {/* ITEM 3 */}
         <div className="flex items-start gap-4">
           <div className="text-[#3bb4ff]">
-            <MonitorPlay size={40} strokeWidth={1.5} />
+            <Network size={40} strokeWidth={1.5} />
           </div>
           <div>
             <h3 className="text-lg font-semibold text-gray-800">
-              Easily Online Learning
+              Expert Connections
             </h3>
             <p className="text-gray-500 text-sm mt-1 leading-6">
-              The ultimate destination knowledge We are committed to learn
+              Easily connect with experienced professionals who provide quality educational support.
             </p>
           </div>
         </div>

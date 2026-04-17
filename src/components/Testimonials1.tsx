@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useState } from "react";
 import Image from "next/image";
 import SectionTitle from "./SectionTitle";
 
@@ -18,20 +19,58 @@ const testimonials = [
     role: "UI Designer",
     image: "/pro3.jpeg",
   },
+  {
+    title: "Flexible Classes!",
+    desc: "Educate ultimate destination knowledge seekers and educators we are committed to transforming special education impact channels without standards compliant-is systems attractive learning",
+    name: "Sophia James",
+    role: "Student",
+    image: "/pro2.jpeg",
+  },
+  {
+    title: "Supportive Team!",
+    desc: "Educate ultimate destination knowledge seekers and educators we are committed to transforming special education impact channels without standards compliant-is systems attractive learning",
+    name: "Michael Ford",
+    role: "Mentor",
+    image: "/pro3.jpeg",
+  },
 ];
 
 export default function Testimonials() {
+  const [activePage, setActivePage] = useState(0);
+  const cardsPerPage = 2;
+  const totalPages = Math.ceil(testimonials.length / cardsPerPage);
+  const sliderRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollToPage = (nextPage: number) => {
+    const normalizedPage = (nextPage + totalPages) % totalPages;
+    const viewportWidth = sliderRef.current?.clientWidth ?? 0;
+
+    setActivePage(normalizedPage);
+    sliderRef.current?.scrollTo({
+      left: normalizedPage * viewportWidth,
+      behavior: "smooth",
+    });
+  };
+
+  const goToPrevious = () => {
+    scrollToPage(activePage - 1);
+  };
+
+  const goToNext = () => {
+    scrollToPage(activePage + 1);
+  };
+
   return (
     <section className="bg-[#e9f2f1] px-4 md:px-10 lg:px-16 py-16">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-10 items-center">
 
         {/* LEFT SIDE */}
-        <div>
+        <div className="lg:pl-8">
           {/* SMALL TITLE */}
           <SectionTitle className="mb-4">Testimonials</SectionTitle>
 
           {/* MAIN HEADING */}
-          <h2 className="text-3xl md:text-5xl font-bold text-gray-900 leading-tight mb-8">
+          <h2 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight mb-8">
             All Real Experiences <br />
             From Our Dedicated <br />
             Learners
@@ -47,59 +86,74 @@ export default function Testimonials() {
 
           {/* ARROWS */}
           <div className="flex gap-3">
-            <button className="w-10 h-10 rounded-full border flex items-center justify-center hover:bg-black hover:text-white transition">
+            <button
+              type="button"
+              onClick={goToPrevious}
+              className="w-10 h-10 rounded-full border flex items-center justify-center hover:bg-black hover:text-white transition"
+              aria-label="Previous testimonial"
+            >
               ←
             </button>
-            <button className="w-10 h-10 rounded-full border flex items-center justify-center hover:bg-black hover:text-white transition">
+            <button
+              type="button"
+              onClick={goToNext}
+              className="w-10 h-10 rounded-full border flex items-center justify-center hover:bg-black hover:text-white transition"
+              aria-label="Next testimonial"
+            >
               →
             </button>
           </div>
         </div>
 
         {/* RIGHT SIDE CARDS */}
-        <div className="grid md:grid-cols-2 gap-6">
+        <div
+          ref={sliderRef}
+          className="lg:-ml-44 w-full lg:w-[664px] overflow-x-auto scroll-smooth"
+        >
+          <div className="flex gap-6 snap-x snap-mandatory">
+            {testimonials.map((item, i) => (
+              <div
+                key={i}
+                className="shrink-0 snap-start"
+              >
+                <div className="bg-white rounded-[20px] p-6 shadow-sm hover:shadow-md transition w-[280px] sm:w-[300px] lg:w-[320px]">
+                  {/* TITLE */}
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-[#1ec28e] text-2xl">❝</span>
+                    <h3 className="font-semibold text-lg text-gray-900">
+                      {item.title}
+                    </h3>
+                  </div>
 
-          {testimonials.map((item, i) => (
-            <div
-              key={i}
-              className="bg-white rounded-[20px] p-6 shadow-sm hover:shadow-md transition"
-            >
-              {/* TITLE */}
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-[#1ec28e] text-2xl">❝</span>
-                <h3 className="font-semibold text-lg text-gray-900">
-                  {item.title}
-                </h3>
-              </div>
+                  {/* DESC */}
+                  <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                    {item.desc}
+                  </p>
 
-              {/* DESC */}
-              <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                {item.desc}
-              </p>
+                  {/* STARS */}
+                  <div className="text-orange-500 mb-4">★★★★★</div>
 
-              {/* STARS */}
-              <div className="text-orange-500 mb-4">★★★★★</div>
+                  {/* LINE */}
+                  <div className="h-[1px] bg-gray-200 mb-4"></div>
 
-              {/* LINE */}
-              <div className="h-[1px] bg-gray-200 mb-4"></div>
-
-              {/* USER */}
-              <div className="flex items-center gap-3">
-                <Image
-                  src={item.image}
-                  width={45}
-                  height={45}
-                  className="rounded-full"
-                  alt=""
-                />
-                <div>
-                  <p className="font-semibold text-gray-900">{item.name}</p>
-                  <p className="text-sm text-gray-500">{item.role}</p>
+                  {/* USER */}
+                  <div className="flex items-center gap-3">
+                    <Image
+                      src={item.image}
+                      width={45}
+                      height={45}
+                      className="rounded-full"
+                      alt=""
+                    />
+                    <div>
+                      <p className="font-semibold text-gray-900">{item.name}</p>
+                      <p className="text-sm text-gray-500">{item.role}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-
+            ))}
+          </div>
         </div>
       </div>
     </section>

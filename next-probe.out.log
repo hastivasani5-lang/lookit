@@ -1,0 +1,51 @@
+
+> lookit@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.2 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.29.92:3000
+✓ Ready in 719ms
+
+ GET /api/auth/providers 200 in 1660ms (next.js: 1606ms, application-code: 54ms)
+ GET /api/auth/providers 200 in 16ms (next.js: 3ms, application-code: 13ms)
+ GET /api/auth/providers 200 in 5ms (next.js: 2ms, application-code: 3ms)
+ GET /api/auth/providers 200 in 4ms (next.js: 1408µs, application-code: 2ms)
+ GET /api/auth/session 200 in 7ms (next.js: 1453µs, application-code: 6ms)
+ GET /api/auth/csrf 200 in 3ms (next.js: 1007µs, application-code: 2ms)
+ GET /api/auth/session 200 in 7ms (next.js: 1050µs, application-code: 6ms)
+ GET /api/auth/csrf 200 in 6ms (next.js: 1916µs, application-code: 4ms)
+ GET / 307 in 1502ms (next.js: 885ms, application-code: 617ms)
+ GET /dashboard/students 200 in 407ms (next.js: 82ms, application-code: 324ms)
+ GET /api/auth/session 200 in 100ms (next.js: 16ms, application-code: 85ms)
+ GET /team2.jpg 404 in 462ms (next.js: 120ms, application-code: 342ms)
+ GET /team1.jpg 404 in 739ms (next.js: 200ms, application-code: 540ms)
+ GET /team3.jpg 404 in 736ms (next.js: 246ms, application-code: 489ms)
+ GET /cart 200 in 554ms (next.js: 262ms, application-code: 292ms)
+ GET /cart 200 in 1742ms (next.js: 819ms, application-code: 924ms)
+ GET /product1.png 404 in 125ms (next.js: 35ms, application-code: 90ms)
+ GET /api/auth/session 200 in 112ms (next.js: 72ms, application-code: 40ms)
+ GET /cart 200 in 670ms (next.js: 220ms, application-code: 450ms)
+ GET /cart 200 in 326ms (next.js: 143ms, application-code: 183ms)
+ GET /product1.png 404 in 209ms (next.js: 36ms, application-code: 173ms)
+ GET /api/auth/session 200 in 227ms (next.js: 18ms, application-code: 209ms)
+ GET /cart 200 in 161ms (next.js: 5ms, application-code: 155ms)
+ GET /product1.png 404 in 135ms (next.js: 13ms, application-code: 122ms)
+ GET /api/auth/session 200 in 16ms (next.js: 3ms, application-code: 13ms)
+ GET /api/auth/session 200 in 20ms (next.js: 3ms, application-code: 17ms)
+ GET /cart 200 in 138ms (next.js: 5ms, application-code: 133ms)
+ GET /product1.png 404 in 121ms (next.js: 18ms, application-code: 103ms)
+ GET /api/auth/session 200 in 25ms (next.js: 4ms, application-code: 20ms)
+ GET /api/auth/session 200 in 22ms (next.js: 2ms, application-code: 20ms)
+✓ Compiled in 4.1s
+ GET /cart 200 in 1360ms (next.js: 767ms, application-code: 593ms)
+ GET /cart 200 in 385ms (next.js: 6ms, application-code: 379ms)
+ GET /cart 200 in 330ms (next.js: 37ms, application-code: 294ms)
+ GET /cart 200 in 339ms (next.js: 6ms, application-code: 333ms)
+ GET /cart 200 in 2.1s (next.js: 1423ms, application-code: 723ms)
+ GET /api/auth/session 200 in 172ms (next.js: 64ms, application-code: 108ms)
+ GET /api/auth/session 200 in 29ms (next.js: 5ms, application-code: 24ms)
+ GET /api/auth/session 200 in 19ms (next.js: 3ms, application-code: 16ms)
+✓ Compiled in 236ms
+ GET /product1.png 404 in 103ms (next.js: 24ms, application-code: 80ms)
+✓ Compiled in 175ms

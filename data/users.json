@@ -259,6 +259,8 @@
     "name": "asd",
     "email": "asd@gmail.com",
     "passwordHash": "$2a$10$HNZquKiE.EJSdHZQmcDsmOA3Ey3O/qZcDn5D8nWRtusTBFQeBPhnK",
+
+   
     "role": "student",
     "certificates": [],
     "reviews": [],
@@ -271,11 +273,12 @@
     "name": "Hasti Vasani",
     "email": "abc@gmail.com",
     "passwordHash": "$2a$10$Nz35.c0QNALLJbdWYYjAiubNSwk858I46o18G7iwdVjCPd.sjyoIG",
+
     "role": "professional",
     "certificates": [],
     "reviews": [],
     "approvalStatus": "pending",
     "provider": "credentials",
-    "createdAt": "2026-04-16T12:00:12.631Z"
+     "createdAt": "2026-04-16T12:00:12.631Z"
   }
 ]

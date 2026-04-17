@@ -73,24 +73,28 @@ export const authOptions: NextAuthOptions = {
         return false;
       }
 
-      const dbUser = await getUserByEmail(user.email);
-      if (!dbUser) {
-        return "/login?error=register-first";
+      try {
+        const dbUser = await getUserByEmail(user.email);
+        if (!dbUser) {
+          return "/login?error=register-first";
+        }
+
+        if (dbUser.role === "professional" && dbUser.approvalStatus === "rejected") {
+          await recordProfessionalLoginAttempt(dbUser, "rejected");
+          return "/login?error=approval-rejected";
+        }
+
+        user.id = dbUser.id;
+        user.role = dbUser.role;
+
+        if (dbUser.role === "professional") {
+          await markProfessionalLoggedIn(dbUser.id);
+        }
+
+        return true;
+      } catch {
+        return false;
       }
-
-      if (dbUser.role === "professional" && dbUser.approvalStatus === "rejected") {
-        await recordProfessionalLoginAttempt(dbUser, "rejected");
-        return "/login?error=approval-rejected";
-      }
-
-      user.id = dbUser.id;
-      user.role = dbUser.role;
-
-      if (dbUser.role === "professional") {
-        await markProfessionalLoggedIn(dbUser.id);
-      }
-
-      return true;
     },
     async jwt({ token, user }) {
       if (user) {
@@ -99,15 +103,19 @@ export const authOptions: NextAuthOptions = {
       }
 
       if (token.id) {
-        const dbUser = await getUserById(token.id);
-        if (dbUser) {
-          token.role = dbUser.role;
-          token.name = dbUser.name;
-          token.email = dbUser.email;
-          token.picture = dbUser.image ?? token.picture;
-          token.location = dbUser.location;
-          token.profileBoostedUntil = dbUser.profileBoostedUntil;
-          token.approvalStatus = dbUser.approvalStatus;
+        try {
+          const dbUser = await getUserById(token.id);
+          if (dbUser) {
+            token.role = dbUser.role;
+            token.name = dbUser.name;
+            token.email = dbUser.email;
+            token.picture = dbUser.image ?? token.picture;
+            token.location = dbUser.location;
+            token.profileBoostedUntil = dbUser.profileBoostedUntil;
+            token.approvalStatus = dbUser.approvalStatus;
+          }
+        } catch {
+          return token;
         }
       }
 

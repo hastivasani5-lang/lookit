@@ -1,6 +1,6 @@
 "use client";
 
-import { GraduationCap, Users, BadgeDollarSign } from "lucide-react";
+import { GraduationCap, Users, BookOpenCheck } from "lucide-react";
 
 const Features = () => {
   return (
@@ -74,12 +74,13 @@ const Features = () => {
           data-aos-delay="400"
           className="bg-[#eaf2f8] rounded-3xl p-8 text-center transition hover:shadow-xl lg:text-left"
         >
-          <BadgeDollarSign className="w-10 h-10 text-blue-500 mb-6" />
+          <BookOpenCheck className="w-10 h-10 text-blue-500 mb-6" />
           <h3 className="text-xl font-semibold text-gray-900">
-            Moneyback Guarantee
+            Personalized Learning
           </h3>
           <p className="text-gray-600 mt-3 text-sm leading-relaxed">
-            The ultimate destination for knowledge for We are committed to transforming
+            Personalized learning solutions to meet individual student needs and goals.
+
           </p>
         </div>
 

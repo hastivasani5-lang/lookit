@@ -45,12 +45,11 @@ type StudentProfileDashboardProps = {
   };
 };
 
-const tabItems: Array<{ key: DashboardTab; label: string }> = [
-  { key: "profile", label: "Profile" },
-  { key: "edit", label: "Edit Profile" },
-  { key: "courses", label: "Courses Information" },
-  { key: "followers", label: "Followers" },
-  { key: "reviews", label: "Reviews" },
+const tabItems: Array<{ key: string; label: string }> = [
+  { key: "buy-courses", label: "Buy Courses" },
+  { key: "calendar", label: "Calendar" },
+  { key: "wishlist", label: "Wishlist" },
+  { key: "following", label: "Following" },
 ];
 
 const skillRows = [
@@ -88,6 +87,7 @@ function getWebsiteFromEmail(email: string) {
   return domain ? `https://${domain}` : "https://lookit.com";
 }
 
+
 export default function StudentProfileDashboard({ user, library }: StudentProfileDashboardProps) {
   const profileStorageKey = `student-profile-preview-${user.id}`;
   const [activeTab, setActiveTab] = useState<DashboardTab>("profile");
@@ -98,41 +98,40 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
   const [editPhone, setEditPhone] = useState(user.contactNumber ?? "+125 254 3562");
   const [editLocation, setEditLocation] = useState(user.location ?? "USA");
   const [editWebsite, setEditWebsite] = useState(getWebsiteFromEmail(user.email));
+  const [profileAnswers, setProfileAnswers] = useState<any>(null);
 
   useEffect(() => {
     try {
-      const raw = window.localStorage.getItem(profileStorageKey);
-
-      if (!raw) {
-        return;
+       const raw = window.localStorage.getItem(profileStorageKey);
+      if (raw) {
+        const saved = JSON.parse(raw) as {
+          name?: string;
+          email?: string;
+          phone?: string;
+          location?: string;
+          website?: string;
+        };
+        if (typeof saved.name === "string" && saved.name.trim()) {
+          setEditName(saved.name);
+        }
+        if (typeof saved.email === "string" && saved.email.trim()) {
+          setEditEmail(saved.email);
+        }
+        if (typeof saved.phone === "string" && saved.phone.trim()) {
+          setEditPhone(saved.phone);
+        }
+        if (typeof saved.location === "string" && saved.location.trim()) {
+          setEditLocation(saved.location);
+        }
+        if (typeof saved.website === "string" && saved.website.trim()) {
+          setEditWebsite(saved.website);
+        }
       }
-
-      const saved = JSON.parse(raw) as {
-        name?: string;
-        email?: string;
-        phone?: string;
-        location?: string;
-        website?: string;
-      };
-
-      if (typeof saved.name === "string" && saved.name.trim()) {
-        setEditName(saved.name);
-      }
-
-      if (typeof saved.email === "string" && saved.email.trim()) {
-        setEditEmail(saved.email);
-      }
-
-      if (typeof saved.phone === "string" && saved.phone.trim()) {
-        setEditPhone(saved.phone);
-      }
-
-      if (typeof saved.location === "string" && saved.location.trim()) {
-        setEditLocation(saved.location);
-      }
-
-      if (typeof saved.website === "string" && saved.website.trim()) {
-        setEditWebsite(saved.website);
+    
+      const userId = typeof window !== "undefined" ? window.localStorage.getItem("current_student_id") || "guest" : "guest";
+      const answersRaw = window.localStorage.getItem(`student_profile_answers_${userId}`);
+      if (answersRaw) {
+        setProfileAnswers(JSON.parse(answersRaw));
       }
     } catch {
       // Ignore invalid saved data.
@@ -220,7 +219,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
       name: editName.trim(),
       email: editEmail.trim(),
       phone: editPhone.trim(),
-      location: editLocation.trim(),
+      location: editLocation.trim(), 
       website: editWebsite.trim(),
     };
 
@@ -252,10 +251,24 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
 
           <div className="space-y-3 px-5 py-5 text-sm text-[#4b5563]">
             <h3 className="text-base font-semibold text-[#1f2937]">Contact Info</h3>
-            <p className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />{editLocation}</p>
-            <p className="flex items-center gap-2"><Mail className="h-4 w-4 text-primary" />{editEmail}</p>
-            <p className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" />{editPhone}</p>
-            <p className="flex items-center gap-2"><Globe className="h-4 w-4 text-primary" />{editWebsite}</p>
+            {profileAnswers ? (
+              <>
+                {profileAnswers.country && (
+                  <p className="flex items-center gap-2"><span className="font-semibold">Country:</span> {profileAnswers.country}</p>
+                )}
+                {profileAnswers.language && (
+                  <p className="flex items-center gap-2"><span className="font-semibold">Preferred Language:</span> {profileAnswers.language}</p>
+                )}
+                {profileAnswers.profession && (
+                  <p className="flex items-center gap-2"><span className="font-semibold">Profession:</span> {profileAnswers.profession}</p>
+                )}
+                {profileAnswers.source && (
+                  <p className="flex items-center gap-2"><span className="font-semibold">Heard About Us:</span> {profileAnswers.source}</p>
+                )}
+              </>
+            ) : (
+              <p className="text-gray-400">No details provided yet.</p>
+            )}
           </div>
 
           <div className="px-5 pb-5">
@@ -273,18 +286,74 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
 
         <div className="h-full overflow-y-auto space-y-6 pr-1">
           <article className="rounded-2xl border border-[#dbe8e4] bg-white p-5 shadow-[0_20px_40px_rgba(15,23,42,0.08)] md:p-6">
-            <div className="flex flex-wrap items-center gap-2">
-              {tabItems.map((tab) => (
-                <button
-                  key={tab.key}
-                  type="button"
-                  onClick={() => setActiveTab(tab.key)}
-                  className="rounded-md px-3.5 py-2 text-sm font-medium bg-linear-to-r from-emerald-600 to-teal-600 text-white"
-                >
-                  {tab.label}
-                </button>
-              ))}
+            {/* Minimal tab system for Profile and Calendar */}
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <button
+                type="button"
+                onClick={() => setActiveTab("profile")}
+                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "profile" ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
+              >
+                Profile
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("calendar")}
+                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "calendar" ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
+              >
+                Calendar
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("wishlist")}
+                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "wishlist" ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
+              >
+                Wishlist
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("following")}
+                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "following" ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
+              >
+                Following
+              </button>
             </div>
+            {activeTab === "wishlist" && (
+              <div className="my-6">
+                <h3 className="text-xl font-bold mb-2 text-[#1f2937]">Wishlist</h3>
+                <div className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-4 w-full max-w-md">
+                  <p className="text-[#4b5563]">Your wishlist is empty.</p>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "following" && (
+              <div className="my-6">
+                <h3 className="text-xl font-bold mb-2 text-[#1f2937]">Following</h3>
+                <div className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-4 w-full max-w-md">
+                  <p className="text-[#4b5563]">You are not following anyone yet.</p>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "calendar" && (
+              <div className="my-6">
+                <h3 className="text-xl font-bold mb-2 text-[#1f2937]">Today's Work Calendar</h3>
+                <div className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-4 w-full max-w-md">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-semibold text-[#374151]">{new Date().toLocaleDateString()}</span>
+                    <span className="text-sm text-[#1b8c65]">Work Hours</span>
+                  </div>
+                  {/* Example: 3 hours worked today, change value as needed */}
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 h-4 bg-[#eceff5] rounded-full overflow-hidden">
+                      <div className="h-4 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full" style={{ width: `${(3/12)*100}%` }} />
+                    </div>
+                    <span className="font-semibold text-[#1b8c65]">3 / 12 hrs</span>
+                  </div>
+                  <p className="mt-2 text-xs text-[#6b7280]">You worked 3 hours today.</p>
+                </div>
+              </div>
+            )}
 
             {activeTab === "profile" ? (
               <div className="mt-6 space-y-6">

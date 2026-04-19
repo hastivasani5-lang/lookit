@@ -50,7 +50,7 @@
     "reviews": [],
     "profileBoostedUntil": "2026-07-15T11:38:42.010Z",
     "profileUpgradeTier": "top",
-    "approvalStatus": "rejected",
+    "approvalStatus": "approved",
     "approvalReviewedBy": "Admin",
     "approvalReviewedAt": "2026-04-16T11:50:52.841Z",
     "provider": "credentials",
@@ -351,5 +351,29 @@
     "approvalStatus": "pending",
     "provider": "credentials",
     "createdAt": "2026-04-17T12:12:56.945Z"
+  },
+  {
+    "id": "4f8ddb10-770f-4988-8a00-742bd709c019",
+    "name": "Hasti Vasani",
+    "email": "pari@gmail.com",
+    "passwordHash": "$2a$10$tDYQPG2qprAUluq/.Rt5Tuuvw63PICxsI4Chh2/Xg.8CjhKMSzapi",
+    "role": "student",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-19T08:21:07.036Z"
+  },
+  {
+    "id": "99d3a63f-b39b-475f-a8f1-547705c3eda7",
+    "name": "Hasti Vasani",
+    "email": "has@gmail.com",
+    "passwordHash": "$2a$10$AxFqlfEPERGsFnDwj81g1.9iSgxTLlYXqzqtByF5K1Q0ykuDz.NHi",
+    "role": "student",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-19T08:34:19.089Z"
   }
 ]

@@ -52,12 +52,11 @@ body {
 }
 
 body {
+  background-color: #fff !important;
   font-family: sans-serif;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
   -ms-overflow-style: none;
   scrollbar-width: none;
-  background-color: var(--page-background);
   color: var(--page-foreground);
   transition: background-color 0.25s ease, color 0.25s ease;
 }

@@ -109,6 +109,12 @@
 			"type": "shell",
 			"command": "git add -A; git commit -m \"Auto commit\"; git pull --rebase origin main; git push origin main",
 			"group": "build"
+		},
+		{
+			"label": "push-without-commit-prompt-pwsh",
+			"type": "shell",
+			"command": "git add -A; git commit -m \"Auto commit\"; git pull --rebase origin main; git push origin main",
+			"group": "build"
 		}
 	]
 }

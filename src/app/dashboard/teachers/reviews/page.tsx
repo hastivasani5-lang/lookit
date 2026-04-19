@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 
 import ProfessionalReviewsClient from "@/components/ProfessionalReviewsClient";
-import ProfessionalSidebar from "@/components/ProfessionalSidebar";
+import DashboardSidebar from "@/components/DashboardSidebar";
 import { authOptions } from "@/lib/auth";
 import { getUserById } from "@/lib/user-store";
 
@@ -21,11 +21,11 @@ export default async function ProfessionalReviewsPage() {
   return (
     <>
       <main className="h-screen w-full overflow-hidden bg-[#eef5f3]">
-        <section className="grid h-full w-full gap-4 p-3 md:p-4 lg:grid-cols-[260px_minmax(0,1fr)] lg:p-5">
-          <ProfessionalSidebar />
+        <section className="grid h-full w-full gap-4  md:p-4 lg:grid-cols-[260px_minmax(0,1fr)] lg:p-5">
+          <DashboardSidebar profileName={user?.name || "Professional User"} profileEmail={user?.email || "professional@demo.com"} avatarSrc={user?.image || "/person.png"} />
 
-          <div className="h-full overflow-y-auto rounded-[24px] bg-[#eef5f3] p-4 shadow-[20px_20px_40px_#d0dbd6,-20px_-20px_40px_#ffffff] md:p-6">
-            <div className="rounded-[24px] bg-[#eef5f3] px-5 py-4 shadow-[12px_12px_24px_#d0dbd6,-12px_-12px_24px_#ffffff]">
+          <div className="h-full overflow-y-auto rounded-3xl bg-[#eef5f3] p-4 shadow-[20px_20px_40px_#d0dbd6,-20px_-20px_40px_#ffffff] md:p-6">
+            <div className="rounded-3xl bg-[#eef5f3] px-5 py-4 shadow-[12px_12px_24px_#d0dbd6,-12px_-12px_24px_#ffffff]">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#2c5a48]">Professional Dashboard</p>
               <h1 className="mt-2 text-3xl font-bold text-slate-900">Incoming Reviews</h1>
               <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-600">

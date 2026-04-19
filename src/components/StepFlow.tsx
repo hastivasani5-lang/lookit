@@ -3,34 +3,34 @@
 const steps = [
   {
     step: "01",
-    title: "Lorem ipsum",
-    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    title: "Sign Up",
+    desc: "Create your free account to get started on your learning journey.",
   },
   {
     step: "02",
-    title: "Lorem ipsum",
-    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    title: "Browse Courses",
+    desc: "Explore a wide range of courses and select the ones that fit your goals.",
   },
   {
     step: "03",
-    title: "Lorem ipsum",
-    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    title: "Enroll & Learn",
+    desc: "Enroll in your chosen course and start learning with interactive lessons.",
   },
   {
     step: "04",
-    title: "Lorem ipsum",
-    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    title: "Complete Assignments",
+    desc: "Practice your skills with assignments and real-world projects.",
   },
   {
     step: "05",
-    title: "Lorem ipsum",
-    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    title: "Get Certified",
+    desc: "Earn certificates and showcase your achievements to the world.",
   },
 ];
 
 export default function StepFlow() {
   return (
-    <section className="py-20 bg-[#f7f9fb]">
+    <section className="py-20 bg-[#eef5f3]">
       <div className="max-w-7xl mx-auto px-6">
 
         {/* TITLE */}

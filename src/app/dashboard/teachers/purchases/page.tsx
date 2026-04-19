@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Bell, BookOpen, Clock3, RefreshCcw, Video, Users } from "lucide-react";
 
-import ProfessionalSidebar from "@/components/ProfessionalSidebar";
+import DashboardSidebar from "@/components/DashboardSidebar";
 import { Suspense } from "react";
 
 type PurchaseRow = {
@@ -108,12 +108,10 @@ export default function TeacherPurchasesPage() {
     <>
       <main className="h-screen w-full overflow-hidden bg-[#eef5f3]">
         <section className="grid h-full w-full gap-4 p-3 md:p-4 lg:grid-cols-[260px_minmax(0,1fr)] lg:p-5">
-          <Suspense>
-            <ProfessionalSidebar />
-          </Suspense>
+          <DashboardSidebar profileName={"Professional User"} profileEmail={"professional@demo.com"} avatarSrc={"/person.png"} />
 
-          <div className="h-full overflow-y-auto rounded-[24px] bg-[#eef5f3] p-4 shadow-[20px_20px_40px_#d0dbd6,-20px_-20px_40px_#ffffff] md:p-6">
-          <div className="flex flex-col gap-4 rounded-[24px] bg-[#eef5f3] px-5 py-4 shadow-[12px_12px_24px_#d0dbd6,-12px_-12px_24px_#ffffff] md:flex-row md:items-center md:justify-between">
+          <div className="h-full overflow-y-auto rounded-3xl bg-[#eef5f3] p-4 shadow-[20px_20px_40px_#d0dbd6,-20px_-20px_40px_#ffffff] md:p-6">
+          <div className="flex flex-col gap-4 rounded-3xl bg-[#eef5f3] px-5 py-4 shadow-[12px_12px_24px_#d0dbd6,-12px_-12px_24px_#ffffff] md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#2c5a48]">Professional Dashboard</p>
               <h1 className="mt-2 text-3xl font-bold text-slate-900">Live Purchases</h1>
@@ -141,7 +139,7 @@ export default function TeacherPurchasesPage() {
             {summaryCards.map((card) => {
               const Icon = card.icon;
               return (
-                <div key={card.label} className="rounded-[24px] bg-[#eef5f3] p-5 shadow-[8px_8px_16px_#d0dbd6,-8px_-8px_16px_#ffffff]">
+                <div key={card.label} className="rounded-3xl bg-[#eef5f3] p-5 shadow-[8px_8px_16px_#d0dbd6,-8px_-8px_16px_#ffffff]">
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="text-sm text-slate-500">{card.label}</p>
@@ -156,7 +154,7 @@ export default function TeacherPurchasesPage() {
             })}
           </div>
 
-          <div className="mt-6 rounded-[24px] bg-[#eef5f3] p-5 shadow-[12px_12px_24px_#d0dbd6,-12px_-12px_24px_#ffffff]">
+          <div className="mt-6 rounded-3xl bg-[#eef5f3] p-5 shadow-[12px_12px_24px_#d0dbd6,-12px_-12px_24px_#ffffff]">
             <div className="flex flex-col gap-2 border-b border-white/70 pb-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-lg font-semibold text-slate-900">Student Purchases</h2>
@@ -185,7 +183,7 @@ export default function TeacherPurchasesPage() {
               </div>
             ) : (
               <div className="mt-4 overflow-x-auto rounded-2xl border border-white/80 bg-white shadow-[8px_8px_16px_#d0dbd6,-8px_-8px_16px_#ffffff]">
-                <table className="w-full min-w-[760px] text-sm">
+                <table className="w-full min-w-190 text-sm">
                   <thead className="bg-[#f6fefb] text-left text-slate-500">
                     <tr>
                       <th className="px-4 py-3">Student</th>

@@ -45,19 +45,19 @@ const Sidebar = ({ minPrice, maxPrice, selectedMaxPrice, onPriceChange }: Sideba
 
         <input
           type="range"
-          min={minPrice}
-          max={Math.max(maxPrice, minPrice)}
-          value={Math.min(selectedMaxPrice, Math.max(maxPrice, minPrice))}
+          min={minPrice ?? 0}
+          max={Math.max(maxPrice ?? 0, minPrice ?? 0)}
+          value={Math.min(selectedMaxPrice ?? 0, Math.max(maxPrice ?? 0, minPrice ?? 0))}
           onChange={(event) => onPriceChange(Number(event.target.value))}
-          disabled={maxPrice <= minPrice}
+          disabled={(maxPrice ?? 0) <= (minPrice ?? 0)}
           className="w-full accent-[#1ec28e]"
         />
 
         <div className="mt-3 text-sm text-gray-500">
-          ₹{minPrice.toFixed(2)} - ₹{Math.max(selectedMaxPrice, minPrice).toFixed(2)}
+          ₹{(minPrice ?? 0).toFixed(2)} - ₹{Math.max(selectedMaxPrice ?? 0, minPrice ?? 0).toFixed(2)}
         </div>
         <div className="mt-1 text-xs text-gray-400">
-          Max available: ₹{Math.max(maxPrice, minPrice).toFixed(2)}
+          Max available: ₹{Math.max(maxPrice ?? 0, minPrice ?? 0).toFixed(2)}
         </div>
       </div>
     </div>

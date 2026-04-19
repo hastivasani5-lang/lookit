@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Star, ChevronLeft, ChevronRight, BookOpen, Users } from "lucide-react";
 import { useState } from "react";
 
@@ -227,6 +228,8 @@ export default function StudentsViewing() {
     currentPage * pageSize
   );
 
+  const router = useRouter();
+
   return (
     <section className="bg-gradient-to-b from-[#f7f9fb] to-white px-6 md:px-16 py-20">
       <div className="max-w-7xl mx-auto">
@@ -264,7 +267,8 @@ export default function StudentsViewing() {
           {paginatedCourses.map((course, index) => (
             <div
               key={index}
-              className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-gray-100"
+              className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 cursor-pointer"
+              onClick={() => router.push(`/course/${encodeURIComponent(course.title)}`)}
             >
               {/* IMAGE CONTAINER WITH ZOOM EFFECT */}
               <div className="relative overflow-hidden bg-gray-100">
@@ -291,7 +295,7 @@ export default function StudentsViewing() {
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
 
                 {/* QUICK ACTION BUTTON (HOVER) */}
-                <button className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm text-[#1e2a55] p-1.5 rounded-full opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-md hover:bg-[#1ec28e] hover:text-white">
+                <button className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm text-[#1e2a55] p-1.5 rounded-full opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-md hover:bg-[#1ec28e] hover:text-white" onClick={e => e.stopPropagation()}>
                   <BookOpen size={16} />
                 </button>
               </div>
@@ -354,7 +358,13 @@ export default function StudentsViewing() {
                 <div className="border-t border-gray-100 my-3"></div>
 
                 {/* ENROLL BUTTON */}
-                <button className="w-full py-2 rounded-lg text-sm font-semibold transition-all duration-300 bg-gray-50 text-[#1e2a55] hover:bg-[#1ec28e] hover:text-white group/btn flex items-center justify-center gap-2">
+                <button
+                  className="w-full py-2 rounded-lg text-sm font-semibold transition-all duration-300 bg-gray-50 text-[#1e2a55] hover:bg-[#1ec28e] hover:text-white group/btn flex items-center justify-center gap-2"
+                  onClick={e => {
+                    e.stopPropagation();
+                    router.push(`/course/${encodeURIComponent(course.title)}`);
+                  }}
+                >
                   <span>Enroll Now</span>
                   <svg
                     className="w-3.5 h-3.5 transition-transform duration-300 group-hover/btn:translate-x-1"

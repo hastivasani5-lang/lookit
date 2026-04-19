@@ -104,9 +104,7 @@ const sidebarItems: Array<{ label: string; icon: typeof LayoutGrid; section?: Da
   { label: "Overview", icon: LayoutGrid, section: "overview" },
   { label: "Add", icon: Upload, section: "add" },
   { label: "Upgrade Profile", icon: CreditCard, section: "upgrade" },
-  { label: "Purchases", icon: Users, href: "/dashboard/teachers/purchases" },
-  { label: "Reviews", icon: Star, href: "/dashboard/teachers/reviews" },
-  { label: "Settings", icon: Settings, section: "settings" },
+   { label: "Settings", icon: Settings, section: "settings" },
 ];
 
 const overviewCards = [
@@ -2789,7 +2787,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                         </div>
                       </div>
 
-<div className="mt-5">
+                    <div className="mt-5">
                         <div className="flex items-center justify-between">
                           <h4 className="text-base font-semibold text-slate-900">YouTube Learning Playlist</h4>
                           <span className="text-sm font-semibold text-[#1ec28e]">Live</span>

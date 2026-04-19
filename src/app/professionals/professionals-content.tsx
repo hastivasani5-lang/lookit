@@ -51,24 +51,13 @@ export default function ProfessionalsContent() {
   const [selectedRating, setSelectedRating] = useState("all");
   const [selectedReviews, setSelectedReviews] = useState("all");
   const [selectedLanguage, setSelectedLanguage] = useState("all");
-  const [locationText, setLocationText] = useState("");
-  const [professionalQuery, setProfessionalQuery] = useState("");
+  const [locationText, setLocationText] = useState(() => searchParams?.get("location")?.trim() ?? "");
+  const [professionalQuery, setProfessionalQuery] = useState(() => searchParams?.get("search") ?? "");
   const [sortBy, setSortBy] = useState("popular");
   const [visibleCount, setVisibleCount] = useState(6);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
-  useEffect(() => {
-    const search = searchParams.get("search")?.trim() ?? "";
-    const location = searchParams.get("location")?.trim() ?? "";
-
-    if (search) {
-      setProfessionalQuery(search);
-    }
-
-    if (location) {
-      setLocationText(location);
-    }
-  }, [searchParams]);
+  // Removed effect that synchronously set state from searchParams
 
   useEffect(() => {
     let isActive = true;
@@ -106,22 +95,23 @@ export default function ProfessionalsContent() {
 
   const professionals = useMemo(() => liveProfessionals, [liveProfessionals]);
 
-  const topUpgradedProfessionals = useMemo(
-    () =>
-      professionals.filter((item) => {
-        if (item.profileUpgradeTier !== "top" || !item.profileBoostedUntil) {
-          return false;
-        }
-
-        const boostedUntil = new Date(item.profileBoostedUntil);
-        if (Number.isNaN(boostedUntil.getTime())) {
-          return false;
-        }
-
-        return boostedUntil.getTime() > Date.now();
-      }),
-    [professionals],
-  );
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const interval = setInterval(() => setNow(Date.now()), 60000);
+    return () => clearInterval(interval);
+  }, []);
+  const topUpgradedProfessionals = useMemo(() => {
+    return professionals.filter((item) => {
+      if (item.profileUpgradeTier !== "top" || !item.profileBoostedUntil) {
+        return false;
+      }
+      const boostedUntil = new Date(item.profileBoostedUntil);
+      if (Number.isNaN(boostedUntil.getTime())) {
+        return false;
+      }
+      return boostedUntil.getTime() > now;
+    });
+  }, [professionals, now]);
 
   const filteredProfessionals = useMemo(() => {
     const result = professionals.filter((item) => {
@@ -242,7 +232,7 @@ export default function ProfessionalsContent() {
               <button
                 type="button"
                 onClick={handleTopSearchClick}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:scale-[1.02] hover:shadow-md"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:scale-[1.02] hover:shadow-md"
               >
                 <Search className="h-4 w-4" />
                 Search
@@ -419,7 +409,7 @@ export default function ProfessionalsContent() {
                       <div className="mt-auto flex w-full gap-2">
                         <Link
                           href={`/professionals/${item.id}`}
-                          className="flex-1 rounded-full bg-primary px-4 py-2.5 text-center text-sm font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 text-white transition"
+                          className="flex-1 rounded-full bg-primary px-4 py-2.5 text-center text-sm font-semibold bg-linear-to-r from-emerald-600 to-teal-600 text-white transition"
                         >
                           View Profile
                         </Link>

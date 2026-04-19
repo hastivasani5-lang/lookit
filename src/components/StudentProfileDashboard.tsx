@@ -264,7 +264,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
               onClick={async () => {
                 await signOut({ callbackUrl: "/" });
               }}
-              className="w-full rounded-lg bg-primary px-3 py-2.5 text-xs font-semibold text-white transition hover:bg-[#18ab7d]"
+              className="w-full rounded-lg bg-linear-to-r from-emerald-600 to-teal-600 text-white px-3 py-2.5 text-xs font-semibold"
             >
               Logout
             </button>
@@ -279,11 +279,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                   key={tab.key}
                   type="button"
                   onClick={() => setActiveTab(tab.key)}
-                  className={`rounded-md px-3.5 py-2 text-sm font-medium transition ${
-                    activeTab === tab.key
-                      ? "bg-primary text-white"
-                      : "bg-[#ecf8f4] text-[#1b8c65] hover:bg-[#dcf2ea]"
-                  }`}
+                  className="rounded-md px-3.5 py-2 text-sm font-medium bg-linear-to-r from-emerald-600 to-teal-600 text-white"
                 >
                   {tab.label}
                 </button>
@@ -382,7 +378,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                   <button
                     type="button"
                     onClick={handleEditSave}
-                    className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+                    className="rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 text-white px-5 py-2.5 text-sm font-semibold"
                   >
                     Save Changes
                   </button>
@@ -391,7 +387,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                     onClick={async () => {
                       await signOut({ callbackUrl: "/" });
                     }}
-                    className="rounded-xl border border-[#f5c2cb] bg-[#fff1f3] px-5 py-2.5 text-sm font-semibold text-[#be123c] transition hover:bg-[#ffe4e8]"
+                    className="rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 text-white px-5 py-2.5 text-sm font-semibold"
                   >
                     Logout
                   </button>
@@ -447,10 +443,10 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                 <h4 className="text-xl font-bold text-[#1f2937]">Student Reviews Center</h4>
                 <p className="mt-2 text-sm text-[#4b5563]">Write and manage reviews for professionals directly from your student dashboard.</p>
                 <div className="mt-4 flex flex-wrap gap-3">
-                  <Link href="/dashboard/students/reviews" className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ab7d]">
+                  <Link href="/dashboard/students/reviews" className="rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 text-sm font-semibold">
                     Open Reviews Page
                   </Link>
-                  <Link href="/dashboard/students/library" className="rounded-xl border border-[#dbe8e4] bg-white px-4 py-2 text-sm font-semibold text-[#2c5a48] transition hover:bg-[#ecf8f4]">
+                  <Link href="/dashboard/students/library" className="rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 text-sm font-semibold">
                     Open Library
                   </Link>
                 </div>
@@ -461,14 +457,14 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
               <button
                 type="button"
                 onClick={() => void handleShare()}
-                className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#18ab7d]"
+                className="inline-flex items-center gap-1 rounded-md bg-linear-to-r from-emerald-600 to-teal-600 text-white px-3 py-1.5 text-xs font-semibold"
               >
                 <Share2 className="h-3.5 w-3.5" /> Share Course
               </button>
               <button
                 type="button"
                 onClick={handleReport}
-                className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#18ab7d]"
+                className="inline-flex items-center gap-1 rounded-md bg-linear-to-r from-emerald-600 to-teal-600 text-white px-3 py-1.5 text-xs font-semibold"
               >
                 <TriangleAlert className="h-3.5 w-3.5" /> Report Abuse
               </button>
@@ -478,14 +474,14 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                   setLikes((current) => current + 1);
                   setActionMessage("Thanks for the like.");
                 }}
-                className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#18ab7d]"
+                className="inline-flex items-center gap-1 rounded-md bg-linear-to-r from-emerald-600 to-teal-600 text-white px-3 py-1.5 text-xs font-semibold"
               >
                 <Heart className="h-3.5 w-3.5" /> {likes}
               </button>
               <button
                 type="button"
                 onClick={handlePrint}
-                className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#18ab7d]"
+                className="inline-flex items-center gap-1 rounded-md bg-linear-to-r from-emerald-600 to-teal-600 text-white px-3 py-1.5 text-xs font-semibold"
               >
                 <Printer className="h-3.5 w-3.5" /> Print
               </button>

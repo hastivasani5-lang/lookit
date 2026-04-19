@@ -55,30 +55,35 @@ export default function HeroCourses() {
             change in how individuals prefer to learn. Ellen offers you the beauty of eLearning!
           </p>
 
-          {/* ================= ENHANCED SEARCH BAR ================= */}
+          {/* ================= MODERN GLASS SEARCH BAR ================= */}
           <div className="mt-8">
             <form onSubmit={handleSearch} className="relative">
-              <div className={`flex items-center bg-white rounded-full shadow-lg transition-all duration-300 ${
-                isFocused ? "ring-2 ring-[#1ec28e]/30 shadow-[#1ec28e]/10" : ""
-              }`}>
-                <div className="flex-1 flex items-center gap-2 pl-5 pr-2 py-1">
-                  <Search className="w-5 h-5 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="What do you want to learn today?"
-                    value={searchText}
-                    onChange={(e) => setSearchText(e.target.value)}
-                    onFocus={() => setIsFocused(true)}
-                    onBlur={() => setIsFocused(false)}
-                    className="w-full py-3 text-sm outline-none bg-transparent text-gray-700 placeholder:text-gray-400"
-                  />
+              <div
+                className={`flex items-center backdrop-blur-md bg-white/70 border border-[#e0f2ef] shadow-xl rounded-2xl transition-all duration-300 ${
+                  isFocused ? "ring-2 ring-[#1ec28e]/30 shadow-[#1ec28e]/10" : ""
+                }`}
+              >
+                {/* Icon section with divider */}
+                <div className="flex items-center justify-center h-14 w-14 bg-[#e6faf4] rounded-l-2xl border-r border-[#d1f5e7]">
+                  <Search className="w-6 h-6 text-[#1ec28e]" />
                 </div>
+                {/* Input */}
+                <input
+                  type="text"
+                  placeholder="What do you want to learn today?"
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  className="flex-1 py-4 px-4 text-base outline-none bg-transparent text-gray-700 placeholder:text-gray-400"
+                />
+                {/* Button section with gradient */}
                 <button
                   type="submit"
-                  className="bg-[#1ec28e] hover:bg-[#18a97a] text-white font-semibold px-6 py-3 rounded-full text-sm transition-all duration-200 flex items-center gap-2 mr-1"
+                  className="h-14 px-8 rounded-r-2xl bg-gradient-to-r from-[#1ec28e] to-[#18a97a] text-white font-bold text-base flex items-center gap-2 transition-all duration-200 hover:from-[#18a97a] hover:to-[#1ec28e]"
                 >
                   Search Now
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-5 h-5" />
                 </button>
               </div>
             </form>

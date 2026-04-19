@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
-
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import StudentProfileDashboard from "@/components/StudentProfileDashboard";
 import { authOptions } from "@/lib/auth";
 import { getStudentLibrary } from "@/lib/content-library-store";
@@ -23,6 +24,7 @@ export default async function StudentProfileDashboardPage() {
 
   return (
     <>
+      <Navbar />
       <main className="h-screen w-full overflow-hidden bg-[#eef2f7]">
         <StudentProfileDashboard
           user={{
@@ -48,6 +50,7 @@ export default async function StudentProfileDashboardPage() {
           }}
         />
       </main>
+      <Footer />
     </>
   );
 }

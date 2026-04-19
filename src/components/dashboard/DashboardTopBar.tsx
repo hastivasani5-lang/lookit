@@ -1,7 +1,27 @@
+
 import React from "react";
 import { Search, Bell, Calendar as CalendarIcon } from "lucide-react";
 
-export default function DashboardTopBar({
+interface DashboardTopBarProps {
+  searchQuery: string;
+  setSearchQuery: (value: string) => void;
+  setIsNotificationOpen: (open: boolean) => void;
+  setIsCalendarOpen: (open: boolean) => void;
+  isNotificationOpen: boolean;
+  isCalendarOpen: boolean;
+  NotificationModal?: React.ComponentType<{
+    isOpen: boolean;
+    onClose: () => void;
+    notifications: any;
+    section2: any;
+    section3: any;
+  }>;
+  notificationFollowers: any;
+  notificationBooksVideos: any;
+  notificationPurchases: any;
+}
+
+const DashboardTopBar: React.FC<DashboardTopBarProps> = ({
   searchQuery,
   setSearchQuery,
   setIsNotificationOpen,
@@ -12,7 +32,7 @@ export default function DashboardTopBar({
   notificationFollowers,
   notificationBooksVideos,
   notificationPurchases
-}) {
+}) => {
   return (
     <div className="flex w-full max-w-3xl items-center gap-3 md:w-auto md:flex-1 md:justify-end">
       <div className="flex h-12 flex-1 items-center gap-3 rounded-full border-none bg-[#f6fefb] px-4 shadow-[inset_4px_4px_12px_#d0dbd6,inset_-4px_-4px_12px_#ffffff] md:max-w-xl">
@@ -50,4 +70,6 @@ export default function DashboardTopBar({
       </button>
     </div>
   );
-}
+};
+
+export default DashboardTopBar;

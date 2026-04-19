@@ -7,7 +7,6 @@ import {
   DollarSign,
   FolderTree,
   Home,
-  MoreHorizontal,
   PencilLine,
   ShieldCheck,
   Trash2,
@@ -22,12 +21,6 @@ import { useEffect, useState } from "react";
 import SiteLogo from "@/components/SiteLogo";
 
 import type { ProfessionalNotification } from "@/types/notifications";
-
-const students = [
-  { name: "Evelyn Harper", id: "PRE43178", marks: 1185, percent: "98%" },
-  { name: "Diana Plenty", id: "PRE43174", marks: 1165, percent: "91%" },
-  { name: "John Millar", id: "PRE43187", marks: 1175, percent: "92%" },
-];
 const ADMIN_PROFILE = {
   name: "Admin",
   email: "jenilgadhiya@gmail.com",
@@ -108,6 +101,8 @@ type AdminPaymentRecord = {
 };
 
 type UploadView = "professional-uploads" | "student-purchases";
+
+type AlertsView = "professionals" | "students";
 
 type ProfessionalUploadSummary = {
   id: string;
@@ -442,6 +437,9 @@ export default function AdminPanelView() {
   const [payoutEntries, setPayoutEntries] = useState(initialPayoutEntries);
   const [payoutsLoading, setPayoutsLoading] = useState(false);
   const [uploadView, setUploadView] = useState<UploadView>("professional-uploads");
+  const [alertsView, setAlertsView] = useState<AlertsView>("professionals");
+  const [alertsProfessionalsCurrentPage, setAlertsProfessionalsCurrentPage] = useState(1);
+  const [alertsStudentsCurrentPage, setAlertStudentsCurrentPage] = useState(1);
   const [detailModal, setDetailModal] = useState<DetailModalState | null>(null);
   const [categoriesList, setCategoriesList] = useState(initialProfessionalCategories);
   const [categoryName, setCategoryName] = useState("");
@@ -465,7 +463,75 @@ export default function AdminPanelView() {
   const [globalSearchQuery, setGlobalSearchQuery] = useState("");
   const [studentsCurrentPage, setStudentsCurrentPage] = useState(1);
   const [professionalsCurrentPage, setProfessionalsCurrentPage] = useState(1);
+  const [reviewsCurrentPage, setReviewsCurrentPage] = useState(1);
+  const [approvalsCurrentPage, setApprovalsCurrentPage] = useState(1);
+  const [categoriesCurrentPage, setCategoriesCurrentPage] = useState(1);
+  const [uploadsProfessionalsCurrentPage, setUploadsProfessionalsCurrentPage] = useState(1);
+  const [uploadsStudentsCurrentPage, setUploadsStudentsCurrentPage] = useState(1);
+  const [payoutsCurrentPage, setPayoutsCurrentPage] = useState(1);
+  const [todayTableActiveTab, setTodayTableActiveTab] = useState<"Student" | "Teacher" | "Notification">("Student");
+  const [dashboardTodayCurrentPage, setDashboardTodayCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
+  const DASHBOARD_ITEMS_PER_PAGE = 10;
+  const approvalTotalPages = Math.max(1, Math.ceil(approvalRequests.length / ITEMS_PER_PAGE));
+  const approvalPageStart = (approvalsCurrentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedApprovalRequests = approvalRequests.slice(approvalPageStart, approvalPageStart + ITEMS_PER_PAGE);
+  const categoryTotalPages = Math.max(1, Math.ceil(categoriesList.length / ITEMS_PER_PAGE));
+  const categoryPageStart = (categoriesCurrentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedCategories = categoriesList.slice(categoryPageStart, categoryPageStart + ITEMS_PER_PAGE);
+  const uploadsProfessionalsTotalPages = Math.max(1, Math.ceil(professionalUploadRows.length / ITEMS_PER_PAGE));
+  const uploadsProfessionalsPageStart = (uploadsProfessionalsCurrentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedProfessionalUploadRows = professionalUploadRows.slice(
+    uploadsProfessionalsPageStart,
+    uploadsProfessionalsPageStart + ITEMS_PER_PAGE,
+  );
+  const uploadsStudentsTotalPages = Math.max(1, Math.ceil(studentUploadRows.length / ITEMS_PER_PAGE));
+  const uploadsStudentsPageStart = (uploadsStudentsCurrentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedStudentUploadRows = studentUploadRows.slice(uploadsStudentsPageStart, uploadsStudentsPageStart + ITEMS_PER_PAGE);
+  const payoutsTotalPages = Math.max(1, Math.ceil(payoutEntries.length / ITEMS_PER_PAGE));
+  const payoutsPageStart = (payoutsCurrentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedPayoutEntries = payoutEntries.slice(payoutsPageStart, payoutsPageStart + ITEMS_PER_PAGE);
+  const alertsProfessionalsTotalPages = Math.max(1, Math.ceil(notifications.length / ITEMS_PER_PAGE));
+  const alertsProfessionalsPageStart = (alertsProfessionalsCurrentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedNotifications = notifications.slice(
+    alertsProfessionalsPageStart,
+    alertsProfessionalsPageStart + ITEMS_PER_PAGE,
+  );
+  const alertsStudentsTotalPages = Math.max(1, Math.ceil(contactMessages.length / ITEMS_PER_PAGE));
+  const alertsStudentsPageStart = (alertsStudentsCurrentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedContactMessages = contactMessages.slice(alertsStudentsPageStart, alertsStudentsPageStart + ITEMS_PER_PAGE);
+  const reviewsTotalPages = Math.max(1, Math.ceil(reviewEntries.length / ITEMS_PER_PAGE));
+  const reviewsPageStart = (reviewsCurrentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedReviewEntries = reviewEntries.slice(reviewsPageStart, reviewsPageStart + ITEMS_PER_PAGE);
+  const dashboardTodayTotalPages = Math.max(1, Math.ceil(approvalRequests.length / DASHBOARD_ITEMS_PER_PAGE));
+  const dashboardTodayPageStart = (dashboardTodayCurrentPage - 1) * DASHBOARD_ITEMS_PER_PAGE;
+  const paginatedDashboardTodayRows = approvalRequests.slice(
+    dashboardTodayPageStart,
+    dashboardTodayPageStart + DASHBOARD_ITEMS_PER_PAGE,
+  );
+  const adminTrendLabels = ["January", "February", "March", "April", "May", "June", "July"];
+  const adminTrendSeries = [
+    { label: "Approvals", color: "#ff5b7a", values: [34, 55, 10, 36, 76, 54, 64] },
+    { label: "Alerts", color: "#3498db", values: [12, 85, 82, 15, 43, 66, 12] },
+  ];
+  const adminTrendMax = Math.max(...adminTrendSeries.flatMap((series) => series.values), 1);
+  const adminTrendWidth = 470;
+  const adminTrendHeight = 220;
+  const adminTrendPadding = { top: 18, right: 20, bottom: 34, left: 42 };
+  const adminTrendChartWidth = adminTrendWidth - adminTrendPadding.left - adminTrendPadding.right;
+  const adminTrendChartHeight = adminTrendHeight - adminTrendPadding.top - adminTrendPadding.bottom;
+
+  const adminTrendPoints = adminTrendSeries.map((series) =>
+    series.values.map((value, index) => {
+      const x = adminTrendPadding.left + (adminTrendChartWidth / (adminTrendLabels.length - 1)) * index;
+      const y =
+        adminTrendPadding.top +
+        adminTrendChartHeight - (value / adminTrendMax) * adminTrendChartHeight;
+      return { x, y, value };
+    }),
+  );
+
+  const adminTrendPath = adminTrendPoints.map((points) => points.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`).join(" "));
 
   const selectedStudent = studentsList.find((student) => student.id === selectedStudentId) ?? null;
   const selectedStudentMeta = selectedStudent ? userDetailsById[selectedStudent.id] : null;
@@ -884,6 +950,8 @@ export default function AdminPanelView() {
       return;
     }
 
+    setAlertsView("professionals");
+
     const loadNotifications = async () => {
       setNotificationsLoading(true);
       setContactMessagesLoading(true);
@@ -923,6 +991,8 @@ export default function AdminPanelView() {
     if (activeSection !== "Approvals") {
       return;
     }
+
+    setApprovalsCurrentPage(1);
 
     const loadApprovals = async () => {
       try {
@@ -970,6 +1040,24 @@ export default function AdminPanelView() {
 
     void loadApprovals();
   }, [activeSection]);
+
+  useEffect(() => {
+    if (activeSection !== "Categories") {
+      return;
+    }
+
+    setCategoriesCurrentPage(1);
+  }, [activeSection]);
+
+  useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(approvalRequests.length / ITEMS_PER_PAGE));
+    setApprovalsCurrentPage((currentPage) => Math.min(currentPage, totalPages));
+  }, [approvalRequests.length]);
+
+  useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(categoriesList.length / ITEMS_PER_PAGE));
+    setCategoriesCurrentPage((currentPage) => Math.min(currentPage, totalPages));
+  }, [categoriesList.length]);
 
   useEffect(() => {
     if (activeSection !== "Users") {
@@ -1081,6 +1169,9 @@ export default function AdminPanelView() {
       return;
     }
 
+    setUploadsProfessionalsCurrentPage(1);
+    setUploadsStudentsCurrentPage(1);
+
     const loadUploads = async () => {
       setUploadsLoading(true);
 
@@ -1111,9 +1202,21 @@ export default function AdminPanelView() {
   }, [activeSection]);
 
   useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(professionalUploadRows.length / ITEMS_PER_PAGE));
+    setUploadsProfessionalsCurrentPage((currentPage) => Math.min(currentPage, totalPages));
+  }, [professionalUploadRows.length]);
+
+  useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(studentUploadRows.length / ITEMS_PER_PAGE));
+    setUploadsStudentsCurrentPage((currentPage) => Math.min(currentPage, totalPages));
+  }, [studentUploadRows.length]);
+
+  useEffect(() => {
     if (activeSection !== "Payouts") {
       return;
     }
+
+    setPayoutsCurrentPage(1);
 
     const loadPayouts = async () => {
       setPayoutsLoading(true);
@@ -1147,6 +1250,56 @@ export default function AdminPanelView() {
 
     void loadPayouts();
   }, [activeSection]);
+
+  useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(payoutEntries.length / ITEMS_PER_PAGE));
+    setPayoutsCurrentPage((currentPage) => Math.min(currentPage, totalPages));
+  }, [payoutEntries.length]);
+
+  useEffect(() => {
+    if (activeSection !== "Alerts") {
+      return;
+    }
+
+    setAlertsProfessionalsCurrentPage(1);
+    setAlertStudentsCurrentPage(1);
+  }, [activeSection]);
+
+  useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(notifications.length / ITEMS_PER_PAGE));
+    setAlertsProfessionalsCurrentPage((currentPage) => Math.min(currentPage, totalPages));
+  }, [notifications.length]);
+
+  useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(contactMessages.length / ITEMS_PER_PAGE));
+    setAlertStudentsCurrentPage((currentPage) => Math.min(currentPage, totalPages));
+  }, [contactMessages.length]);
+
+  useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(reviewEntries.length / ITEMS_PER_PAGE));
+    setReviewsCurrentPage((currentPage) => Math.min(currentPage, totalPages));
+  }, [reviewEntries.length]);
+
+  useEffect(() => {
+    if (activeSection !== "Reviews") {
+      return;
+    }
+
+    setReviewsCurrentPage(1);
+  }, [activeSection]);
+
+  useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(approvalRequests.length / DASHBOARD_ITEMS_PER_PAGE));
+    setDashboardTodayCurrentPage((currentPage) => Math.min(currentPage, totalPages));
+  }, [approvalRequests.length]);
+
+  useEffect(() => {
+    if (activeSection !== "Dashboard") {
+      return;
+    }
+
+    setDashboardTodayCurrentPage(1);
+  }, [todayTableActiveTab, activeSection]);
 
   const onLogout = async () => {
     await fetch("/api/admin/logout", { method: "POST" });
@@ -1317,59 +1470,75 @@ export default function AdminPanelView() {
                 </div>
               </div>
 
-              <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
+              <div className="mt-4 grid gap-4 xl:grid-cols-2">
                 <div className="space-y-4">
-                  <div className="rounded-2xl neumorph-admin-card border border-transparent p-4">
+                  <div className="h-[360px] rounded-2xl neumorph-admin-card border border-transparent p-4 !bg-white">
                     <div className="mb-3 flex items-center justify-between">
-                      <h3 className="font-semibold text-slate-800">Star Students</h3>
-                      <button className="text-slate-400 hover:text-slate-600"><MoreHorizontal className="h-4 w-4" /></button>
-                    </div>
-                    <table className="w-full text-sm">
-                      <thead className="text-left text-slate-400">
-                        <tr>
-                          <th className="py-2">Name</th>
-                          <th className="py-2">ID</th>
-                          <th className="py-2">Marks</th>
-                          <th className="py-2">Percent</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {students.map((student) => (
-                          <tr key={student.id} className="border-t border-slate-100 text-slate-700">
-                            <td className="py-2.5">{student.name}</td>
-                            <td className="py-2.5">{student.id}</td>
-                            <td className="py-2.5">{student.marks}</td>
-                            <td className="py-2.5">{student.percent}</td>
-                          </tr>
+                      <div>
+                        <h3 className="font-semibold text-slate-800">Admin Activity Trend</h3>
+                        <p className="text-xs text-slate-500">Approvals and alerts across recent months.</p>
+                      </div>
+                      <div className="flex items-center gap-3 text-xs text-slate-500">
+                        {adminTrendSeries.map((series) => (
+                          <span key={series.label} className="inline-flex items-center gap-2">
+                            <svg viewBox="0 0 10 10" aria-hidden="true" className="h-2.5 w-2.5">
+                              <circle cx="5" cy="5" r="5" fill={series.color} />
+                            </svg>
+                            {series.label}
+                          </span>
                         ))}
-                      </tbody>
-                    </table>
-                  </div>
+                      </div>
+                    </div>
+                    <svg viewBox={`0 0 ${adminTrendWidth} ${adminTrendHeight}`} className="h-[245px] w-full">
+                      {[0, 20, 40, 60, 80, 100].map((tick) => {
+                        const y = adminTrendPadding.top + adminTrendChartHeight - (tick / 100) * adminTrendChartHeight;
+                        return (
+                          <g key={tick}>
+                            <line x1={adminTrendPadding.left} y1={y} x2={adminTrendWidth - adminTrendPadding.right} y2={y} stroke="#e5e7eb" strokeWidth="1" />
+                            <text x={10} y={y + 4} fill="#94a3b8" fontSize="10">
+                              {tick}
+                            </text>
+                          </g>
+                        );
+                      })}
 
-                  <div className="rounded-2xl neumorph-admin-card border border-transparent p-4">
-                    <div className="mb-3 flex items-center justify-between">
-                      <h3 className="font-semibold text-slate-800">Notifications</h3>
-                      <button className="text-sm text-slate-400 hover:text-slate-600">View all</button>
-                    </div>
-                    <div className="space-y-2 text-sm text-slate-600">
-                      <div className="rounded-lg bg-[#f8f9ff] px-3 py-2">Emergency School Closure</div>
-                      <div className="rounded-lg bg-[#f8f9ff] px-3 py-2">New Extracurricular Clubs</div>
-                    </div>
+                      {adminTrendLabels.map((label, index) => {
+                        const x = adminTrendPadding.left + (adminTrendChartWidth / (adminTrendLabels.length - 1)) * index;
+                        return (
+                          <text key={label} x={x} y={adminTrendHeight - 10} textAnchor="middle" fill="#64748b" fontSize="10" fontWeight="500">
+                            {label}
+                          </text>
+                        );
+                      })}
+
+                      {adminTrendPath.map((path, seriesIndex) => (
+                        <path
+                          key={adminTrendSeries[seriesIndex].label}
+                          d={path}
+                          fill="none"
+                          stroke={adminTrendSeries[seriesIndex].color}
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      ))}
+
+                      {adminTrendPoints.map((points, seriesIndex) =>
+                        points.map((point, pointIndex) => (
+                          <g key={`${adminTrendSeries[seriesIndex].label}-${pointIndex}`}>
+                            <circle cx={point.x} cy={point.y} r="4" fill={adminTrendSeries[seriesIndex].color} />
+                            <circle cx={point.x} cy={point.y} r="8" fill="transparent" />
+                          </g>
+                        )),
+                      )}
+                    </svg>
+
+                    <p className="mt-1 text-center text-xs text-slate-500">Month</p>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="rounded-2xl neumorph-admin-card border border-transparent p-4">
-                    <h3 className="font-semibold text-slate-800">Course Statistics</h3>
-                    <div className="mx-auto mt-4 grid h-40 w-40 place-items-center rounded-full neumorph-admin-stat p-3">
-                      <div className="grid h-full w-full place-items-center rounded-full bg-[#eef5f3] text-center">
-                        <p className="text-xs text-slate-400">Total</p>
-                        <p className="text-2xl font-bold text-slate-800">15000</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="rounded-2xl neumorph-admin-card border border-transparent p-4">
+                  <div className="h-[360px] rounded-2xl neumorph-admin-card border border-transparent p-4">
                           <style>{`
                             .neumorph-admin-main {
                               background: #eef5f3;
@@ -1392,11 +1561,270 @@ export default function AdminPanelView() {
                               box-shadow: 1px 1px 2px #d0dbd6, -1px -1px 2px #ffffff;
                             }
                           `}</style>
-                    <h3 className="font-semibold text-slate-800">Total Exams</h3>
-                    <p className="mt-2 text-4xl font-bold text-slate-800">256</p>
-                    <p className="mt-1 text-xs text-slate-500">Here is your total exams ratio this month.</p>
+                    <div className="h-full rounded-xl border border-slate-200 bg-white p-3">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <button type="button" className="text-sm font-semibold text-slate-500">2015</button>
+                        <div className="flex items-center gap-3 text-slate-700">
+                          <button type="button" className="text-lg leading-none text-slate-400">&lt;</button>
+                          <p className="text-sm font-semibold tracking-wide">APRIL</p>
+                          <button type="button" className="text-lg leading-none text-slate-400">&gt;</button>
+                        </div>
+                      </div>
+
+                      <div className="mt-2 grid grid-cols-7 border border-slate-100 bg-slate-50">
+                        {[
+                          "Sunday",
+                          "Monday",
+                          "Tuesday",
+                          "Wednesday",
+                          "Thursday",
+                          "Friday",
+                          "Saturday",
+                        ].map((day) => (
+                          <div key={day} className="border-r border-slate-100 px-2 py-1.5 text-[11px] font-medium text-slate-500 last:border-r-0">
+                            {day}
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="grid grid-cols-7 border-x border-b border-slate-100 bg-white text-[11px]">
+                        {[
+                          { day: 29, muted: true },
+                          { day: 30, muted: true },
+                          { day: 31, muted: true },
+                          { day: 1, event: "NYU Engine..", tone: "bg-emerald-400" },
+                          { day: 2 },
+                          { day: 3 },
+                          { day: 4 },
+                          { day: 5, event: "John Hopk..", tone: "bg-cyan-400", active: true },
+                          { day: 6 },
+                          { day: 7 },
+                          { day: 8 },
+                          { day: 9 },
+                          { day: 10 },
+                          { day: 11 },
+                          { day: 12 },
+                          { day: 13, event: "Spring Dem..", tone: "bg-emerald-400" },
+                          { day: 14 },
+                          { day: 15 },
+                          { day: 16 },
+                          { day: 17, event: "Lehigh Co..", tone: "bg-orange-500" },
+                          { day: 18 },
+                          { day: 19 },
+                          { day: 20 },
+                          { day: 21 },
+                          { day: 22 },
+                          { day: 23, event: "UBC Job Fai..", tone: "bg-emerald-400" },
+                          { day: 24, event: "Spring De..", tone: "bg-emerald-400" },
+                          { day: 25 },
+                          { day: 26 },
+                          { day: 27 },
+                          { day: 28 },
+                          { day: 29 },
+                          { day: 30, event: "NYU Engine..", tone: "bg-emerald-400" },
+                          { day: 1, muted: true },
+                          { day: 2, muted: true },
+                          { day: 3, muted: true },
+                          { day: 4, muted: true },
+                          { day: 5, muted: true },
+                          { day: 6, muted: true },
+                          { day: 7, muted: true },
+                          { day: 8, muted: true },
+                          { day: 9, muted: true },
+                        ].map((cell, index) => (
+                          <div
+                            key={`${cell.day}-${index}`}
+                            className={`min-h-[32px] border-r border-t border-slate-100 px-1 py-0.5 align-top text-slate-700 ${
+                              cell.active ? "bg-[#eef9ff]" : "bg-white"
+                            } ${index % 7 === 6 ? "border-r-0" : ""}`}
+                          >
+                            <p className={`text-[10px] ${cell.muted ? "text-slate-300" : "text-slate-500"}`}>{cell.day}</p>
+                            {cell.event ? (
+                              <p className="mt-1 inline-flex items-center gap-1 truncate text-[10px] text-slate-500">
+                                <span className={`h-1.5 w-1.5 rounded-full ${cell.tone}`} />
+                                {cell.event}
+                              </p>
+                            ) : null}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
+              </div>
+
+              <div className="mt-4 rounded-2xl neumorph-admin-card border border-transparent p-4">
+                <div className="mb-3 flex items-center justify-between">
+                  <h3 className="text-base font-semibold text-slate-800">Today</h3>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setTodayTableActiveTab("Student")}
+                      className={`rounded-full border px-5 py-2 text-sm font-semibold transition ${
+                        todayTableActiveTab === "Student"
+                          ? "border-[#bfe9cb] bg-[#e8f9ee] text-[#178c43]"
+                          : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      Student
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTodayTableActiveTab("Teacher")}
+                      className={`rounded-full border px-5 py-2 text-sm font-semibold transition ${
+                        todayTableActiveTab === "Teacher"
+                          ? "border-[#bfe9cb] bg-[#e8f9ee] text-[#178c43]"
+                          : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      Teacher
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTodayTableActiveTab("Notification")}
+                      className={`rounded-full border px-5 py-2 text-sm font-semibold transition ${
+                        todayTableActiveTab === "Notification"
+                          ? "border-[#bfe9cb] bg-[#e8f9ee] text-[#178c43]"
+                          : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      Notification
+                    </button>
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+                  <table className="w-full text-sm">
+                    <thead className="bg-slate-50 text-left text-slate-500">
+                      <tr>
+                        <th className="px-4 py-3">Name</th>
+                        <th className="px-4 py-3">Email</th>
+                        <th className="px-4 py-3">
+                          {todayTableActiveTab === "Student" && "Grade"}
+                          {todayTableActiveTab === "Teacher" && "Specialization"}
+                          {todayTableActiveTab === "Notification" && "Type"}
+                        </th>
+                        <th className="px-4 py-3">Status</th>
+                        <th className="px-4 py-3">Updated</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {todayTableActiveTab === "Student" && paginatedDashboardTodayRows.map((request) => (
+                        <tr key={request.id} className="border-t border-slate-100 text-slate-700">
+                          <td className="px-4 py-3 font-medium text-slate-800">{request.name}</td>
+                          <td className="px-4 py-3">{request.email}</td>
+                          <td className="px-4 py-3">-</td>
+                          <td className="px-4 py-3">
+                            <span className="inline-flex rounded-full bg-[#e8f9ee] px-2.5 py-1 text-xs font-semibold text-[#178c43]">
+                              Active
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-xs text-slate-500">{request.updated}</td>
+                        </tr>
+                      ))}
+
+                      {todayTableActiveTab === "Teacher" && paginatedDashboardTodayRows.map((request) => (
+                        <tr key={request.id} className="border-t border-slate-100 text-slate-700">
+                          <td className="px-4 py-3 font-medium text-slate-800">{request.name}</td>
+                          <td className="px-4 py-3">{request.email}</td>
+                          <td className="px-4 py-3">{request.specialization || "-"}</td>
+                          <td className="px-4 py-3">
+                            <span
+                              className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
+                                request.status === "approved"
+                                  ? "bg-[#e8f9ee] text-[#178c43]"
+                                  : request.status === "rejected"
+                                    ? "bg-[#ffe7e7] text-[#cc2a2a]"
+                                    : "bg-[#f1f5f9] text-slate-600"
+                              }`}
+                            >
+                              {request.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-xs text-slate-500">{request.updated}</td>
+                        </tr>
+                      ))}
+
+                      {todayTableActiveTab === "Notification" && paginatedDashboardTodayRows.map((request) => (
+                        <tr key={request.id} className="border-t border-slate-100 text-slate-700">
+                          <td className="px-4 py-3 font-medium text-slate-800">{request.name}</td>
+                          <td className="px-4 py-3">{request.email}</td>
+                          <td className="px-4 py-3">Alert</td>
+                          <td className="px-4 py-3">
+                            <span className="inline-flex rounded-full bg-[#e7f4ff] px-2.5 py-1 text-xs font-semibold text-[#2c6fb8]">
+                              Sent
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-xs text-slate-500">{request.updated}</td>
+                        </tr>
+                      ))}
+
+                      {approvalRequests.length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="px-4 py-4 text-center text-sm text-slate-500">
+                            No records available.
+                          </td>
+                        </tr>
+                      ) : null}
+                    </tbody>
+                  </table>
+                </div>
+
+                {approvalRequests.length > 0 ? (
+                  <div className="mt-3 rounded-[24px] border border-slate-300 bg-slate-100 px-4 py-3 sm:px-5">
+                    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                      <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
+                        <span>
+                          Showing {Math.min(dashboardTodayPageStart + 1, approvalRequests.length)} to {Math.min(dashboardTodayPageStart + DASHBOARD_ITEMS_PER_PAGE, approvalRequests.length)} of {approvalRequests.length} entries
+                        </span>
+                        <span className="rounded-full border border-emerald-300 bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+                          Page {dashboardTodayCurrentPage} / {dashboardTodayTotalPages}
+                        </span>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setDashboardTodayCurrentPage((page) => Math.max(1, page - 1))}
+                          disabled={dashboardTodayCurrentPage === 1}
+                          className="inline-flex h-10 items-center rounded-2xl border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
+                        >
+                          Prev
+                        </button>
+
+                        <div className="flex flex-wrap items-center gap-2">
+                          {Array.from({ length: dashboardTodayTotalPages }, (_, i) => i + 1).map((page) => (
+                            <button
+                              key={page}
+                              type="button"
+                              onClick={() => setDashboardTodayCurrentPage(page)}
+                              className={`inline-flex h-10 min-w-10 items-center justify-center rounded-2xl border text-sm font-semibold transition ${
+                                page === dashboardTodayCurrentPage
+                                  ? "border-emerald-700 bg-emerald-700 text-white shadow-[0_8px_20px_rgba(16,185,129,0.32)]"
+                                  : "border-slate-300 bg-slate-100 text-slate-700 hover:bg-white"
+                              }`}
+                            >
+                              {page}
+                            </button>
+                          ))}
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setDashboardTodayCurrentPage((page) =>
+                              Math.min(dashboardTodayTotalPages, page + 1),
+                            )
+                          }
+                          disabled={dashboardTodayCurrentPage === dashboardTodayTotalPages}
+                          className="inline-flex h-10 items-center rounded-2xl border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
               </div>
             </div>
           ) : (
@@ -1462,7 +1890,7 @@ export default function AdminPanelView() {
                   </div>
 
                   <ul className="mt-5 flex flex-col gap-3">
-                    {approvalRequests.map((request) => {
+                    {paginatedApprovalRequests.map((request) => {
                       const statusStyle = approvalStatusStyles[request.status];
                       return (
                         <li key={request.id} className={`flex flex-wrap items-center justify-between gap-4 rounded-2xl neumorph-admin-card p-4 shadow-[4px_4px_16px_#d0dbd6,-4px_-4px_16px_#ffffff] ${statusStyle.row}`}>
@@ -1511,152 +1939,382 @@ export default function AdminPanelView() {
                         </li>
                       );
                     })}
+
+                    {approvalRequests.length === 0 ? (
+                      <li className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">No approval requests found.</li>
+                    ) : null}
                   </ul>
+
+                  {approvalRequests.length > 0 ? (
+                    <div className="mt-4 rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex flex-wrap items-center gap-2 text-sm text-slate-600">
+                          <span>
+                            Showing {Math.min((approvalsCurrentPage - 1) * ITEMS_PER_PAGE + 1, approvalRequests.length)} to {Math.min(approvalsCurrentPage * ITEMS_PER_PAGE, approvalRequests.length)} of {approvalRequests.length} entries
+                          </span>
+                          <span className="rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-2.5 py-0.5 text-xs font-semibold text-[#178c43]">
+                            Page {approvalsCurrentPage} / {approvalTotalPages}
+                          </span>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setApprovalsCurrentPage((page) => page - 1)}
+                            disabled={approvalsCurrentPage === 1}
+                            className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                          >
+                            Prev
+                          </button>
+
+                          <div className="flex flex-wrap items-center gap-2">
+                            {Array.from({ length: approvalTotalPages }, (_, i) => i + 1).map((page) => (
+                              <button
+                                key={page}
+                                type="button"
+                                onClick={() => setApprovalsCurrentPage(page)}
+                                className={`inline-flex h-9 min-w-9 items-center justify-center rounded-xl border text-sm font-semibold transition ${
+                                  page === approvalsCurrentPage
+                                    ? "border-[#178c43] bg-[#178c43] text-white shadow-[0_8px_18px_rgba(23,140,67,0.25)]"
+                                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                                }`}
+                              >
+                                {page}
+                              </button>
+                            ))}
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => setApprovalsCurrentPage((page) => page + 1)}
+                            disabled={approvalsCurrentPage === approvalTotalPages}
+                            className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                          >
+                            Next
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               ) : activeSection === "Reviews" ? (
                 <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div className="rounded-xl bg-[#f8fafc] p-4">
-                      <p className="text-sm text-slate-500">Total Reviews</p>
+                      <p className="text-xs text-slate-500">Total Reviews</p>
                       <p className="mt-1 text-2xl font-semibold text-slate-800">{reviewCounts.total}</p>
                     </div>
                     <div className="rounded-xl bg-[#f8fafc] p-4">
-                      <p className="text-sm text-slate-500">Flagged Reviews</p>
+                      <p className="text-xs text-slate-500">Flagged Reviews</p>
                       <p className="mt-1 text-2xl font-semibold text-[#cc2a2a]">{reviewCounts.flagged}</p>
                     </div>
                   </div>
 
                   <ul className="mt-5 flex flex-col gap-3">
                     {reviewsError ? (
-                      <li className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{reviewsError}</li>
+                      <li className="rounded-2xl border border-red-200 bg-red-50 p-4 text-xs text-red-700">{reviewsError}</li>
                     ) : null}
 
                     {reviewsLoading ? (
-                      <li className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">Loading reviews...</li>
+                      <li className="rounded-2xl border border-slate-200 bg-white p-4 text-xs text-slate-500">Loading reviews...</li>
                     ) : null}
 
                     {!reviewsLoading && reviewEntries.length === 0 ? (
-                      <li className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">No reviews found.</li>
+                      <li className="rounded-2xl border border-slate-200 bg-white p-4 text-xs text-slate-500">No reviews found.</li>
                     ) : null}
 
-                    {!reviewsLoading && reviewEntries.map((review) => (
+                    {!reviewsLoading && paginatedReviewEntries.map((review) => (
                       <li
                         key={review.id}
-                        className={`flex flex-wrap items-center gap-4 rounded-2xl neumorph-admin-card p-4 shadow-[4px_4px_16px_#d0dbd6,-4px_-4px_16px_#ffffff] ${review.flagged ? "bg-[#fff1f1]" : "bg-white"}`}
+                        className={`rounded-3xl neumorph-admin-card px-6 py-5 shadow-[4px_4px_16px_#d0dbd6,-4px_-4px_16px_#ffffff] ${review.flagged ? "bg-[#fff1f1]" : "bg-white"}`}
                       >
-                        <div className="flex-1 min-w-[120px] font-medium text-slate-800">{review.userName}</div>
-                        <div className="flex-1 min-w-[120px]">
-                          <div className="font-medium text-slate-800">{review.professionalName}</div>
-                          <div className="text-xs text-slate-500">{review.professionalDetails}</div>
-                        </div>
-                        <div className="flex-1 min-w-[200px]">
-                          <div className="max-w-xl space-y-1">
-                            <p className="text-slate-700">{review.review}</p>
+                        <div className="grid gap-4 text-center sm:grid-cols-2 lg:grid-cols-12 lg:items-center">
+                          <div className="text-sm font-semibold text-slate-800 lg:col-span-2 md:text-base">{review.userName}</div>
+
+                          <div className="lg:col-span-2">
+                            <div className="text-sm font-semibold text-slate-800 md:text-base">{review.professionalName}</div>
+                            <div className="text-[11px] text-slate-500">{review.professionalDetails}</div>
+                          </div>
+
+                          <div className="space-y-2 lg:col-span-3">
+                            <p className="text-xs leading-relaxed text-slate-700 md:text-sm">{review.review}</p>
                             {review.flagged ? (
                               <span className="inline-flex rounded-full border border-[#f5c1c1] bg-[#ffe7e7] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-[#cc2a2a]">
                                 Flagged as inappropriate
                               </span>
                             ) : null}
                           </div>
-                        </div>
-                        <div className="flex-1 min-w-[60px] font-semibold text-slate-800">{review.rating}/5</div>
-                        <div className="flex-1 min-w-[100px] text-slate-600">{review.createdAt}</div>
-                        <div className="flex flex-1 justify-end min-w-[120px]">
-                          <button
-                            type="button"
-                            onClick={() => void deleteReview(review.id)}
-                            className="inline-flex items-center gap-1 rounded-full border border-[#f5c1c1] bg-[#ffe7e7] px-3 py-1.5 text-xs font-semibold text-[#cc2a2a] transition hover:bg-[#ffdcdc]"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                            Delete
-                          </button>
+
+                          <div className="text-sm font-semibold text-slate-800 lg:col-span-1 lg:text-center md:text-base">{review.rating}/5</div>
+
+                          <div className="text-xs text-slate-600 lg:col-span-2 lg:whitespace-normal md:text-sm">{review.createdAt}</div>
+
+                          <div className="sm:col-span-2 lg:col-span-2 lg:justify-self-center">
+                            <button
+                              type="button"
+                              onClick={() => void deleteReview(review.id)}
+                              className="inline-flex items-center gap-1 rounded-full border border-[#f5c1c1] bg-[#ffe7e7] px-4 py-1.5 text-[11px] font-semibold text-[#cc2a2a] transition hover:bg-[#ffdcdc] md:text-xs"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              Delete
+                            </button>
+                          </div>
                         </div>
                       </li>
                     ))}
                   </ul>
+
+                  {!reviewsLoading && reviewEntries.length > 0 ? (
+                    <div className="mt-4 rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600">
+                          <span>
+                            Showing {Math.min(reviewsPageStart + 1, reviewEntries.length)} to {Math.min(reviewsPageStart + ITEMS_PER_PAGE, reviewEntries.length)} of {reviewEntries.length} entries
+                          </span>
+                          <span className="rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-2.5 py-0.5 text-xs font-semibold text-[#178c43]">
+                            Page {reviewsCurrentPage} / {reviewsTotalPages}
+                          </span>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setReviewsCurrentPage((page) => Math.max(1, page - 1))}
+                            disabled={reviewsCurrentPage === 1}
+                            className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                          >
+                            Prev
+                          </button>
+
+                          <div className="flex flex-wrap items-center gap-2">
+                            {Array.from({ length: reviewsTotalPages }, (_, i) => i + 1).map((page) => (
+                              <button
+                                key={page}
+                                type="button"
+                                onClick={() => setReviewsCurrentPage(page)}
+                                className={`inline-flex h-9 min-w-9 items-center justify-center rounded-xl border text-xs font-semibold transition ${
+                                  page === reviewsCurrentPage
+                                    ? "border-[#178c43] bg-[#178c43] text-white shadow-[0_8px_18px_rgba(23,140,67,0.25)]"
+                                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                                }`}
+                              >
+                                {page}
+                              </button>
+                            ))}
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => setReviewsCurrentPage((page) => Math.min(reviewsTotalPages, page + 1))}
+                            disabled={reviewsCurrentPage === reviewsTotalPages}
+                            className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                          >
+                            Next
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               ) : activeSection === "Alerts" ? (
                 <div className="mt-6 space-y-5">
-                  <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <h3 className="text-lg font-semibold text-slate-800">Professional Notifications</h3>
-                        <p className="text-sm text-slate-500">Latest profile, certificate, and upgrade changes from professionals.</p>
-                      </div>
+                  <div className="rounded-xl border border-slate-200 bg-white p-3">
+                    <div className="flex w-full max-w-sm items-center gap-2 rounded-xl bg-slate-50 p-1">
+                      <button
+                        type="button"
+                        onClick={() => setAlertsView("professionals")}
+                        className={`flex-1 rounded-lg px-3 py-2 text-xs font-semibold transition ${
+                          alertsView === "professionals"
+                            ? "bg-[#2d6a4f] text-white"
+                            : "text-slate-600 hover:bg-white"
+                        }`}
+                      >
+                        Professional
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setAlertsView("students")}
+                        className={`flex-1 rounded-lg px-3 py-2 text-xs font-semibold transition ${
+                          alertsView === "students"
+                            ? "bg-[#2d6a4f] text-white"
+                            : "text-slate-600 hover:bg-white"
+                        }`}
+                      >
+                        Students
+                      </button>
                     </div>
+                  </div>
 
-                    <div className="mt-5 overflow-hidden rounded-xl border border-slate-200">
-                      {notificationsLoading ? (
-                        <div className="bg-white p-4 text-sm text-slate-500">Loading notifications...</div>
-                      ) : notifications.length > 0 ? (
-                        <div className="divide-y divide-slate-100">
-                          {notifications.map((notification) => (
-                            <div key={notification.id} className="bg-white p-4">
-                              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                                <div className="space-y-1">
-                                  <p className="font-semibold text-slate-800">{notification.professionalName}</p>
-                                  <p className="text-xs text-slate-500">{notification.professionalEmail}</p>
-                                  <p className="text-sm text-slate-700">{notification.summary}</p>
-                                  <p className="text-xs text-slate-500">{notification.details}</p>
+                  {alertsView === "professionals" ? (
+                    <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <h3 className="text-lg font-semibold text-slate-800">Professional Notifications</h3>
+                          <p className="text-sm text-slate-500">Latest profile, certificate, and upgrade changes from professionals.</p>
+                        </div>
+                      </div>
+
+                      <div className="mt-5 overflow-hidden rounded-xl">
+                        {notificationsLoading ? (
+                          <div className="bg-white p-4 text-sm text-slate-500">Loading notifications...</div>
+                        ) : notifications.length > 0 ? (
+                          <div className="divide-y divide-slate-100">
+                            {paginatedNotifications.map((notification) => (
+                              <div key={notification.id} className="bg-white p-4">
+                                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                                  <div className="space-y-1">
+                                    <p className="font-semibold text-slate-800">{notification.professionalName}</p>
+                                    <p className="text-xs text-slate-500">{notification.professionalEmail}</p>
+                                    <p className="text-sm text-slate-700">{notification.summary}</p>
+                                    <p className="text-xs text-slate-500">{notification.details}</p>
+                                  </div>
+                                  <span className="inline-flex w-fit rounded-full border border-[#dbeafe] bg-[#eff6ff] px-3 py-1 text-xs font-semibold text-[#2563eb]">
+                                    {new Date(notification.createdAt).toLocaleString()}
+                                  </span>
                                 </div>
-                                <span className="inline-flex w-fit rounded-full border border-[#dbeafe] bg-[#eff6ff] px-3 py-1 text-xs font-semibold text-[#2563eb]">
-                                  {new Date(notification.createdAt).toLocaleString()}
-                                </span>
                               </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="bg-white p-4 text-sm text-slate-500">No professional updates yet.</div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <h3 className="text-lg font-semibold text-slate-800">Contact Form Submissions</h3>
-                        <p className="text-sm text-slate-500">Messages submitted from the Contact page form.</p>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="bg-white p-4 text-sm text-slate-500">No professional updates yet.</div>
+                        )}
                       </div>
-                    </div>
 
-                    <div className="mt-5 overflow-hidden rounded-xl border border-slate-200">
-                      {contactMessagesLoading ? (
-                        <div className="bg-white p-4 text-sm text-slate-500">Loading contact submissions...</div>
-                      ) : contactMessages.length > 0 ? (
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-sm">
-                            <thead className="bg-slate-50 text-left text-slate-500">
-                              <tr>
-                                <th className="px-4 py-3">Name</th>
-                                <th className="px-4 py-3">Email</th>
-                                <th className="px-4 py-3">Phone</th>
-                                <th className="px-4 py-3">Subject</th>
-                                <th className="px-4 py-3">Message</th>
-                                <th className="px-4 py-3">Submitted</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {contactMessages.map((entry) => (
-                                <tr key={entry.id} className="border-t border-slate-100 text-slate-700">
-                                  <td className="px-4 py-3 font-medium text-slate-800">{entry.name}</td>
-                                  <td className="px-4 py-3">{entry.email}</td>
-                                  <td className="px-4 py-3">{entry.phone || "-"}</td>
-                                  <td className="px-4 py-3">{entry.subject}</td>
-                                  <td className="px-4 py-3 max-w-[340px]">
-                                    <p className="line-clamp-3">{entry.message}</p>
-                                  </td>
-                                  <td className="px-4 py-3 text-xs text-slate-500">{new Date(entry.createdAt).toLocaleString()}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
+                      {notifications.length > 0 && (
+                        <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
+                          <p className="text-xs text-slate-600 sm:text-sm">
+                            Showing {Math.min(alertsProfessionalsPageStart + 1, notifications.length)} to{" "}
+                            {Math.min(alertsProfessionalsPageStart + ITEMS_PER_PAGE, notifications.length)} of {notifications.length} entries
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <span className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700">
+                              Page {alertsProfessionalsCurrentPage} / {alertsProfessionalsTotalPages}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setAlertsProfessionalsCurrentPage(Math.max(1, alertsProfessionalsCurrentPage - 1))}
+                              disabled={alertsProfessionalsCurrentPage === 1}
+                              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              Prev
+                            </button>
+                            {Array.from({ length: alertsProfessionalsTotalPages }, (_, i) => i + 1).map((page) => (
+                              <button
+                                key={page}
+                                type="button"
+                                onClick={() => setAlertsProfessionalsCurrentPage(page)}
+                                className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
+                                  alertsProfessionalsCurrentPage === page
+                                    ? "border-[#178c43] bg-[#178c43] text-white"
+                                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                                }`}
+                              >
+                                {page}
+                              </button>
+                            ))}
+                            <button
+                              type="button"
+                              onClick={() => setAlertsProfessionalsCurrentPage(Math.min(alertsProfessionalsTotalPages, alertsProfessionalsCurrentPage + 1))}
+                              disabled={alertsProfessionalsCurrentPage === alertsProfessionalsTotalPages}
+                              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              Next
+                            </button>
+                          </div>
                         </div>
-                      ) : (
-                        <div className="bg-white p-4 text-sm text-slate-500">No contact submissions yet.</div>
                       )}
                     </div>
-                  </div>
+                  ) : (
+                    <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <h3 className="text-lg font-semibold text-slate-800">Student Submissions</h3>
+                          <p className="text-sm text-slate-500">Messages submitted from students through the Contact page form.</p>
+                        </div>
+                      </div>
+
+                      <div className="mt-5 overflow-hidden rounded-xl">
+                        {contactMessagesLoading ? (
+                          <div className="bg-white p-4 text-sm text-slate-500">Loading contact submissions...</div>
+                        ) : contactMessages.length > 0 ? (
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                              <thead className="bg-slate-50 text-left text-slate-500">
+                                <tr>
+                                  <th className="px-4 py-3">Name</th>
+                                  <th className="px-4 py-3">Email</th>
+                                  <th className="px-4 py-3">Phone</th>
+                                  <th className="px-4 py-3">Subject</th>
+                                  <th className="px-4 py-3">Message</th>
+                                  <th className="px-4 py-3">Submitted</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {paginatedContactMessages.map((entry) => (
+                                  <tr key={entry.id} className="border-t border-slate-100 text-slate-700">
+                                    <td className="px-4 py-3 font-medium text-slate-800">{entry.name}</td>
+                                    <td className="px-4 py-3">{entry.email}</td>
+                                    <td className="px-4 py-3">{entry.phone || "-"}</td>
+                                    <td className="px-4 py-3">{entry.subject}</td>
+                                    <td className="px-4 py-3 max-w-[340px]">
+                                      <p className="line-clamp-3">{entry.message}</p>
+                                    </td>
+                                    <td className="px-4 py-3 text-xs text-slate-500">{new Date(entry.createdAt).toLocaleString()}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        ) : (
+                          <div className="bg-white p-4 text-sm text-slate-500">No contact submissions yet.</div>
+                        )}
+                      </div>
+
+                      {contactMessages.length > 0 && (
+                        <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
+                          <p className="text-xs text-slate-600 sm:text-sm">
+                            Showing {Math.min(alertsStudentsPageStart + 1, contactMessages.length)} to{" "}
+                            {Math.min(alertsStudentsPageStart + ITEMS_PER_PAGE, contactMessages.length)} of {contactMessages.length} entries
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <span className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700">
+                              Page {alertsStudentsCurrentPage} / {alertsStudentsTotalPages}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setAlertStudentsCurrentPage(Math.max(1, alertsStudentsCurrentPage - 1))}
+                              disabled={alertsStudentsCurrentPage === 1}
+                              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              Prev
+                            </button>
+                            {Array.from({ length: alertsStudentsTotalPages }, (_, i) => i + 1).map((page) => (
+                              <button
+                                key={page}
+                                type="button"
+                                onClick={() => setAlertStudentsCurrentPage(page)}
+                                className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
+                                  alertsStudentsCurrentPage === page
+                                    ? "border-[#178c43] bg-[#178c43] text-white"
+                                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                                }`}
+                              >
+                                {page}
+                              </button>
+                            ))}
+                            <button
+                              type="button"
+                              onClick={() => setAlertStudentsCurrentPage(Math.min(alertsStudentsTotalPages, alertsStudentsCurrentPage + 1))}
+                              disabled={alertsStudentsCurrentPage === alertsStudentsTotalPages}
+                              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              Next
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               ) : activeSection === "Payouts" ? (
                 <div className="mt-6 space-y-4">
@@ -1677,7 +2335,7 @@ export default function AdminPanelView() {
 
                   <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
                     <table className="w-full text-sm">
-                      <thead className="bg-slate-50 text-left text-slate-500">
+                      <thead className="bg-slate-50 text-center text-slate-500">
                         <tr>
                           <th className="px-4 py-3">Professional</th>
                           <th className="px-4 py-3">Plan</th>
@@ -1685,7 +2343,7 @@ export default function AdminPanelView() {
                           <th className="px-4 py-3">Transaction ID</th>
                           <th className="px-4 py-3">Paid At</th>
                           <th className="px-4 py-3">Status</th>
-                          <th className="px-4 py-3 text-right">View</th>
+                          <th className="px-4 py-3">View</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1697,17 +2355,17 @@ export default function AdminPanelView() {
                           <tr>
                             <td colSpan={7} className="px-4 py-4 text-sm text-slate-500">No payments yet.</td>
                           </tr>
-                        ) : payoutEntries.map((entry) => (
-                          <tr key={entry.id} className="border-t border-slate-100 text-slate-700">
-                            <td className="px-4 py-3">
-                              <div className="font-medium text-slate-800">{entry.professionalName}</div>
+                        ) : paginatedPayoutEntries.map((entry) => (
+                          <tr key={entry.id} className="border-t border-slate-100 text-xs text-slate-700">
+                            <td className="px-4 py-3 align-middle text-center">
+                              <div className="font-semibold text-slate-800">{entry.professionalName}</div>
                               <div className="text-xs text-slate-500">{entry.professionalEmail}</div>
                             </td>
-                            <td className="px-4 py-3">{entry.plan}</td>
-                            <td className="px-4 py-3 font-semibold text-slate-800">{entry.amount}</td>
-                            <td className="px-4 py-3 text-xs text-slate-600">{entry.transactionId}</td>
-                            <td className="px-4 py-3">{entry.paidAt}</td>
-                            <td className="px-4 py-3">
+                            <td className="px-4 py-3 align-middle text-center">{entry.plan}</td>
+                            <td className="px-4 py-3 align-middle text-center font-semibold text-slate-800">{entry.amount}</td>
+                            <td className="px-4 py-3 align-middle text-center text-xs text-slate-600">{entry.transactionId}</td>
+                            <td className="px-4 py-3 align-middle text-center">{entry.paidAt}</td>
+                            <td className="px-4 py-3 align-middle text-center">
                               <span
                                 className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${
                                   entry.status === "completed"
@@ -1718,8 +2376,8 @@ export default function AdminPanelView() {
                                 {entry.status}
                               </span>
                             </td>
-                            <td className="px-4 py-3">
-                              <div className="flex justify-end">
+                            <td className="px-4 py-3 align-middle text-center">
+                              <div className="flex justify-center">
                                 <button
                                   type="button"
                                   onClick={() =>
@@ -1747,6 +2405,58 @@ export default function AdminPanelView() {
                         ))}
                       </tbody>
                     </table>
+
+                    {!payoutsLoading && payoutEntries.length > 0 ? (
+                      <div className="mt-4 rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="flex flex-wrap items-center gap-2 text-sm text-slate-600">
+                            <span>
+                              Showing {Math.min((payoutsCurrentPage - 1) * ITEMS_PER_PAGE + 1, payoutEntries.length)} to {Math.min(payoutsCurrentPage * ITEMS_PER_PAGE, payoutEntries.length)} of {payoutEntries.length} entries
+                            </span>
+                            <span className="rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-2.5 py-0.5 text-xs font-semibold text-[#178c43]">
+                              Page {payoutsCurrentPage} / {payoutsTotalPages}
+                            </span>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setPayoutsCurrentPage((page) => page - 1)}
+                              disabled={payoutsCurrentPage === 1}
+                              className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                            >
+                              Prev
+                            </button>
+
+                            <div className="flex flex-wrap items-center gap-2">
+                              {Array.from({ length: payoutsTotalPages }, (_, i) => i + 1).map((page) => (
+                                <button
+                                  key={page}
+                                  type="button"
+                                  onClick={() => setPayoutsCurrentPage(page)}
+                                  className={`inline-flex h-9 min-w-9 items-center justify-center rounded-xl border text-sm font-semibold transition ${
+                                    page === payoutsCurrentPage
+                                      ? "border-[#178c43] bg-[#178c43] text-white shadow-[0_8px_18px_rgba(23,140,67,0.25)]"
+                                      : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                                  }`}
+                                >
+                                  {page}
+                                </button>
+                              ))}
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => setPayoutsCurrentPage((page) => page + 1)}
+                              disabled={payoutsCurrentPage === payoutsTotalPages}
+                              className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                            >
+                              Next
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               ) : activeSection === "Uploads" ? (
@@ -1756,9 +2466,9 @@ export default function AdminPanelView() {
                       <button
                         type="button"
                         onClick={() => setUploadView("professional-uploads")}
-                        className={`flex-1 rounded-lg px-3 py-2 text-xs font-semibold transition ${
+                        className={`flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition ${
                           uploadView === "professional-uploads"
-                            ? "bg-[#1ec28e] text-white"
+                            ? "bg-[#2d6a4f] text-white"
                             : "text-slate-600 hover:bg-white"
                         }`}
                       >
@@ -1767,9 +2477,9 @@ export default function AdminPanelView() {
                       <button
                         type="button"
                         onClick={() => setUploadView("student-purchases")}
-                        className={`flex-1 rounded-lg px-3 py-2 text-xs font-semibold transition ${
+                        className={`flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition ${
                           uploadView === "student-purchases"
-                            ? "bg-[#1ec28e] text-white"
+                            ? "bg-[#2d6a4f] text-white"
                             : "text-slate-600 hover:bg-white"
                         }`}
                       >
@@ -1784,7 +2494,7 @@ export default function AdminPanelView() {
                         <h3 className="font-semibold text-slate-800">Professionals</h3>
                       </div>
                       <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
+                        <table className="w-full text-[15px]">
                           <thead className="bg-slate-50 text-left text-slate-500">
                             <tr>
                               <th className="px-4 py-3">Name</th>
@@ -1798,17 +2508,17 @@ export default function AdminPanelView() {
                           <tbody>
                             {uploadsLoading ? (
                               <tr>
-                                <td colSpan={6} className="px-4 py-4 text-sm text-slate-500">Loading professionals...</td>
+                                <td colSpan={6} className="px-4 py-4 text-base text-slate-500">Loading professionals...</td>
                               </tr>
                             ) : professionalUploadRows.length === 0 ? (
                               <tr>
-                                <td colSpan={6} className="px-4 py-4 text-sm text-slate-500">No professionals found.</td>
+                                <td colSpan={6} className="px-4 py-4 text-base text-slate-500">No professionals found.</td>
                               </tr>
                             ) : (
-                              professionalUploadRows.map((professional) => (
+                              paginatedProfessionalUploadRows.map((professional) => (
                                 <tr key={professional.id} className="border-t border-slate-100 text-slate-700">
                                   <td className="px-4 py-3 font-medium text-slate-800">{professional.name}</td>
-                                  <td className="px-4 py-3 text-xs text-slate-600">{professional.email}</td>
+                                  <td className="px-4 py-3 text-sm text-slate-600">{professional.email}</td>
                                   <td className="px-4 py-3">{professional.categories.length}</td>
                                   <td className="px-4 py-3">{professional.booksCount}</td>
                                   <td className="px-4 py-3">{professional.videosCount}</td>
@@ -1817,7 +2527,7 @@ export default function AdminPanelView() {
                                       <button
                                         type="button"
                                         onClick={() => router.push(`/admin/uploads/professionals/${professional.id}`)}
-                                        className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
+                                        className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
                                       >
                                         <Eye className="h-3.5 w-3.5" />
                                         View
@@ -1830,6 +2540,58 @@ export default function AdminPanelView() {
                           </tbody>
                         </table>
                       </div>
+
+                      {professionalUploadRows.length > 0 ? (
+                        <div className="mt-4 rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
+                          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="flex flex-wrap items-center gap-2 text-base text-slate-600">
+                              <span>
+                                Showing {Math.min((uploadsProfessionalsCurrentPage - 1) * ITEMS_PER_PAGE + 1, professionalUploadRows.length)} to {Math.min(uploadsProfessionalsCurrentPage * ITEMS_PER_PAGE, professionalUploadRows.length)} of {professionalUploadRows.length} entries
+                              </span>
+                              <span className="rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-2.5 py-0.5 text-sm font-semibold text-[#178c43]">
+                                Page {uploadsProfessionalsCurrentPage} / {uploadsProfessionalsTotalPages}
+                              </span>
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => setUploadsProfessionalsCurrentPage((page) => page - 1)}
+                                disabled={uploadsProfessionalsCurrentPage === 1}
+                                className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                              >
+                                Prev
+                              </button>
+
+                              <div className="flex flex-wrap items-center gap-2">
+                                {Array.from({ length: uploadsProfessionalsTotalPages }, (_, i) => i + 1).map((page) => (
+                                  <button
+                                    key={page}
+                                    type="button"
+                                    onClick={() => setUploadsProfessionalsCurrentPage(page)}
+                                    className={`inline-flex h-9 min-w-9 items-center justify-center rounded-xl border text-sm font-semibold transition ${
+                                      page === uploadsProfessionalsCurrentPage
+                                        ? "border-[#178c43] bg-[#178c43] text-white shadow-[0_8px_18px_rgba(23,140,67,0.25)]"
+                                        : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                                    }`}
+                                  >
+                                    {page}
+                                  </button>
+                                ))}
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => setUploadsProfessionalsCurrentPage((page) => page + 1)}
+                                disabled={uploadsProfessionalsCurrentPage === uploadsProfessionalsTotalPages}
+                                className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                              >
+                                Next
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ) : null}
                     </div>
                   ) : (
                     <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
@@ -1837,7 +2599,7 @@ export default function AdminPanelView() {
                         <h3 className="font-semibold text-slate-800">Students</h3>
                       </div>
                       <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
+                        <table className="w-full text-[15px]">
                           <thead className="bg-slate-50 text-left text-slate-500">
                             <tr>
                               <th className="px-4 py-3">Name</th>
@@ -1851,17 +2613,17 @@ export default function AdminPanelView() {
                           <tbody>
                             {uploadsLoading ? (
                               <tr>
-                                <td colSpan={6} className="px-4 py-4 text-sm text-slate-500">Loading students...</td>
+                                <td colSpan={6} className="px-4 py-4 text-base text-slate-500">Loading students...</td>
                               </tr>
                             ) : studentUploadRows.length === 0 ? (
                               <tr>
-                                <td colSpan={6} className="px-4 py-4 text-sm text-slate-500">No students found.</td>
+                                <td colSpan={6} className="px-4 py-4 text-base text-slate-500">No students found.</td>
                               </tr>
                             ) : (
-                              studentUploadRows.map((student) => (
+                              paginatedStudentUploadRows.map((student) => (
                                 <tr key={student.id} className="border-t border-slate-100 text-slate-700">
                                   <td className="px-4 py-3 font-medium text-slate-800">{student.name}</td>
-                                  <td className="px-4 py-3 text-xs text-slate-600">{student.email}</td>
+                                  <td className="px-4 py-3 text-sm text-slate-600">{student.email}</td>
                                   <td className="px-4 py-3">{student.purchasedBooksCount}</td>
                                   <td className="px-4 py-3">{student.watchedVideosCount}</td>
                                   <td className="px-4 py-3">{new Date(student.lastActivity).toLocaleDateString()}</td>
@@ -1870,7 +2632,7 @@ export default function AdminPanelView() {
                                       <button
                                         type="button"
                                         onClick={() => router.push(`/admin/uploads/students/${student.id}`)}
-                                        className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
+                                        className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
                                       >
                                         <Eye className="h-3.5 w-3.5" />
                                         View
@@ -1883,6 +2645,58 @@ export default function AdminPanelView() {
                           </tbody>
                         </table>
                       </div>
+
+                      {studentUploadRows.length > 0 ? (
+                        <div className="mt-4 rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
+                          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="flex flex-wrap items-center gap-2 text-base text-slate-600">
+                              <span>
+                                Showing {Math.min((uploadsStudentsCurrentPage - 1) * ITEMS_PER_PAGE + 1, studentUploadRows.length)} to {Math.min(uploadsStudentsCurrentPage * ITEMS_PER_PAGE, studentUploadRows.length)} of {studentUploadRows.length} entries
+                              </span>
+                              <span className="rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-2.5 py-0.5 text-sm font-semibold text-[#178c43]">
+                                Page {uploadsStudentsCurrentPage} / {uploadsStudentsTotalPages}
+                              </span>
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => setUploadsStudentsCurrentPage((page) => page - 1)}
+                                disabled={uploadsStudentsCurrentPage === 1}
+                                className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                              >
+                                Prev
+                              </button>
+
+                              <div className="flex flex-wrap items-center gap-2">
+                                {Array.from({ length: uploadsStudentsTotalPages }, (_, i) => i + 1).map((page) => (
+                                  <button
+                                    key={page}
+                                    type="button"
+                                    onClick={() => setUploadsStudentsCurrentPage(page)}
+                                    className={`inline-flex h-9 min-w-9 items-center justify-center rounded-xl border text-sm font-semibold transition ${
+                                      page === uploadsStudentsCurrentPage
+                                        ? "border-[#178c43] bg-[#178c43] text-white shadow-[0_8px_18px_rgba(23,140,67,0.25)]"
+                                        : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                                    }`}
+                                  >
+                                    {page}
+                                  </button>
+                                ))}
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => setUploadsStudentsCurrentPage((page) => page + 1)}
+                                disabled={uploadsStudentsCurrentPage === uploadsStudentsTotalPages}
+                                className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                              >
+                                Next
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ) : null}
                     </div>
                   )}
                 </div>
@@ -1900,7 +2714,7 @@ export default function AdminPanelView() {
                         </tr>
                       </thead>
                       <tbody>
-                        {categoriesList.map((category) => (
+                        {paginatedCategories.map((category) => (
                           <tr key={category.id} className="border-t border-slate-100 text-slate-700">
                             <td className="px-4 py-3 font-medium text-slate-800">{category.name}</td>
                             <td className="px-4 py-3">{category.type}</td>
@@ -1946,17 +2760,70 @@ export default function AdminPanelView() {
                             </td>
                           </tr>
                         ))}
+
+                        {categoriesList.length === 0 ? (
+                          <tr>
+                            <td colSpan={5} className="px-4 py-4 text-sm text-slate-500">No categories found.</td>
+                          </tr>
+                        ) : null}
                       </tbody>
                     </table>
                   </div>
+
+                  {categoriesList.length > 0 ? (
+                    <div className="rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex flex-wrap items-center gap-2 text-sm text-slate-600">
+                          <span>
+                            Showing {Math.min((categoriesCurrentPage - 1) * ITEMS_PER_PAGE + 1, categoriesList.length)} to {Math.min(categoriesCurrentPage * ITEMS_PER_PAGE, categoriesList.length)} of {categoriesList.length} entries
+                          </span>
+                          <span className="rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-2.5 py-0.5 text-xs font-semibold text-[#178c43]">
+                            Page {categoriesCurrentPage} / {categoryTotalPages}
+                          </span>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setCategoriesCurrentPage((page) => page - 1)}
+                            disabled={categoriesCurrentPage === 1}
+                            className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                          >
+                            Prev
+                          </button>
+
+                          <div className="flex flex-wrap items-center gap-2">
+                            {Array.from({ length: categoryTotalPages }, (_, i) => i + 1).map((page) => (
+                              <button
+                                key={page}
+                                type="button"
+                                onClick={() => setCategoriesCurrentPage(page)}
+                                className={`inline-flex h-9 min-w-9 items-center justify-center rounded-xl border text-sm font-semibold transition ${
+                                  page === categoriesCurrentPage
+                                    ? "border-[#178c43] bg-[#178c43] text-white shadow-[0_8px_18px_rgba(23,140,67,0.25)]"
+                                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                                }`}
+                              >
+                                {page}
+                              </button>
+                            ))}
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => setCategoriesCurrentPage((page) => page + 1)}
+                            disabled={categoriesCurrentPage === categoryTotalPages}
+                            className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                          >
+                            Next
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               ) : activeSection === "Users" ? (
                 <div className="mt-6 overflow-visible rounded-2xl neumorph-admin-card border border-transparent p-4 shadow-[8px_8px_24px_#d0dbd6,-8px_-8px_24px_#ffffff]">
-                  <div className="border-b border-slate-200 px-4 py-3">
-                    <h3 className="font-semibold text-slate-800">Users</h3>
-                    <p className="text-sm text-slate-500">Switch between students and professionals.</p>
-                  </div>
-
                   <div className="flex gap-3 border-b border-slate-200 px-2 py-3 mb-2">
                     <button
                       type="button"
@@ -2063,40 +2930,57 @@ export default function AdminPanelView() {
                           </tbody>
                         </table>
                       </div>
-                      <div className="flex items-center justify-between border-t border-slate-100 px-4 py-4">
-                        <div className="text-sm text-slate-600">
-                          Showing {Math.min((studentsCurrentPage - 1) * ITEMS_PER_PAGE + 1, studentsList.length)} to {Math.min(studentsCurrentPage * ITEMS_PER_PAGE, studentsList.length)} of {studentsList.length} entries
-                        </div>
-                        <div className="flex gap-2">
-                          {studentsCurrentPage > 1 && (
+                      <div className="mt-3 rounded-[24px] border border-slate-300 bg-slate-100 px-4 py-3 sm:px-5">
+                        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                          <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
+                            <span>
+                              Showing {Math.min((studentsCurrentPage - 1) * ITEMS_PER_PAGE + 1, studentsList.length)} to {Math.min(studentsCurrentPage * ITEMS_PER_PAGE, studentsList.length)} of {studentsList.length} entries
+                            </span>
+                            <span className="rounded-full border border-emerald-300 bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+                              Page {studentsCurrentPage} / {Math.max(1, Math.ceil(studentsList.length / ITEMS_PER_PAGE))}
+                            </span>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-3">
                             <button
-                              onClick={() => setStudentsCurrentPage(p => p - 1)}
-                              className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50"
+                              type="button"
+                              onClick={() => setStudentsCurrentPage((page) => Math.max(1, page - 1))}
+                              disabled={studentsCurrentPage === 1}
+                              className="inline-flex h-10 items-center rounded-2xl border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
                             >
-                              Previous
+                              Prev
                             </button>
-                          )}
-                          {Array.from({ length: Math.ceil(studentsList.length / ITEMS_PER_PAGE) }, (_, i) => i + 1).map((page) => (
+
+                            <div className="flex flex-wrap items-center gap-3">
+                              {Array.from({ length: Math.max(1, Math.ceil(studentsList.length / ITEMS_PER_PAGE)) }, (_, i) => i + 1).map((page) => (
+                                <button
+                                  key={page}
+                                  type="button"
+                                  onClick={() => setStudentsCurrentPage(page)}
+                                  className={`inline-flex h-10 min-w-10 items-center justify-center rounded-2xl border text-sm font-semibold transition ${
+                                    page === studentsCurrentPage
+                                      ? "border-emerald-700 bg-emerald-700 text-white shadow-[0_8px_20px_rgba(16,185,129,0.32)]"
+                                      : "border-slate-300 bg-slate-100 text-slate-700 hover:bg-white"
+                                  }`}
+                                >
+                                  {page}
+                                </button>
+                              ))}
+                            </div>
+
                             <button
-                              key={page}
-                              onClick={() => setStudentsCurrentPage(page)}
-                              className={`h-8 w-8 rounded-lg text-sm font-semibold transition ${
-                                page === studentsCurrentPage
-                                  ? "bg-[#6366f1] text-white"
-                                  : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                              }`}
-                            >
-                              {page}
-                            </button>
-                          ))}
-                          {studentsCurrentPage < Math.ceil(studentsList.length / ITEMS_PER_PAGE) && (
-                            <button
-                              onClick={() => setStudentsCurrentPage(p => p + 1)}
-                              className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50"
+                              type="button"
+                              onClick={() =>
+                                setStudentsCurrentPage((page) =>
+                                  Math.min(Math.max(1, Math.ceil(studentsList.length / ITEMS_PER_PAGE)), page + 1),
+                                )
+                              }
+                              disabled={studentsCurrentPage === Math.max(1, Math.ceil(studentsList.length / ITEMS_PER_PAGE))}
+                              className="inline-flex h-10 items-center rounded-2xl border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
                             >
                               Next
                             </button>
-                          )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -2207,40 +3091,57 @@ export default function AdminPanelView() {
                           </tbody>
                         </table>
                       </div>
-                      <div className="flex items-center justify-between border-t border-slate-100 px-4 py-4">
-                        <div className="text-sm text-slate-600">
-                          Showing {Math.min((professionalsCurrentPage - 1) * ITEMS_PER_PAGE + 1, professionalUsers.length)} to {Math.min(professionalsCurrentPage * ITEMS_PER_PAGE, professionalUsers.length)} of {professionalUsers.length} entries
-                        </div>
-                        <div className="flex gap-2">
-                          {professionalsCurrentPage > 1 && (
+                      <div className="mt-3 rounded-[24px] border border-slate-300 bg-slate-100 px-4 py-3 sm:px-5">
+                        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                          <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
+                            <span>
+                              Showing {Math.min((professionalsCurrentPage - 1) * ITEMS_PER_PAGE + 1, professionalUsers.length)} to {Math.min(professionalsCurrentPage * ITEMS_PER_PAGE, professionalUsers.length)} of {professionalUsers.length} entries
+                            </span>
+                            <span className="rounded-full border border-emerald-300 bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+                              Page {professionalsCurrentPage} / {Math.max(1, Math.ceil(professionalUsers.length / ITEMS_PER_PAGE))}
+                            </span>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-3">
                             <button
-                              onClick={() => setProfessionalsCurrentPage(p => p - 1)}
-                              className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50"
+                              type="button"
+                              onClick={() => setProfessionalsCurrentPage((page) => Math.max(1, page - 1))}
+                              disabled={professionalsCurrentPage === 1}
+                              className="inline-flex h-10 items-center rounded-2xl border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
                             >
-                              Previous
+                              Prev
                             </button>
-                          )}
-                          {Array.from({ length: Math.ceil(professionalUsers.length / ITEMS_PER_PAGE) }, (_, i) => i + 1).map((page) => (
+
+                            <div className="flex flex-wrap items-center gap-3">
+                              {Array.from({ length: Math.max(1, Math.ceil(professionalUsers.length / ITEMS_PER_PAGE)) }, (_, i) => i + 1).map((page) => (
+                                <button
+                                  key={page}
+                                  type="button"
+                                  onClick={() => setProfessionalsCurrentPage(page)}
+                                  className={`inline-flex h-10 min-w-10 items-center justify-center rounded-2xl border text-sm font-semibold transition ${
+                                    page === professionalsCurrentPage
+                                      ? "border-emerald-700 bg-emerald-700 text-white shadow-[0_8px_20px_rgba(16,185,129,0.32)]"
+                                      : "border-slate-300 bg-slate-100 text-slate-700 hover:bg-white"
+                                  }`}
+                                >
+                                  {page}
+                                </button>
+                              ))}
+                            </div>
+
                             <button
-                              key={page}
-                              onClick={() => setProfessionalsCurrentPage(page)}
-                              className={`h-8 w-8 rounded-lg text-sm font-semibold transition ${
-                                page === professionalsCurrentPage
-                                  ? "bg-[#6366f1] text-white"
-                                  : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                              }`}
-                            >
-                              {page}
-                            </button>
-                          ))}
-                          {professionalsCurrentPage < Math.ceil(professionalUsers.length / ITEMS_PER_PAGE) && (
-                            <button
-                              onClick={() => setProfessionalsCurrentPage(p => p + 1)}
-                              className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50"
+                              type="button"
+                              onClick={() =>
+                                setProfessionalsCurrentPage((page) =>
+                                  Math.min(Math.max(1, Math.ceil(professionalUsers.length / ITEMS_PER_PAGE)), page + 1),
+                                )
+                              }
+                              disabled={professionalsCurrentPage === Math.max(1, Math.ceil(professionalUsers.length / ITEMS_PER_PAGE))}
+                              className="inline-flex h-10 items-center rounded-2xl border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
                             >
                               Next
                             </button>
-                          )}
+                          </div>
                         </div>
                       </div>
                     </div>

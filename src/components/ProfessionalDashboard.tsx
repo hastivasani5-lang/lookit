@@ -45,7 +45,7 @@ type ProfessionalDashboardProps = {
   user: ProfessionalUser;
 };
 
-type DashboardSection = "overview" | "add" | "upgrade" | "settings";
+export type DashboardSection = "overview" | "add" | "upgrade" | "settings";
 type AddContentTab = "books" | "videos";
 
 type SearchResultItem = {
@@ -334,7 +334,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   }, []);
 
   useEffect(() => {
-    const section = searchParams.get("section");
+    const section = searchParams?.get("section");
     if (section === "add" || section === "upgrade" || section === "settings" || section === "overview") {
       setActiveSection(section);
       return;

@@ -27,13 +27,6 @@ setThemeMode('dark');
 setPrimaryColor('#1ec28e');
 ```
 
-#### 2. **FloatingSettingsButton** (`src/components/FloatingSettingsButton.tsx`)
-- UI component for theme customization
-- Provides toggles for light/dark mode and LTR/RTL
-- Color picker for primary color customization
-- Preset color options for quick selection
-- Reset all button to restore defaults
-
 ### Storage & Persistence
 
 #### Frontend (Local Storage)
@@ -193,7 +186,6 @@ export function MyButton() {
 - `src/app/api/theme/save/route.ts` - Theme save API endpoint
 
 ### Modified Files
-- `src/components/FloatingSettingsButton.tsx` - Integrated with ThemeProvider
 - `src/app/layout.tsx` - Wrapped with ThemeProvider
 - `src/app/globals.css` - Added CSS variables
 

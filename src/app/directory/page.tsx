@@ -12,7 +12,7 @@ import Footer from "@/components/Footer";
 
 function DirectoryPageContent() {
   const searchParams = useSearchParams();
-  const searchQuery = searchParams.get("search")?.trim() ?? "";
+  const searchQuery = searchParams?.get("search")?.trim() ?? "";
 
   return (
     <main className="min-h-screen bg-[#eef5f3] ">

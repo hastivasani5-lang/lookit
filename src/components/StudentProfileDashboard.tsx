@@ -17,7 +17,16 @@ import {
   Video,
 } from "lucide-react";
 
-type DashboardTab = "profile" | "edit" | "courses" | "followers" | "reviews";
+type DashboardTab =
+  | "profile"
+  | "calendar"
+  | "wishlist"
+  | "following"
+  | "edit"
+  | "courses"
+  | "followers"
+  | "reviews"
+  | "buy-courses";
 
 type CourseCard = {
   id: string;

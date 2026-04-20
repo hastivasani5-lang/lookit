@@ -24,7 +24,8 @@ type WatchClassPayload = {
 };
 
 export default function WatchClassPage() {
-  const { slug } = useParams();
+  const params = useParams<{ slug: string }>();
+  const slug = params?.slug;
   const [cls, setCls] = useState<WatchClassPayload["classItem"] | null>(null);
   const [loading, setLoading] = useState(true);
   const [current, setCurrent] = useState(0);

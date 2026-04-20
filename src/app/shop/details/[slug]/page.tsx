@@ -10,7 +10,8 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 
 export default function DetailsPage() {
-  const { slug } = useParams();
+  const params = useParams<{ slug: string }>();
+  const slug = params?.slug;
   const slugValue = typeof slug === "string" ? slug : "";
   const [item, setItem] = useState<ShopCatalogItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);

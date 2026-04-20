@@ -1,9 +1,10 @@
 import React from "react";
 import Calendar from "react-calendar";
+import type { LooseValue } from "react-calendar/dist/shared/types.js";
 import 'react-calendar/dist/Calendar.css';
 
 export default function FullCalendarModalContent() {
-  const [value, setValue] = React.useState(new Date());
+  const [value, setValue] = React.useState<LooseValue>(new Date());
   return (
     <div className="w-full flex flex-col items-center">
       <Calendar

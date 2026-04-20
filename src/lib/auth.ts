@@ -64,7 +64,7 @@ export const authOptions: NextAuthOptions = {
     error: "/login",
   },
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user, account }: any) {
       if (account?.provider !== "google") {
         return true;
       }
@@ -96,7 +96,7 @@ export const authOptions: NextAuthOptions = {
         return false;
       }
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user }: any) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
@@ -121,7 +121,7 @@ export const authOptions: NextAuthOptions = {
 
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       if (session.user) {
         session.user.id = token.id ?? "";
         session.user.role = token.role ?? "student";

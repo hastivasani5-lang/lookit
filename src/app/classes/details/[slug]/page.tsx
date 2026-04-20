@@ -22,7 +22,8 @@ type ClassDetails = {
 };
 
 export default function ClassDetailsPage() {
-  const { slug } = useParams();
+  const params = useParams<{ slug: string }>();
+  const slug = params?.slug;
   const [cls, setCls] = useState<ClassDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);

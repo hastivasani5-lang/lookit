@@ -1,4 +1,12 @@
-// Placeholder component to fix build error
+"use client";
+
 export default function AddPage() {
-  return <div>Add Page Placeholder</div>;
+  return (
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold text-[#2c5a48]">Add New Content</h1>
+      <div className="rounded-lg bg-white p-6 shadow-md">
+        <p className="text-gray-600">Content addition section coming soon...</p>
+      </div>
+    </div>
+  );
 }

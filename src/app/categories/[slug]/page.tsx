@@ -14,6 +14,7 @@ const defaultImage = "/uploads/categories/default.jpg";
 
 export default function CategoryPage() {
   const params = useParams();
+  if (!params) return notFound();
   const slug = typeof params.slug === "string" ? params.slug : Array.isArray(params.slug) ? params.slug[0] : "";
   const category = categories.find(cat => cat.slug === slug);
   if (!category) return notFound();

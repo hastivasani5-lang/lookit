@@ -121,7 +121,7 @@ const Courses = () => {
             
             <div className="flex items-center justify-center gap-2 text-sm text-gray-500 lg:justify-start">
               <span className="h-2 w-2 rounded-full bg-primary"></span>
-              CORE FEATURES
+              CORE FEATURES12345678
             </div>
 
             {/* LINE */}

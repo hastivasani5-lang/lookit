@@ -3,6 +3,24 @@ import Image from "next/image";
 import Link from "next/link";
 import { LogOut } from "lucide-react";
 
+type SidebarItem = {
+  label: string;
+  icon: React.ElementType;
+  section?: string;
+  href?: string;
+};
+
+type SidebarProps = {
+  avatarSrc: string;
+  profileName: string;
+  profileEmail: string;
+  sidebarItems: SidebarItem[];
+  activeSection: string;
+  setActiveSection: (section: string) => void;
+  user?: any;
+  signOut: () => void;
+};
+
 export default function Sidebar({
   avatarSrc,
   profileName,
@@ -12,7 +30,7 @@ export default function Sidebar({
   setActiveSection,
   user,
   signOut
-}) {
+}: SidebarProps) {
   return (
     <aside className="flex flex-col border-b border-slate-200/70 bg-[#eef5f3] px-5 py-6 lg:sticky lg:top-0 lg:h-full lg:border-b-0 lg:border-r">
       <div className="flex items-center gap-3 px-2 pb-6">
@@ -60,7 +78,7 @@ export default function Sidebar({
           if (user.role === "professional") {
             await fetch("/api/professionals/session", { method: "DELETE" }).catch(() => undefined);
           }
-          await signOut({ callbackUrl: "/" });
+          await signOut();
         }}
         className="mt-6 flex items-center gap-3 rounded-xl bg-[#eef5f3] px-4 py-3 text-sm font-medium text-[#2c5a48] shadow-[3px_3px_6px_#d0dbd6,-3px_-3px_6px_#ffffff] transition hover:shadow-inner"
       >

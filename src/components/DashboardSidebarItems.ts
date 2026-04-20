@@ -1,5 +1,5 @@
 import { LayoutGrid, Upload, CreditCard, Users, Star, Settings } from "lucide-react";
-import type { DashboardSection } from "./ProfessionalDashboard";
+import type { DashboardSection } from "./ProfessionalDashboard/types";
 
 const dashboardSidebarItems: Array<{ label: string; icon: typeof LayoutGrid; section?: DashboardSection; href?: string }> = [
   { label: "Overview", icon: LayoutGrid, section: "overview" },

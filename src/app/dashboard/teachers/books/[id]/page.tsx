@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import ProfessionalSidebar from "@/components/ProfessionalSidebar";
+
 
 type BookDetail = {
   id: string;
@@ -143,7 +143,7 @@ export default function TeacherBookDetailsPage() {
   return (
     <main className="min-h-screen bg-[#eef5f3] px-3 pb-12 pt-28 sm:px-4 md:px-6 lg:px-8">
       <section className="mx-auto grid w-full max-w-[1600px] gap-5 lg:grid-cols-[260px_minmax(0,1fr)]">
-        <ProfessionalSidebar />
+
 
         <div className="space-y-5 rounded-3xl bg-white p-6 shadow-sm">
         <div className="flex items-center justify-between gap-3">

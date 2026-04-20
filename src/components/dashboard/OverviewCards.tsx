@@ -1,6 +1,17 @@
 import React from "react";
 
-export default function OverviewCards({ overviewCards }) {
+type OverviewCard = {
+  title: string;
+  description: string;
+  icon: React.ElementType;
+  iconBg?: string;
+};
+
+type OverviewCardsProps = {
+  overviewCards: OverviewCard[];
+};
+
+export default function OverviewCards({ overviewCards }: OverviewCardsProps) {
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
       {overviewCards.map((card, idx) => {

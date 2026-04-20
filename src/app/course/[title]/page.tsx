@@ -4,7 +4,14 @@ import { useParams } from "next/navigation";
 
 export default function CourseDetailPage() {
   const params = useParams();
-  const title = decodeURIComponent(params?.title || "");
+  let title = "";
+  if (params?.title) {
+    if (Array.isArray(params.title)) {
+      title = decodeURIComponent(params.title[0] || "");
+    } else {
+      title = decodeURIComponent(params.title);
+    }
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#f7f9fb] p-8">

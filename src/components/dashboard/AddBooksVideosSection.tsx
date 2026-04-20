@@ -1,5 +1,15 @@
 import React from "react";
 
+type AddBooksVideosSectionProps = {
+  addContentTab: string;
+  setAddContentTab: (tab: string) => void;
+  isBookFormOpen: boolean;
+  setIsBookFormOpen: (open: boolean) => void;
+  isVideoFormOpen: boolean;
+  setIsVideoFormOpen: (open: boolean) => void;
+  [key: string]: any;
+};
+
 export default function AddBooksVideosSection({
   addContentTab,
   setAddContentTab,
@@ -8,7 +18,7 @@ export default function AddBooksVideosSection({
   isVideoFormOpen,
   setIsVideoFormOpen,
   ...props
-}) {
+}: AddBooksVideosSectionProps) {
   return (
     <div className="mt-6 space-y-6">
       <div className="rounded-[24px] bg-white p-3 shadow-sm">

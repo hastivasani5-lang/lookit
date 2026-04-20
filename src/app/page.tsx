@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import StudentsPage from "./dashboard/students/page";
 
 export default function HomePage() {
-  redirect("/dashboard/students");
+  return <StudentsPage />;
 }

@@ -17,7 +17,7 @@ export default function ShopHero() {
         <p className="text-lg md:text-2xl text-gray-600 mb-8">
           Discover high-quality products curated for you
         </p>
-        <button className="px-8 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-blue-500 text-white font-semibold shadow-lg hover:scale-105 transition-transform duration-200">
+        <button className="px-8 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold shadow-lg hover:scale-105 transition-transform duration-200">
           Shop Now
         </button>
       </motion.div>

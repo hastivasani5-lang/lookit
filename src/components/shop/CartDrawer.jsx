@@ -56,7 +56,7 @@ export default function CartDrawer() {
                 <span>Total</span>
                 <span>₹{total}</span>
               </div>
-              <button className="w-full py-3 rounded-xl bg-indigo-500 text-white font-bold shadow hover:bg-indigo-600 transition-colors">Checkout</button>
+              <button className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold shadow hover:scale-105 hover:shadow-md transition-colors">Checkout</button>
             </div>
           </motion.aside>
         )}

@@ -151,31 +151,19 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps
       <div className="mb-6 flex items-center justify-between gap-2">
         <div className="flex gap-2">
           <button
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-              activeTab === "all"
-                ? "bg-[#1ec28e] text-white hover:bg-[#169e6d]"
-                : "bg-[#e5f8f2] text-[#1ec28e] hover:bg-[#c7f0e3]"
-            }`}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition bg-gradient-to-r from-emerald-600 to-teal-600 text-white ${activeTab === "all" ? "" : "opacity-70"}`}
             onClick={() => handleTab("all")}
           >
             All
           </button>
           <button
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-              activeTab === "book"
-                ? "bg-[#1ec28e] text-white hover:bg-[#169e6d]"
-                : "bg-[#e5f8f2] text-[#1ec28e] hover:bg-[#c7f0e3]"
-            }`}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition bg-gradient-to-r from-emerald-600 to-teal-600 text-white ${activeTab === "book" ? "" : "opacity-70"}`}
             onClick={() => handleTab("book")}
           >
             Books
           </button>
           <button
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-              activeTab === "video"
-                ? "bg-[#1ec28e] text-white hover:bg-[#169e6d]"
-                : "bg-[#e5f8f2] text-[#1ec28e] hover:bg-[#c7f0e3]"
-            }`}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition bg-gradient-to-r from-emerald-600 to-teal-600 text-white ${activeTab === "video" ? "" : "opacity-70"}`}
             onClick={() => handleTab("video")}
           >
             Videos

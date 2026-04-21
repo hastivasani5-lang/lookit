@@ -123,7 +123,7 @@ export default function ContactPage() {
               className="w-full rounded-2xl bg-[#cbefe1] px-5 py-4 outline-none resize-none"
             />
  
-            <button className="bg-[#2e4f46] text-white px-6 py-2 rounded-full">
+            <button className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-2 rounded-full">
               Submit Button
             </button>
           </div>
@@ -146,7 +146,7 @@ export default function ContactPage() {
                 className="mt-6 w-full rounded-full px-4 py-3 text-black outline-none"
               />
  
-              <button className="mt-4 w-full bg-[#c3ecdd] text-black py-3 rounded-full">
+              <button className="mt-4 w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-3 rounded-full">
                 Submit Button
               </button>
             </div>

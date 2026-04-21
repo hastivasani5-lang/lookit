@@ -80,7 +80,7 @@ export default function HeroCourses() {
                 {/* Button section with gradient */}
                 <button
                   type="submit"
-                  className="h-14 px-8 rounded-r-2xl bg-gradient-to-r from-[#1ec28e] to-[#18a97a] text-white font-bold text-base flex items-center gap-2 transition-all duration-200 hover:from-[#18a97a] hover:to-[#1ec28e]"
+                  className="h-14 px-8 rounded-r-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-base flex items-center gap-2 transition-all duration-200 hover:from-teal-600 hover:to-emerald-600"
                 >
                   Search Now
                   <ArrowRight className="w-5 h-5" />

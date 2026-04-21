@@ -135,7 +135,7 @@ export default function ContactFormCard() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="mt-3 inline-flex h-[48px] items-center justify-center rounded-full bg-[#22c58b] px-8 text-base font-bold text-white transition hover:bg-[#1dad7a] disabled:cursor-not-allowed disabled:opacity-70"
+          className="mt-3 inline-flex h-[48px] items-center justify-center rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-8 text-base font-bold text-white transition hover:scale-105 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-70"
         >
           {isSubmitting ? "Sending..." : "Send Message"}
         </button>

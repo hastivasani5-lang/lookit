@@ -82,7 +82,7 @@ const PopularClasses = () => {
               </div>
               <Link
                 href={`/classes/details/${item.slug}`}
-                className="mt-4 w-full block border border-gray-200 rounded-lg py-2 text-sm text-gray-700 text-center hover:bg-[#1ec28e] hover:text-white transition"
+                className="mt-4 w-full block rounded-lg py-2 text-sm text-center bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold shadow transition"
               >
                 Start Learning
               </Link>
@@ -93,7 +93,7 @@ const PopularClasses = () => {
         <div className="flex justify-center mt-8">
           <a
             href="/classes"
-            className="px-6 py-2 rounded-lg bg-white text-[#1ec28e] border border-[#1ec28e] font-semibold hover:bg-[#1ec28e] hover:text-white transition text-center"
+            className="px-6 py-2 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold shadow transition text-center"
           >
             Show More
           </a>

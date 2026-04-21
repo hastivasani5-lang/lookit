@@ -6,7 +6,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import type { UserRole } from "@/types/auth";
-import SiteLogo from "@/components/SiteLogo";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -22,140 +21,110 @@ export default function SignupPage() {
     event.preventDefault();
     setError("");
     setIsSubmitting(true);
-
     const response = await fetch("/api/auth/register", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password, role }),
     });
-
     const result = (await response.json()) as { message?: string };
     setIsSubmitting(false);
-
     if (!response.ok) {
       setError(result.message || "Registration failed.");
       return;
     }
-
     router.push(`/login?registered=1&email=${encodeURIComponent(email)}&role=${role}`);
   };
 
   return (
-    <main className="min-h-screen overflow-auto bg-[#d8f0dc] p-3 sm:p-4 md:p-6">
-      <section className="mx-auto flex h-auto min-h-screen w-full max-w-[1440px] flex-col overflow-hidden rounded-[36px] bg-[#bfe4c5] shadow-[0_30px_80px_rgba(18,76,54,0.22)] lg:h-screen lg:flex-row">
-        <div className="relative flex flex-1 items-end justify-center overflow-hidden bg-[linear-gradient(180deg,#daf4df_0%,#c6eccf_55%,#9dddae_100%)] py-8 sm:py-12 md:py-16 lg:pt-16">
-          <div className="pointer-events-none absolute left-8 top-8 h-14 w-14 rounded-full border-[4px] border-[#195a44] bg-white/70 shadow-[0_8px_18px_rgba(25,90,68,0.2)]" />
-          <div className="pointer-events-none absolute bottom-10 right-10 h-48 w-24 rounded-t-[60px] bg-[#e4f6e8]/80" />
-          <div className="pointer-events-none absolute left-1/2 top-4 z-20 w-full max-w-[560px] -translate-x-1/2 px-3 sm:px-4 md:px-6 text-center text-[#124533]">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-extrabold leading-none tracking-tight">Welcome</h2>
-            <p className="mt-1 text-lg sm:text-xl md:text-2xl lg:text-4xl font-semibold">to the website</p>
-          </div>
-          <div className="relative z-10 h-[60vh] sm:h-[70vh] md:h-[80vh] lg:h-[90%] w-[95%] sm:w-[92%] max-w-[640px] animate-float-slow">
-            <Image
-              src="/about1.png"
-              alt="Learning illustration"
-              width={640}
-              height={640}
-              className="h-full w-full object-contain object-bottom drop-shadow-[0_18px_30px_rgba(18,76,54,0.2)]"
-              priority
-            />
+    <main className="min-h-screen flex items-center justify-center bg-linear-to-br from-[#e0f7fa] via-[#f1f8e9] to-[#e3f2fd] p-0">
+      <div className="flex w-full max-w-5xl min-h-[80vh] rounded-3xl shadow-2xl overflow-hidden bg-white">
+        {/* Left Side - Illustration & Branding */}
+        <div className="hidden md:flex flex-col justify-center items-center flex-1 bg-linear-to-b from-[#b2dfdb] to-[#c8e6c9] p-10 relative">
+          <div className="absolute top-8 left-8 text-3xl font-extrabold text-[#1ec28e] tracking-tight">LOOKIT</div>
+          <Image src="/about1.png" alt="Signup Illustration" width={400} height={400} className="w-80 h-80 object-contain drop-shadow-xl" />
+          <div className="mt-8 text-center">
+            <h2 className="text-4xl font-bold text-[#195a44] mb-2">Join LOOKIT!</h2>
+            <p className="text-lg text-[#388e3c]">Create your account to get started.</p>
           </div>
         </div>
 
-        <div className="flex flex-1 items-center justify-center bg-white px-4 sm:px-6 py-8 md:py-10 lg:px-10">
-          <div className="w-full max-w-[420px] text-center">
-            <SiteLogo size="auth" priority className="mx-auto mb-4 sm:mb-6" />
+        {/* Right Side - Signup Form */}
+        <div className="flex flex-1 flex-col justify-center items-center p-8 sm:p-12 bg-white">
+          <div className="w-full max-w-xs mx-auto">
+            <h1 className="text-3xl font-bold text-[#195a44] mb-6 text-center">Sign up for LOOKIT</h1>
+            <div className="flex justify-center mb-6">
+              <button
+                type="button"
+                onClick={() => setRole("student")}
+                className={`px-6 py-2 rounded-l-full font-semibold border transition-all ${role === "student" ? "bg-[#1ec28e] text-white border-[#1ec28e]" : "bg-gray-100 text-[#195a44] border-gray-200"}`}
+              >
+                Student
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole("professional")}
+                className={`px-6 py-2 rounded-r-full font-semibold border transition-all ${role === "professional" ? "bg-[#1ec28e] text-white border-[#1ec28e]" : "bg-gray-100 text-[#195a44] border-gray-200"}`}
+              >
+                Professional
+              </button>
+            </div>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold leading-[0.96] tracking-tight text-slate-900">Sign up</h1>
+            {error && <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700 text-center">{error}</div>}
 
-            {error && (
-              <div className="mt-4 sm:mt-5 rounded-2xl border border-red-200 bg-red-50 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-red-700">{error}</div>
-            )}
-
-            <form onSubmit={handleSignup} className="mt-6 sm:mt-7 space-y-3 sm:space-y-4 text-left">
-              <div className="grid grid-cols-2 rounded-full bg-[#f1f7f3] p-1">
-                <button
-                  type="button"
-                  onClick={() => setRole("student")}
-                  className={`rounded-full px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold transition ${
-                    role === "student" ? "bg-[#1ec28e] text-white shadow-sm" : "text-slate-500"
-                  }`}
-                >
-                  Student
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setRole("professional")}
-                  className={`rounded-full px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold transition ${
-                    role === "professional" ? "bg-[#1ec28e] text-white shadow-sm" : "text-slate-500"
-                  }`}
-                >
-                  Professional
-                </button>
-              </div>
-
-              <div className="space-y-2 sm:space-y-3">
+            <form onSubmit={handleSignup} className="space-y-4">
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Full name"
+                className="w-full h-12 px-4 rounded-lg border border-gray-200 focus:border-[#1ec28e] outline-none text-base"
+                autoComplete="name"
+                required
+              />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email address"
+                className="w-full h-12 px-4 rounded-lg border border-gray-200 focus:border-[#1ec28e] outline-none text-base"
+                autoComplete="email"
+                required
+              />
+              <div className="relative">
                 <input
-                  type="text"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  placeholder="Full name"
-                  className="h-12 sm:h-14 w-full rounded-full border border-[#e2e6db] px-4 sm:px-5 text-sm sm:text-base text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
-                  autoComplete="name"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
+                  className="w-full h-12 px-4 pr-12 rounded-lg border border-gray-200 focus:border-[#1ec28e] outline-none text-base"
+                  autoComplete="new-password"
                   required
                 />
-
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  placeholder="Email address"
-                  className="h-12 sm:h-14 w-full rounded-full border border-[#e2e6db] px-4 sm:px-5 text-sm sm:text-base text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
-                  autoComplete="email"
-                  required
-                />
-
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                    placeholder="Password"
-                    className="h-12 sm:h-14 w-full rounded-full border border-[#e2e6db] px-4 sm:px-5 pr-12 text-sm sm:text-base text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
-                    autoComplete="new-password"
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-slate-500 transition hover:text-slate-700"
-                    onClick={() => setShowPassword((current) => !current)}
-                    aria-label="Toggle password visibility"
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#1ec28e]"
+                  onClick={() => setShowPassword((cur) => !cur)}
+                  aria-label="Toggle password visibility"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
               </div>
-
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex h-12 sm:h-14 w-full items-center justify-center rounded-full bg-[#1ec28e] text-sm sm:text-base font-semibold text-white transition hover:bg-[#18ab7d] disabled:cursor-not-allowed disabled:opacity-70"
+                className="w-full h-12 rounded-lg bg-[#1ec28e] text-white font-semibold text-lg transition hover:bg-[#15996b] disabled:opacity-60 flex items-center justify-center"
               >
-                {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : "Create account"}
+                {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : "Create account"}
               </button>
             </form>
 
-            <p className="mt-6 sm:mt-8 text-center text-xs sm:text-sm text-slate-600">
-              Already have an account?{" "}
-              <Link href="/login" className="font-semibold text-[#1b8c65] transition hover:text-[#0f6c4b]">
-                Log in
-              </Link>
+            <p className="mt-8 text-center text-sm text-gray-500">
+              Already have an account?{' '}
+              <Link href="/login" className="font-semibold text-[#1ec28e] hover:text-[#15996b]">Log in</Link>
             </p>
           </div>
         </div>
-      </section>
+      </div>
     </main>
   );
 }

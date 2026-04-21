@@ -7,17 +7,37 @@ const blogs = [
     id: 1,
     image: "/blog-thumb1.png",
     date: "18 January, 2025",
-    author: "Anjelina Watson",
-    title: "Trends that are shaping the Learning experience",
-    subtitle: "Globally engage cross-media leadership skills before cross-media innovation forward morph flexible whereas process-centric models predom efficiently that's transformation customer-directed alignments for front-end minds.",
-    content: `Dramatically harness cross-platform best practices whereas business services. Conveniently standards in innovation with wireless vertical intellectual capital before global architectures. Dramatically harness global business based results with wireless standards. Conveniently formulate standards in innovation with wireless vertical intellectual capital before global architectures.\n\nDramatically harness cross-platform best practices whereas business services. Conveniently standards in innovation with wireless. Globally engage leadership skills before cross-media innovation forward morph flexible whereas process-centric models predom efficiently that's transformation customer-directed alignments for front-end minds. Dramatically harness cross-platform best practices whereas vertical architectures.`,
+    author: "John D. Alexon",
+    title: "10 Proven Strategies to excel Online Learning",
+    subtitle: "Globally engage cross-media leadership skills before cross-media innovation forward morph flexible whereas process-centric models predom efficiently.",
+    content: `Dramatically harness cross-platform best practices whereas business services. Conveniently standards in innovation with wireless vertical intellectual capital before global architectures.\n\nDramatically harness global business based results with wireless standards. Conveniently formulate standards in innovation with wireless vertical intellectual capital before global architectures.\n\nGlobally engage leadership skills before cross-media innovation forward morph flexible whereas process-centric models predom efficiently that's transformation customer-directed alignments for front-end minds.`,
     tags: ["Technology", "Education", "Learning"],
   },
-  // Add more blogs as needed
+  {
+    id: 2,
+    image: "/blog-thumb2.png",
+    date: "29 January, 2025",
+    author: "Anjelina Watson",
+    title: "Trends that are shaping the Learning experience",
+    subtitle: "Discover the latest trends transforming how students and professionals learn in the digital age.",
+    content: `The landscape of education is rapidly evolving. New technologies and methodologies are reshaping how we learn and teach.\n\nFrom AI-powered personalized learning to immersive virtual classrooms, the future of education is here. Institutions and learners alike must adapt to stay ahead.\n\nEmbracing these trends not only improves outcomes but also makes learning more engaging and accessible for everyone around the world.`,
+    tags: ["Trends", "EdTech", "Innovation"],
+  },
+  {
+    id: 3,
+    image: "/blog-thumb3.png",
+    date: "30 January, 2025",
+    author: "David X. Barmer",
+    title: "Learning is the Key soft skills and Professional",
+    subtitle: "Soft skills are increasingly valued in the professional world. Learn how to develop them effectively.",
+    content: `In today's competitive job market, technical skills alone are not enough. Employers are looking for candidates who can communicate, collaborate, and lead.\n\nSoft skills such as emotional intelligence, adaptability, and critical thinking are now considered essential. Investing in these skills can dramatically improve your career prospects.\n\nOnline learning platforms offer a wide range of courses to help you build these competencies at your own pace and schedule.`,
+    tags: ["Soft Skills", "Career", "Professional"],
+  },
 ];
 
-export default function BlogDetailPage({ params }: { params: { id: string } }) {
-  const id = Number(params.id);
+export default async function BlogDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: idStr } = await params;
+  const id = Number(idStr);
   const blog = blogs.find((b) => b.id === id);
   if (!blog) return notFound();
 

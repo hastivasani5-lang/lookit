@@ -1,63 +1,71 @@
 {
   "professionals": {
-    "c50f32c9-00f5-4979-b76a-aa7956e91a4e": {
+    "060fe115-29ac-4395-bdfe-c896a31d6b49": {
       "books": [
         {
-          "name": "react js",
-          "category": "Business",
-          "mrp": "32.00",
-          "imageUrl": "/uploads/books/c50f32c9-00f5-4979-b76a-aa7956e91a4e-1776406464435-rwaj1b.jpg",
+          "name": "Frontend design",
+          "category": "Design",
+          "mrp": "70.00",
+          "imageUrl": "/uploads/books/060fe115-29ac-4395-bdfe-c896a31d6b49-1776755992158-3sp2ky.png",
           "url": "",
           "source": "file",
           "fileName": "2.React Js.pdf",
           "sizeLabel": "1.4 MB",
-          "id": "book-1776406464438-ao01tc",
-          "createdAt": "2026-04-17T06:14:24.438Z"
+          "id": "book-1776755992160-caujx5",
+          "createdAt": "2026-04-21T07:19:52.160Z"
+        },
+        {
+          "name": "Node js",
+          "category": "Business",
+          "mrp": "60.00",
+          "imageUrl": "/uploads/books/060fe115-29ac-4395-bdfe-c896a31d6b49-1776755961226-gg4o66.png",
+          "url": "",
+          "source": "file",
+          "fileName": "3.React Bootstrap.pdf",
+          "sizeLabel": "504.6 KB",
+          "id": "book-1776755961228-pu9wec",
+          "createdAt": "2026-04-21T07:19:21.228Z"
+        },
+        {
+          "name": "React js",
+          "category": "Design",
+          "mrp": "50.00",
+          "imageUrl": "/uploads/books/060fe115-29ac-4395-bdfe-c896a31d6b49-1776755926063-gdo43y.png",
+          "url": "",
+          "source": "file",
+          "fileName": "2.React Js.pdf",
+          "sizeLabel": "1.4 MB",
+          "id": "book-1776755926065-6wotvq",
+          "createdAt": "2026-04-21T07:18:46.065Z"
         }
       ],
-      "videos": [],
+      "videos": [
+        {
+          "name": "YouTube Video",
+          "mrp": "29.89",
+          "url": "https://www.youtube.com/embed/mh1MZfC0uA8",
+          "source": "youtube",
+          "sizeLabel": "YouTube Link",
+          "level": "Intermediate",
+          "isPopular": false,
+          "id": "video-1776756077294-6f9ywv",
+          "createdAt": "2026-04-21T07:21:17.294Z"
+        },
+        {
+          "name": "YouTube Video",
+          "mrp": "40",
+          "url": "https://www.youtube.com/embed/4ZfJ1QdbSWA",
+          "source": "youtube",
+          "sizeLabel": "YouTube Link",
+          "level": "Advanced",
+          "isPopular": false,
+          "id": "video-1776756037823-9sfxds",
+          "createdAt": "2026-04-21T07:20:37.823Z"
+        }
+      ],
       "categories": [
+        "Design",
         "Business"
-      ]
-    },
-    "1c5adc52-4304-4584-b7ee-59fe4c4316a5": {
-      "books": [
-        {
-          "name": "hastu",
-          "category": "Technology",
-          "mrp": "121.00",
-          "imageUrl": "/uploads/books/1c5adc52-4304-4584-b7ee-59fe4c4316a5-1776341141589-o61pzc.png",
-          "url": "",
-          "source": "file",
-          "fileName": "lookit project_status_report.pdf",
-          "sizeLabel": "2.9 KB",
-          "id": "book-1776341141600-tk7ske",
-          "createdAt": "2026-04-16T12:05:41.600Z"
-        }
-      ],
-      "videos": [],
-      "categories": [
-        "Technology"
-      ]
-    },
-    "76da43c0-08fb-4cb3-87d5-f47a2019cc61": {
-      "books": [
-        {
-          "name": "web",
-          "category": "Technology",
-          "mrp": "12.00",
-          "imageUrl": "/uploads/books/76da43c0-08fb-4cb3-87d5-f47a2019cc61-1776423085522-3vxt8m.png",
-          "url": "",
-          "source": "file",
-          "fileName": "lookit 1.pdf",
-          "sizeLabel": "5.4 KB",
-          "id": "book-1776423085530-inj56s",
-          "createdAt": "2026-04-17T10:51:25.530Z"
-        }
-      ],
-      "videos": [],
-      "categories": [
-        "Technology"
       ]
     }
   },

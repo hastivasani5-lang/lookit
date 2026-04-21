@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { Bell, RefreshCcw, Users } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import Image from "next/image";
 
 import DashboardSidebar from "@/components/DashboardSidebar";
 
@@ -11,14 +12,33 @@ type Follower = {
   studentId: string;
   professionalId: string;
   followedAt: string;
-  studentName?: string;
+  studentName?: string | null;
+  studentEmail?: string | null;
+  studentImage?: string | null;
 };
 
 function formatDate(value: string) {
   const date = new Date(value);
   return Number.isNaN(date.getTime())
     ? value
-    : date.toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+    : date.toLocaleString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+}
+
+function timeAgo(value: string) {
+  const diff = Date.now() - new Date(value).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "Just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
 }
 
 export default function FollowersPage() {
@@ -48,7 +68,12 @@ export default function FollowersPage() {
 
   const filtered = followers.filter((f) => {
     const q = search.trim().toLowerCase();
-    return !q || (f.studentName ?? f.studentId).toLowerCase().includes(q);
+    if (!q) return true;
+    return (
+      (f.studentName ?? "").toLowerCase().includes(q) ||
+      (f.studentEmail ?? "").toLowerCase().includes(q) ||
+      f.studentId.toLowerCase().includes(q)
+    );
   });
 
   const todayCount = followers.filter((f) => Date.now() - new Date(f.followedAt).getTime() < 86400000).length;
@@ -92,9 +117,9 @@ export default function FollowersPage() {
           {/* Stats */}
           <div className="mb-6 grid gap-4 sm:grid-cols-3">
             {[
-              { label: "Total Followers", value: followers.length,  bg: "bg-[#effaf6]", color: "text-[#1ec28e]" },
-              { label: "This Week",       value: weekCount,          bg: "bg-blue-50",   color: "text-blue-600" },
-              { label: "Today",           value: todayCount,         bg: "bg-amber-50",  color: "text-amber-600" },
+              { label: "Total Followers", value: followers.length, bg: "bg-[#effaf6]", color: "text-[#1ec28e]" },
+              { label: "This Week",       value: weekCount,         bg: "bg-blue-50",   color: "text-blue-600" },
+              { label: "Today",           value: todayCount,        bg: "bg-amber-50",  color: "text-amber-600" },
             ].map((s) => (
               <div key={s.label} className="rounded-2xl bg-white p-5 shadow-sm border border-slate-100">
                 <div className={`grid h-10 w-10 place-items-center rounded-xl ${s.bg} ${s.color}`}>
@@ -106,16 +131,20 @@ export default function FollowersPage() {
             ))}
           </div>
 
-          {/* Table */}
+          {/* Followers list */}
           <div className="rounded-2xl bg-white shadow-sm border border-slate-100">
+            {/* Table header */}
             <div className="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-              <h2 className="text-base font-bold text-slate-900">All Followers</h2>
+              <div>
+                <h2 className="text-base font-bold text-slate-900">All Followers</h2>
+                <p className="text-xs text-slate-400">{followers.length} student{followers.length !== 1 ? "s" : ""} following you</p>
+              </div>
               <input
                 type="text"
-                placeholder="Search by name or ID..."
+                placeholder="Search by name or email..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="h-9 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm outline-none focus:border-[#1ec28e] sm:w-56"
+                className="h-9 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm outline-none focus:border-[#1ec28e] sm:w-60"
               />
             </div>
 
@@ -130,37 +159,62 @@ export default function FollowersPage() {
             ) : filtered.length === 0 ? (
               <div className="flex flex-col items-center justify-center gap-3 py-16 text-slate-400">
                 <Users className="h-10 w-10 opacity-30" />
-                <p className="text-sm">{search ? "No followers match your search." : "No followers yet."}</p>
+                <p className="text-sm font-medium">{search ? "No followers match your search." : "No followers yet."}</p>
+                {!search && <p className="text-xs">Share your profile to get followers.</p>}
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[500px] text-sm">
-                  <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    <tr>
-                      <th className="px-5 py-3">#</th>
-                      <th className="px-5 py-3">Student</th>
-                      <th className="px-5 py-3">Student ID</th>
-                      <th className="px-5 py-3">Followed At</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filtered.map((f, i) => (
-                      <tr key={`${f.studentId}-${f.followedAt}`} className="border-t border-slate-100 hover:bg-slate-50 transition">
-                        <td className="px-5 py-3 text-slate-400">{i + 1}</td>
-                        <td className="px-5 py-3">
-                          <div className="flex items-center gap-2">
-                            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#effaf6] text-xs font-bold text-[#1ec28e]">
-                              {(f.studentName ?? f.studentId).charAt(0).toUpperCase()}
-                            </span>
-                            <span className="font-medium text-slate-900">{f.studentName ?? "—"}</span>
+              <div className="divide-y divide-slate-100">
+                {filtered.map((f, i) => {
+                  const name  = f.studentName  ?? "Unknown Student";
+                  const email = f.studentEmail ?? "";
+                  const img   = f.studentImage;
+                  const initials = name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+
+                  return (
+                    <div key={`${f.studentId}-${f.followedAt}`}
+                      className="flex items-center gap-4 px-5 py-4 hover:bg-slate-50 transition">
+
+                      {/* Serial */}
+                      <span className="hidden w-6 shrink-0 text-center text-xs text-slate-400 sm:block">{i + 1}</span>
+
+                      {/* Avatar */}
+                      <div className="relative shrink-0">
+                        {img ? (
+                          <Image src={img} alt={name} width={44} height={44}
+                            className="h-11 w-11 rounded-full object-cover ring-2 ring-[#1ec28e]/20" />
+                        ) : (
+                          <div className="grid h-11 w-11 place-items-center rounded-full bg-[#effaf6] text-sm font-bold text-[#1ec28e] ring-2 ring-[#1ec28e]/20">
+                            {initials}
                           </div>
-                        </td>
-                        <td className="px-5 py-3 font-mono text-xs text-slate-400">{f.studentId.slice(0, 8)}…</td>
-                        <td className="px-5 py-3 text-slate-500">{formatDate(f.followedAt)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        )}
+                        {/* Online dot - show if followed today */}
+                        {Date.now() - new Date(f.followedAt).getTime() < 86400000 && (
+                          <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-[#1ec28e]" />
+                        )}
+                      </div>
+
+                      {/* Info */}
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold text-slate-900">{name}</p>
+                        {email && (
+                          <p className="truncate text-xs text-slate-400">{email}</p>
+                        )}
+                        <p className="mt-0.5 text-xs text-slate-400 sm:hidden">{formatDate(f.followedAt)}</p>
+                      </div>
+
+                      {/* Followed at - desktop */}
+                      <div className="hidden shrink-0 text-right sm:block">
+                        <p className="text-xs font-medium text-slate-600">{timeAgo(f.followedAt)}</p>
+                        <p className="text-[11px] text-slate-400">{formatDate(f.followedAt)}</p>
+                      </div>
+
+                      {/* Badge */}
+                      <span className="shrink-0 rounded-full bg-[#effaf6] px-2.5 py-1 text-[11px] font-semibold text-[#1ec28e]">
+                        Following
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>

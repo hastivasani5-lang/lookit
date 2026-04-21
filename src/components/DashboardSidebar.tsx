@@ -1,19 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import { Suspense } from "react";
 import { signOut } from "next-auth/react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { CreditCard, LayoutGrid, LogOut, Settings, Star, Upload, Users } from "lucide-react";
 import Image from "next/image";
 
 const sidebarItems = [
-  { label: "Overview", href: "/dashboard/teachers", icon: LayoutGrid },
-  { label: "Add", href: "/dashboard/teachers?section=add", icon: Upload },
-  { label: "Upgrade Profile", href: "/dashboard/teachers?section=upgrade", icon: CreditCard },
-  { label: "Purchases", href: "/dashboard/teachers/purchases", icon: Users },
-  { label: "Followers", href: "/dashboard/teachers/followers", icon: Users },
-  { label: "Reviews", href: "/dashboard/teachers/reviews", icon: Star },
-  { label: "Settings", href: "/dashboard/teachers?section=settings", icon: Settings },
+  { label: "Overview",        href: "/dashboard/teachers",                  icon: LayoutGrid },
+  { label: "Add",             href: "/dashboard/teachers?section=add",      icon: Upload },
+  { label: "Upgrade Profile", href: "/dashboard/teachers?section=upgrade",  icon: CreditCard },
+  { label: "Purchases",       href: "/dashboard/teachers/purchases",        icon: Users },
+  { label: "Followers",       href: "/dashboard/teachers/followers",        icon: Users },
+  { label: "Reviews",         href: "/dashboard/teachers/reviews",          icon: Star },
+  { label: "Settings",        href: "/dashboard/teachers?section=settings", icon: Settings },
 ];
 
 interface DashboardSidebarProps {
@@ -22,16 +23,49 @@ interface DashboardSidebarProps {
   avatarSrc?: string;
 }
 
-export default function DashboardSidebar({ profileName, profileEmail, avatarSrc }: DashboardSidebarProps) {
+// Inner component that uses useSearchParams (must be inside Suspense)
+function SidebarNav() {
   const pathname = usePathname() ?? "";
   const searchParams = useSearchParams();
   const activeSection = searchParams?.get("section") ?? "";
 
   return (
+    <nav className="mt-6 flex-1 space-y-1">
+      {sidebarItems.map((item) => {
+        const Icon = item.icon;
+        const isActive =
+          item.href === "/dashboard/teachers"
+            ? pathname === "/dashboard/teachers" && !activeSection
+            : item.href.includes("?section=")
+              ? activeSection === item.href.split("?section=")[1]
+              : pathname === item.href || pathname.startsWith(`${item.href}/`);
+
+        return (
+          <Link
+            key={item.label}
+            href={item.href}
+            className={`flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-left text-sm font-medium transition-all ${
+              isActive
+                ? "bg-white text-[#1ec28e] shadow-lg"
+                : "text-white/80 hover:bg-white/10 hover:text-white"
+            }`}
+          >
+            <Icon className="h-4 w-4 shrink-0" />
+            {item.label}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
+export default function DashboardSidebar({ profileName, profileEmail, avatarSrc }: DashboardSidebarProps) {
+  return (
     <aside
       className="flex w-full shrink-0 flex-col border-b border-white/10 px-5 py-6 lg:sticky lg:top-0 lg:h-screen lg:w-[260px] lg:overflow-y-auto lg:border-b-0 lg:border-r lg:border-white/10"
       style={{ background: "linear-gradient(160deg, #0d7a57 0%, #15a374 40%, #1ec28e 100%)" }}
     >
+      {/* Logo */}
       <div className="flex items-center gap-3 px-2 pb-7">
         <div className="grid h-10 w-10 place-items-center rounded-xl bg-white/15 text-white">
           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,46 +74,54 @@ export default function DashboardSidebar({ profileName, profileEmail, avatarSrc 
         </div>
         <div>
           <h1 className="text-base font-bold tracking-wide text-white">LearnFlow</h1>
-          <p className="text-[11px] text-blue-200/70">Professional Dashboard</p>
+          <p className="text-[11px] text-white/60">Professional Dashboard</p>
         </div>
       </div>
 
-      <div className="rounded-2xl bg-white/10 p-4 backdrop-blur-sm border border-white/10">
+      {/* Profile card */}
+      <div className="rounded-2xl bg-white/10 p-4 border border-white/10">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Image src={avatarSrc || "/person.png"} alt="Profile" width={46} height={46} className="h-[46px] w-[46px] rounded-full object-cover ring-2 ring-white/40" />
+            <Image
+              src={avatarSrc || "/person.png"}
+              alt="Profile"
+              width={46}
+              height={46}
+              className="h-[46px] w-[46px] rounded-full object-cover ring-2 ring-white/40"
+            />
             <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-[#15a374] bg-white" />
           </div>
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-white">{profileName || "Professional User"}</p>
-            <p className="truncate text-[11px] text-blue-200/80">@{(profileEmail || "professional").split("@")[0]}</p>
+            <p className="truncate text-[11px] text-white/60">@{(profileEmail || "professional").split("@")[0]}</p>
           </div>
         </div>
       </div>
 
-      <nav className="mt-6 flex-1 space-y-1">
-        {sidebarItems.map((item) => {
-          const Icon = item.icon;
-  const isActive =
-    item.href === "/dashboard/teachers"
-      ? pathname === "/dashboard/teachers" && !activeSection
-      : item.href.includes("?section=")
-        ? activeSection === item.href.split("?section=")[1]
-        : pathname === item.href || pathname.startsWith(`${item.href}/`);
-          return (
-            <Link key={item.label} href={item.href} className={`flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-left text-sm font-medium transition-all ${isActive ? "bg-white text-[#1ec28e] shadow-lg" : "text-blue-100/80 hover:bg-white/10 hover:text-white"}`}>
-              <Icon className="h-4 w-4 shrink-0" />
-              {item.label}
-            </Link>
-          );
-        })}
-      </nav>
+      {/* Nav — wrapped in Suspense to avoid hydration mismatch from useSearchParams */}
+      <Suspense
+        fallback={
+          <nav className="mt-6 flex-1 space-y-1">
+            {sidebarItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link key={item.label} href={item.href}
+                  className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-left text-sm font-medium text-white/80 transition-all hover:bg-white/10 hover:text-white">
+                  <Icon className="h-4 w-4 shrink-0" />
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+        }
+      >
+        <SidebarNav />
+      </Suspense>
 
+      {/* Logout */}
       <button
-        onClick={async () => {
-          await signOut({ callbackUrl: "/" });
-        }}
-        className="mt-4 flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-blue-200/70 transition hover:bg-white/10 hover:text-white"
+        onClick={async () => { await signOut({ callbackUrl: "/" }); }}
+        className="mt-4 flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-white transition hover:bg-white/10"
       >
         <LogOut className="h-4 w-4 shrink-0" />
         Log Out

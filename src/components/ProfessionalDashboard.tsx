@@ -144,6 +144,8 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   const [editingBookId, setEditingBookId] = useState<string | null>(null);
   const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   // Notification panel state
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifLoading, setNotifLoading] = useState(false);
@@ -1061,19 +1063,106 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     return null;
   }
 
-
-  // ── Render ──────────────────────────────────────────────────────────────────
-  if (!isMounted) {
-    return null;
-  }
-
   return (
-    <main className="h-screen w-full overflow-hidden bg-[#f0f4f8]">
-      <div className="grid h-full w-full grid-cols-1 overflow-hidden lg:grid-cols-[260px_minmax(0,1fr)]">
+    <div className="min-h-screen w-full bg-[#f0f4f8]">
 
-        {/* ── SIDEBAR ── */}
+      {/* ── MOBILE TOPBAR ── */}
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/20 px-4 py-3 lg:hidden"
+        style={{ background: "linear-gradient(135deg, #0d7a57 0%, #1ec28e 100%)" }}>
+        <div className="flex items-center gap-2">
+          <div className="grid h-8 w-8 place-items-center rounded-lg bg-white/20 text-white">
+            <BookOpen className="h-4 w-4" />
+          </div>
+          <span className="text-sm font-bold text-white">LearnFlow</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={handleBellClick}
+            className="relative grid h-9 w-9 place-items-center rounded-xl bg-white/20 text-white">
+            <Bell className="h-4 w-4" />
+            {(notifFollows.length + notifPurchases.length + notifReviews.length) > 0 && (
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[9px] font-bold text-[#1ec28e]">
+                {Math.min(99, notifFollows.length + notifPurchases.length + notifReviews.length)}
+              </span>
+            )}
+          </button>
+          <button onClick={() => setSidebarOpen((v) => !v)}
+            className="grid h-9 w-9 place-items-center rounded-xl bg-white/20 text-white" aria-label="Toggle menu">
+            {sidebarOpen ? (
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+          </button>
+        </div>
+      </header>
+
+      {/* ── MOBILE SIDEBAR DRAWER ── */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-40 lg:hidden">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setSidebarOpen(false)} />
+          <aside className="absolute left-0 top-0 flex h-full w-72 flex-col overflow-y-auto px-5 py-6 shadow-2xl"
+            style={{ background: "linear-gradient(160deg, #0d7a57 0%, #15a374 40%, #1ec28e 100%)" }}>
+            <div className="flex items-center justify-between pb-5">
+              <div className="flex items-center gap-2">
+                <div className="grid h-9 w-9 place-items-center rounded-xl bg-white/15 text-white">
+                  <BookOpen className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-white">LearnFlow</p>
+                  <p className="text-[10px] text-white/60">Professional Dashboard</p>
+                </div>
+              </div>
+              <button onClick={() => setSidebarOpen(false)} className="grid h-8 w-8 place-items-center rounded-lg bg-white/20 text-white">
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="rounded-2xl bg-white/10 p-3 border border-white/10">
+              <div className="flex items-center gap-3">
+                <Image src={avatarSrc} alt="Profile" width={40} height={40} className="h-10 w-10 rounded-full object-cover ring-2 ring-white/40" />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-white">{profileName || "Professional"}</p>
+                  <p className="truncate text-[11px] text-white/60">@{(profileEmail || "professional").split("@")[0]}</p>
+                </div>
+              </div>
+            </div>
+            <nav className="mt-5 flex-1 space-y-1">
+              {sidebarItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = item.section ? activeSection === item.section : false;
+                const cls = `flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-left text-sm font-medium transition-all ${isActive ? "bg-white text-[#1ec28e] shadow-lg" : "text-white/80 hover:bg-white/10 hover:text-white"}`;
+                return item.href ? (
+                  <Link key={item.label} href={item.href} className={cls} onClick={() => setSidebarOpen(false)}>
+                    <Icon className="h-4 w-4 shrink-0" />{item.label}
+                  </Link>
+                ) : (
+                  <button key={item.label} onClick={() => { setActiveSection(item.section ?? "overview"); setSidebarOpen(false); }} className={cls}>
+                    <Icon className="h-4 w-4 shrink-0" />{item.label}
+                  </button>
+                );
+              })}
+            </nav>
+            <button onClick={async () => {
+              if (user.role === "professional") await fetch("/api/professionals/session", { method: "DELETE" }).catch(() => undefined);
+              await signOut({ callbackUrl: "/" });
+            }} className="mt-4 flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-white/60 hover:bg-white/10 hover:text-white transition">
+              <LogOut className="h-4 w-4 shrink-0" />Log Out
+            </button>
+          </aside>
+        </div>
+      )}
+
+      {/* ── DESKTOP + MOBILE LAYOUT ── */}
+      <div className="flex lg:h-screen">
+
+        {/* ── DESKTOP SIDEBAR ── */}
         <aside
-          className="flex flex-col border-b border-white/10 px-5 py-6 lg:sticky lg:top-0 lg:h-full lg:border-b-0 lg:border-r lg:border-white/10"
+          className="hidden w-[260px] shrink-0 flex-col border-r border-white/10 px-5 py-6 lg:sticky lg:top-0 lg:flex lg:h-screen lg:overflow-y-auto"
           style={{ background: "linear-gradient(160deg, #0d7a57 0%, #15a374 40%, #1ec28e 100%)" }}
         >
           <div className="flex items-center gap-3 px-2 pb-7">
@@ -1082,11 +1171,10 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
             </div>
             <div>
               <h1 className="text-base font-bold tracking-wide text-white">LearnFlow</h1>
-              <p className="text-[11px] text-blue-200/70">Professional Dashboard</p>
+              <p className="text-[11px] text-white/60">Professional Dashboard</p>
             </div>
           </div>
-
-          <div className="rounded-2xl bg-white/10 p-4 backdrop-blur-sm border border-white/10">
+          <div className="rounded-2xl bg-white/10 p-4 border border-white/10">
             <div className="flex items-center gap-3">
               <div className="relative">
                 <Image src={avatarSrc} alt="Profile" width={46} height={46} className="h-[46px] w-[46px] rounded-full object-cover ring-2 ring-white/40" />
@@ -1094,235 +1182,216 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
               </div>
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold text-white">{profileName || "Professional User"}</p>
-                <p className="truncate text-[11px] text-blue-200/80">@{(profileEmail || "professional").split("@")[0]}</p>
+                <p className="truncate text-[11px] text-white/60">@{(profileEmail || "professional").split("@")[0]}</p>
               </div>
             </div>
           </div>
-
-          <nav className="mt-6 flex-1 space-y-1">
+          <nav className="mt-6 flex-1 space-y-1 overflow-y-auto">
             {sidebarItems.map((item) => {
               const Icon = item.icon;
               const isActive = item.section
                 ? activeSection === item.section
-                : item.href
-                  ? (typeof window !== "undefined" && window.location.pathname === item.href)
-                  : false;
-              const sharedClassName = `flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-left text-sm font-medium transition-all ${
-                isActive ? "bg-white text-[#1ec28e] shadow-lg" : "text-blue-100/80 hover:bg-white/10 hover:text-white"
-              }`;
-              return (
-                item.href ? (
-                  <Link key={item.label} href={item.href} className={sharedClassName}>
-                    <Icon className="h-4 w-4 shrink-0" />
-                    {item.label}
-                  </Link>
-                ) : (
-                  <button key={item.label} onClick={() => setActiveSection(item.section ?? "overview")} className={sharedClassName}>
-                    <Icon className="h-4 w-4 shrink-0" />
-                    {item.label}
-                  </button>
-                )
+                : item.href ? (typeof window !== "undefined" && window.location.pathname === item.href) : false;
+              const cls = `flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-left text-sm font-medium transition-all ${isActive ? "bg-white text-[#1ec28e] shadow-lg" : "text-white/80 hover:bg-white/10 hover:text-white"}`;
+              return item.href ? (
+                <Link key={item.label} href={item.href} className={cls}><Icon className="h-4 w-4 shrink-0" />{item.label}</Link>
+              ) : (
+                <button key={item.label} onClick={() => setActiveSection(item.section ?? "overview")} className={cls}>
+                  <Icon className="h-4 w-4 shrink-0" />{item.label}
+                </button>
               );
             })}
           </nav>
-
-          <button
-            onClick={async () => {
-              if (user.role === "professional") {
-                await fetch("/api/professionals/session", { method: "DELETE" }).catch(() => undefined);
-              }
-              await signOut({ callbackUrl: "/" });
-            }}
-            className="mt-4 flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-white/60 transition hover:bg-white/10 hover:text-white"
-          >
-            <LogOut className="h-4 w-4 shrink-0" />
-            Log Out
+          <button onClick={async () => {
+            if (user.role === "professional") await fetch("/api/professionals/session", { method: "DELETE" }).catch(() => undefined);
+            await signOut({ callbackUrl: "/" });
+          }} className="mt-4 flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-white/60 transition hover:bg-white/10 hover:text-white">
+            <LogOut className="h-4 w-4 shrink-0" />Log Out
           </button>
         </aside>
 
         {/* ── MAIN CONTENT ── */}
-        <section className="h-full overflow-y-auto bg-[#f0f4f8] px-4 py-5 md:px-6 lg:px-7">
+        <section className="min-h-screen flex-1 overflow-y-auto bg-[#f0f4f8] lg:h-screen">
+          <div className="mx-auto max-w-7xl px-4 py-5 md:px-6 lg:px-7">
 
-          {/* Top bar */}
-          <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h2 className="text-xl font-bold text-slate-800">
-                Welcome back, {profileName?.split(" ")[0] || "Professional"} 👋
-              </h2>
-              <p className="text-sm text-slate-500">Here&apos;s what&apos;s happening with your profile today.</p>
+            {/* Desktop topbar */}
+            <div className="mb-6 hidden items-center justify-between gap-4 lg:flex">
+              <div>
+                <h2 className="text-xl font-bold text-slate-800">Welcome back, {profileName?.split(" ")[0] || "Professional"} 👋</h2>
+                <p className="text-sm text-slate-500">Here&apos;s what&apos;s happening with your profile today.</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-64 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 shadow-sm">
+                  <Search className="h-4 w-4 shrink-0 text-slate-400" />
+                  <input type="text" placeholder="Search..." value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400" />
+                </div>
+                <div className="relative">
+                  <button onClick={handleBellClick}
+                    className="relative grid h-11 w-11 place-items-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:text-[#1ec28e]">
+                    <Bell className="h-4 w-4" />
+                    {(notifFollows.length + notifPurchases.length + notifReviews.length) > 0 && (
+                      <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#1ec28e] text-[10px] font-bold text-white">
+                        {Math.min(99, notifFollows.length + notifPurchases.length + notifReviews.length)}
+                      </span>
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 flex-1 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 shadow-sm md:w-64 md:flex-none">
+
+            {/* Mobile search + welcome */}
+            <div className="mb-5 lg:hidden">
+              <h2 className="mb-3 text-lg font-bold text-slate-800">Welcome back, {profileName?.split(" ")[0] || "Professional"} 👋</h2>
+              <div className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 shadow-sm">
                 <Search className="h-4 w-4 shrink-0 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(event) => setSearchQuery(event.target.value)}
-                  className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
-                />
-              </div>
-              <div className="relative">
-                <button
-                  onClick={handleBellClick}
-                  className="relative grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:text-[#1ec28e]"
-                >
-                  <Bell className="h-4 w-4" />
-                  {(notifFollows.length + notifPurchases.length + notifReviews.length) > 0 && (
-                    <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#1ec28e] text-[10px] font-bold text-white">
-                      {Math.min(99, notifFollows.length + notifPurchases.length + notifReviews.length)}
-                    </span>
-                  )}
-                </button>
+                <input type="text" placeholder="Search..." value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400" />
               </div>
             </div>
-          </div>
 
-          {/* Search results */}
-          {searchQuery.trim() ? (
-            <div className="mt-6 rounded-[24px] bg-white p-6 shadow-sm">
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <div>
-                  <h3 className="text-lg font-semibold text-slate-900">Search Results</h3>
-                  <p className="text-sm text-slate-500">
-                    {searchResults.length} result{searchResults.length === 1 ? "" : "s"} found for &quot;{searchQuery.trim()}&quot;.
-                  </p>
+            {/* ── SECTIONS ── */}
+            {searchQuery.trim() ? (
+              <div className="rounded-2xl bg-white p-5 shadow-sm">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900">Search Results</h3>
+                    <p className="text-sm text-slate-500">{searchResults.length} result{searchResults.length === 1 ? "" : "s"} found for &quot;{searchQuery.trim()}&quot;.</p>
+                  </div>
+                  <button type="button" onClick={() => setSearchQuery("")}
+                    className="rounded-xl bg-[#effaf6] px-4 py-2 text-xs font-semibold text-[#1ec28e] transition hover:bg-[#d8f5ec]">Clear</button>
                 </div>
-                <button type="button" onClick={() => setSearchQuery("")}
-                  className="rounded-xl bg-[#effaf6] px-4 py-2 text-xs font-semibold text-[#1ec28e] transition hover:bg-[#d8f5ec]">
-                  Clear Search
-                </button>
-              </div>
-              {searchResults.length === 0 ? (
-                <p className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-500">No matching results found.</p>
-              ) : (
-                <div className="space-y-3">
-                  {searchResults.map((result) => (
-                    <button key={result.id} type="button" onClick={() => handleSearchResultClick(result)}
-                      className="w-full rounded-2xl border border-slate-100 bg-slate-50 p-4 text-left transition hover:border-blue-200 hover:bg-blue-50/50">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="text-sm font-semibold text-slate-900">{result.title}</p>
-                          <p className="mt-1 text-xs text-slate-500">{result.description}</p>
+                {searchResults.length === 0 ? (
+                  <p className="rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-500">No results found.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {searchResults.map((result) => (
+                      <button key={result.id} type="button" onClick={() => handleSearchResultClick(result)}
+                        className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-left transition hover:bg-[#effaf6]">
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <p className="text-sm font-semibold text-slate-900">{result.title}</p>
+                            <p className="mt-0.5 text-xs text-slate-500">{result.description}</p>
+                          </div>
+                          <span className="shrink-0 rounded-lg bg-[#effaf6] px-2 py-0.5 text-[11px] font-semibold text-[#1ec28e]">{result.section}</span>
                         </div>
-                        <span className="rounded-lg bg-[#effaf6] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[#1ec28e]">
-                          {result.section}
-                        </span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
 
-          ) : activeSection === "add" ? (
-            <AddSection
-              addContentTab={addContentTab} setAddContentTab={setAddContentTab}
-              isBookFormOpen={isBookFormOpen} setIsBookFormOpen={setIsBookFormOpen}
-              isVideoFormOpen={isVideoFormOpen} setIsVideoFormOpen={setIsVideoFormOpen}
-              addedBooks={addedBooks} addedVideos={addedVideos}
-              bookNameInput={bookNameInput} setBookNameInput={setBookNameInput}
-              bookMrpInput={bookMrpInput} setBookMrpInput={setBookMrpInput}
-              bookCategoryInput={bookCategoryInput} setBookCategoryInput={setBookCategoryInput}
-              bookImageFile={bookImageFile} setBookImageFile={setBookImageFile}
-              pendingBookFiles={pendingBookFiles} setPendingBookFiles={setPendingBookFiles}
-              bookImageLinkInput={bookImageLinkInput} setBookImageLinkInput={setBookImageLinkInput}
-              bookLinkInput={bookLinkInput} setBookLinkInput={setBookLinkInput}
-              bookFormError={bookFormError}
-              bookInstructorInput={bookInstructorInput} setBookInstructorInput={setBookInstructorInput}
-              bookModeInput={bookModeInput} setBookModeInput={setBookModeInput}
-              bookDescriptionInput={bookDescriptionInput} setBookDescriptionInput={setBookDescriptionInput}
-              bookTypeInput={bookTypeInput} setBookTypeInput={setBookTypeInput}
-              bookLevelInput={bookLevelInput} setBookLevelInput={setBookLevelInput}
-              bookCoursePackageInput={bookCoursePackageInput} setBookCoursePackageInput={setBookCoursePackageInput}
-              youtubeLinkInput={youtubeLinkInput} setYoutubeLinkInput={setYoutubeLinkInput}
-              youtubeLinkError={youtubeLinkError}
-              videoMrpInput={videoMrpInput} setVideoMrpInput={setVideoMrpInput}
-              pendingVideoFiles={pendingVideoFiles} setPendingVideoFiles={setPendingVideoFiles}
-              videoInstructorInput={videoInstructorInput} setVideoInstructorInput={setVideoInstructorInput}
-              videoModeInput={videoModeInput} setVideoModeInput={setVideoModeInput}
-              videoDescriptionInput={videoDescriptionInput} setVideoDescriptionInput={setVideoDescriptionInput}
-              videoTypeInput={videoTypeInput} setVideoTypeInput={setVideoTypeInput}
-              videoLevelInput={videoLevelInput} setVideoLevelInput={setVideoLevelInput}
-              videoCoursePackageInput={videoCoursePackageInput} setVideoCoursePackageInput={setVideoCoursePackageInput}
-              likedBookIds={likedBookIds} likedVideoIds={likedVideoIds}
-              userName={profileName}
-              handleBookSave={handleBookSave} handleVideoSave={handleVideoSave}
-              handleEditBook={handleEditBook} handleEditVideo={handleEditVideo}
-              handleDeleteBookWithConfirm={handleDeleteBookWithConfirm}
-              handleDeleteVideoWithConfirm={handleDeleteVideoWithConfirm}
-              handleToggleLikeBook={handleToggleLikeBook}
-              handleToggleLikeVideo={handleToggleLikeVideo}
-            />
+            ) : activeSection === "add" ? (
+              <AddSection
+                addContentTab={addContentTab} setAddContentTab={setAddContentTab}
+                isBookFormOpen={isBookFormOpen} setIsBookFormOpen={setIsBookFormOpen}
+                isVideoFormOpen={isVideoFormOpen} setIsVideoFormOpen={setIsVideoFormOpen}
+                addedBooks={addedBooks} addedVideos={addedVideos}
+                bookNameInput={bookNameInput} setBookNameInput={setBookNameInput}
+                bookMrpInput={bookMrpInput} setBookMrpInput={setBookMrpInput}
+                bookCategoryInput={bookCategoryInput} setBookCategoryInput={setBookCategoryInput}
+                bookImageFile={bookImageFile} setBookImageFile={setBookImageFile}
+                pendingBookFiles={pendingBookFiles} setPendingBookFiles={setPendingBookFiles}
+                bookImageLinkInput={bookImageLinkInput} setBookImageLinkInput={setBookImageLinkInput}
+                bookLinkInput={bookLinkInput} setBookLinkInput={setBookLinkInput}
+                bookFormError={bookFormError}
+                bookInstructorInput={bookInstructorInput} setBookInstructorInput={setBookInstructorInput}
+                bookModeInput={bookModeInput} setBookModeInput={setBookModeInput}
+                bookDescriptionInput={bookDescriptionInput} setBookDescriptionInput={setBookDescriptionInput}
+                bookTypeInput={bookTypeInput} setBookTypeInput={setBookTypeInput}
+                bookLevelInput={bookLevelInput} setBookLevelInput={setBookLevelInput}
+                bookCoursePackageInput={bookCoursePackageInput} setBookCoursePackageInput={setBookCoursePackageInput}
+                youtubeLinkInput={youtubeLinkInput} setYoutubeLinkInput={setYoutubeLinkInput}
+                youtubeLinkError={youtubeLinkError}
+                videoMrpInput={videoMrpInput} setVideoMrpInput={setVideoMrpInput}
+                pendingVideoFiles={pendingVideoFiles} setPendingVideoFiles={setPendingVideoFiles}
+                videoInstructorInput={videoInstructorInput} setVideoInstructorInput={setVideoInstructorInput}
+                videoModeInput={videoModeInput} setVideoModeInput={setVideoModeInput}
+                videoDescriptionInput={videoDescriptionInput} setVideoDescriptionInput={setVideoDescriptionInput}
+                videoTypeInput={videoTypeInput} setVideoTypeInput={setVideoTypeInput}
+                videoLevelInput={videoLevelInput} setVideoLevelInput={setVideoLevelInput}
+                videoCoursePackageInput={videoCoursePackageInput} setVideoCoursePackageInput={setVideoCoursePackageInput}
+                likedBookIds={likedBookIds} likedVideoIds={likedVideoIds}
+                userName={profileName}
+                handleBookSave={handleBookSave} handleVideoSave={handleVideoSave}
+                handleEditBook={handleEditBook} handleEditVideo={handleEditVideo}
+                handleDeleteBookWithConfirm={handleDeleteBookWithConfirm}
+                handleDeleteVideoWithConfirm={handleDeleteVideoWithConfirm}
+                handleToggleLikeBook={handleToggleLikeBook}
+                handleToggleLikeVideo={handleToggleLikeVideo}
+              />
 
-          ) : activeSection === "upgrade" ? (
-            <UpgradeSection
-              upgradePlan={upgradePlan} setUpgradePlan={setUpgradePlan}
-              profileBoostedUntil={profileBoostedUntil}
-              hasOpenedRazorpay={hasOpenedRazorpay} setHasOpenedRazorpay={setHasOpenedRazorpay}
-              processingUpgrade={processingUpgrade}
-              profileError={profileError} profileMessage={profileMessage}
-              handleUpgradeSubmit={handleUpgradeSubmit}
-              handleOpenRazorpay={handleOpenRazorpay}
-              setActiveSection={setActiveSection}
-            />
+            ) : activeSection === "upgrade" ? (
+              <UpgradeSection
+                upgradePlan={upgradePlan} setUpgradePlan={setUpgradePlan}
+                profileBoostedUntil={profileBoostedUntil}
+                hasOpenedRazorpay={hasOpenedRazorpay} setHasOpenedRazorpay={setHasOpenedRazorpay}
+                processingUpgrade={processingUpgrade}
+                profileError={profileError} profileMessage={profileMessage}
+                handleUpgradeSubmit={handleUpgradeSubmit}
+                handleOpenRazorpay={handleOpenRazorpay}
+                setActiveSection={setActiveSection}
+              />
 
-          ) : activeSection === "settings" ? (
-            <SettingsSection
-              avatarSrc={avatarSrc}
-              profileFirstName={profileFirstName} setProfileFirstName={setProfileFirstName}
-              profileLastName={profileLastName} setProfileLastName={setProfileLastName}
-              profileEmail={profileEmail} setProfileEmail={setProfileEmail}
-              profileContactNumber={profileContactNumber} setProfileContactNumber={setProfileContactNumber}
-              profileAddress={profileAddress} setProfileAddress={setProfileAddress}
-              profileCity={profileCity} setProfileCity={setProfileCity}
-              profilePostalCode={profilePostalCode} setProfilePostalCode={setProfilePostalCode}
-              profileCountry={profileCountry} setProfileCountry={setProfileCountry}
-              profileFacebook={profileFacebook} setProfileFacebook={setProfileFacebook}
-              profileGoogle={profileGoogle} setProfileGoogle={setProfileGoogle}
-              profileTwitter={profileTwitter} setProfileTwitter={setProfileTwitter}
-              profilePinterest={profilePinterest} setProfilePinterest={setProfilePinterest}
-              profileAboutMe={profileAboutMe} setProfileAboutMe={setProfileAboutMe}
-              profileSpecialization={profileSpecialization} setProfileSpecialization={setProfileSpecialization}
-              profileLocation={profileLocation} setProfileLocation={setProfileLocation}
-              certificateList={certificateList}
-              certificateUploads={certificateUploads} setCertificateUploads={setCertificateUploads}
-              setPhotoFile={setPhotoFile}
-              savingProfile={savingProfile}
-              profileError={profileError} profileMessage={profileMessage}
-              handleProfileSave={handleProfileSave}
-            />
+            ) : activeSection === "settings" ? (
+              <SettingsSection
+                avatarSrc={avatarSrc}
+                profileFirstName={profileFirstName} setProfileFirstName={setProfileFirstName}
+                profileLastName={profileLastName} setProfileLastName={setProfileLastName}
+                profileEmail={profileEmail} setProfileEmail={setProfileEmail}
+                profileContactNumber={profileContactNumber} setProfileContactNumber={setProfileContactNumber}
+                profileAddress={profileAddress} setProfileAddress={setProfileAddress}
+                profileCity={profileCity} setProfileCity={setProfileCity}
+                profilePostalCode={profilePostalCode} setProfilePostalCode={setProfilePostalCode}
+                profileCountry={profileCountry} setProfileCountry={setProfileCountry}
+                profileFacebook={profileFacebook} setProfileFacebook={setProfileFacebook}
+                profileGoogle={profileGoogle} setProfileGoogle={setProfileGoogle}
+                profileTwitter={profileTwitter} setProfileTwitter={setProfileTwitter}
+                profilePinterest={profilePinterest} setProfilePinterest={setProfilePinterest}
+                profileAboutMe={profileAboutMe} setProfileAboutMe={setProfileAboutMe}
+                profileSpecialization={profileSpecialization} setProfileSpecialization={setProfileSpecialization}
+                profileLocation={profileLocation} setProfileLocation={setProfileLocation}
+                certificateList={certificateList}
+                certificateUploads={certificateUploads} setCertificateUploads={setCertificateUploads}
+                setPhotoFile={setPhotoFile}
+                savingProfile={savingProfile}
+                profileError={profileError} profileMessage={profileMessage}
+                handleProfileSave={handleProfileSave}
+              />
 
-          ) : (
-            <OverviewSection
-              avatarSrc={avatarSrc}
-              profileName={profileName}
-              profileSpecialization={profileSpecialization}
-              profileContactNumber={profileContactNumber}
-              profileLocation={profileLocation}
-              profileBoostedUntil={profileBoostedUntil}
-              certificateList={certificateList}
-              mapsHref={mapsHref}
-              addedBooks={addedBooks}
-              addedVideos={addedVideos}
-              featuredPage={featuredPage}
-              setFeaturedPage={setFeaturedPage}
-              featuredContent={featuredContent}
-              setActiveSection={setActiveSection}
-            />
-          )}
+            ) : (
+              <OverviewSection
+                avatarSrc={avatarSrc}
+                profileName={profileName}
+                profileSpecialization={profileSpecialization}
+                profileContactNumber={profileContactNumber}
+                profileLocation={profileLocation}
+                profileBoostedUntil={profileBoostedUntil}
+                certificateList={certificateList}
+                mapsHref={mapsHref}
+                addedBooks={addedBooks}
+                addedVideos={addedVideos}
+                featuredPage={featuredPage}
+                setFeaturedPage={setFeaturedPage}
+                featuredContent={featuredContent}
+                setActiveSection={setActiveSection}
+              />
+            )}
 
-          <NotificationDrawer
-            notifOpen={notifOpen} setNotifOpen={setNotifOpen}
-            notifLoading={notifLoading}
-            notifFollows={notifFollows}
-            notifPurchases={notifPurchases}
-            notifReviews={notifReviews}
-            setActiveSection={setActiveSection}
-          />
-
+          </div>
         </section>
       </div>
-    </main>
+
+      <NotificationDrawer
+        notifOpen={notifOpen} setNotifOpen={setNotifOpen}
+        notifLoading={notifLoading}
+        notifFollows={notifFollows}
+        notifPurchases={notifPurchases}
+        notifReviews={notifReviews}
+        setActiveSection={setActiveSection}
+      />
+    </div>
   );
 }

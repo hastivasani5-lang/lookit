@@ -387,5 +387,17 @@
     "approvalStatus": "approved",
     "provider": "credentials",
     "createdAt": "2026-04-20T03:50:28.302Z"
+  },
+  {
+    "id": "07d7028d-3cac-48b0-a23e-071a9ddd1f4a",
+    "name": "heer",
+    "email": "heer@gmail.com",
+    "passwordHash": "$2a$10$BY017GTBunn/BQ8deEarMep9SjgtH2BaiRQesomHzvnOgs.X277FW",
+    "role": "student",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-21T04:25:44.198Z"
   }
 ]

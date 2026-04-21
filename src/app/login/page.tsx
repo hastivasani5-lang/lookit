@@ -72,7 +72,7 @@ export default function LoginPage() {
         </div>
 
         {/* Right Side - Login Form */}
-        <div className="flex flex-1 flex-col justify-center items-center p-8 sm:p-12 bg-white">
+        <div className="flex flex-1 flex-col justify-center items-center p-8 sm:p-12 bg-white text-black">
           <div className="w-full max-w-xs mx-auto">
             <h1 className="text-3xl font-bold text-[#195a44] mb-6 text-center">Log in to LOOKIT</h1>
             <div className="flex justify-center mb-6">
@@ -134,9 +134,9 @@ export default function LoginPage() {
             </form>
 
             <div className="my-6 flex items-center justify-center gap-2">
-              <span className="h-px flex-1 bg-gray-200" />
-              <span className="text-gray-400 text-sm">or</span>
-              <span className="h-px flex-1 bg-gray-200" />
+              <span className="h-px flex-1 " />
+              <span className="text-sm">or</span>
+              <span className="h-px flex-1 " />
             </div>
 
             <button

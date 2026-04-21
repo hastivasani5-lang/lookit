@@ -49,27 +49,27 @@ export default function SignupPage() {
         </div>
 
         {/* Right Side - Signup Form */}
-        <div className="flex flex-1 flex-col justify-center items-center p-8 sm:p-12 bg-white">
+        <div className="flex flex-1 flex-col justify-center items-center p-8 sm:p-12 bg-white text-black">
           <div className="w-full max-w-xs mx-auto">
             <h1 className="text-3xl font-bold text-[#195a44] mb-6 text-center">Sign up for LOOKIT</h1>
             <div className="flex justify-center mb-6">
               <button
                 type="button"
                 onClick={() => setRole("student")}
-                className={`px-6 py-2 rounded-l-full font-semibold border transition-all ${role === "student" ? "bg-[#1ec28e] text-white border-[#1ec28e]" : "bg-gray-100 text-[#195a44] border-gray-200"}`}
+                className={`px-6 py-2 rounded-l-full font-semibold border transition-all ${role === "student" ? "bg-[#1ec28e] text-white border-[#1ec28e]" : " text-[#195a44] border--200"}`}
               >
                 Student
               </button>
               <button
                 type="button"
                 onClick={() => setRole("professional")}
-                className={`px-6 py-2 rounded-r-full font-semibold border transition-all ${role === "professional" ? "bg-[#1ec28e] text-white border-[#1ec28e]" : "bg-gray-100 text-[#195a44] border-gray-200"}`}
+                className={`px-6 py-2 rounded-r-full font-semibold border transition-all ${role === "professional" ? "bg-[#1ec28e] text-white border-[#1ec28e]" : " text-[#195a44] border--200"}`}
               >
                 Professional
               </button>
             </div>
 
-            {error && <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700 text-center">{error}</div>}
+            {error && <div className="mb-4 rounded-lg border   bg-red-50 px-4 py-2 text-sm text-red-700 text-center">{error}</div>}
 
             <form onSubmit={handleSignup} className="space-y-4">
               <input
@@ -77,7 +77,7 @@ export default function SignupPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Full name"
-                className="w-full h-12 px-4 rounded-lg border border-gray-200 focus:border-[#1ec28e] outline-none text-base"
+                className="w-full h-12 px-4 rounded-lg border    focus:border-[#1ec28e] outline-none text-base"
                 autoComplete="name"
                 required
               />
@@ -86,7 +86,7 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email address"
-                className="w-full h-12 px-4 rounded-lg border border-gray-200 focus:border-[#1ec28e] outline-none text-base"
+                className="w-full h-12 px-4 rounded-lg border   focus:border-[#1ec28e] outline-none text-base"
                 autoComplete="email"
                 required
               />
@@ -96,13 +96,13 @@ export default function SignupPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
-                  className="w-full h-12 px-4 pr-12 rounded-lg border border-gray-200 focus:border-[#1ec28e] outline-none text-base"
+                  className="w-full h-12 px-4 pr-12 rounded-lg border focus:border-[#1ec28e] outline-none text-base"
                   autoComplete="new-password"
                   required
                 />
                 <button
                   type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#1ec28e]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2  hover:text-[#1ec28e]"
                   onClick={() => setShowPassword((cur) => !cur)}
                   aria-label="Toggle password visibility"
                 >
@@ -118,7 +118,7 @@ export default function SignupPage() {
               </button>
             </form>
 
-            <p className="mt-8 text-center text-sm text-gray-500">
+            <p className="mt-8 text-center text-sm ">
               Already have an account?{' '}
               <Link href="/login" className="font-semibold text-[#1ec28e] hover:text-[#15996b]">Log in</Link>
             </p>

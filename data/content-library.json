@@ -3,6 +3,18 @@
     "060fe115-29ac-4395-bdfe-c896a31d6b49": {
       "books": [
         {
+          "name": "React js",
+          "category": "Education",
+          "mrp": "50.00",
+          "imageUrl": "/uploads/books/060fe115-29ac-4395-bdfe-c896a31d6b49-1776766529776-v5zgjh.png",
+          "url": "",
+          "source": "file",
+          "fileName": "2.React Js.pdf",
+          "sizeLabel": "1.4 MB",
+          "id": "book-1776766529779-iso5ss",
+          "createdAt": "2026-04-21T10:15:29.779Z"
+        },
+        {
           "name": "Frontend design",
           "category": "Design",
           "mrp": "70.00",
@@ -65,13 +77,22 @@
       ],
       "categories": [
         "Design",
-        "Business"
+        "Business",
+        "Education"
       ]
     }
   },
   "students": {
     "42d3d5d9-e80d-4f0e-9db0-aa949fcfb800": {
       "purchasedBooks": [
+        {
+          "id": "purchased-book-1776766598637-spp80g",
+          "purchasedAt": "2026-04-21T10:16:38.637Z",
+          "title": "React js",
+          "source": "jenil",
+          "amount": "₹50.00",
+          "accessUrl": ""
+        },
         {
           "id": "purchased-book-1776765686106-bv3c0j",
           "purchasedAt": "2026-04-21T10:01:26.106Z",

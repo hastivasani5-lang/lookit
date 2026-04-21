@@ -1,5 +1,53 @@
 [
   {
+    "professionalId": "71f729c1-d92f-4b68-99f2-0f514f861ab1",
+    "professionalName": "jentilal",
+    "professionalEmail": "jentilal@gmail.com",
+    "event": "decision",
+    "title": "Approval granted",
+    "message": "Your professional account has been approved. You can now log in.",
+    "status": "approved",
+    "audience": "professional",
+    "id": "205f1971-7d0f-4626-8115-62dc1a14acf1",
+    "createdAt": "2026-04-21T09:05:35.244Z"
+  },
+  {
+    "professionalId": "71f729c1-d92f-4b68-99f2-0f514f861ab1",
+    "professionalName": "jentilal",
+    "professionalEmail": "jentilal@gmail.com",
+    "event": "decision",
+    "title": "Professional approved",
+    "message": "jentilal was approved by Admin.",
+    "status": "approved",
+    "audience": "admin",
+    "id": "a0983306-91d5-4f94-a47e-6ef73386a94d",
+    "createdAt": "2026-04-21T09:05:35.242Z"
+  },
+  {
+    "professionalId": "d27ef8c3-6ce3-412a-a5d7-3630be7e9489",
+    "professionalName": "chandhu",
+    "professionalEmail": "chandhu@gmail.com",
+    "event": "decision",
+    "title": "Approval granted",
+    "message": "Your professional account has been approved. You can now log in.",
+    "status": "approved",
+    "audience": "professional",
+    "id": "97b313b8-4637-4f43-b0ee-22805f5e4f50",
+    "createdAt": "2026-04-21T09:05:33.598Z"
+  },
+  {
+    "professionalId": "d27ef8c3-6ce3-412a-a5d7-3630be7e9489",
+    "professionalName": "chandhu",
+    "professionalEmail": "chandhu@gmail.com",
+    "event": "decision",
+    "title": "Professional approved",
+    "message": "chandhu was approved by Admin.",
+    "status": "approved",
+    "audience": "admin",
+    "id": "806851b2-56ee-40e0-b92a-36dce5ce4fe6",
+    "createdAt": "2026-04-21T09:05:33.595Z"
+  },
+  {
     "professionalId": "1c5adc52-4304-4584-b7ee-59fe4c4316a5",
     "professionalName": "Hasti Vasani",
     "professionalEmail": "abc@gmail.com",

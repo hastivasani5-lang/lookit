@@ -1,5 +1,17 @@
 [
   {
+    "id": "e6c13fda-009a-41bf-aa8f-5129962e3901",
+    "name": "jenilo",
+    "email": "jenil25@gmail.com",
+    "passwordHash": "$2a$10$vYALCuZqWaxSAX6mUDfZVOFBCkQaT/Oq1pz9Yl5R4uyWeXmcjR6sC",
+    "role": "student",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-21T08:59:10.024Z"
+  },
+  {
     "id": "07d7028d-3cac-48b0-a23e-071a9ddd1f4a",
     "name": "heer",
     "email": "heer@gmail.com",
@@ -208,9 +220,9 @@
     "reviews": [],
     "profileBoostedUntil": "2026-07-15T11:38:06.823Z",
     "profileUpgradeTier": "top",
-    "approvalStatus": "rejected",
+    "approvalStatus": "approved",
     "approvalReviewedBy": "Admin",
-    "approvalReviewedAt": "2026-04-16T11:50:53.527Z",
+    "approvalReviewedAt": "2026-04-21T09:05:33.592Z",
     "provider": "credentials",
     "createdAt": "2026-04-15T11:37:38.329Z"
   },
@@ -222,9 +234,9 @@
     "role": "professional",
     "certificates": [],
     "reviews": [],
-    "approvalStatus": "rejected",
+    "approvalStatus": "approved",
     "approvalReviewedBy": "Admin",
-    "approvalReviewedAt": "2026-04-16T11:50:55.723Z",
+    "approvalReviewedAt": "2026-04-21T09:05:35.239Z",
     "provider": "credentials",
     "createdAt": "2026-04-15T11:37:17.510Z"
   },

@@ -870,7 +870,7 @@ export async function updateUserProfile(input: {
       location: input.location === undefined ? currentUser.location : input.location.trim() || undefined,
       certificates:
         input.certificates && input.certificates.length > 0
-          ? [...(currentUser.certificates ?? []), ...input.certificates]
+          ? input.certificates
           : currentUser.certificates ?? [],
       reviews:
         input.reviews === undefined
@@ -950,7 +950,7 @@ export async function updateUserProfile(input: {
     location: input.location === undefined ? currentUser.location : input.location.trim() || undefined,
     certificates:
       input.certificates && input.certificates.length > 0
-        ? [...(currentUser.certificates ?? []), ...input.certificates]
+        ? input.certificates
         : currentUser.certificates ?? [],
     reviews:
       input.reviews === undefined

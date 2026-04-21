@@ -99,40 +99,46 @@ export default function SettingsSection({
         </div>
 
         <div className="mt-6 rounded-2xl bg-[#f7faf8] p-4 text-sm text-slate-600">
-          <p className="font-semibold text-slate-900">Certificates</p>
-          <p className="mt-1">Upload certificates, awards, or proof documents.</p>
+          <p className="font-semibold text-slate-900">Certificate</p>
+          <p className="mt-1">Upload one certificate, award, or proof document. New upload replaces the existing one.</p>
         </div>
 
         <label className="mt-4 block space-y-2 text-sm font-medium text-slate-700">
-          Add certificates
+          Upload certificate
           <div className="flex min-h-14 items-center gap-3 rounded-full border border-dashed border-slate-300 px-4 text-sm text-slate-500">
             <Upload className="h-4 w-4 text-slate-400" />
-            <span>{certificateUploads.length > 0 ? `${certificateUploads.length} file(s) selected` : "Choose one or more files"}</span>
+            <span>{certificateUploads.length > 0 ? `✓ ${certificateUploads[0].name}` : "Choose a file (PDF, image)"}</span>
           </div>
           <input
             type="file"
-            multiple
             accept=".pdf,.png,.jpg,.jpeg,.webp"
             className="hidden"
-            onChange={(event) => setCertificateUploads(Array.from(event.target.files ?? []))}
+            onChange={(event) => setCertificateUploads(event.target.files?.[0] ? [event.target.files[0]] : [])}
           />
         </label>
 
         {certificateList.length > 0 && (
           <div className="mt-4 rounded-2xl border border-slate-100 bg-white p-4">
-            <p className="text-sm font-semibold text-slate-900">Saved certificates</p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {certificateList.map((certificate) => (
-                <a
-                  key={certificate}
-                  href={certificate}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-full bg-[#f7faf8] px-3 py-1 text-xs text-slate-600 transition hover:bg-[#eaf7f1] hover:text-[#1ec28e]"
-                >
-                  {certificate.split("/").pop()}
-                </a>
-              ))}
+            <p className="text-sm font-semibold text-slate-900">Current certificate</p>
+            <div className="mt-3 flex flex-col gap-2">
+              {certificateList.slice(0, 1).map((certificate, idx) => {
+                const ext = certificate.split(".").pop()?.toLowerCase() ?? "";
+                const isPdf = ext === "pdf";
+                return (
+                  <a
+                    key={certificate}
+                    href={certificate}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2 rounded-lg bg-[#f7faf8] px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-[#effaf6] hover:text-[#1ec28e]"
+                  >
+                    <svg className="h-4 w-4 shrink-0 text-[#1ec28e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Certificate {idx + 1}{isPdf ? " (PDF)" : ""}
+                  </a>
+                );
+              })}
             </div>
           </div>
         )}

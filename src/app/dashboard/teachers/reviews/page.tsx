@@ -19,26 +19,28 @@ export default async function ProfessionalReviewsPage() {
   }
 
   return (
-    <>
-      <main className="h-screen w-full overflow-hidden bg-[#eef5f3]">
-        <section className="grid h-full w-full gap-4  md:p-4 lg:grid-cols-[260px_minmax(0,1fr)] lg:p-5">
-          <DashboardSidebar profileName={user?.name || "Professional User"} profileEmail={user?.email || "professional@demo.com"} avatarSrc={user?.image || "/person.png"} />
+    <main className="h-screen w-full overflow-hidden bg-[#f0f4f8]">
+      <section className="grid h-full w-full lg:grid-cols-[260px_minmax(0,1fr)]">
+        <DashboardSidebar
+          profileName={user?.name || "Professional User"}
+          profileEmail={user?.email || "professional@demo.com"}
+          avatarSrc={user?.image || "/person.png"}
+        />
 
-          <div className="h-full overflow-y-auto rounded-3xl bg-[#eef5f3] p-4 shadow-[20px_20px_40px_#d0dbd6,-20px_-20px_40px_#ffffff] md:p-6">
-            <div className="rounded-3xl bg-[#eef5f3] px-5 py-4 shadow-[12px_12px_24px_#d0dbd6,-12px_-12px_24px_#ffffff]">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#2c5a48]">Professional Dashboard</p>
-              <h1 className="mt-2 text-3xl font-bold text-slate-900">Incoming Reviews</h1>
-              <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-600">
-                See every student review submitted for your profile in real time.
-              </p>
-            </div>
-
-            <div className="mt-6">
-              <ProfessionalReviewsClient />
-            </div>
+        <div className="h-full overflow-y-auto bg-[#f0f4f8] px-4 py-5 md:px-6 lg:px-7">
+          <div className="mb-6">
+            <p className="text-xs font-bold uppercase tracking-widest text-[#1ec28e]">
+              Professional Dashboard
+            </p>
+            <h1 className="mt-1 text-2xl font-bold text-slate-900">Student Reviews</h1>
+            <p className="mt-1 text-sm text-slate-500">
+              All reviews submitted by students for your profile, updated in real time.
+            </p>
           </div>
-        </section>
-      </main>
-    </>
+
+          <ProfessionalReviewsClient />
+        </div>
+      </section>
+    </main>
   );
 }

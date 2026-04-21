@@ -88,72 +88,88 @@ export default function ProfessionalReviewsClient() {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-3">
+      {/* Stats */}
+      <div className="grid gap-4 sm:grid-cols-3">
         {summaryCards.map((card) => (
-          <div key={card.label} className="rounded-[24px] bg-[#eef5f3] p-5 shadow-[8px_8px_16px_#d0dbd6,-8px_-8px_16px_#ffffff]">
-            <p className="text-sm text-slate-500">{card.label}</p>
-            <p className="mt-2 text-3xl font-bold text-slate-900">{card.value}</p>
+          <div key={card.label} className="rounded-2xl bg-white p-5 shadow-sm border border-slate-100">
+            <div className="grid h-10 w-10 place-items-center rounded-xl bg-[#effaf6] text-[#1ec28e]">
+              <Star className="h-5 w-5" />
+            </div>
+            <p className="mt-3 text-2xl font-bold text-slate-900">{card.value}</p>
+            <p className="mt-0.5 text-xs text-slate-500">{card.label}</p>
           </div>
         ))}
       </div>
 
-      <div className="rounded-[24px] bg-[#eef5f3] p-5 shadow-[12px_12px_24px_#d0dbd6,-12px_-12px_24px_#ffffff]">
-        <div className="flex flex-col gap-3 border-b border-white/70 pb-4 sm:flex-row sm:items-center sm:justify-between">
+      {/* Table */}
+      <div className="rounded-2xl bg-white shadow-sm border border-slate-100">
+        <div className="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">Student Reviews</h2>
+            <h2 className="text-base font-bold text-slate-900">Student Reviews</h2>
             <p className="text-sm text-slate-500">All submitted reviews for your profile, updated live.</p>
           </div>
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => void loadReviews()}
-              className="inline-flex h-10 items-center gap-2 rounded-full bg-[#1ec28e] px-4 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+              className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#1ec28e] px-4 text-sm font-semibold text-white transition hover:bg-[#17a87a]"
             >
               <RefreshCcw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
               Refresh
             </button>
-            <div className="text-xs text-slate-500">{lastUpdated ? `Last updated: ${formatDate(lastUpdated)}` : "Waiting for updates..."}</div>
+            <span className="text-xs text-slate-400">
+              {lastUpdated ? `Updated: ${formatDate(lastUpdated)}` : "Waiting..."}
+            </span>
           </div>
         </div>
 
-        {error ? <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div> : null}
+        {error ? (
+          <div className="mx-5 mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+        ) : null}
 
         {loading ? (
-          <div className="mt-4 rounded-2xl bg-[#f6fefb] px-4 py-6 text-sm text-slate-500 shadow-[inset_4px_4px_12px_#d0dbd6,inset_-4px_-4px_12px_#ffffff]">
-            Loading live reviews...
+          <div className="flex items-center justify-center py-16">
+            <div className="h-7 w-7 animate-spin rounded-full border-2 border-[#1ec28e] border-t-transparent" />
           </div>
         ) : reviews.length === 0 ? (
-          <div className="mt-4 rounded-2xl bg-[#f6fefb] px-4 py-6 text-sm text-slate-500 shadow-[inset_4px_4px_12px_#d0dbd6,inset_-4px_-4px_12px_#ffffff]">
-            No reviews yet.
+          <div className="flex flex-col items-center justify-center gap-3 py-16 text-slate-400">
+            <Star className="h-10 w-10 opacity-30" />
+            <p className="text-sm">No reviews yet.</p>
           </div>
         ) : (
-          <div className="mt-4 grid gap-4 lg:grid-cols-2">
+          <div className="divide-y divide-slate-100">
             {reviews.map((review) => (
-              <article key={review.id} className="rounded-[24px] bg-white p-5 shadow-[8px_8px_16px_#d0dbd6,-8px_-8px_16px_#ffffff]">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
+              <div key={review.id} className="flex items-start gap-4 px-5 py-4 hover:bg-slate-50 transition">
+                {/* Avatar */}
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#effaf6] text-sm font-bold text-[#1ec28e]">
+                  {review.studentName.charAt(0).toUpperCase()}
+                </div>
+
+                {/* Content */}
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
                     <p className="text-sm font-semibold text-slate-900">{review.studentName}</p>
-                    <p className="text-xs text-slate-500">{review.studentEmail}</p>
+                    <p className="text-xs text-slate-400">{review.studentEmail}</p>
+                    {/* Star rating */}
+                    <div className="flex items-center gap-0.5">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-3.5 w-3.5 ${i < review.rating ? "fill-amber-400 text-amber-400" : "text-slate-200"}`}
+                        />
+                      ))}
+                    </div>
+                    <span className="rounded-full bg-[#effaf6] px-2 py-0.5 text-[11px] font-semibold text-[#1ec28e]">
+                      {review.rating}/5
+                    </span>
                   </div>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-[#e8f9ee] px-3 py-1 text-xs font-semibold text-[#178c43]">
-                    <Star className="h-3.5 w-3.5" />
-                    {review.rating}/5
-                  </span>
+                  <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{review.review}</p>
+                  <p className="mt-1 text-xs text-slate-400">{formatDate(review.createdAt)}</p>
                 </div>
 
-                <div className="mt-4 rounded-2xl bg-[#f6fefb] p-4 text-sm text-slate-600">
-                  <p className="font-semibold text-slate-900">{review.professionalName}</p>
-                  <p className="mt-1 leading-7">{review.review}</p>
-                </div>
-
-                <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
-                  <span>Submitted: {formatDate(review.createdAt)}</span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-[#f6fefb] px-3 py-1 font-semibold text-[#2c5a48]">
-                    <Users className="h-3.5 w-3.5" />
-                    Live
-                  </span>
-                </div>
-              </article>
+                {/* Live dot */}
+                <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#1ec28e]" />
+              </div>
             ))}
           </div>
         )}

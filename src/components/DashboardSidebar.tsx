@@ -11,6 +11,7 @@ const sidebarItems = [
   { label: "Add", href: "/dashboard/teachers?section=add", icon: Upload },
   { label: "Upgrade Profile", href: "/dashboard/teachers?section=upgrade", icon: CreditCard },
   { label: "Purchases", href: "/dashboard/teachers/purchases", icon: Users },
+  { label: "Followers", href: "/dashboard/teachers/followers", icon: Users },
   { label: "Reviews", href: "/dashboard/teachers/reviews", icon: Star },
   { label: "Settings", href: "/dashboard/teachers?section=settings", icon: Settings },
 ];
@@ -27,23 +28,31 @@ export default function DashboardSidebar({ profileName, profileEmail, avatarSrc 
   const activeSection = searchParams?.get("section") ?? "";
 
   return (
-    <aside className="flex flex-col border-b border-slate-200/70 bg-[#eef5f3] px-5 py-6 lg:sticky lg:top-0 lg:h-full lg:border-b-0 lg:border-r">
-      <div className="flex items-center gap-3 px-2 pb-6">
-        <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#1ec28e]/10 text-[#1ec28e]">
-          <div className="h-5 w-5 rounded-full border-4 border-current border-r-transparent" />
+    <aside
+      className="flex flex-col border-b border-white/10 px-5 py-6 lg:sticky lg:top-0 lg:h-full lg:border-b-0 lg:border-r lg:border-white/10"
+      style={{ background: "linear-gradient(160deg, #0d7a57 0%, #15a374 40%, #1ec28e 100%)" }}
+    >
+      <div className="flex items-center gap-3 px-2 pb-7">
+        <div className="grid h-10 w-10 place-items-center rounded-xl bg-white/15 text-white">
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
         </div>
         <div>
-          <h1 className="text-lg font-semibold text-slate-900">LearnFlow</h1>
-          <p className="text-xs text-slate-500">Professional dashboard</p>
+          <h1 className="text-base font-bold tracking-wide text-white">LearnFlow</h1>
+          <p className="text-[11px] text-blue-200/70">Professional Dashboard</p>
         </div>
       </div>
 
-      <div className="rounded-2xl bg-[#eef5f3] p-4 shadow-[8px_8px_16px_#d0dbd6,-8px_-8px_16px_#ffffff]">
+      <div className="rounded-2xl bg-white/10 p-4 backdrop-blur-sm border border-white/10">
         <div className="flex items-center gap-3">
-          <Image src={avatarSrc || "/person.png"} alt="Profile" width={44} height={44} className="h-11 w-11 rounded-full object-cover" />
+          <div className="relative">
+            <Image src={avatarSrc || "/person.png"} alt="Profile" width={46} height={46} className="h-[46px] w-[46px] rounded-full object-cover ring-2 ring-white/40" />
+            <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-[#15a374] bg-white" />
+          </div>
           <div className="min-w-0">
-            <p className="truncate font-medium text-slate-900">{profileName || "Professional User"}</p>
-            <p className="truncate text-xs text-slate-500">@{(profileEmail || "professional").split("@")[0]}</p>
+            <p className="truncate text-sm font-semibold text-white">{profileName || "Professional User"}</p>
+            <p className="truncate text-[11px] text-blue-200/80">@{(profileEmail || "professional").split("@")[0]}</p>
           </div>
         </div>
       </div>
@@ -51,10 +60,15 @@ export default function DashboardSidebar({ profileName, profileEmail, avatarSrc 
       <nav className="mt-6 flex-1 space-y-1">
         {sidebarItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+  const isActive =
+    item.href === "/dashboard/teachers"
+      ? pathname === "/dashboard/teachers" && !activeSection
+      : item.href.includes("?section=")
+        ? activeSection === item.href.split("?section=")[1]
+        : pathname === item.href || pathname.startsWith(`${item.href}/`);
           return (
-            <Link key={item.label} href={item.href} className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-medium transition ${isActive ? "bg-[#2d6a4f] text-white shadow-[8px_8px_16px_#d0dbd6,-8px_-8px_16px_#ffffff]" : "bg-[#eef5f3] text-[#2c5a48] shadow-[3px_3px_6px_#d0dbd6,-3px_-3px_6px_#ffffff] hover:shadow-inner"}`}>
-              <Icon className="h-4 w-4" />
+            <Link key={item.label} href={item.href} className={`flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-left text-sm font-medium transition-all ${isActive ? "bg-white text-[#1ec28e] shadow-lg" : "text-blue-100/80 hover:bg-white/10 hover:text-white"}`}>
+              <Icon className="h-4 w-4 shrink-0" />
               {item.label}
             </Link>
           );
@@ -65,9 +79,9 @@ export default function DashboardSidebar({ profileName, profileEmail, avatarSrc 
         onClick={async () => {
           await signOut({ callbackUrl: "/" });
         }}
-        className="mt-6 flex items-center gap-3 rounded-xl bg-[#eef5f3] px-4 py-3 text-sm font-medium text-[#2c5a48] shadow-[3px_3px_6px_#d0dbd6,-3px_-3px_6px_#ffffff] transition hover:shadow-inner"
+        className="mt-4 flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-blue-200/70 transition hover:bg-white/10 hover:text-white"
       >
-        <LogOut className="h-4 w-4" />
+        <LogOut className="h-4 w-4 shrink-0" />
         Log Out
       </button>
     </aside>

@@ -3,12 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Bell,
   BookOpen,
-  ChevronRight,
   CreditCard,
   Edit2,
   Eye,
@@ -26,6 +25,34 @@ import {
   Video,
 } from "lucide-react";
 import UpgradeTimeline from "@/components/UpgradeTimeline";
+
+// ── Sub-components ────────────────────────────────────────────────────────────
+import AddSection from "@/components/professional/AddSection";
+import MiniCalendar from "@/components/professional/MiniCalendar";
+import NotificationDrawer from "@/components/professional/NotificationDrawer";
+import OverviewSection from "@/components/professional/OverviewSection";
+import SettingsSection from "@/components/professional/SettingsSection";
+import UpgradeProgressChart from "@/components/professional/UpgradeProgressChart";
+import UpgradeSection from "@/components/professional/UpgradeSection";
+
+// ── Types & static data ───────────────────────────────────────────────────────
+import {
+  type AddContentTab,
+  type AddedBook,
+  type AddedVideo,
+  type DashboardSection,
+  type FeaturedPage,
+  type SearchResultItem,
+  type UpgradePlanKey,
+  coursePageOne,
+  coursePageTwo,
+  coursePageThree,
+  detailVideos,
+  overviewCards,
+  sidebarItems,
+  upgradePlans,
+  RAZORPAY_PAYMENT_LINK,
+} from "@/components/professional/DashboardTypes";
 
 type ProfessionalUser = {
   id: string;
@@ -45,220 +72,8 @@ type ProfessionalDashboardProps = {
   user: ProfessionalUser;
 };
 
-export type DashboardSection = "overview" | "add" | "upgrade" | "settings";
-type AddContentTab = "books" | "videos";
-
-type SearchResultItem = {
-  id: string;
-  title: string;
-  description: string;
-  section: DashboardSection;
-  addTab?: AddContentTab;
-  featuredTargetPage?: FeaturedPage;
-  openUrl?: string;
-};
-
-type AddedBook = {
-  id: string;
-  name: string;
-  mrp: string;
-  category: string;
-  fileName: string;
-  sizeLabel: string;
-  url: string;
-  imageUrl: string;
-  source: "file" | "amazon";
-};
-
-type AddedVideo = {
-  id: string;
-  name: string;
-  mrp: string;
-  sizeLabel: string;
-  url: string;
-  level?: string;
-  category?: string;
-  source: "file" | "youtube";
-  isPopular: boolean;
-};
-
-type FeaturedPage = 1 | 2 | 3;
-
-type UpgradePlanKey = "starter" | "pro" | "premium" | "elite";
-
-const upgradePlans: Array<{
-  key: UpgradePlanKey;
-  name: string;
-  price: string;
-  duration: string;
-}> = [
-  { key: "starter", name: "Starter", price: "$9", duration: "1 week boost" },
-  { key: "pro", name: "Pro", price: "$19", duration: "1 month boost" },
-  { key: "premium", name: "Premium", price: "$39", duration: "2 months boost" },
-  { key: "elite", name: "Elite", price: "$59", duration: "3 months boost" },
-];
-
-const RAZORPAY_PAYMENT_LINK = "https://razorpay.me/@jenildineshbhaigadhiya";
-
-const sidebarItems: Array<{ label: string; icon: typeof LayoutGrid; section?: DashboardSection; href?: string }> = [
-  { label: "Overview", icon: LayoutGrid, section: "overview" },
-  { label: "Add", icon: Upload, section: "add" },
-  { label: "Upgrade Profile", icon: CreditCard, section: "upgrade" },
-   { label: "Settings", icon: Settings, section: "settings" },
-];
-
-const overviewCards = [
-  {
-    title: "Business Analytics",
-    description: "Invest in your future with our business analysis course",
-    icon: LayoutGrid,
-    iconBg: "bg-[#eef5ff] text-[#5067d9]",
-  },
-  {
-    title: "Design",
-    description: "Invest in your future with our design strategy course",
-    icon: BookOpen,
-    iconBg: "bg-[#effaf6] text-[#1ec28e]",
-  },
-  {
-    title: "Currency",
-    description: "Invest in your future with our finance and currency course",
-    icon: CreditCard,
-    iconBg: "bg-[#f0f7ff] text-[#5067d9]",
-  },
-  {
-    title: "Sale Marketing",
-    description: "Invest in your future with our marketing course",
-    icon: Users,
-    iconBg: "bg-[#fff4e8] text-[#f59e0b]",
-  },
-];
-
-const coursePageOne = [
-  {
-    title: "The Complete HTML & CSS Bootcamp 2023 Edition",
-    image: "/img1.png",
-    tag: "Graphic Design",
-    academy: "JDG Academy",
-    lessons: "32 Lessons",
-  },
-  {
-    title: "The Complete HTML & CSS Bootcamp 2023 Edition",
-    image: "/person.png",
-    tag: "Graphic Design",
-    academy: "STK Academy",
-    lessons: "28 Lessons",
-  },
-  {
-    title: "The Complete HTML & CSS Bootcamp 2023 Edition",
-    image: "/books.png",
-    tag: "Graphic Design",
-    academy: "LOA Academy",
-    lessons: "32 Lessons",
-  },
-  {
-    title: "The Complete HTML & CSS Bootcamp 2023 Edition",
-    image: "/girls.png",
-    tag: "Graphic Design",
-    academy: "JDG Academy",
-    lessons: "30 Lessons",
-  },
-  {
-    title: "The Complete HTML & CSS Bootcamp 2023 Edition",
-    image: "/offer-video.png",
-    tag: "Graphic Design",
-    academy: "JDG Academy",
-    lessons: "34 Lessons",
-  },
-  {
-    title: "The Complete HTML & CSS Bootcamp 2023 Edition",
-    image: "/hero.png",
-    tag: "Graphic Design",
-    academy: "JDG Academy",
-    lessons: "35 Lessons",
-  },
-];
-
-const coursePageTwo = [
-  {
-    title: "CSS Grid in Depth",
-    youtubeId: "UB1O30fR-EE",
-    tag: "Video Course",
-    academy: "EducateX Academy",
-  },
-  {
-    title: "Flexbox Masterclass",
-    youtubeId: "yfoY53QXEnI",
-    tag: "Video Course",
-    academy: "EducateX Academy",
-  },
-  {
-    title: "HTML Layout Workshop",
-    youtubeId: "1Rs2ND1ryYc",
-    tag: "Video Course",
-    academy: "EducateX Academy",
-  },
-];
-
-const coursePageThree = [
-  {
-    title: "UI Design System Workshop",
-    image: "/person.png",
-    tag: "Workshop",
-    academy: "EducateX Lab",
-    lessons: "18 Lessons",
-  },
-  {
-    title: "Responsive Landing Page Build",
-    image: "/books.png",
-    tag: "Workshop",
-    academy: "EducateX Lab",
-    lessons: "20 Lessons",
-  },
-  {
-    title: "Professional Portfolio Sprint",
-    image: "/girls.png",
-    tag: "Workshop",
-    academy: "EducateX Lab",
-    lessons: "16 Lessons",
-  },
-  {
-    title: "Component Styling Deep Dive",
-    image: "/img1.png",
-    tag: "Workshop",
-    academy: "EducateX Lab",
-    lessons: "24 Lessons",
-  },
-  {
-    title: "Dashboard UI Patterns",
-    image: "/hero.png",
-    tag: "Workshop",
-    academy: "EducateX Lab",
-    lessons: "19 Lessons",
-  },
-  {
-    title: "Modern Page Layouts",
-    image: "/offer-video.png",
-    tag: "Workshop",
-    academy: "EducateX Lab",
-    lessons: "22 Lessons",
-  },
-];
-
-const detailVideos = [
-  {
-    title: "Grid Layout Tutorial",
-    youtubeId: "UB1O30fR-EE",
-  },
-  {
-    title: "Flexbox Tutorial",
-    youtubeId: "yfoY53QXEnI",
-  },
-  {
-    title: "HTML/CSS Course",
-    youtubeId: "1Rs2ND1ryYc",
-  },
-];
+// ── Suppress unused-import warnings for static data used in sub-components ───
+void overviewCards; void coursePageOne; void coursePageTwo; void coursePageThree; void detailVideos; void upgradePlans; void RAZORPAY_PAYMENT_LINK;
 
 export default function ProfessionalDashboard({ user }: ProfessionalDashboardProps) {
   const router = useRouter();
@@ -328,6 +143,13 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   const [likedVideoIds, setLikedVideoIds] = useState<Set<string>>(new Set());
   const [editingBookId, setEditingBookId] = useState<string | null>(null);
   const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
+
+  // Notification panel state
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [notifLoading, setNotifLoading] = useState(false);
+  const [notifFollows, setNotifFollows] = useState<Array<{ studentId: string; studentName?: string; followedAt: string }>>([]);
+  const [notifPurchases, setNotifPurchases] = useState<Array<{ id: string; studentName: string; items?: Array<{ title: string; contentType: string }>; amount: string; paidAt: string; professionalId: string }>>([]);
+  const [notifReviews, setNotifReviews] = useState<Array<{ id: string; studentName: string; rating: number; review: string; createdAt: string; professionalId: string }>>([]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -402,95 +224,32 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   }, [user.id]);
 
   const featuredContent = useMemo(() => {
-    if (featuredPage === 2) {
-      return (
-        <div className="grid gap-4 lg:grid-cols-3">
-          {coursePageTwo.map((video, index) => (
-            <article key={`${video.title}-${index}`} className="overflow-hidden rounded-[22px] bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-              <div className="relative aspect-video bg-slate-950">
-                <iframe
-                  className="h-full w-full"
-                  src={`https://www.youtube.com/embed/${video.youtubeId}`}
-                  title={video.title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-              <div className="space-y-3 p-4">
-                <span className="inline-flex rounded-full bg-[#1ec28e]/10 px-3 py-1 text-xs font-medium text-[#1ec28e]">
-                  {video.tag}
-                </span>
-                <h4 className="text-sm font-semibold leading-5 text-slate-900">{video.title}</h4>
-                <p className="text-xs text-slate-500">{video.academy}</p>
-              </div>
-            </article>
-          ))}
-        </div>
-      );
-    }
-
-    if (featuredPage === 3) {
-      return (
-        <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
-          {coursePageThree.map((course, index) => (
-            <article key={`${course.title}-${index}`} className="overflow-hidden rounded-[22px] bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-              <div className="relative h-44 overflow-hidden">
-                <Image src={course.image} alt={course.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1536px) 50vw, 33vw" className="object-cover" />
-                <div className="absolute left-4 top-4 rounded-full bg-[#1ec28e] px-3 py-1 text-xs font-medium text-white">
-                  {course.tag}
-                </div>
-                <button className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-full bg-white/95 text-[#1ec28e] shadow-sm">
-                  <Heart className="h-4 w-4" />
-                </button>
-              </div>
-              <div className="space-y-4 p-4">
-                <h4 className="text-sm font-semibold leading-5 text-slate-900">{course.title}</h4>
-                <div className="flex items-center justify-between text-xs text-slate-500">
-                  <span>{course.academy}</span>
-                  <span className="flex items-center gap-1 text-amber-500">
-                    <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                    4.8
-                  </span>
-                </div>
-                <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs text-slate-500">
-                  <span>{course.lessons}</span>
-                  <span className="text-sm font-semibold text-[#1ec28e]">$59.00</span>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-      );
-    }
+    const allCourses = featuredPage === 2
+      ? coursePageTwo.map((c) => ({ title: c.title, tag: c.tag, academy: c.academy, lessons: "Video", price: "$39.00", rating: "4.7" }))
+      : featuredPage === 3
+        ? coursePageThree.map((c) => ({ title: c.title, tag: c.tag, academy: c.academy, lessons: c.lessons, price: "$59.00", rating: "4.8" }))
+        : coursePageOne.map((c) => ({ title: c.title, tag: c.tag, academy: c.academy, lessons: c.lessons, price: "$49.00", rating: "4.5" }));
 
     return (
-      <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
-        {coursePageOne.map((course, index) => (
-          <article key={`${course.title}-${index}`} className="overflow-hidden rounded-[22px] bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-            <div className="relative h-44 overflow-hidden">
-              <Image src={course.image} alt={course.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1536px) 50vw, 33vw" className="object-cover" />
-              <div className="absolute left-4 top-4 rounded-full bg-[#1ec28e] px-3 py-1 text-xs font-medium text-white">
-                {course.tag}
-              </div>
-              <button className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-full bg-white/95 text-[#1ec28e] shadow-sm">
-                <Heart className="h-4 w-4" />
-              </button>
+      <div className="divide-y divide-slate-100 rounded-2xl border border-slate-100 bg-white overflow-hidden">
+        {allCourses.map((course, index) => (
+          <div key={`${course.title}-${index}`} className="flex items-center gap-4 px-4 py-3 hover:bg-[#f6fefb] transition">
+            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#1ec28e]/10 text-[#1ec28e] text-sm font-bold">
+              {index + 1}
             </div>
-            <div className="space-y-4 p-4">
-              <h4 className="text-sm font-semibold leading-5 text-slate-900">{course.title}</h4>
-              <div className="flex items-center justify-between text-xs text-slate-500">
-                <span>{course.academy}</span>
-                <span className="flex items-center gap-1 text-amber-500">
-                  <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                  4.5
-                </span>
-              </div>
-              <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs text-slate-500">
-                <span>{course.lessons}</span>
-                <span className="text-sm font-semibold text-[#1ec28e]">$49.00</span>
-              </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold text-slate-900">{course.title}</p>
+              <p className="mt-0.5 text-xs text-slate-500">{course.academy} · {course.lessons}</p>
             </div>
-          </article>
+            <div className="flex shrink-0 items-center gap-3">
+              <span className="hidden rounded-full bg-[#1ec28e]/10 px-2.5 py-0.5 text-xs font-medium text-[#1ec28e] sm:inline">{course.tag}</span>
+              <span className="flex items-center gap-1 text-xs text-amber-500">
+                <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                {course.rating}
+              </span>
+              <span className="text-sm font-bold text-[#1ec28e]">{course.price}</span>
+            </div>
+          </div>
         ))}
       </div>
     );
@@ -1248,7 +1007,39 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     });
   }, [searchQuery, searchableItems]);
 
-  const handleSearchResultClick = (result: SearchResultItem) => {
+  const fetchNotifications = async () => {
+    setNotifLoading(true);
+    try {
+      const [followsRes, purchasesRes, reviewsRes] = await Promise.all([
+        fetch("/api/notifications/followers", { cache: "no-store" }),
+        fetch("/api/notifications/purchases", { cache: "no-store" }),
+        fetch("/api/profile/reviews", { cache: "no-store" }),
+      ]);
+      const followsData = followsRes.ok ? await followsRes.json() : { data: [] };
+      const purchasesData = purchasesRes.ok ? await purchasesRes.json() : { data: [] };
+      const reviewsData = reviewsRes.ok ? await reviewsRes.json() : { reviews: [] };
+
+      setNotifFollows(Array.isArray(followsData.data) ? followsData.data : []);
+      // Filter purchases for this professional
+      const allPurchases = Array.isArray(purchasesData.data) ? purchasesData.data : [];
+      setNotifPurchases(allPurchases.filter((p: { professionalId?: string }) => !p.professionalId || p.professionalId === user.id));
+      const allReviews = Array.isArray(reviewsData.reviews) ? reviewsData.reviews : [];
+      setNotifReviews(allReviews.filter((r: { professionalId?: string }) => r.professionalId === user.id));
+    } catch {
+      // silently fail
+    } finally {
+      setNotifLoading(false);
+    }
+  };
+
+  const handleBellClick = () => {
+    setNotifOpen((prev) => {
+      if (!prev) void fetchNotifications();
+      return !prev;
+    });
+  };
+
+    const handleSearchResultClick = (result: SearchResultItem) => {
     if (result.openUrl) {
       window.open(result.openUrl, "_blank", "noopener,noreferrer");
     }
@@ -1270,26 +1061,40 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     return null;
   }
 
+
+  // ── Render ──────────────────────────────────────────────────────────────────
+  if (!isMounted) {
+    return null;
+  }
+
   return (
-    <main className="h-screen w-full overflow-hidden bg-[#eef5f3]">
-      <div className="grid h-full w-full grid-cols-1 overflow-hidden bg-[#eef5f3] shadow-[20px_20px_40px_#d0dbd6,-20px_-20px_40px_#ffffff] lg:grid-cols-[260px_minmax(0,1fr)]">
-        <aside className="flex flex-col border-b border-slate-200/70 bg-[#eef5f3] px-5 py-6 lg:sticky lg:top-0 lg:h-full lg:border-b-0 lg:border-r">
-          <div className="flex items-center gap-3 px-2 pb-6">
-            <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#1ec28e]/10 text-[#1ec28e]">
-              <div className="h-5 w-5 rounded-full border-4 border-current border-r-transparent" />
+    <main className="h-screen w-full overflow-hidden bg-[#f0f4f8]">
+      <div className="grid h-full w-full grid-cols-1 overflow-hidden lg:grid-cols-[260px_minmax(0,1fr)]">
+
+        {/* ── SIDEBAR ── */}
+        <aside
+          className="flex flex-col border-b border-white/10 px-5 py-6 lg:sticky lg:top-0 lg:h-full lg:border-b-0 lg:border-r lg:border-white/10"
+          style={{ background: "linear-gradient(160deg, #0d7a57 0%, #15a374 40%, #1ec28e 100%)" }}
+        >
+          <div className="flex items-center gap-3 px-2 pb-7">
+            <div className="grid h-10 w-10 place-items-center rounded-xl bg-white/15 text-white">
+              <BookOpen className="h-5 w-5" />
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-slate-900">LearnFlow</h1>
-              <p className="text-xs text-slate-500">Professional dashboard</p>
+              <h1 className="text-base font-bold tracking-wide text-white">LearnFlow</h1>
+              <p className="text-[11px] text-blue-200/70">Professional Dashboard</p>
             </div>
           </div>
 
-          <div className="rounded-2xl bg-[#eef5f3] p-4 shadow-[8px_8px_16px_#d0dbd6,-8px_-8px_16px_#ffffff]">
+          <div className="rounded-2xl bg-white/10 p-4 backdrop-blur-sm border border-white/10">
             <div className="flex items-center gap-3">
-              <Image src={avatarSrc} alt="Profile" width={44} height={44} className="h-11 w-11 rounded-full object-cover" />
+              <div className="relative">
+                <Image src={avatarSrc} alt="Profile" width={46} height={46} className="h-[46px] w-[46px] rounded-full object-cover ring-2 ring-white/40" />
+                <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-[#15a374] bg-white" />
+              </div>
               <div className="min-w-0">
-                <p className="truncate font-medium text-slate-900">{profileName || "Professional User"}</p>
-                <p className="truncate text-xs text-slate-500">@{(profileEmail || "professional").split("@")[0]}</p>
+                <p className="truncate text-sm font-semibold text-white">{profileName || "Professional User"}</p>
+                <p className="truncate text-[11px] text-blue-200/80">@{(profileEmail || "professional").split("@")[0]}</p>
               </div>
             </div>
           </div>
@@ -1297,23 +1102,23 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
           <nav className="mt-6 flex-1 space-y-1">
             {sidebarItems.map((item) => {
               const Icon = item.icon;
-              const isActive = item.section ? activeSection === item.section : false;
-
-              const sharedClassName = `flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-medium transition ${
-                isActive
-                  ? "bg-[#2d6a4f] text-white shadow-[8px_8px_16px_#d0dbd6,-8px_-8px_16px_#ffffff]"
-                  : "bg-[#eef5f3] text-[#2c5a48] shadow-[3px_3px_6px_#d0dbd6,-3px_-3px_6px_#ffffff] hover:shadow-inner"
+              const isActive = item.section
+                ? activeSection === item.section
+                : item.href
+                  ? (typeof window !== "undefined" && window.location.pathname === item.href)
+                  : false;
+              const sharedClassName = `flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-left text-sm font-medium transition-all ${
+                isActive ? "bg-white text-[#1ec28e] shadow-lg" : "text-blue-100/80 hover:bg-white/10 hover:text-white"
               }`;
-
               return (
                 item.href ? (
                   <Link key={item.label} href={item.href} className={sharedClassName}>
-                    <Icon className="h-4 w-4" />
+                    <Icon className="h-4 w-4 shrink-0" />
                     {item.label}
                   </Link>
                 ) : (
                   <button key={item.label} onClick={() => setActiveSection(item.section ?? "overview")} className={sharedClassName}>
-                    <Icon className="h-4 w-4" />
+                    <Icon className="h-4 w-4 shrink-0" />
                     {item.label}
                   </button>
                 )
@@ -1328,73 +1133,79 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
               }
               await signOut({ callbackUrl: "/" });
             }}
-            className="mt-6 flex items-center gap-3 rounded-xl bg-[#eef5f3] px-4 py-3 text-sm font-medium text-[#2c5a48] shadow-[3px_3px_6px_#d0dbd6,-3px_-3px_6px_#ffffff] transition hover:shadow-inner"
+            className="mt-4 flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-white/60 transition hover:bg-white/10 hover:text-white"
           >
-            <LogOut className="h-4 w-4" />
+            <LogOut className="h-4 w-4 shrink-0" />
             Log Out
           </button>
         </aside>
 
-    <section className="h-full overflow-y-auto bg-[#eef5f3] px-3 py-4 md:px-4 lg:px-5">
-      <div className="flex flex-col gap-4 rounded-[24px] bg-[#eef5f3] px-5 py-4 shadow-[12px_12px_24px_#d0dbd6,-12px_-12px_24px_#ffffff] md:flex-row md:items-center md:justify-between">
-            <div>
-              <h2 className="text-xl font-semibold text-slate-900">Welcome!</h2>
-              <p className="text-sm text-slate-500">Welcome back, it’s explore now!</p>
-            </div>
+        {/* ── MAIN CONTENT ── */}
+        <section className="h-full overflow-y-auto bg-[#f0f4f8] px-4 py-5 md:px-6 lg:px-7">
 
-            <div className="flex w-full max-w-3xl items-center gap-3 md:w-auto md:flex-1 md:justify-end">
-              <div className="flex h-12 flex-1 items-center gap-3 rounded-full border-none bg-[#f6fefb] px-4 shadow-[inset_4px_4px_12px_#d0dbd6,inset_-4px_-4px_12px_#ffffff] md:max-w-xl">
-                <Search className="h-4 w-4 text-slate-400" />
+          {/* Top bar */}
+          <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-slate-800">
+                Welcome back, {profileName?.split(" ")[0] || "Professional"} 👋
+              </h2>
+              <p className="text-sm text-slate-500">Here&apos;s what&apos;s happening with your profile today.</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 flex-1 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 shadow-sm md:w-64 md:flex-none">
+                <Search className="h-4 w-4 shrink-0 text-slate-400" />
                 <input
                   type="text"
-                  placeholder="Search here"
+                  placeholder="Search..."
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}
                   className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
                 />
               </div>
-
-              <button className="grid h-11 w-11 place-items-center rounded-full border-none bg-[#f6fefb] text-[#1ec28e] shadow-[3px_3px_8px_#d0dbd6,-3px_-3px_8px_#ffffff]">
-                <Bell className="h-4 w-4" />
-              </button>
+              <div className="relative">
+                <button
+                  onClick={handleBellClick}
+                  className="relative grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:text-[#1ec28e]"
+                >
+                  <Bell className="h-4 w-4" />
+                  {(notifFollows.length + notifPurchases.length + notifReviews.length) > 0 && (
+                    <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#1ec28e] text-[10px] font-bold text-white">
+                      {Math.min(99, notifFollows.length + notifPurchases.length + notifReviews.length)}
+                    </span>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 
+          {/* Search results */}
           {searchQuery.trim() ? (
             <div className="mt-6 rounded-[24px] bg-white p-6 shadow-sm">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div>
                   <h3 className="text-lg font-semibold text-slate-900">Search Results</h3>
                   <p className="text-sm text-slate-500">
-                    {searchResults.length} result{searchResults.length === 1 ? "" : "s"} found for “{searchQuery.trim()}”.
+                    {searchResults.length} result{searchResults.length === 1 ? "" : "s"} found for &quot;{searchQuery.trim()}&quot;.
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery("")}
-                  className="rounded-full bg-[#effaf6] px-4 py-2 text-xs font-semibold text-[#1ec28e] transition hover:bg-[#dff5eb]"
-                >
+                <button type="button" onClick={() => setSearchQuery("")}
+                  className="rounded-xl bg-[#effaf6] px-4 py-2 text-xs font-semibold text-[#1ec28e] transition hover:bg-[#d8f5ec]">
                   Clear Search
                 </button>
               </div>
-
               {searchResults.length === 0 ? (
-                <p className="rounded-2xl bg-[#f7faf8] px-4 py-3 text-sm text-slate-500">No matching results found.</p>
+                <p className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-500">No matching results found.</p>
               ) : (
                 <div className="space-y-3">
                   {searchResults.map((result) => (
-                    <button
-                      key={result.id}
-                      type="button"
-                      onClick={() => handleSearchResultClick(result)}
-                      className="w-full rounded-2xl border border-slate-100 bg-[#f7faf8] p-4 text-left transition hover:border-[#1ec28e]/40 hover:bg-[#f2fbf7]"
-                    >
+                    <button key={result.id} type="button" onClick={() => handleSearchResultClick(result)}
+                      className="w-full rounded-2xl border border-slate-100 bg-slate-50 p-4 text-left transition hover:border-blue-200 hover:bg-blue-50/50">
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <p className="text-sm font-semibold text-slate-900">{result.title}</p>
                           <p className="mt-1 text-xs text-slate-500">{result.description}</p>
                         </div>
-                        <span className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[#1ec28e]">
+                        <span className="rounded-lg bg-[#effaf6] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[#1ec28e]">
                           {result.section}
                         </span>
                       </div>
@@ -1403,1447 +1214,113 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                 </div>
               )}
             </div>
+
           ) : activeSection === "add" ? (
-            <div className="mt-6 space-y-6">
-              <div className="rounded-[24px] bg-white p-3 shadow-sm">
-                <div className="flex w-full max-w-sm items-center gap-2 rounded-2xl bg-[#f7faf8] p-1">
-                  <button
-                    type="button"
-                    onClick={() => setAddContentTab("books")}
-                    className={`flex-1 rounded-xl px-4 py-2 text-sm font-medium transition ${
-                      addContentTab === "books" ? "bg-[#1ec28e] text-white" : "text-slate-600 hover:bg-white"
-                    }`}
-                  >
-                    Books
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setAddContentTab("videos")}
-                    className={`flex-1 rounded-xl px-4 py-2 text-sm font-medium transition ${
-                      addContentTab === "videos" ? "bg-[#1ec28e] text-white" : "text-slate-600 hover:bg-white"
-                    }`}
-                  >
-                    Videos
-                  </button>
-                </div>
-              </div>
+            <AddSection
+              addContentTab={addContentTab} setAddContentTab={setAddContentTab}
+              isBookFormOpen={isBookFormOpen} setIsBookFormOpen={setIsBookFormOpen}
+              isVideoFormOpen={isVideoFormOpen} setIsVideoFormOpen={setIsVideoFormOpen}
+              addedBooks={addedBooks} addedVideos={addedVideos}
+              bookNameInput={bookNameInput} setBookNameInput={setBookNameInput}
+              bookMrpInput={bookMrpInput} setBookMrpInput={setBookMrpInput}
+              bookCategoryInput={bookCategoryInput} setBookCategoryInput={setBookCategoryInput}
+              bookImageFile={bookImageFile} setBookImageFile={setBookImageFile}
+              pendingBookFiles={pendingBookFiles} setPendingBookFiles={setPendingBookFiles}
+              bookImageLinkInput={bookImageLinkInput} setBookImageLinkInput={setBookImageLinkInput}
+              bookLinkInput={bookLinkInput} setBookLinkInput={setBookLinkInput}
+              bookFormError={bookFormError}
+              bookInstructorInput={bookInstructorInput} setBookInstructorInput={setBookInstructorInput}
+              bookModeInput={bookModeInput} setBookModeInput={setBookModeInput}
+              bookDescriptionInput={bookDescriptionInput} setBookDescriptionInput={setBookDescriptionInput}
+              bookTypeInput={bookTypeInput} setBookTypeInput={setBookTypeInput}
+              bookLevelInput={bookLevelInput} setBookLevelInput={setBookLevelInput}
+              bookCoursePackageInput={bookCoursePackageInput} setBookCoursePackageInput={setBookCoursePackageInput}
+              youtubeLinkInput={youtubeLinkInput} setYoutubeLinkInput={setYoutubeLinkInput}
+              youtubeLinkError={youtubeLinkError}
+              videoMrpInput={videoMrpInput} setVideoMrpInput={setVideoMrpInput}
+              pendingVideoFiles={pendingVideoFiles} setPendingVideoFiles={setPendingVideoFiles}
+              videoInstructorInput={videoInstructorInput} setVideoInstructorInput={setVideoInstructorInput}
+              videoModeInput={videoModeInput} setVideoModeInput={setVideoModeInput}
+              videoDescriptionInput={videoDescriptionInput} setVideoDescriptionInput={setVideoDescriptionInput}
+              videoTypeInput={videoTypeInput} setVideoTypeInput={setVideoTypeInput}
+              videoLevelInput={videoLevelInput} setVideoLevelInput={setVideoLevelInput}
+              videoCoursePackageInput={videoCoursePackageInput} setVideoCoursePackageInput={setVideoCoursePackageInput}
+              likedBookIds={likedBookIds} likedVideoIds={likedVideoIds}
+              userName={profileName}
+              handleBookSave={handleBookSave} handleVideoSave={handleVideoSave}
+              handleEditBook={handleEditBook} handleEditVideo={handleEditVideo}
+              handleDeleteBookWithConfirm={handleDeleteBookWithConfirm}
+              handleDeleteVideoWithConfirm={handleDeleteVideoWithConfirm}
+              handleToggleLikeBook={handleToggleLikeBook}
+              handleToggleLikeVideo={handleToggleLikeVideo}
+            />
 
-              {addContentTab === "books" ? (
-                <>
-                  <div className="rounded-[24px] bg-white p-6 shadow-sm">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <h3 className="text-lg font-semibold text-slate-900">Add Books</h3>
-                        <p className="text-sm text-slate-500">Click Add+ to open the book form.</p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setIsBookFormOpen((current) => !current)}
-                        className="inline-flex h-10 items-center justify-center rounded-xl bg-[#1ec28e] px-4 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
-                      >
-                        {isBookFormOpen ? "Close" : "Add+"}
-                      </button>
-                    </div>
-                  </div>
-
-                  {isBookFormOpen ? (
-                    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/35 p-4 backdrop-blur-sm">
-                      <div className="w-full max-w-xl rounded-[12px] bg-white shadow-2xl flex flex-col max-h-[90vh]">
-                        <div className="overflow-y-auto flex-1 p-6 space-y-5">
-                          {/* Course Title */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-800 mb-2">Course Title</label>
-                            <input
-                              type="text"
-                              value={bookNameInput}
-                              onChange={(event) => setBookNameInput(event.target.value)}
-                              placeholder=""
-                              className="w-full h-10 rounded border border-slate-300 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400"
-                            />
-                          </div>
-
-                          {/* Category and Instructor */}
-                          <div className="grid gap-4 md:grid-cols-2">
-                            <div>
-                              <label className="block text-sm font-medium text-slate-800 mb-2">Category</label>
-                              <select
-                                value={bookCategoryInput}
-                                onChange={(event) => setBookCategoryInput(event.target.value)}
-                                className="w-full h-10 rounded border border-slate-300 px-3 text-sm text-slate-600 outline-none transition focus:border-slate-400 appearance-none bg-white cursor-pointer"
-                                style={{backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem'}}
-                              >
-                                <option value="">Select</option>
-                                <option value="Technology">Technology</option>
-                                <option value="Business">Business</option>
-                                <option value="Design">Design</option>
-                                <option value="Education">Education</option>
-                              </select>
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium text-slate-800 mb-2">Instructor</label>
-                              <select
-                                value={bookInstructorInput}
-                                onChange={(event) => setBookInstructorInput(event.target.value)}
-                                className="w-full h-10 rounded border border-slate-300 px-3 text-sm text-slate-600 outline-none transition focus:border-slate-400 appearance-none bg-white cursor-pointer"
-                                style={{backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem'}}
-                              >
-                                <option value="">Select</option>
-                                <option value={user.name}>{user.name}</option>
-                              </select>
-                            </div>
-                          </div>
-
-                          {/* Type of mode */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-800 mb-3">Type of mode</label>
-                            <div className="flex gap-8">
-                              <label className="flex items-center gap-3 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="bookMode"
-                                  value="online"
-                                  checked={bookModeInput === "online"}
-                                  onChange={(event) => setBookModeInput(event.target.value as "online" | "offline")}
-                                  className="w-5 h-5"
-                                  style={{accentColor: '#5b61d9'}}
-                                />
-                                <span className="text-sm text-slate-700">Online</span>
-                              </label>
-                              <label className="flex items-center gap-3 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="bookMode"
-                                  value="offline"
-                                  checked={bookModeInput === "offline"}
-                                  onChange={(event) => setBookModeInput(event.target.value as "online" | "offline")}
-                                  className="w-5 h-5"
-                                  style={{accentColor: '#5b61d9'}}
-                                />
-                                <span className="text-sm text-slate-700">Offline</span>
-                              </label>
-                            </div>
-                          </div>
-
-                          {/* Description */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-900 mb-2">Description</label>
-                            <textarea
-                              value={bookDescriptionInput}
-                              onChange={(event) => setBookDescriptionInput(event.target.value)}
-                              placeholder="Enter course description"
-                              rows={3}
-                              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                            />
-                          </div>
-
-                          {/* Course Type */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-800 mb-3">Course Type</label>
-                            <div className="flex gap-8">
-                              <label className="flex items-center gap-3 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="bookType"
-                                  value="free"
-                                  checked={bookTypeInput === "free"}
-                                  onChange={(event) => setBookTypeInput(event.target.value as "free" | "paid")}
-                                  className="w-5 h-5"
-                                  style={{accentColor: '#5b61d9'}}
-                                />
-                                <span className="text-sm text-slate-700">Free</span>
-                              </label>
-                              <label className="flex items-center gap-3 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="bookType"
-                                  value="paid"
-                                  checked={bookTypeInput === "paid"}
-                                  onChange={(event) => setBookTypeInput(event.target.value as "free" | "paid")}
-                                  className="w-5 h-5"
-                                  style={{accentColor: '#5b61d9'}}
-                                />
-                                <span className="text-sm text-slate-700">Paid</span>
-                              </label>
-                            </div>
-                          </div>
-
-                          {/* Upload Course Images */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-900 mb-2">Upload Course Images</label>
-                            <label className="flex min-h-28 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-[#f7faf8] transition hover:border-[#1ec28e]">
-                              {bookImageFile ? (
-                                <img src={URL.createObjectURL(bookImageFile)} alt="preview" className="h-24 w-24 object-cover rounded" />
-                              ) : (
-                                <div className="flex flex-col items-center gap-2">
-                                  <svg className="h-8 w-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                  </svg>
-                                  <span className="text-sm text-slate-600">Drag or click to upload</span>
-                                </div>
-                              )}
-                              <input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={(event) => setBookImageFile(event.target.files?.[0] ?? null)}
-                              />
-                            </label>
-                          </div>
-
-                          {/* Upload Video URL */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-900 mb-2">Upload Video URL</label>
-                            <input
-                              type="url"
-                              value={bookLinkInput}
-                              onChange={(event) => setBookLinkInput(event.target.value)}
-                              placeholder="https://videos.com"
-                              className="w-full h-10 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                            />
-                          </div>
-
-                          {/* Level and Price */}
-                          <div className="grid gap-4 md:grid-cols-2">
-                            <div>
-                              <label className="block text-sm font-medium text-slate-900 mb-2">Level</label>
-                              <select
-                                value={bookLevelInput}
-                                onChange={(event) => setBookLevelInput(event.target.value)}
-                                className="w-full h-10 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                              >
-                                <option value="">Select</option>
-                                <option value="Beginner">Beginner</option>
-                                <option value="Intermediate">Intermediate</option>
-                                <option value="Advanced">Advanced</option>
-                              </select>
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium text-slate-900 mb-2">Price</label>
-                              <div className="relative h-10 rounded-lg border border-slate-200 focus-within:border-[#1ec28e]">
-                                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-500">$</span>
-                                <input
-                                  type="number"
-                                  min="0"
-                                  step="0.01"
-                                  value={bookMrpInput}
-                                  onChange={(event) => setBookMrpInput(event.target.value)}
-                                  placeholder="0.00"
-                                  className="h-10 w-full rounded-lg border-0 bg-transparent pl-8 pr-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400"
-                                />
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Course Post Package */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-900 mb-2">Course Post Package</label>
-                            <div className="grid gap-3 md:grid-cols-2">
-                              <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="bookPackage"
-                                  value="30days"
-                                  checked={bookCoursePackageInput === "30days"}
-                                  onChange={(event) => setBookCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
-                                  className="w-4 h-4 accent-[#1ec28e]"
-                                />
-                                <span className="text-sm text-slate-700">30 Days Free</span>
-                              </label>
-                              <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="bookPackage"
-                                  value="60days"
-                                  checked={bookCoursePackageInput === "60days"}
-                                  onChange={(event) => setBookCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
-                                  className="w-4 h-4 accent-[#1ec28e]"
-                                />
-                                <span className="text-sm text-slate-700">60 days / $20</span>
-                              </label>
-                              <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="bookPackage"
-                                  value="6months"
-                                  checked={bookCoursePackageInput === "6months"}
-                                  onChange={(event) => setBookCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
-                                  className="w-4 h-4 accent-[#1ec28e]"
-                                />
-                                <span className="text-sm text-slate-700">6 months / $50</span>
-                              </label>
-                              <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="bookPackage"
-                                  value="1year"
-                                  checked={bookCoursePackageInput === "1year"}
-                                  onChange={(event) => setBookCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
-                                  className="w-4 h-4 accent-[#1ec28e]"
-                                />
-                                <span className="text-sm text-slate-700">1 year / $80</span>
-                              </label>
-                            </div>
-                          </div>
-
-                          {/* Course Files Upload */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-900 mb-2">Upload Course Files</label>
-                            <label className="flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-lg border border-dashed border-slate-300 bg-[#f7faf8] px-4 text-sm text-slate-600 transition hover:border-[#1ec28e] hover:bg-[#f0f7f5]">
-                              <span>{pendingBookFiles.length > 0 ? `${pendingBookFiles.length} file(s) selected` : "Choose course files to upload"}</span>
-                              <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-medium text-[#1ec28e]">Browse</span>
-                              <input
-                                type="file"
-                                multiple
-                                accept=".pdf,.doc,.docx,.ppt,.pptx,.txt"
-                                className="hidden"
-                                onChange={(event) => setPendingBookFiles(Array.from(event.target.files ?? []))}
-                              />
-                            </label>
-                          </div>
-
-                          {bookFormError && (
-                            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-700">{bookFormError}</div>
-                          )}
-                        </div>
-                        <div className="border-t border-slate-200 bg-white p-6 flex gap-3 justify-between">
-                          <button
-                            type="button"
-                            onClick={() => setIsBookFormOpen(false)}
-                            className="inline-flex h-11 items-center justify-center rounded px-6 text-sm font-medium text-white transition"
-                            style={{backgroundColor: '#ef5350'}}
-                          >
-                            Save to Draft
-                          </button>
-                          <button
-                            type="button"
-                            onClick={handleBookSave}
-                            className="inline-flex h-11 items-center justify-center rounded px-6 text-sm font-medium text-white transition"
-                            style={{backgroundColor: '#6366f1'}}
-                          >
-                            Publish Now
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ) : null}
-
-                  <div className="rounded-[24px] bg-white p-6 shadow-sm">
-                    <div className="mb-6 flex items-center justify-between gap-3">
-                      <h4 className="text-base font-semibold text-slate-900">Uploaded Books</h4>
-                      <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-semibold text-[#1ec28e]">
-                        {addedBooks.length}
-                      </span>
-                    </div>
-
-                    {addedBooks.length === 0 ? (
-                      <p className="rounded-2xl bg-[#f7faf8] px-4 py-3 text-sm text-slate-500">No books uploaded yet.</p>
-                    ) : (
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm">
-                          <thead>
-                            <tr className="border-b border-slate-200">
-                              <th className="px-4 py-3 font-semibold text-slate-900">COURSES</th>
-                              <th className="px-4 py-3 font-semibold text-slate-900">CATEGORY</th>
-                              <th className="px-4 py-3 font-semibold text-slate-900">FEES</th>
-                              <th className="px-4 py-3 font-semibold text-slate-900">STATUS</th>
-                              <th className="px-4 py-3 font-semibold text-slate-900">ACTION</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {addedBooks.map((book) => (
-                              <tr key={book.id} className="border-b border-slate-100 hover:bg-slate-50 transition">
-                                <td className="px-4 py-4">
-                                  <div className="flex items-center gap-3">
-                                    <img src={book.imageUrl} alt={book.name} className="h-12 w-12 rounded-lg object-cover" />
-                                    <div className="min-w-0">
-                                      <p className="truncate font-medium text-slate-900">{book.name}</p>
-                                      <p className="text-xs text-slate-500">{book.sizeLabel}</p>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td className="px-4 py-4 text-slate-600">{book.category}</td>
-                                <td className="px-4 py-4 font-semibold text-slate-900">₹{book.mrp}</td>
-                                <td className="px-4 py-4">
-                                  <span className="inline-flex rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700">
-                                    Published
-                                  </span>
-                                </td>
-                                <td className="px-4 py-4">
-                                  <div className="flex items-center gap-2">
-                                    <button 
-                                      type="button"
-                                      onClick={() => handleEditBook(book)}
-                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
-                                      title="Edit book"
-                                    >
-                                      <Edit2 className="h-4 w-4 text-slate-600" />
-                                    </button>
-                                    <button 
-                                      type="button"
-                                      onClick={() => handleDeleteBookWithConfirm(book.id)}
-                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
-                                      title="Delete book"
-                                    >
-                                      <Trash2 className="h-4 w-4 text-slate-600" />
-                                    </button>
-                                    <button 
-                                      type="button"
-                                      onClick={() => handleToggleLikeBook(book.id)}
-                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
-                                      title={likedBookIds.has(book.id) ? "Unlike book" : "Like book"}
-                                    >
-                                      <Heart className={`h-4 w-4 ${likedBookIds.has(book.id) ? 'fill-red-500 text-red-500' : 'text-slate-600'}`} />
-                                    </button>
-                                    <Link
-                                      href={`/dashboard/teachers/books/${book.id}`}
-                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
-                                      title="View book"
-                                    >
-                                      <Eye className="h-4 w-4 text-slate-600" />
-                                    </Link>
-                                  </div>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="rounded-[24px] bg-white p-6 shadow-sm">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <h3 className="text-lg font-semibold text-slate-900">Add Videos</h3>
-                        <p className="text-sm text-slate-500">Click Add+ to open the video form.</p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setIsVideoFormOpen((current) => !current)}
-                        className="inline-flex h-10 items-center justify-center rounded-xl bg-[#1ec28e] px-4 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
-                      >
-                        {isVideoFormOpen ? "Close" : "Add+"}
-                      </button>
-                    </div>
-                  </div>
-
-                  {isVideoFormOpen ? (
-                    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/35 p-4 backdrop-blur-sm">
-                      <div className="w-full max-w-xl rounded-[12px] bg-white shadow-2xl flex flex-col max-h-[90vh]">
-                        <div className="overflow-y-auto flex-1 p-6 space-y-5">
-                          {/* Course Title */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-800 mb-2">Course Title</label>
-                            <input
-                              type="text"
-                              value={bookNameInput}
-                              onChange={(event) => setBookNameInput(event.target.value)}
-                              placeholder=""
-                              className="w-full h-10 rounded border border-slate-300 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400"
-                            />
-                          </div>
-
-                          {/* Category and Instructor */}
-                          <div className="grid gap-4 md:grid-cols-2">
-                            <div>
-                              <label className="block text-sm font-medium text-slate-800 mb-2">Category</label>
-                              <select
-                                value={bookCategoryInput}
-                                onChange={(event) => setBookCategoryInput(event.target.value)}
-                                className="w-full h-10 rounded border border-slate-300 px-3 text-sm text-slate-600 outline-none transition focus:border-slate-400 appearance-none bg-white cursor-pointer"
-                                style={{backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem'}}
-                              >
-                                <option value="">Select</option>
-                                <option value="Technology">Technology</option>
-                                <option value="Business">Business</option>
-                                <option value="Design">Design</option>
-                                <option value="Education">Education</option>
-                              </select>
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium text-slate-800 mb-2">Instructor</label>
-                              <select
-                                value={videoInstructorInput}
-                                onChange={(event) => setVideoInstructorInput(event.target.value)}
-                                className="w-full h-10 rounded border border-slate-300 px-3 text-sm text-slate-600 outline-none transition focus:border-slate-400 appearance-none bg-white cursor-pointer"
-                                style={{backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem'}}
-                              >
-                                <option value="">Select</option>
-                                <option value={user.name}>{user.name}</option>
-                              </select>
-                            </div>
-                          </div>
-
-                          {/* Type of mode */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-800 mb-3">Type of mode</label>
-                            <div className="flex gap-8">
-                              <label className="flex items-center gap-3 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="videoMode"
-                                  value="online"
-                                  checked={videoModeInput === "online"}
-                                  onChange={(event) => setVideoModeInput(event.target.value as "online" | "offline")}
-                                  className="w-5 h-5"
-                                  style={{accentColor: '#5b61d9'}}
-                                />
-                                <span className="text-sm text-slate-700">Online</span>
-                              </label>
-                              <label className="flex items-center gap-3 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="videoMode"
-                                  value="offline"
-                                  checked={videoModeInput === "offline"}
-                                  onChange={(event) => setVideoModeInput(event.target.value as "online" | "offline")}
-                                  className="w-5 h-5"
-                                  style={{accentColor: '#5b61d9'}}
-                                />
-                                <span className="text-sm text-slate-700">Offline</span>
-                              </label>
-                            </div>
-                          </div>
-
-                          {/* Description */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-900 mb-2">Description</label>
-                            <textarea
-                              value={videoDescriptionInput}
-                              onChange={(event) => setVideoDescriptionInput(event.target.value)}
-                              placeholder="Enter course description"
-                              rows={3}
-                              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                            />
-                          </div>
-
-                          {/* Course Type */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-800 mb-3">Course Type</label>
-                            <div className="flex gap-8">
-                              <label className="flex items-center gap-3 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="videoType"
-                                  value="free"
-                                  checked={videoTypeInput === "free"}
-                                  onChange={(event) => setVideoTypeInput(event.target.value as "free" | "paid")}
-                                  className="w-5 h-5"
-                                  style={{accentColor: '#5b61d9'}}
-                                />
-                                <span className="text-sm text-slate-700">Free</span>
-                              </label>
-                              <label className="flex items-center gap-3 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="videoType"
-                                  value="paid"
-                                  checked={videoTypeInput === "paid"}
-                                  onChange={(event) => setVideoTypeInput(event.target.value as "free" | "paid")}
-                                  className="w-5 h-5"
-                                  style={{accentColor: '#5b61d9'}}
-                                />
-                                <span className="text-sm text-slate-700">Paid</span>
-                              </label>
-                            </div>
-                          </div>
-
-                          {/* Video URL */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-900 mb-2">Upload Video URL</label>
-                            <input
-                              type="url"
-                              value={youtubeLinkInput}
-                              onChange={(event) => setYoutubeLinkInput(event.target.value)}
-                              placeholder="https://videos.com"
-                              className="w-full h-10 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                            />
-                          </div>
-
-                          {/* Level and Price */}
-                          <div className="grid gap-4 md:grid-cols-2">
-                            <div>
-                              <label className="block text-sm font-medium text-slate-900 mb-2">Level</label>
-                              <select
-                                value={videoLevelInput}
-                                onChange={(event) => setVideoLevelInput(event.target.value)}
-                                className="w-full h-10 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                              >
-                                <option value="">Select</option>
-                                <option value="Beginner">Beginner</option>
-                                <option value="Intermediate">Intermediate</option>
-                                <option value="Advanced">Advanced</option>
-                              </select>
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium text-slate-900 mb-2">Price</label>
-                              <div className="relative h-10 rounded-lg border border-slate-200 focus-within:border-[#1ec28e]">
-                                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-500">$</span>
-                                <input
-                                  type="number"
-                                  min="0"
-                                  step="0.01"
-                                  value={videoMrpInput}
-                                  onChange={(event) => setVideoMrpInput(event.target.value)}
-                                  placeholder="0.00"
-                                  className="h-10 w-full rounded-lg border-0 bg-transparent pl-8 pr-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400"
-                                />
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Course Post Package */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-900 mb-2">Course Post Package</label>
-                            <div className="grid gap-3 md:grid-cols-2">
-                              <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="videoPackage"
-                                  value="30days"
-                                  checked={videoCoursePackageInput === "30days"}
-                                  onChange={(event) => setVideoCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
-                                  className="w-4 h-4 accent-[#1ec28e]"
-                                />
-                                <span className="text-sm text-slate-700">30 Days Free</span>
-                              </label>
-                              <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="videoPackage"
-                                  value="60days"
-                                  checked={videoCoursePackageInput === "60days"}
-                                  onChange={(event) => setVideoCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
-                                  className="w-4 h-4 accent-[#1ec28e]"
-                                />
-                                <span className="text-sm text-slate-700">60 days / $20</span>
-                              </label>
-                              <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="videoPackage"
-                                  value="6months"
-                                  checked={videoCoursePackageInput === "6months"}
-                                  onChange={(event) => setVideoCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
-                                  className="w-4 h-4 accent-[#1ec28e]"
-                                />
-                                <span className="text-sm text-slate-700">6 months / $50</span>
-                              </label>
-                              <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="videoPackage"
-                                  value="1year"
-                                  checked={videoCoursePackageInput === "1year"}
-                                  onChange={(event) => setVideoCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
-                                  className="w-4 h-4 accent-[#1ec28e]"
-                                />
-                                <span className="text-sm text-slate-700">1 year / $80</span>
-                              </label>
-                            </div>
-                          </div>
-
-                          {/* Upload Video Files */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-900 mb-2">Upload Video Files</label>
-                            <label className="flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-lg border border-dashed border-slate-300 bg-[#f7faf8] px-4 text-sm text-slate-600 transition hover:border-[#1ec28e] hover:bg-[#f0f7f5]">
-                              <span>{pendingVideoFiles.length > 0 ? `${pendingVideoFiles.length} file(s) selected` : "Choose video files to upload"}</span>
-                              <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-medium text-[#1ec28e]">Browse</span>
-                              <input
-                                type="file"
-                                multiple
-                                accept="video/*"
-                                className="hidden"
-                                onChange={(event) => setPendingVideoFiles(Array.from(event.target.files ?? []))}
-                              />
-                            </label>
-                          </div>
-
-                          {youtubeLinkError && (
-                            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-700">{youtubeLinkError}</div>
-                          )}
-                        </div>
-                        <div className="border-t border-slate-200 bg-white p-6 flex gap-3 justify-between">
-                          <button
-                            type="button"
-                            onClick={() => setIsVideoFormOpen(false)}
-                            className="inline-flex h-11 items-center justify-center rounded px-6 text-sm font-medium text-white transition"
-                            style={{backgroundColor: '#ef5350'}}
-                          >
-                            Save to Draft
-                          </button>
-                          <button
-                            type="button"
-                            onClick={handleVideoSave}
-                            className="inline-flex h-11 items-center justify-center rounded px-6 text-sm font-medium text-white transition"
-                            style={{backgroundColor: '#6366f1'}}
-                          >
-                            Publish Now
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ) : null}
-
-                  <div className="rounded-[24px] bg-white p-6 shadow-sm">
-                    <div className="mb-6 flex items-center justify-between gap-3">
-                      <h4 className="text-base font-semibold text-slate-900">Uploaded Videos</h4>
-                      <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-semibold text-[#1ec28e]">
-                        {addedVideos.length}
-                      </span>
-                    </div>
-
-                    {addedVideos.length === 0 ? (
-                      <p className="rounded-2xl bg-[#f7faf8] px-4 py-3 text-sm text-slate-500">No videos uploaded yet.</p>
-                    ) : (
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm">
-                          <thead>
-                            <tr className="border-b border-slate-200">
-                              <th className="px-4 py-3 font-semibold text-slate-900">COURSES</th>
-                              <th className="px-4 py-3 font-semibold text-slate-900">CATEGORY</th>
-                              <th className="px-4 py-3 font-semibold text-slate-900">FEES</th>
-                              <th className="px-4 py-3 font-semibold text-slate-900">STATUS</th>
-                              <th className="px-4 py-3 font-semibold text-slate-900">ACTION</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {addedVideos.map((video) => (
-                              <tr key={video.id} className="border-b border-slate-100 hover:bg-slate-50 transition">
-                                <td className="px-4 py-4">
-                                  <div className="flex items-center gap-3">
-                                    <div className="h-12 w-12 rounded-lg bg-black overflow-hidden flex-shrink-0">
-                                      {video.source === "youtube" ? (
-                                        <img src={`https://img.youtube.com/vi/${video.url.split('embed/')[1]?.split('"')[0] || 'dQw4w9WgXcQ'}/default.jpg`} alt={video.name} className="h-full w-full object-cover" />
-                                      ) : (
-                                        <div className="h-full w-full bg-slate-800 flex items-center justify-center">
-                                          <Play className="h-6 w-6 text-white" />
-                                        </div>
-                                      )}
-                                    </div>
-                                    <div className="min-w-0">
-                                      <p className="truncate font-medium text-slate-900">{video.name}</p>
-                                      <p className="text-xs text-slate-500">{video.sizeLabel}</p>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td className="px-4 py-4 text-slate-600">{video.category || "Uncategorized"}</td>
-                                <td className="px-4 py-4 font-semibold text-slate-900">₹{video.mrp || "0.00"}</td>
-                                <td className="px-4 py-4">
-                                  <span className="inline-flex rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700">
-                                    Published
-                                  </span>
-                                </td>
-                                <td className="px-4 py-4">
-                                  <div className="flex items-center gap-2">
-                                    <button 
-                                      type="button"
-                                      onClick={() => handleEditVideo(video)}
-                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
-                                      title="Edit video"
-                                    >
-                                      <Edit2 className="h-4 w-4 text-slate-600" />
-                                    </button>
-                                    <button 
-                                      type="button"
-                                      onClick={() => handleDeleteVideoWithConfirm(video.id)}
-                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
-                                      title="Delete video"
-                                    >
-                                      <Trash2 className="h-4 w-4 text-slate-600" />
-                                    </button>
-                                    <button 
-                                      type="button"
-                                      onClick={() => handleToggleLikeVideo(video.id)}
-                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
-                                      title={likedVideoIds.has(video.id) ? "Unlike video" : "Like video"}
-                                    >
-                                      <Heart className={`h-4 w-4 ${likedVideoIds.has(video.id) ? 'fill-red-500 text-red-500' : 'text-slate-600'}`} />
-                                    </button>
-                                    <Link
-                                      href={`/dashboard/teachers/videos/${video.id}`}
-                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
-                                      title="View video"
-                                    >
-                                      <Eye className="h-4 w-4 text-slate-600" />
-                                    </Link>
-                                  </div>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
           ) : activeSection === "upgrade" ? (
-            <div className="mt-6 space-y-6">
-              <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-                <form onSubmit={handleUpgradeSubmit} className="rounded-[24px] bg-white p-6 shadow-sm">
-                <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900">Upgrade Profile</h3>
-                    <p className="text-sm text-slate-500">Pay with Razorpay to rank higher than other professionals.</p>
-                  </div>
-                  <CreditCard className="h-5 w-5 text-[#1ec28e]" />
-                </div>
+            <UpgradeSection
+              upgradePlan={upgradePlan} setUpgradePlan={setUpgradePlan}
+              profileBoostedUntil={profileBoostedUntil}
+              hasOpenedRazorpay={hasOpenedRazorpay} setHasOpenedRazorpay={setHasOpenedRazorpay}
+              processingUpgrade={processingUpgrade}
+              profileError={profileError} profileMessage={profileMessage}
+              handleUpgradeSubmit={handleUpgradeSubmit}
+              handleOpenRazorpay={handleOpenRazorpay}
+              setActiveSection={setActiveSection}
+            />
 
-                <div className="mt-6 rounded-2xl bg-[#f7faf8] p-4">
-                  <p className="text-sm font-semibold text-slate-900">Selected plan</p>
-                  <div className="mt-3 flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3">
-                    <div>
-                      <p className="text-base font-semibold text-slate-900">
-                        {upgradePlans.find((plan) => plan.key === upgradePlan)?.name}
-                      </p>
-                      <p className="text-sm text-slate-500">
-                        {upgradePlans.find((plan) => plan.key === upgradePlan)?.duration}
-                      </p>
-                    </div>
-                    <p className="text-lg font-semibold text-[#1ec28e]">
-                      {upgradePlans.find((plan) => plan.key === upgradePlan)?.price}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-6 grid gap-4 md:grid-cols-2">
-                  <label className="space-y-2 text-sm font-medium text-slate-700">
-                    Cardholder name
-                    <input
-                      type="text"
-                      placeholder="Name on card"
-                      className="h-12 w-full rounded-full border border-slate-200 px-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
-                    />
-                  </label>
-                </div>
-
-                <div className="mt-4 grid gap-4 md:grid-cols-3">
-                  <input
-                    type="text"
-                    placeholder="Card number"
-                    className="h-12 w-full rounded-full border border-slate-200 px-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
-                  />
-                  <input
-                    type="text"
-                    placeholder="MM/YY"
-                    className="h-12 w-full rounded-full border border-slate-200 px-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
-                  />
-                  <input
-                    type="text"
-                    placeholder="CVC"
-                    className="h-12 w-full rounded-full border border-slate-200 px-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
-                  />
-                </div>
-
-                <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="text-sm font-semibold text-slate-900">Razorpay payment</p>
-                  <p className="mt-1 text-xs text-slate-500">Open payment link, complete payment, then confirm below.</p>
-                  <div className="mt-3 flex flex-wrap items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={handleOpenRazorpay}
-                      className="inline-flex h-10 items-center rounded-full bg-[#1ec28e] px-4 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
-                    >
-                      Pay Now
-                    </button>
-                    <a
-                      href={RAZORPAY_PAYMENT_LINK}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs font-medium text-slate-500 underline-offset-2 hover:text-slate-700 hover:underline"
-                    >
-                      {RAZORPAY_PAYMENT_LINK}
-                    </a>
-                  </div>
-                </div>
-
-                <div className="mt-6 rounded-2xl bg-[#f7faf8] p-4 text-sm text-slate-600">
-                  <p className="font-semibold text-slate-900">What you get</p>
-                  <ul className="mt-3 space-y-2">
-                    <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-[#1ec28e]" />Higher ranking in professional listings</li>
-                    <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-[#1ec28e]" />Boost badge on your profile</li>
-                    <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-[#1ec28e]" />Priority visibility for clients</li>
-                  </ul>
-                </div>
-
-                {profileError && (
-                  <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{profileError}</div>
-                )}
-
-                {profileMessage && (
-                  <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-                    {profileMessage}
-                  </div>
-                )}
-
-                <div className="mt-6 flex items-center gap-3">
-                  <button
-                    type="submit"
-                    disabled={processingUpgrade}
-                    className="inline-flex h-12 items-center gap-2 rounded-full border border-[#1ec28e] bg-white px-5 text-sm font-medium text-[#1ec28e] transition hover:bg-[#effaf6] disabled:cursor-not-allowed disabled:opacity-70"
-                  >
-                    <CreditCard className="h-4 w-4" />
-                    {processingUpgrade ? "Confirming..." : "Confirm Payment"}
-                  </button>
-                  <span className="text-xs text-slate-500">{hasOpenedRazorpay ? "Payment link opened. After payment, click Confirm Payment." : "Open Razorpay link first."}</span>
-                </div>
-              </form>
-
-              <aside className="rounded-[24px] bg-white p-6 shadow-sm">
-                <h4 className="text-base font-semibold text-slate-900">Upgrade summary</h4>
-                <p className="mt-2 text-sm text-slate-500">Your profile is currently visible as a standard professional profile.</p>
-
-                <div className="mt-5 grid gap-3">
-                  {upgradePlans.map((plan) => {
-                    const isSelected = upgradePlan === plan.key;
-
-                    return (
-                      <button
-                        key={plan.key}
-                        type="button"
-                        onClick={() => {
-                          setUpgradePlan(plan.key);
-                          setHasOpenedRazorpay(false);
-                        }}
-                        className={`rounded-2xl border p-4 text-left transition ${
-                          isSelected
-                            ? "border-[#1ec28e] bg-[#effaf6]"
-                            : "border-slate-200 bg-white hover:border-[#1ec28e]/40 hover:bg-slate-50"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between gap-3">
-                          <div>
-                            <p className="text-base font-semibold text-slate-900">{plan.name}</p>
-                            <p className="text-sm text-slate-500">{plan.duration}</p>
-                          </div>
-                          <p className="text-lg font-semibold text-[#1ec28e]">{plan.price}</p>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <div className="mt-5 rounded-2xl border border-slate-100 bg-[#f7faf8] p-4">
-                  <p className="text-sm font-semibold text-slate-900">Boost status</p>
-                  <p className="mt-2 text-sm text-slate-600">
-                    {profileBoostedUntil ? `Active until ${new Date(profileBoostedUntil).toLocaleDateString()}` : "Not upgraded yet"}
-                  </p>
-                </div>
-
-                <div className="mt-4 rounded-2xl bg-[#effaf6] p-4 text-sm text-slate-600">
-                  <p className="font-semibold text-slate-900">Ranking benefit</p>
-                  <p className="mt-2">Upgraded profiles appear higher than standard professionals in search and discovery lists.</p>
-                </div>
-                </aside>
-              </div>
-
-              {profileBoostedUntil ? (
-                <div className="rounded-[24px] bg-white p-6 shadow-sm">
-                  <h4 className="text-base font-semibold text-slate-900">Upgrade timeline</h4>
-                  <p className="mt-1 text-sm text-slate-500">Live remaining duration for your active profile boost.</p>
-                  <UpgradeTimeline boostedUntil={profileBoostedUntil} />
-                </div>
-              ) : null}
-              </div>
           ) : activeSection === "settings" ? (
-            <div className="mt-6 grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
-              <div className="rounded-[24px] bg-white p-6 shadow-sm">
-                <div className="flex items-center gap-4">
-                  <Image
-                    src={avatarSrc}
-                    alt="Profile preview"
-                    width={96}
-                    height={96}
-                    className="h-24 w-24 rounded-3xl border border-slate-100 object-cover"
-                  />
-                  <div>
-                    <p className="text-sm font-medium text-slate-500">Profile Photo</p>
-                    <p className="mt-1 text-base font-semibold text-slate-900">Update your public image</p>
-                    <label className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#1ec28e] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#18ab7d]">
-                      <Upload className="h-4 w-4" />
-                      Choose photo
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(event) => setPhotoFile(event.target.files?.[0] ?? null)}
-                      />
-                    </label>
-                  </div>
-                </div>
+            <SettingsSection
+              avatarSrc={avatarSrc}
+              profileFirstName={profileFirstName} setProfileFirstName={setProfileFirstName}
+              profileLastName={profileLastName} setProfileLastName={setProfileLastName}
+              profileEmail={profileEmail} setProfileEmail={setProfileEmail}
+              profileContactNumber={profileContactNumber} setProfileContactNumber={setProfileContactNumber}
+              profileAddress={profileAddress} setProfileAddress={setProfileAddress}
+              profileCity={profileCity} setProfileCity={setProfileCity}
+              profilePostalCode={profilePostalCode} setProfilePostalCode={setProfilePostalCode}
+              profileCountry={profileCountry} setProfileCountry={setProfileCountry}
+              profileFacebook={profileFacebook} setProfileFacebook={setProfileFacebook}
+              profileGoogle={profileGoogle} setProfileGoogle={setProfileGoogle}
+              profileTwitter={profileTwitter} setProfileTwitter={setProfileTwitter}
+              profilePinterest={profilePinterest} setProfilePinterest={setProfilePinterest}
+              profileAboutMe={profileAboutMe} setProfileAboutMe={setProfileAboutMe}
+              profileSpecialization={profileSpecialization} setProfileSpecialization={setProfileSpecialization}
+              profileLocation={profileLocation} setProfileLocation={setProfileLocation}
+              certificateList={certificateList}
+              certificateUploads={certificateUploads} setCertificateUploads={setCertificateUploads}
+              setPhotoFile={setPhotoFile}
+              savingProfile={savingProfile}
+              profileError={profileError} profileMessage={profileMessage}
+              handleProfileSave={handleProfileSave}
+            />
 
-                <div className="mt-6 rounded-2xl bg-[#f7faf8] p-4 text-sm text-slate-600">
-                  <p className="font-semibold text-slate-900">Certificates</p>
-                  <p className="mt-1">Upload certificates, awards, or proof documents.</p>
-                </div>
-
-                <label className="mt-4 block space-y-2 text-sm font-medium text-slate-700">
-                  Add certificates
-                  <div className="flex min-h-14 items-center gap-3 rounded-full border border-dashed border-slate-300 px-4 text-sm text-slate-500">
-                    <Upload className="h-4 w-4 text-slate-400" />
-                    <span>{certificateUploads.length > 0 ? `${certificateUploads.length} file(s) selected` : "Choose one or more files"}</span>
-                  </div>
-                  <input
-                    type="file"
-                    multiple
-                    accept=".pdf,.png,.jpg,.jpeg,.webp"
-                    className="hidden"
-                    onChange={(event) => setCertificateUploads(Array.from(event.target.files ?? []))}
-                  />
-                </label>
-
-                {certificateList.length > 0 && (
-                  <div className="mt-4 rounded-2xl border border-slate-100 bg-white p-4">
-                    <p className="text-sm font-semibold text-slate-900">Saved certificates</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {certificateList.map((certificate) => (
-                        <a
-                          key={certificate}
-                          href={certificate}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="rounded-full bg-[#f7faf8] px-3 py-1 text-xs text-slate-600 transition hover:bg-[#eaf7f1] hover:text-[#1ec28e]"
-                        >
-                          {certificate.split("/").pop()}
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <form onSubmit={handleProfileSave} className="rounded-[24px] bg-white p-6 shadow-sm">
-                <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900">Edit Profile</h3>
-                    <p className="text-sm text-slate-500">Update your profile information and details.</p>
-                  </div>
-                  <Settings className="h-5 w-5 text-[#1ec28e]" />
-                </div>
-
-                {/* First Name + Last Name */}
-                <div className="mt-6 grid gap-4 md:grid-cols-2">
-                  <label className="space-y-2 text-sm font-medium text-slate-700">
-                    First Name
-                    <input
-                      type="text"
-                      value={profileFirstName}
-                      onChange={(event) => setProfileFirstName(event.target.value)}
-                      placeholder="Enter first name"
-                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                    />
-                  </label>
-
-                  <label className="space-y-2 text-sm font-medium text-slate-700">
-                    Last Name
-                    <input
-                      type="text"
-                      value={profileLastName}
-                      onChange={(event) => setProfileLastName(event.target.value)}
-                      placeholder="Enter last name"
-                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                    />
-                  </label>
-                </div>
-
-                {/* Email + Phone */}
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  <label className="space-y-2 text-sm font-medium text-slate-700">
-                    Email Address
-                    <input
-                      type="email"
-                      value={profileEmail}
-                      onChange={(event) => setProfileEmail(event.target.value)}
-                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                    />
-                  </label>
-
-                  <label className="space-y-2 text-sm font-medium text-slate-700">
-                    Phone Number
-                    <input
-                      type="tel"
-                      value={profileContactNumber}
-                      onChange={(event) => setProfileContactNumber(event.target.value)}
-                      placeholder="e.g. +91 98765 43210"
-                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                    />
-                  </label>
-                </div>
-
-                {/* Address */}
-                <div className="mt-4">
-                  <label className="space-y-2 text-sm font-medium text-slate-700">
-                    Address
-                    <input
-                      type="text"
-                      value={profileAddress}
-                      onChange={(event) => setProfileAddress(event.target.value)}
-                      placeholder="Enter your address"
-                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                    />
-                  </label>
-                </div>
-
-                {/* City + Postal Code + Country */}
-                <div className="mt-4 grid gap-4 md:grid-cols-3">
-                  <label className="space-y-2 text-sm font-medium text-slate-700">
-                    City
-                    <input
-                      type="text"
-                      value={profileCity}
-                      onChange={(event) => setProfileCity(event.target.value)}
-                      placeholder="Enter city"
-                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                    />
-                  </label>
-
-                  <label className="space-y-2 text-sm font-medium text-slate-700">
-                    Postal Code
-                    <input
-                      type="text"
-                      value={profilePostalCode}
-                      onChange={(event) => setProfilePostalCode(event.target.value)}
-                      placeholder="Enter postal code"
-                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                    />
-                  </label>
-
-                  <label className="space-y-2 text-sm font-medium text-slate-700">
-                    Country
-                    <input
-                      type="text"
-                      value={profileCountry}
-                      onChange={(event) => setProfileCountry(event.target.value)}
-                      placeholder="Enter country"
-                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                    />
-                  </label>
-                </div>
-
-                {/* Social Links - Row 1 */}
-                <div className="mt-4">
-                  <p className="mb-3 text-sm font-medium text-slate-700">Social Links</p>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <label className="space-y-2 text-sm font-medium text-slate-700">
-                      Facebook
-                      <input
-                        type="url"
-                        value={profileFacebook}
-                        onChange={(event) => setProfileFacebook(event.target.value)}
-                        placeholder="https://facebook.com/username"
-                        className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                      />
-                    </label>
-
-                    <label className="space-y-2 text-sm font-medium text-slate-700">
-                      Google
-                      <input
-                        type="url"
-                        value={profileGoogle}
-                        onChange={(event) => setProfileGoogle(event.target.value)}
-                        placeholder="https://google.com/username"
-                        className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                      />
-                    </label>
-                  </div>
-                </div>
-
-                {/* Social Links - Row 2 */}
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  <label className="space-y-2 text-sm font-medium text-slate-700">
-                    Twitter
-                    <input
-                      type="url"
-                      value={profileTwitter}
-                      onChange={(event) => setProfileTwitter(event.target.value)}
-                      placeholder="https://twitter.com/username"
-                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                    />
-                  </label>
-
-                  <label className="space-y-2 text-sm font-medium text-slate-700">
-                    Pinterest
-                    <input
-                      type="url"
-                      value={profilePinterest}
-                      onChange={(event) => setProfilePinterest(event.target.value)}
-                      placeholder="https://pinterest.com/username"
-                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                    />
-                  </label>
-                </div>
-
-                {/* About Me */}
-                <div className="mt-4">
-                  <label className="space-y-2 text-sm font-medium text-slate-700">
-                    About Me
-                    <textarea
-                      value={profileAboutMe}
-                      onChange={(event) => setProfileAboutMe(event.target.value)}
-                      placeholder="Tell us about yourself, your experience, and expertise..."
-                      rows={4}
-                      className="w-full rounded-lg border border-slate-200 px-3 py-2 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                    />
-                  </label>
-                </div>
-
-                {/* Specialization and Location (kept for backward compatibility) */}
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  <label className="space-y-2 text-sm font-medium text-slate-700">
-                    Specialization
-                    <input
-                      type="text"
-                      value={profileSpecialization}
-                      onChange={(event) => setProfileSpecialization(event.target.value)}
-                      placeholder="e.g. UI/UX Design"
-                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                    />
-                  </label>
-
-                  <label className="space-y-2 text-sm font-medium text-slate-700">
-                    Location
-                    <input
-                      type="text"
-                      value={profileLocation}
-                      onChange={(event) => setProfileLocation(event.target.value)}
-                      placeholder="Enter your city or address"
-                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                    />
-                  </label>
-                </div>
-
-                {profileError && (
-                  <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{profileError}</div>
-                )}
-
-                {profileMessage && (
-                  <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-                    {profileMessage}
-                  </div>
-                )}
-
-                <div className="mt-6 flex items-center gap-3">
-                  <button
-                    type="submit"
-                    disabled={savingProfile}
-                    className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#1ec28e] px-5 text-sm font-medium text-white transition hover:bg-[#18ab7d] disabled:cursor-not-allowed disabled:opacity-70"
-                  >
-                    <Save className="h-4 w-4" />
-                    {savingProfile ? "Saving..." : "Update Profile"}
-                  </button>
-                </div>
-              </form>
-            </div>
           ) : (
-            <>
-              <div className="mt-6 rounded-[24px] bg-white p-5 shadow-sm md:p-6">
-                <div className="grid gap-5 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:items-start">
-                  <div className="flex justify-center lg:justify-start">
-                    <Image
-                      src={avatarSrc}
-                      alt="Professional profile"
-                      width={92}
-                      height={92}
-                      className="h-20 w-20 rounded-3xl border border-slate-100 object-cover"
-                    />
-                  </div>
-
-                  <div className="text-center lg:text-left">
-                    <p className="text-sm font-medium text-[#1ec28e]">Professional Profile</p>
-                    <h3 className="mt-1 text-2xl font-semibold text-slate-900">{profileName || "Professional User"}</h3>
-
-                    {(profileSpecialization || profileContactNumber) && (
-                      <div className="mt-2 flex flex-wrap items-center justify-center gap-2 text-xs lg:justify-start">
-                        {profileSpecialization ? (
-                          <span className="rounded-full bg-[#f7faf8] px-3 py-1 text-slate-600">{profileSpecialization}</span>
-                        ) : null}
-                        {profileContactNumber ? (
-                          <span className="rounded-full bg-[#f7faf8] px-3 py-1 text-slate-600">{profileContactNumber}</span>
-                        ) : null}
-                      </div>
-                    )}
-
-                    <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-xs text-slate-500 lg:justify-start">
-                      <span className="rounded-full bg-[#effaf6] px-3 py-1 text-[#1ec28e]">Professional</span>
-                      {certificateList.length > 0 ? (
-                        <span className="rounded-full bg-slate-100 px-3 py-1">{certificateList.length} Certificates</span>
-                      ) : null}
-                      {profileBoostedUntil ? (
-                        <span className="rounded-full bg-amber-50 px-3 py-1 text-amber-700">Boost active</span>
-                      ) : null}
-                    </div>
-
-                    {profileLocation ? (
-                      <a
-                        href={mapsHref}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-[#1ec28e] transition hover:text-[#18ab7d]"
-                      >
-                        {profileLocation}
-                      </a>
-                    ) : null}
-                  </div>
-
-                  <div className="flex items-start justify-center lg:justify-end">
-                    <button
-                      type="button"
-                      onClick={() => setActiveSection("settings")}
-                      className="inline-flex h-11 items-center gap-2 rounded-full bg-[#1ec28e] px-5 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
-                    >
-                      <Settings className="h-4 w-4" />
-                      Edit
-                    </button>
-                  </div>
-                </div>
-
-                {certificateList.length > 0 && (
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    {certificateList.slice(0, 4).map((certificate) => (
-                      <a
-                        key={certificate}
-                        href={certificate}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="rounded-full bg-[#f7faf8] px-3 py-1 text-xs text-slate-600 transition hover:bg-[#eaf7f1] hover:text-[#1ec28e]"
-                      >
-                        {certificate.split("/").pop()}
-                      </a>
-                    ))}
-                    {certificateList.length > 4 && (
-                      <span className="rounded-full bg-[#f7faf8] px-3 py-1 text-xs text-slate-600">
-                        +{certificateList.length - 4} more
-                      </span>
-                    )}
-                  </div>
-                )}
-
-              </div>
-
-              <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                {overviewCards.map((card) => {
-                  const Icon = card.icon;
-
-                  return (
-                    <div key={card.title} className="rounded-[24px] bg-white p-5 shadow-sm">
-                      <div className={`mx-auto grid h-16 w-16 place-items-center rounded-2xl ${card.iconBg}`}>
-                        <Icon className="h-7 w-7" />
-                      </div>
-                      <h3 className="mt-4 text-center text-base font-semibold text-slate-900">{card.title}</h3>
-                      <p className="mt-2 text-center text-sm text-slate-500">{card.description}</p>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
-                <div>
-                  <div className="mb-4 flex items-center justify-between gap-4">
-                    <h3 className="text-lg font-semibold text-slate-900">Featured Course</h3>
-                    <div className="flex items-center gap-2 rounded-full bg-white p-1 shadow-sm">
-                      {[1, 2, 3].map((pageNumber) => (
-                        <button
-                          key={pageNumber}
-                          onClick={() => setFeaturedPage(pageNumber as FeaturedPage)}
-                          className={`min-w-10 rounded-full px-3 py-2 text-sm font-medium transition ${
-                            featuredPage === pageNumber ? "bg-[#1ec28e] text-white" : "text-slate-500 hover:bg-slate-100"
-                          }`}
-                        >
-                          {pageNumber}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {featuredContent}
-                </div>
-
-                <aside className="rounded-[24px] bg-white p-4 shadow-sm">
-                  {featuredPage === 2 ? (
-                    <>
-                      <div className="space-y-3">
-                        <div className="relative overflow-hidden rounded-[18px] bg-slate-950">
-                          <iframe
-                            className="aspect-video w-full"
-                            src={`https://www.youtube.com/embed/${detailVideos[0].youtubeId}`}
-                            title={detailVideos[0].title}
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                          />
-                        </div>
-
-                        <div className="relative overflow-hidden rounded-[18px] bg-slate-950">
-                          <iframe
-                            className="aspect-video w-full"
-                            src={`https://www.youtube.com/embed/${detailVideos[1].youtubeId}`}
-                            title={detailVideos[1].title}
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                          />
-                        </div>
-                      </div>
-
-                    <div className="mt-5">
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-base font-semibold text-slate-900">YouTube Learning Playlist</h4>
-                          <span className="text-sm font-semibold text-[#1ec28e]">Live</span>
-                        </div>
-
-                        <div className="mt-4 rounded-2xl bg-[#f7faf8] p-4">
-                          <p className="text-sm font-semibold text-slate-900">Courses included</p>
-                          <ul className="mt-3 space-y-2 text-sm text-slate-500">
-                            <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-[#1ec28e]" />CSS Grid and Flexbox</li>
-                            <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-[#1ec28e]" />Responsive layout practice</li>
-                            <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-[#1ec28e]" />Portfolio project walkthroughs</li>
-                          </ul>
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="relative overflow-hidden rounded-[18px]">
-                        <Image src="/offer-video.png" alt="Detail course" width={600} height={360} className="h-52 w-full object-cover" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
-                        <button className="absolute inset-0 m-auto grid h-14 w-14 place-items-center rounded-full bg-white/95 text-[#1ec28e] shadow-lg">
-                          <Video className="h-6 w-6 fill-current" />
-                        </button>
-                      </div>
-
-                      <div className="mt-5">
-                        <div className="flex items-center justify-between gap-4">
-                          <h4 className="text-base font-semibold text-slate-900">The Complete HTML & CSS Bootcamp 2023 Edition</h4>
-                          <span className="text-lg font-semibold text-[#1ec28e]">$49.00</span>
-                        </div>
-
-                        <div className="mt-4 rounded-2xl bg-[#f7faf8] p-4">
-                          <p className="text-sm font-semibold text-slate-900">Course included</p>
-                          <ul className="mt-3 space-y-2 text-sm text-slate-500">
-                            <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-[#1ec28e]" />24 videos by this course</li>
-                            <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-[#1ec28e]" />Access on mobile devices</li>
-                            <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-[#1ec28e]" />Access at any time</li>
-                            <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-[#1ec28e]" />Certificate of completion</li>
-                          </ul>
-                        </div>
-
-                        <div className="mt-4 rounded-2xl border border-[#e7f2ee] bg-white p-4">
-                          <p className="text-sm font-semibold text-slate-900">What you will learn?</p>
-                          <ul className="mt-3 space-y-2 text-sm text-slate-500">
-                            <li className="flex items-start gap-2"><span className="mt-1 h-2 w-2 rounded-full bg-[#1ec28e]" />Improve UI fundamentals</li>
-                            <li className="flex items-start gap-2"><span className="mt-1 h-2 w-2 rounded-full bg-[#1ec28e]" />Create responsive layouts</li>
-                            <li className="flex items-start gap-2"><span className="mt-1 h-2 w-2 rounded-full bg-[#1ec28e]" />Build professional projects</li>
-                          </ul>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </aside>
-              </div>
-            </>
+            <OverviewSection
+              avatarSrc={avatarSrc}
+              profileName={profileName}
+              profileSpecialization={profileSpecialization}
+              profileContactNumber={profileContactNumber}
+              profileLocation={profileLocation}
+              profileBoostedUntil={profileBoostedUntil}
+              certificateList={certificateList}
+              mapsHref={mapsHref}
+              addedBooks={addedBooks}
+              addedVideos={addedVideos}
+              featuredPage={featuredPage}
+              setFeaturedPage={setFeaturedPage}
+              featuredContent={featuredContent}
+              setActiveSection={setActiveSection}
+            />
           )}
+
+          <NotificationDrawer
+            notifOpen={notifOpen} setNotifOpen={setNotifOpen}
+            notifLoading={notifLoading}
+            notifFollows={notifFollows}
+            notifPurchases={notifPurchases}
+            notifReviews={notifReviews}
+            setActiveSection={setActiveSection}
+          />
+
         </section>
       </div>
     </main>

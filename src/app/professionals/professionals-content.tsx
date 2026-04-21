@@ -4,7 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { MapPin, Search, SlidersHorizontal, Star, X } from "lucide-react";
+import { MapPin, Search, SlidersHorizontal, Star, UserCheck, UserPlus, X } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -44,6 +45,10 @@ const languageOptions = [
 ] as const;
 
 export default function ProfessionalsContent() {
+  const { data: session } = useSession();
+  const studentId = session?.user?.id ?? null;
+  const isStudent = session?.user?.role === "student";
+
   const searchParams = useSearchParams();
   const resultsRef = useRef<HTMLDivElement | null>(null);
   const [liveProfessionals, setLiveProfessionals] = useState<PublicProfessional[]>([]);
@@ -56,6 +61,50 @@ export default function ProfessionalsContent() {
   const [sortBy, setSortBy] = useState("popular");
   const [visibleCount, setVisibleCount] = useState(6);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+
+  // followedIds: set of professionalIds this student follows
+  const [followedIds, setFollowedIds] = useState<Set<string>>(new Set());
+  const [followLoading, setFollowLoading] = useState<string | null>(null); // professionalId being toggled
+
+  // Load which professionals this student already follows
+  useEffect(() => {
+    if (!studentId) return;
+    // Fetch all follows and filter by studentId client-side
+    fetch("/api/follows?professionalId=all")
+      .then((r) => r.json())
+      .then(() => {
+        // We can't get all follows by studentId from current API easily,
+        // so we'll track locally via state only (optimistic)
+      })
+      .catch(() => undefined);
+  }, [studentId]);
+
+  const handleFollow = async (professionalId: string) => {
+    if (!isStudent || !studentId) return;
+    setFollowLoading(professionalId);
+    const alreadyFollowing = followedIds.has(professionalId);
+    try {
+      if (alreadyFollowing) {
+        await fetch("/api/follows", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ studentId, professionalId }),
+        });
+        setFollowedIds((prev) => { const s = new Set(prev); s.delete(professionalId); return s; });
+      } else {
+        await fetch("/api/follows", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ studentId, professionalId }),
+        });
+        setFollowedIds((prev) => new Set([...prev, professionalId]));
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setFollowLoading(null);
+    }
+  };
 
   // Removed effect that synchronously set state from searchParams
 
@@ -413,12 +462,35 @@ export default function ProfessionalsContent() {
                         >
                           View Profile
                         </Link>
-                        <button
-                          type="button"
-                          className="flex-1 rounded-full border border-primary bg-white px-4 py-2.5 text-center text-sm font-semibold text-primary transition hover:bg-[#e6f7f0] hover:border-[#18ab7d]"
-                        >
-                          Follow
-                        </button>
+                        {isStudent ? (
+                          <button
+                            type="button"
+                            onClick={() => void handleFollow(item.id)}
+                            disabled={followLoading === item.id}
+                            className={`flex flex-1 items-center justify-center gap-1.5 rounded-full border px-4 py-2.5 text-sm font-semibold transition disabled:opacity-60 ${
+                              followedIds.has(item.id)
+                                ? "border-[#1ec28e] bg-[#effaf6] text-[#1ec28e] hover:border-red-400 hover:bg-red-50 hover:text-red-500"
+                                : "border-primary bg-white text-primary hover:bg-[#e6f7f0] hover:border-[#18ab7d]"
+                            }`}
+                          >
+                            {followLoading === item.id ? (
+                              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                            ) : followedIds.has(item.id) ? (
+                              <UserCheck className="h-3.5 w-3.5" />
+                            ) : (
+                              <UserPlus className="h-3.5 w-3.5" />
+                            )}
+                            {followedIds.has(item.id) ? "Following" : "Follow"}
+                          </button>
+                        ) : (
+                          <Link
+                            href="/login"
+                            className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-primary bg-white px-4 py-2.5 text-sm font-semibold text-primary transition hover:bg-[#e6f7f0]"
+                          >
+                            <UserPlus className="h-3.5 w-3.5" />
+                            Follow
+                          </Link>
+                        )}
                       </div>
                     </div>
                   </article>

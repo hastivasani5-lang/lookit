@@ -3,7 +3,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
-import { CreditCard, MapPin, PlayCircle, Star } from "lucide-react";
+import { CreditCard, MapPin, PlayCircle, Star, UserCheck, UserPlus } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 import type { PublicProfessional } from "@/lib/professional-display";
 import { addCartItem } from "@/lib/cart-store";
@@ -73,6 +74,10 @@ function toPriceLabel(value: string) {
 }
 
 export default function ProfessionalProfileClient({ professional, canAddToCart, hasLibraryItems, categories, books, videos }: Props) {
+  const { data: session } = useSession();
+  const studentId = session?.user?.id ?? null;
+  const isStudent = session?.user?.role === "student";
+
   const [liveBooks, setLiveBooks] = useState<UploadedBook[]>(books);
   const [liveVideos, setLiveVideos] = useState<UploadedVideo[]>(videos);
   const [liveCategories, setLiveCategories] = useState<string[]>(categories);
@@ -110,6 +115,55 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
 
   const [selectedPlan, setSelectedPlan] = useState("single");
   const [selectedProduct, setSelectedProduct] = useState<ContentItem | null>(null);
+
+  // ── Follow state ──────────────────────────────────────────────────────────
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
+  const [followCount, setFollowCount] = useState(0);
+
+  // Load initial follow state
+  useEffect(() => {
+    if (!professional.id) return;
+    // Get total follower count
+    fetch(`/api/follows?professionalId=${professional.id}`)
+      .then((r) => r.json())
+      .then((data: Array<{ studentId: string }>) => {
+        setFollowCount(Array.isArray(data) ? data.length : 0);
+        if (studentId) {
+          setIsFollowing(data.some((f) => f.studentId === studentId));
+        }
+      })
+      .catch(() => undefined);
+  }, [professional.id, studentId]);
+
+  const handleFollow = async () => {
+    if (!isStudent || !studentId) return;
+    setFollowLoading(true);
+    try {
+      if (isFollowing) {
+        await fetch("/api/follows", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ studentId, professionalId: professional.id }),
+        });
+        setIsFollowing(false);
+        setFollowCount((c) => Math.max(0, c - 1));
+      } else {
+        await fetch("/api/follows", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ studentId, professionalId: professional.id }),
+        });
+        setIsFollowing(true);
+        setFollowCount((c) => c + 1);
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setFollowLoading(false);
+    }
+  };
+  // ─────────────────────────────────────────────────────────────────────────
   const [cardName, setCardName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [expiry, setExpiry] = useState("");
@@ -239,9 +293,10 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
 
   const submitReview = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!reviewName.trim() || !reviewText.trim()) {
-      return;
-    }
+    if (!reviewText.trim()) return;
+    // Use logged-in student name if available, else fall back to input
+    const nameToUse = (session?.user?.name ?? reviewName).trim();
+    if (!nameToUse) return;
 
     try {
       const response = await fetch("/api/profile/reviews", {
@@ -261,7 +316,7 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
       setReviews((prev) => [
         {
           id: Date.now(),
-          name: reviewName.trim(),
+          name: nameToUse,
           rating: reviewRating,
           message: reviewText.trim(),
         },
@@ -346,6 +401,43 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
                   ) : (
                     <span className="rounded-full bg-white px-3 py-1 text-xs text-gray-500">No categories added yet</span>
                   )}
+                </div>
+              </div>
+
+              {/* ── Follow Button ── */}
+              <div className="flex items-center gap-3 pt-1">
+                {isStudent ? (
+                  <button
+                    type="button"
+                    onClick={() => void handleFollow()}
+                    disabled={followLoading}
+                    className={`inline-flex flex-1 items-center justify-center gap-2 rounded-full py-2.5 text-sm font-bold transition disabled:opacity-60 ${
+                      isFollowing
+                        ? "border-2 border-[#1ec28e] bg-white text-[#1ec28e] hover:bg-red-50 hover:border-red-400 hover:text-red-500"
+                        : "bg-[#1ec28e] text-white hover:bg-[#17a87a]"
+                    }`}
+                  >
+                    {followLoading ? (
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    ) : isFollowing ? (
+                      <UserCheck className="h-4 w-4" />
+                    ) : (
+                      <UserPlus className="h-4 w-4" />
+                    )}
+                    {followLoading ? "..." : isFollowing ? "Following" : "Follow"}
+                  </button>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-[#1ec28e] py-2.5 text-sm font-bold text-white transition hover:bg-[#17a87a]"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                    Follow
+                  </Link>
+                )}
+                <div className="flex flex-col items-center rounded-2xl border border-[#dbe8e4] bg-[#f8fbfa] px-4 py-2">
+                  <span className="text-lg font-bold text-[#1ec28e]">{followCount}</span>
+                  <span className="text-[10px] text-gray-500">Followers</span>
                 </div>
               </div>
             </div>
@@ -640,37 +732,56 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
           </div>
 
           <form onSubmit={submitReview} className="mt-4 space-y-3">
-            <input
-              type="text"
-              value={reviewName}
-              onChange={(event) => setReviewName(event.target.value)}
-              placeholder="Your name"
-              className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-primary"
-            />
+            {isStudent ? (
+              <div className="flex items-center gap-2 rounded-xl border border-[#1ec28e]/30 bg-[#effaf6] px-3 py-2.5">
+                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#1ec28e] text-xs font-bold text-white">
+                  {(session?.user?.name ?? "?").charAt(0).toUpperCase()}
+                </span>
+                <span className="text-sm font-medium text-slate-700">{session?.user?.name}</span>
+                <span className="ml-auto rounded-full bg-[#1ec28e]/10 px-2 py-0.5 text-[11px] font-semibold text-[#1ec28e]">Verified Student</span>
+              </div>
+            ) : (
+              <input
+                type="text"
+                value={reviewName}
+                onChange={(event) => setReviewName(event.target.value)}
+                placeholder="Your name"
+                className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-primary"
+              />
+            )}
             <select
               value={reviewRating}
               onChange={(event) => setReviewRating(Number(event.target.value))}
               className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-primary"
             >
-              <option value={5}>5 Stars</option>
-              <option value={4}>4 Stars</option>
-              <option value={3}>3 Stars</option>
-              <option value={2}>2 Stars</option>
-              <option value={1}>1 Star</option>
+              <option value={5}>⭐⭐⭐⭐⭐ 5 Stars</option>
+              <option value={4}>⭐⭐⭐⭐ 4 Stars</option>
+              <option value={3}>⭐⭐⭐ 3 Stars</option>
+              <option value={2}>⭐⭐ 2 Stars</option>
+              <option value={1}>⭐ 1 Star</option>
             </select>
             <textarea
               value={reviewText}
               onChange={(event) => setReviewText(event.target.value)}
               rows={4}
-              placeholder="Write your review"
+              placeholder="Write your review..."
               className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-primary"
             />
-            <button
-              type="submit"
-              className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
-            >
-              Submit Review
-            </button>
+            {isStudent ? (
+              <button
+                type="submit"
+                className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+              >
+                Submit Review
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                className="inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+              >
+                Login to Submit Review
+              </Link>
+            )}
           </form>
 
           <ul className="mt-6 space-y-4">

@@ -1,3 +1,12 @@
 [
-  // { "studentId": "...", "professionalId": "...", "followedAt": "..." }
+  {
+    "studentId": "42d3d5d9-e80d-4f0e-9db0-aa949fcfb800",
+    "professionalId": "d27ef8c3-6ce3-412a-a5d7-3630be7e9489",
+    "followedAt": "2026-04-21T05:19:26.814Z"
+  },
+  {
+    "studentId": "42d3d5d9-e80d-4f0e-9db0-aa949fcfb800",
+    "professionalId": "060fe115-29ac-4395-bdfe-c896a31d6b49",
+    "followedAt": "2026-04-21T05:22:48.546Z"
+  }
 ]

@@ -1362,7 +1362,7 @@ export default function AdminPanelView() {
   return (
     <main className="min-h-screen bg-[#eef5f3] p-3 sm:p-4 md:p-6 font-sans">
       <section className="flex min-h-[calc(100vh-1.5rem)] w-full overflow-hidden rounded-[28px] neumorph-admin-main bg-[#eef5f3] font-sans">
-        <aside className="fixed left-0 top-0 z-30 h-full w-[250px] border-r border-slate-100 bg-[#eef5f3] px-4 py-5 flex flex-col neumorph-admin-sidebar">
+        <aside className="fixed left-0 top-0 z-30 h-full w-62.5 border-r border-slate-100 bg-[#eef5f3] px-4 py-5 flex flex-col neumorph-admin-sidebar">
           <div className="pb-6">
             <SiteLogo size="sidebar" priority />
           </div>
@@ -1423,7 +1423,7 @@ export default function AdminPanelView() {
           </div>
         </aside>
 
-        <div className={`neumorph-admin-content flex-1 p-3 sm:p-4 md:p-5 transition ml-[250px] h-screen overflow-y-auto hide-scrollbar ${selectedStudent || detailModal || adminProfileOpen || isCategoryFormOpen ? "blur-sm" : ""}`}>
+        <div className={`neumorph-admin-content flex-1 p-3 sm:p-4 md:p-5 transition ml-62.5 h-screen overflow-y-auto hide-scrollbar ${selectedStudent || detailModal || adminProfileOpen || isCategoryFormOpen ? "blur-sm" : ""}`}>
                 <style>{`
                   .hide-scrollbar {
                     scrollbar-width: none; /* Firefox */
@@ -1525,7 +1525,7 @@ export default function AdminPanelView() {
 
               <div className="mt-4 grid gap-4 xl:grid-cols-2">
                 <div className="space-y-4">
-                  <div className="h-[360px] rounded-2xl neumorph-admin-card border border-transparent p-4 !bg-white">
+                  <div className="h-90 rounded-2xl neumorph-admin-card border border-transparent p-4 bg-white!">
                     <div className="mb-3 flex items-center justify-between">
                       <div>
                         <h3 className="font-semibold text-slate-800">Admin Activity Trend</h3>
@@ -1542,7 +1542,7 @@ export default function AdminPanelView() {
                         ))}
                       </div>
                     </div>
-                    <svg viewBox={`0 0 ${adminTrendWidth} ${adminTrendHeight}`} className="h-[245px] w-full">
+                    <svg viewBox={`0 0 ${adminTrendWidth} ${adminTrendHeight}`} className="h-61.25 w-full">
                       {[0, 20, 40, 60, 80, 100].map((tick) => {
                         const y = adminTrendPadding.top + adminTrendChartHeight - (tick / 100) * adminTrendChartHeight;
                         return (
@@ -1591,7 +1591,7 @@ export default function AdminPanelView() {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="h-[360px] rounded-2xl neumorph-admin-card border border-transparent p-4">
+                  <div className="h-90 rounded-2xl neumorph-admin-card border border-transparent p-4">
                           <style>{`
                             .neumorph-admin-main {
                               background: #eef5f3;
@@ -1687,7 +1687,7 @@ export default function AdminPanelView() {
                         ].map((cell, index) => (
                           <div
                             key={`${cell.day}-${index}`}
-                            className={`min-h-[32px] border-r border-t border-slate-100 px-1 py-0.5 align-top text-slate-700 ${
+                            className={`min-h-8 border-r border-t border-slate-100 px-1 py-0.5 align-top text-slate-700 ${
                               cell.active ? "bg-[#eef9ff]" : "bg-white"
                             } ${index % 7 === 6 ? "border-r-0" : ""}`}
                           >
@@ -1818,7 +1818,7 @@ export default function AdminPanelView() {
                 </div>
 
                 {dashboardTodayRows.length > 0 ? (
-                  <div className="mt-3 rounded-[24px] border border-slate-300 bg-slate-100 px-4 py-3 sm:px-5">
+                  <div className="mt-3 rounded-3xl border border-slate-300 bg-slate-100 px-4 py-3 sm:px-5">
                     <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                       <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
                         <span>

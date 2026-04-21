@@ -1,0 +1,49 @@
+// Prisma schema for Admin Dashboard
+// This schema covers Users, Courses, Categories, and Tasks (for overdue indicator)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String   @unique
+  role        String   // 'student' | 'professional' | 'admin'
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  courses     Course[]
+  tasks       Task[]
+}
+
+model Course {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  category    Category @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdById Int
+  createdAt   DateTime @default(now())
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  courses     Course[]
+}
+
+model Task {
+  id          Int      @id @default(autoincrement())
+  title       String
+  dueDate     DateTime
+  completed   Boolean  @default(false)
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int
+  createdAt   DateTime @default(now())
+}

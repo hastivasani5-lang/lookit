@@ -127,7 +127,7 @@ export default function AdminWorkspace(props: AdminWorkspaceProps) {
 
   return (
     <section className="neumorph-admin-main relative flex min-h-screen bg-[#eef5f3]">
-      <aside className="neumorph-admin-sidebar fixed left-0 top-0 z-20 hidden h-screen w-[250px] flex-col rounded-r-3xl p-3 shadow-[8px_8px_16px_#d0dbd6,-8px_-8px_16px_#ffffff] md:flex">
+      <aside className="neumorph-admin-sidebar fixed left-0 top-0 z-20 hidden h-screen w-62.5 flex-col rounded-r-3xl p-3 shadow-[8px_8px_16px_#d0dbd6,-8px_-8px_16px_#ffffff] md:flex">
         <div className="mb-6">
           <div className="rounded-2xl bg-[#eef5f3] p-3 shadow-[3px_3px_8px_#d0dbd6,-3px_-3px_8px_#ffffff]">
             <Image src="/logo.png" alt="Lookit" width={120} height={40} className="h-10 w-auto" />
@@ -156,7 +156,7 @@ export default function AdminWorkspace(props: AdminWorkspaceProps) {
         </div>
       </aside>
 
-      <div className={`neumorph-admin-content flex-1 p-3 sm:p-4 md:p-5 transition ml-[250px] h-screen overflow-y-auto hide-scrollbar ${selectedStudent || detailModal || adminProfileOpen || isCategoryFormOpen ? "blur-sm" : ""}`}>
+      <div className={`neumorph-admin-content flex-1 p-3 sm:p-4 md:p-5 transition ml-62.5 h-screen overflow-y-auto hide-scrollbar ${selectedStudent || detailModal || adminProfileOpen || isCategoryFormOpen ? "blur-sm" : ""}`}>
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl neumorph-admin-card p-4 shadow-[8px_8px_24px_#d0dbd6,-8px_-8px_24px_#ffffff]">
           <input
             type="text"

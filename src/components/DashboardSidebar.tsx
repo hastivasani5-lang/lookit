@@ -143,7 +143,7 @@ export default function DashboardSidebar({ profileName, profileEmail, avatarSrc 
       {/* Logout */}
       <button
         onClick={async () => { await signOut({ callbackUrl: "/" }); }}
-        className="mt-4 flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-white transition hover:bg-white/10"
+        className="mt-4 flex items-center gap-3 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-[#1ec28e] shadow-lg transition hover:bg-white/90"
       >
         <LogOut className="h-4 w-4 shrink-0" />
         Log Out

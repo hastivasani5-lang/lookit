@@ -1150,7 +1150,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
             <button onClick={async () => {
               if (user.role === "professional") await fetch("/api/professionals/session", { method: "DELETE" }).catch(() => undefined);
               await signOut({ callbackUrl: "/" });
-            }} className="mt-4 flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-white/60 hover:bg-white/10 hover:text-white transition">
+            }} className="mt-4 flex items-center gap-3 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-[#1ec28e] shadow-lg transition hover:bg-white/90">
               <LogOut className="h-4 w-4 shrink-0" />Log Out
             </button>
           </aside>
@@ -1205,7 +1205,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
           <button onClick={async () => {
             if (user.role === "professional") await fetch("/api/professionals/session", { method: "DELETE" }).catch(() => undefined);
             await signOut({ callbackUrl: "/" });
-          }} className="mt-4 flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-white/60 transition hover:bg-white/10 hover:text-white">
+          }} className="mt-4 flex items-center gap-3 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-[#1ec28e] shadow-lg transition hover:bg-white/90">
             <LogOut className="h-4 w-4 shrink-0" />Log Out
           </button>
         </aside>

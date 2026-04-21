@@ -26,10 +26,6 @@ import {
   Video,
 } from "lucide-react";
 import UpgradeTimeline from "@/components/UpgradeTimeline";
-import DashboardOverviewSection from "@/components/dashboard/DashboardOverviewSection";
-import DashboardAddSection from "@/components/dashboard/DashboardAddSection";
-import DashboardUpgradeSection from "@/components/dashboard/DashboardUpgradeSection";
-import DashboardSettingsSection from "@/components/dashboard/DashboardSettingsSection";
 
 type ProfessionalUser = {
   id: string;
@@ -1341,138 +1337,1514 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
 
     <section className="h-full overflow-y-auto bg-[#eef5f3] px-3 py-4 md:px-4 lg:px-5">
       <div className="flex flex-col gap-4 rounded-[24px] bg-[#eef5f3] px-5 py-4 shadow-[12px_12px_24px_#d0dbd6,-12px_-12px_24px_#ffffff] md:flex-row md:items-center md:justify-between">
-        <div>
-          <h2 className="text-xl font-semibold text-slate-900">Welcome!</h2>
-          <p className="text-sm text-slate-500">Welcome back, explore now!</p>
-        </div>
-        <div className="flex w-full max-w-3xl items-center gap-3 md:w-auto md:flex-1 md:justify-end">
-          <div className="flex h-12 flex-1 items-center gap-3 rounded-full border-none bg-[#f6fefb] px-4 shadow-[inset_4px_4px_12px_#d0dbd6,inset_-4px_-4px_12px_#ffffff] md:max-w-xl">
-            <Search className="h-4 w-4 text-slate-400" />
-            <input type="text" placeholder="Search here" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400" />
-          </div>
-          <button className="grid h-11 w-11 place-items-center rounded-full border-none bg-[#f6fefb] text-[#1ec28e] shadow-[3px_3px_8px_#d0dbd6,-3px_-3px_8px_#ffffff]">
-            <Bell className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
-
-      {searchQuery.trim() ? (
-        <div className="mt-6 rounded-[24px] bg-white p-6 shadow-sm">
-          <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Search Results</h3>
-              <p className="text-sm text-slate-500">{searchResults.length} result{searchResults.length === 1 ? "" : "s"} found for &quot;{searchQuery.trim()}&quot;.</p>
+              <h2 className="text-xl font-semibold text-slate-900">Welcome!</h2>
+              <p className="text-sm text-slate-500">Welcome back, it’s explore now!</p>
             </div>
-            <button type="button" onClick={() => setSearchQuery("")} className="rounded-full bg-[#effaf6] px-4 py-2 text-xs font-semibold text-[#1ec28e] transition hover:bg-[#dff5eb]">Clear Search</button>
+
+            <div className="flex w-full max-w-3xl items-center gap-3 md:w-auto md:flex-1 md:justify-end">
+              <div className="flex h-12 flex-1 items-center gap-3 rounded-full border-none bg-[#f6fefb] px-4 shadow-[inset_4px_4px_12px_#d0dbd6,inset_-4px_-4px_12px_#ffffff] md:max-w-xl">
+                <Search className="h-4 w-4 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search here"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
+                />
+              </div>
+
+              <button className="grid h-11 w-11 place-items-center rounded-full border-none bg-[#f6fefb] text-[#1ec28e] shadow-[3px_3px_8px_#d0dbd6,-3px_-3px_8px_#ffffff]">
+                <Bell className="h-4 w-4" />
+              </button>
+            </div>
           </div>
-          {searchResults.length === 0 ? (
-            <p className="rounded-2xl bg-[#f7faf8] px-4 py-3 text-sm text-slate-500">No matching results found.</p>
-          ) : (
-            <div className="space-y-3">
-              {searchResults.map((result) => (
-                <button key={result.id} type="button" onClick={() => handleSearchResultClick(result)} className="w-full rounded-2xl border border-slate-100 bg-[#f7faf8] p-4 text-left transition hover:border-[#1ec28e]/40 hover:bg-[#f2fbf7]">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold text-slate-900">{result.title}</p>
-                      <p className="mt-1 text-xs text-slate-500">{result.description}</p>
-                    </div>
-                    <span className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[#1ec28e]">{result.section}</span>
-                  </div>
+
+          {searchQuery.trim() ? (
+            <div className="mt-6 rounded-[24px] bg-white p-6 shadow-sm">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-900">Search Results</h3>
+                  <p className="text-sm text-slate-500">
+                    {searchResults.length} result{searchResults.length === 1 ? "" : "s"} found for “{searchQuery.trim()}”.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="rounded-full bg-[#effaf6] px-4 py-2 text-xs font-semibold text-[#1ec28e] transition hover:bg-[#dff5eb]"
+                >
+                  Clear Search
                 </button>
-              ))}
+              </div>
+
+              {searchResults.length === 0 ? (
+                <p className="rounded-2xl bg-[#f7faf8] px-4 py-3 text-sm text-slate-500">No matching results found.</p>
+              ) : (
+                <div className="space-y-3">
+                  {searchResults.map((result) => (
+                    <button
+                      key={result.id}
+                      type="button"
+                      onClick={() => handleSearchResultClick(result)}
+                      className="w-full rounded-2xl border border-slate-100 bg-[#f7faf8] p-4 text-left transition hover:border-[#1ec28e]/40 hover:bg-[#f2fbf7]"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-semibold text-slate-900">{result.title}</p>
+                          <p className="mt-1 text-xs text-slate-500">{result.description}</p>
+                        </div>
+                        <span className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[#1ec28e]">
+                          {result.section}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
+          ) : activeSection === "add" ? (
+            <div className="mt-6 space-y-6">
+              <div className="rounded-[24px] bg-white p-3 shadow-sm">
+                <div className="flex w-full max-w-sm items-center gap-2 rounded-2xl bg-[#f7faf8] p-1">
+                  <button
+                    type="button"
+                    onClick={() => setAddContentTab("books")}
+                    className={`flex-1 rounded-xl px-4 py-2 text-sm font-medium transition ${
+                      addContentTab === "books" ? "bg-[#1ec28e] text-white" : "text-slate-600 hover:bg-white"
+                    }`}
+                  >
+                    Books
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAddContentTab("videos")}
+                    className={`flex-1 rounded-xl px-4 py-2 text-sm font-medium transition ${
+                      addContentTab === "videos" ? "bg-[#1ec28e] text-white" : "text-slate-600 hover:bg-white"
+                    }`}
+                  >
+                    Videos
+                  </button>
+                </div>
+              </div>
+
+              {addContentTab === "books" ? (
+                <>
+                  <div className="rounded-[24px] bg-white p-6 shadow-sm">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-900">Add Books</h3>
+                        <p className="text-sm text-slate-500">Click Add+ to open the book form.</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setIsBookFormOpen((current) => !current)}
+                        className="inline-flex h-10 items-center justify-center rounded-xl bg-[#1ec28e] px-4 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
+                      >
+                        {isBookFormOpen ? "Close" : "Add+"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {isBookFormOpen ? (
+                    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/35 p-4 backdrop-blur-sm">
+                      <div className="w-full max-w-xl rounded-[12px] bg-white shadow-2xl flex flex-col max-h-[90vh]">
+                        <div className="overflow-y-auto flex-1 p-6 space-y-5">
+                          {/* Course Title */}
+                          <div>
+                            <label className="block text-sm font-medium text-slate-800 mb-2">Course Title</label>
+                            <input
+                              type="text"
+                              value={bookNameInput}
+                              onChange={(event) => setBookNameInput(event.target.value)}
+                              placeholder=""
+                              className="w-full h-10 rounded border border-slate-300 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400"
+                            />
+                          </div>
+
+                          {/* Category and Instructor */}
+                          <div className="grid gap-4 md:grid-cols-2">
+                            <div>
+                              <label className="block text-sm font-medium text-slate-800 mb-2">Category</label>
+                              <select
+                                value={bookCategoryInput}
+                                onChange={(event) => setBookCategoryInput(event.target.value)}
+                                className="w-full h-10 rounded border border-slate-300 px-3 text-sm text-slate-600 outline-none transition focus:border-slate-400 appearance-none bg-white cursor-pointer"
+                                style={{backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem'}}
+                              >
+                                <option value="">Select</option>
+                                <option value="Technology">Technology</option>
+                                <option value="Business">Business</option>
+                                <option value="Design">Design</option>
+                                <option value="Education">Education</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-slate-800 mb-2">Instructor</label>
+                              <select
+                                value={bookInstructorInput}
+                                onChange={(event) => setBookInstructorInput(event.target.value)}
+                                className="w-full h-10 rounded border border-slate-300 px-3 text-sm text-slate-600 outline-none transition focus:border-slate-400 appearance-none bg-white cursor-pointer"
+                                style={{backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem'}}
+                              >
+                                <option value="">Select</option>
+                                <option value={user.name}>{user.name}</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          {/* Type of mode */}
+                          <div>
+                            <label className="block text-sm font-medium text-slate-800 mb-3">Type of mode</label>
+                            <div className="flex gap-8">
+                              <label className="flex items-center gap-3 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="bookMode"
+                                  value="online"
+                                  checked={bookModeInput === "online"}
+                                  onChange={(event) => setBookModeInput(event.target.value as "online" | "offline")}
+                                  className="w-5 h-5"
+                                  style={{accentColor: '#5b61d9'}}
+                                />
+                                <span className="text-sm text-slate-700">Online</span>
+                              </label>
+                              <label className="flex items-center gap-3 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="bookMode"
+                                  value="offline"
+                                  checked={bookModeInput === "offline"}
+                                  onChange={(event) => setBookModeInput(event.target.value as "online" | "offline")}
+                                  className="w-5 h-5"
+                                  style={{accentColor: '#5b61d9'}}
+                                />
+                                <span className="text-sm text-slate-700">Offline</span>
+                              </label>
+                            </div>
+                          </div>
+
+                          {/* Description */}
+                          <div>
+                            <label className="block text-sm font-medium text-slate-900 mb-2">Description</label>
+                            <textarea
+                              value={bookDescriptionInput}
+                              onChange={(event) => setBookDescriptionInput(event.target.value)}
+                              placeholder="Enter course description"
+                              rows={3}
+                              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                            />
+                          </div>
+
+                          {/* Course Type */}
+                          <div>
+                            <label className="block text-sm font-medium text-slate-800 mb-3">Course Type</label>
+                            <div className="flex gap-8">
+                              <label className="flex items-center gap-3 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="bookType"
+                                  value="free"
+                                  checked={bookTypeInput === "free"}
+                                  onChange={(event) => setBookTypeInput(event.target.value as "free" | "paid")}
+                                  className="w-5 h-5"
+                                  style={{accentColor: '#5b61d9'}}
+                                />
+                                <span className="text-sm text-slate-700">Free</span>
+                              </label>
+                              <label className="flex items-center gap-3 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="bookType"
+                                  value="paid"
+                                  checked={bookTypeInput === "paid"}
+                                  onChange={(event) => setBookTypeInput(event.target.value as "free" | "paid")}
+                                  className="w-5 h-5"
+                                  style={{accentColor: '#5b61d9'}}
+                                />
+                                <span className="text-sm text-slate-700">Paid</span>
+                              </label>
+                            </div>
+                          </div>
+
+                          {/* Upload Course Images */}
+                          <div>
+                            <label className="block text-sm font-medium text-slate-900 mb-2">Upload Course Images</label>
+                            <label className="flex min-h-28 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-[#f7faf8] transition hover:border-[#1ec28e]">
+                              {bookImageFile ? (
+                                <img src={URL.createObjectURL(bookImageFile)} alt="preview" className="h-24 w-24 object-cover rounded" />
+                              ) : (
+                                <div className="flex flex-col items-center gap-2">
+                                  <svg className="h-8 w-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                  </svg>
+                                  <span className="text-sm text-slate-600">Drag or click to upload</span>
+                                </div>
+                              )}
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(event) => setBookImageFile(event.target.files?.[0] ?? null)}
+                              />
+                            </label>
+                          </div>
+
+                          {/* Upload Video URL */}
+                          <div>
+                            <label className="block text-sm font-medium text-slate-900 mb-2">Upload Video URL</label>
+                            <input
+                              type="url"
+                              value={bookLinkInput}
+                              onChange={(event) => setBookLinkInput(event.target.value)}
+                              placeholder="https://videos.com"
+                              className="w-full h-10 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                            />
+                          </div>
+
+                          {/* Level and Price */}
+                          <div className="grid gap-4 md:grid-cols-2">
+                            <div>
+                              <label className="block text-sm font-medium text-slate-900 mb-2">Level</label>
+                              <select
+                                value={bookLevelInput}
+                                onChange={(event) => setBookLevelInput(event.target.value)}
+                                className="w-full h-10 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                              >
+                                <option value="">Select</option>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-slate-900 mb-2">Price</label>
+                              <div className="relative h-10 rounded-lg border border-slate-200 focus-within:border-[#1ec28e]">
+                                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-500">$</span>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  step="0.01"
+                                  value={bookMrpInput}
+                                  onChange={(event) => setBookMrpInput(event.target.value)}
+                                  placeholder="0.00"
+                                  className="h-10 w-full rounded-lg border-0 bg-transparent pl-8 pr-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Course Post Package */}
+                          <div>
+                            <label className="block text-sm font-medium text-slate-900 mb-2">Course Post Package</label>
+                            <div className="grid gap-3 md:grid-cols-2">
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="bookPackage"
+                                  value="30days"
+                                  checked={bookCoursePackageInput === "30days"}
+                                  onChange={(event) => setBookCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
+                                  className="w-4 h-4 accent-[#1ec28e]"
+                                />
+                                <span className="text-sm text-slate-700">30 Days Free</span>
+                              </label>
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="bookPackage"
+                                  value="60days"
+                                  checked={bookCoursePackageInput === "60days"}
+                                  onChange={(event) => setBookCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
+                                  className="w-4 h-4 accent-[#1ec28e]"
+                                />
+                                <span className="text-sm text-slate-700">60 days / $20</span>
+                              </label>
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="bookPackage"
+                                  value="6months"
+                                  checked={bookCoursePackageInput === "6months"}
+                                  onChange={(event) => setBookCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
+                                  className="w-4 h-4 accent-[#1ec28e]"
+                                />
+                                <span className="text-sm text-slate-700">6 months / $50</span>
+                              </label>
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="bookPackage"
+                                  value="1year"
+                                  checked={bookCoursePackageInput === "1year"}
+                                  onChange={(event) => setBookCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
+                                  className="w-4 h-4 accent-[#1ec28e]"
+                                />
+                                <span className="text-sm text-slate-700">1 year / $80</span>
+                              </label>
+                            </div>
+                          </div>
+
+                          {/* Course Files Upload */}
+                          <div>
+                            <label className="block text-sm font-medium text-slate-900 mb-2">Upload Course Files</label>
+                            <label className="flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-lg border border-dashed border-slate-300 bg-[#f7faf8] px-4 text-sm text-slate-600 transition hover:border-[#1ec28e] hover:bg-[#f0f7f5]">
+                              <span>{pendingBookFiles.length > 0 ? `${pendingBookFiles.length} file(s) selected` : "Choose course files to upload"}</span>
+                              <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-medium text-[#1ec28e]">Browse</span>
+                              <input
+                                type="file"
+                                multiple
+                                accept=".pdf,.doc,.docx,.ppt,.pptx,.txt"
+                                className="hidden"
+                                onChange={(event) => setPendingBookFiles(Array.from(event.target.files ?? []))}
+                              />
+                            </label>
+                          </div>
+
+                          {bookFormError && (
+                            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-700">{bookFormError}</div>
+                          )}
+                        </div>
+                        <div className="border-t border-slate-200 bg-white p-6 flex gap-3 justify-between">
+                          <button
+                            type="button"
+                            onClick={() => setIsBookFormOpen(false)}
+                            className="inline-flex h-11 items-center justify-center rounded px-6 text-sm font-medium text-white transition"
+                            style={{backgroundColor: '#ef5350'}}
+                          >
+                            Save to Draft
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleBookSave}
+                            className="inline-flex h-11 items-center justify-center rounded px-6 text-sm font-medium text-white transition"
+                            style={{backgroundColor: '#6366f1'}}
+                          >
+                            Publish Now
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  <div className="rounded-[24px] bg-white p-6 shadow-sm">
+                    <div className="mb-6 flex items-center justify-between gap-3">
+                      <h4 className="text-base font-semibold text-slate-900">Uploaded Books</h4>
+                      <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-semibold text-[#1ec28e]">
+                        {addedBooks.length}
+                      </span>
+                    </div>
+
+                    {addedBooks.length === 0 ? (
+                      <p className="rounded-2xl bg-[#f7faf8] px-4 py-3 text-sm text-slate-500">No books uploaded yet.</p>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-sm">
+                          <thead>
+                            <tr className="border-b border-slate-200">
+                              <th className="px-4 py-3 font-semibold text-slate-900">COURSES</th>
+                              <th className="px-4 py-3 font-semibold text-slate-900">CATEGORY</th>
+                              <th className="px-4 py-3 font-semibold text-slate-900">FEES</th>
+                              <th className="px-4 py-3 font-semibold text-slate-900">STATUS</th>
+                              <th className="px-4 py-3 font-semibold text-slate-900">ACTION</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {addedBooks.map((book) => (
+                              <tr key={book.id} className="border-b border-slate-100 hover:bg-slate-50 transition">
+                                <td className="px-4 py-4">
+                                  <div className="flex items-center gap-3">
+                                    <img src={book.imageUrl} alt={book.name} className="h-12 w-12 rounded-lg object-cover" />
+                                    <div className="min-w-0">
+                                      <p className="truncate font-medium text-slate-900">{book.name}</p>
+                                      <p className="text-xs text-slate-500">{book.sizeLabel}</p>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-4 text-slate-600">{book.category}</td>
+                                <td className="px-4 py-4 font-semibold text-slate-900">₹{book.mrp}</td>
+                                <td className="px-4 py-4">
+                                  <span className="inline-flex rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700">
+                                    Published
+                                  </span>
+                                </td>
+                                <td className="px-4 py-4">
+                                  <div className="flex items-center gap-2">
+                                    <button 
+                                      type="button"
+                                      onClick={() => handleEditBook(book)}
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
+                                      title="Edit book"
+                                    >
+                                      <Edit2 className="h-4 w-4 text-slate-600" />
+                                    </button>
+                                    <button 
+                                      type="button"
+                                      onClick={() => handleDeleteBookWithConfirm(book.id)}
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
+                                      title="Delete book"
+                                    >
+                                      <Trash2 className="h-4 w-4 text-slate-600" />
+                                    </button>
+                                    <button 
+                                      type="button"
+                                      onClick={() => handleToggleLikeBook(book.id)}
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
+                                      title={likedBookIds.has(book.id) ? "Unlike book" : "Like book"}
+                                    >
+                                      <Heart className={`h-4 w-4 ${likedBookIds.has(book.id) ? 'fill-red-500 text-red-500' : 'text-slate-600'}`} />
+                                    </button>
+                                    <Link
+                                      href={`/dashboard/teachers/books/${book.id}`}
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
+                                      title="View book"
+                                    >
+                                      <Eye className="h-4 w-4 text-slate-600" />
+                                    </Link>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="rounded-[24px] bg-white p-6 shadow-sm">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-900">Add Videos</h3>
+                        <p className="text-sm text-slate-500">Click Add+ to open the video form.</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setIsVideoFormOpen((current) => !current)}
+                        className="inline-flex h-10 items-center justify-center rounded-xl bg-[#1ec28e] px-4 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
+                      >
+                        {isVideoFormOpen ? "Close" : "Add+"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {isVideoFormOpen ? (
+                    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/35 p-4 backdrop-blur-sm">
+                      <div className="w-full max-w-xl rounded-[12px] bg-white shadow-2xl flex flex-col max-h-[90vh]">
+                        <div className="overflow-y-auto flex-1 p-6 space-y-5">
+                          {/* Course Title */}
+                          <div>
+                            <label className="block text-sm font-medium text-slate-800 mb-2">Course Title</label>
+                            <input
+                              type="text"
+                              value={bookNameInput}
+                              onChange={(event) => setBookNameInput(event.target.value)}
+                              placeholder=""
+                              className="w-full h-10 rounded border border-slate-300 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400"
+                            />
+                          </div>
+
+                          {/* Category and Instructor */}
+                          <div className="grid gap-4 md:grid-cols-2">
+                            <div>
+                              <label className="block text-sm font-medium text-slate-800 mb-2">Category</label>
+                              <select
+                                value={bookCategoryInput}
+                                onChange={(event) => setBookCategoryInput(event.target.value)}
+                                className="w-full h-10 rounded border border-slate-300 px-3 text-sm text-slate-600 outline-none transition focus:border-slate-400 appearance-none bg-white cursor-pointer"
+                                style={{backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem'}}
+                              >
+                                <option value="">Select</option>
+                                <option value="Technology">Technology</option>
+                                <option value="Business">Business</option>
+                                <option value="Design">Design</option>
+                                <option value="Education">Education</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-slate-800 mb-2">Instructor</label>
+                              <select
+                                value={videoInstructorInput}
+                                onChange={(event) => setVideoInstructorInput(event.target.value)}
+                                className="w-full h-10 rounded border border-slate-300 px-3 text-sm text-slate-600 outline-none transition focus:border-slate-400 appearance-none bg-white cursor-pointer"
+                                style={{backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem'}}
+                              >
+                                <option value="">Select</option>
+                                <option value={user.name}>{user.name}</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          {/* Type of mode */}
+                          <div>
+                            <label className="block text-sm font-medium text-slate-800 mb-3">Type of mode</label>
+                            <div className="flex gap-8">
+                              <label className="flex items-center gap-3 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="videoMode"
+                                  value="online"
+                                  checked={videoModeInput === "online"}
+                                  onChange={(event) => setVideoModeInput(event.target.value as "online" | "offline")}
+                                  className="w-5 h-5"
+                                  style={{accentColor: '#5b61d9'}}
+                                />
+                                <span className="text-sm text-slate-700">Online</span>
+                              </label>
+                              <label className="flex items-center gap-3 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="videoMode"
+                                  value="offline"
+                                  checked={videoModeInput === "offline"}
+                                  onChange={(event) => setVideoModeInput(event.target.value as "online" | "offline")}
+                                  className="w-5 h-5"
+                                  style={{accentColor: '#5b61d9'}}
+                                />
+                                <span className="text-sm text-slate-700">Offline</span>
+                              </label>
+                            </div>
+                          </div>
+
+                          {/* Description */}
+                          <div>
+                            <label className="block text-sm font-medium text-slate-900 mb-2">Description</label>
+                            <textarea
+                              value={videoDescriptionInput}
+                              onChange={(event) => setVideoDescriptionInput(event.target.value)}
+                              placeholder="Enter course description"
+                              rows={3}
+                              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                            />
+                          </div>
+
+                          {/* Course Type */}
+                          <div>
+                            <label className="block text-sm font-medium text-slate-800 mb-3">Course Type</label>
+                            <div className="flex gap-8">
+                              <label className="flex items-center gap-3 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="videoType"
+                                  value="free"
+                                  checked={videoTypeInput === "free"}
+                                  onChange={(event) => setVideoTypeInput(event.target.value as "free" | "paid")}
+                                  className="w-5 h-5"
+                                  style={{accentColor: '#5b61d9'}}
+                                />
+                                <span className="text-sm text-slate-700">Free</span>
+                              </label>
+                              <label className="flex items-center gap-3 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="videoType"
+                                  value="paid"
+                                  checked={videoTypeInput === "paid"}
+                                  onChange={(event) => setVideoTypeInput(event.target.value as "free" | "paid")}
+                                  className="w-5 h-5"
+                                  style={{accentColor: '#5b61d9'}}
+                                />
+                                <span className="text-sm text-slate-700">Paid</span>
+                              </label>
+                            </div>
+                          </div>
+
+                          {/* Video URL */}
+                          <div>
+                            <label className="block text-sm font-medium text-slate-900 mb-2">Upload Video URL</label>
+                            <input
+                              type="url"
+                              value={youtubeLinkInput}
+                              onChange={(event) => setYoutubeLinkInput(event.target.value)}
+                              placeholder="https://videos.com"
+                              className="w-full h-10 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                            />
+                          </div>
+
+                          {/* Level and Price */}
+                          <div className="grid gap-4 md:grid-cols-2">
+                            <div>
+                              <label className="block text-sm font-medium text-slate-900 mb-2">Level</label>
+                              <select
+                                value={videoLevelInput}
+                                onChange={(event) => setVideoLevelInput(event.target.value)}
+                                className="w-full h-10 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                              >
+                                <option value="">Select</option>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-slate-900 mb-2">Price</label>
+                              <div className="relative h-10 rounded-lg border border-slate-200 focus-within:border-[#1ec28e]">
+                                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-500">$</span>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  step="0.01"
+                                  value={videoMrpInput}
+                                  onChange={(event) => setVideoMrpInput(event.target.value)}
+                                  placeholder="0.00"
+                                  className="h-10 w-full rounded-lg border-0 bg-transparent pl-8 pr-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Course Post Package */}
+                          <div>
+                            <label className="block text-sm font-medium text-slate-900 mb-2">Course Post Package</label>
+                            <div className="grid gap-3 md:grid-cols-2">
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="videoPackage"
+                                  value="30days"
+                                  checked={videoCoursePackageInput === "30days"}
+                                  onChange={(event) => setVideoCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
+                                  className="w-4 h-4 accent-[#1ec28e]"
+                                />
+                                <span className="text-sm text-slate-700">30 Days Free</span>
+                              </label>
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="videoPackage"
+                                  value="60days"
+                                  checked={videoCoursePackageInput === "60days"}
+                                  onChange={(event) => setVideoCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
+                                  className="w-4 h-4 accent-[#1ec28e]"
+                                />
+                                <span className="text-sm text-slate-700">60 days / $20</span>
+                              </label>
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="videoPackage"
+                                  value="6months"
+                                  checked={videoCoursePackageInput === "6months"}
+                                  onChange={(event) => setVideoCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
+                                  className="w-4 h-4 accent-[#1ec28e]"
+                                />
+                                <span className="text-sm text-slate-700">6 months / $50</span>
+                              </label>
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="videoPackage"
+                                  value="1year"
+                                  checked={videoCoursePackageInput === "1year"}
+                                  onChange={(event) => setVideoCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
+                                  className="w-4 h-4 accent-[#1ec28e]"
+                                />
+                                <span className="text-sm text-slate-700">1 year / $80</span>
+                              </label>
+                            </div>
+                          </div>
+
+                          {/* Upload Video Files */}
+                          <div>
+                            <label className="block text-sm font-medium text-slate-900 mb-2">Upload Video Files</label>
+                            <label className="flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-lg border border-dashed border-slate-300 bg-[#f7faf8] px-4 text-sm text-slate-600 transition hover:border-[#1ec28e] hover:bg-[#f0f7f5]">
+                              <span>{pendingVideoFiles.length > 0 ? `${pendingVideoFiles.length} file(s) selected` : "Choose video files to upload"}</span>
+                              <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-medium text-[#1ec28e]">Browse</span>
+                              <input
+                                type="file"
+                                multiple
+                                accept="video/*"
+                                className="hidden"
+                                onChange={(event) => setPendingVideoFiles(Array.from(event.target.files ?? []))}
+                              />
+                            </label>
+                          </div>
+
+                          {youtubeLinkError && (
+                            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-700">{youtubeLinkError}</div>
+                          )}
+                        </div>
+                        <div className="border-t border-slate-200 bg-white p-6 flex gap-3 justify-between">
+                          <button
+                            type="button"
+                            onClick={() => setIsVideoFormOpen(false)}
+                            className="inline-flex h-11 items-center justify-center rounded px-6 text-sm font-medium text-white transition"
+                            style={{backgroundColor: '#ef5350'}}
+                          >
+                            Save to Draft
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleVideoSave}
+                            className="inline-flex h-11 items-center justify-center rounded px-6 text-sm font-medium text-white transition"
+                            style={{backgroundColor: '#6366f1'}}
+                          >
+                            Publish Now
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  <div className="rounded-[24px] bg-white p-6 shadow-sm">
+                    <div className="mb-6 flex items-center justify-between gap-3">
+                      <h4 className="text-base font-semibold text-slate-900">Uploaded Videos</h4>
+                      <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-semibold text-[#1ec28e]">
+                        {addedVideos.length}
+                      </span>
+                    </div>
+
+                    {addedVideos.length === 0 ? (
+                      <p className="rounded-2xl bg-[#f7faf8] px-4 py-3 text-sm text-slate-500">No videos uploaded yet.</p>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-sm">
+                          <thead>
+                            <tr className="border-b border-slate-200">
+                              <th className="px-4 py-3 font-semibold text-slate-900">COURSES</th>
+                              <th className="px-4 py-3 font-semibold text-slate-900">CATEGORY</th>
+                              <th className="px-4 py-3 font-semibold text-slate-900">FEES</th>
+                              <th className="px-4 py-3 font-semibold text-slate-900">STATUS</th>
+                              <th className="px-4 py-3 font-semibold text-slate-900">ACTION</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {addedVideos.map((video) => (
+                              <tr key={video.id} className="border-b border-slate-100 hover:bg-slate-50 transition">
+                                <td className="px-4 py-4">
+                                  <div className="flex items-center gap-3">
+                                    <div className="h-12 w-12 rounded-lg bg-black overflow-hidden flex-shrink-0">
+                                      {video.source === "youtube" ? (
+                                        <img src={`https://img.youtube.com/vi/${video.url.split('embed/')[1]?.split('"')[0] || 'dQw4w9WgXcQ'}/default.jpg`} alt={video.name} className="h-full w-full object-cover" />
+                                      ) : (
+                                        <div className="h-full w-full bg-slate-800 flex items-center justify-center">
+                                          <Play className="h-6 w-6 text-white" />
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="min-w-0">
+                                      <p className="truncate font-medium text-slate-900">{video.name}</p>
+                                      <p className="text-xs text-slate-500">{video.sizeLabel}</p>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-4 text-slate-600">{video.category || "Uncategorized"}</td>
+                                <td className="px-4 py-4 font-semibold text-slate-900">₹{video.mrp || "0.00"}</td>
+                                <td className="px-4 py-4">
+                                  <span className="inline-flex rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700">
+                                    Published
+                                  </span>
+                                </td>
+                                <td className="px-4 py-4">
+                                  <div className="flex items-center gap-2">
+                                    <button 
+                                      type="button"
+                                      onClick={() => handleEditVideo(video)}
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
+                                      title="Edit video"
+                                    >
+                                      <Edit2 className="h-4 w-4 text-slate-600" />
+                                    </button>
+                                    <button 
+                                      type="button"
+                                      onClick={() => handleDeleteVideoWithConfirm(video.id)}
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
+                                      title="Delete video"
+                                    >
+                                      <Trash2 className="h-4 w-4 text-slate-600" />
+                                    </button>
+                                    <button 
+                                      type="button"
+                                      onClick={() => handleToggleLikeVideo(video.id)}
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
+                                      title={likedVideoIds.has(video.id) ? "Unlike video" : "Like video"}
+                                    >
+                                      <Heart className={`h-4 w-4 ${likedVideoIds.has(video.id) ? 'fill-red-500 text-red-500' : 'text-slate-600'}`} />
+                                    </button>
+                                    <Link
+                                      href={`/dashboard/teachers/videos/${video.id}`}
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
+                                      title="View video"
+                                    >
+                                      <Eye className="h-4 w-4 text-slate-600" />
+                                    </Link>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          ) : activeSection === "upgrade" ? (
+            <div className="mt-6 space-y-6">
+              <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+                <form onSubmit={handleUpgradeSubmit} className="rounded-[24px] bg-white p-6 shadow-sm">
+                <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900">Upgrade Profile</h3>
+                    <p className="text-sm text-slate-500">Pay with Razorpay to rank higher than other professionals.</p>
+                  </div>
+                  <CreditCard className="h-5 w-5 text-[#1ec28e]" />
+                </div>
+
+                <div className="mt-6 rounded-2xl bg-[#f7faf8] p-4">
+                  <p className="text-sm font-semibold text-slate-900">Selected plan</p>
+                  <div className="mt-3 flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                    <div>
+                      <p className="text-base font-semibold text-slate-900">
+                        {upgradePlans.find((plan) => plan.key === upgradePlan)?.name}
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        {upgradePlans.find((plan) => plan.key === upgradePlan)?.duration}
+                      </p>
+                    </div>
+                    <p className="text-lg font-semibold text-[#1ec28e]">
+                      {upgradePlans.find((plan) => plan.key === upgradePlan)?.price}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                  <label className="space-y-2 text-sm font-medium text-slate-700">
+                    Cardholder name
+                    <input
+                      type="text"
+                      placeholder="Name on card"
+                      className="h-12 w-full rounded-full border border-slate-200 px-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
+                    />
+                  </label>
+                </div>
+
+                <div className="mt-4 grid gap-4 md:grid-cols-3">
+                  <input
+                    type="text"
+                    placeholder="Card number"
+                    className="h-12 w-full rounded-full border border-slate-200 px-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
+                  />
+                  <input
+                    type="text"
+                    placeholder="MM/YY"
+                    className="h-12 w-full rounded-full border border-slate-200 px-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
+                  />
+                  <input
+                    type="text"
+                    placeholder="CVC"
+                    className="h-12 w-full rounded-full border border-slate-200 px-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e]"
+                  />
+                </div>
+
+                <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-sm font-semibold text-slate-900">Razorpay payment</p>
+                  <p className="mt-1 text-xs text-slate-500">Open payment link, complete payment, then confirm below.</p>
+                  <div className="mt-3 flex flex-wrap items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={handleOpenRazorpay}
+                      className="inline-flex h-10 items-center rounded-full bg-[#1ec28e] px-4 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
+                    >
+                      Pay Now
+                    </button>
+                    <a
+                      href={RAZORPAY_PAYMENT_LINK}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-medium text-slate-500 underline-offset-2 hover:text-slate-700 hover:underline"
+                    >
+                      {RAZORPAY_PAYMENT_LINK}
+                    </a>
+                  </div>
+                </div>
+
+                <div className="mt-6 rounded-2xl bg-[#f7faf8] p-4 text-sm text-slate-600">
+                  <p className="font-semibold text-slate-900">What you get</p>
+                  <ul className="mt-3 space-y-2">
+                    <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-[#1ec28e]" />Higher ranking in professional listings</li>
+                    <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-[#1ec28e]" />Boost badge on your profile</li>
+                    <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-[#1ec28e]" />Priority visibility for clients</li>
+                  </ul>
+                </div>
+
+                {profileError && (
+                  <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{profileError}</div>
+                )}
+
+                {profileMessage && (
+                  <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                    {profileMessage}
+                  </div>
+                )}
+
+                <div className="mt-6 flex items-center gap-3">
+                  <button
+                    type="submit"
+                    disabled={processingUpgrade}
+                    className="inline-flex h-12 items-center gap-2 rounded-full border border-[#1ec28e] bg-white px-5 text-sm font-medium text-[#1ec28e] transition hover:bg-[#effaf6] disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    <CreditCard className="h-4 w-4" />
+                    {processingUpgrade ? "Confirming..." : "Confirm Payment"}
+                  </button>
+                  <span className="text-xs text-slate-500">{hasOpenedRazorpay ? "Payment link opened. After payment, click Confirm Payment." : "Open Razorpay link first."}</span>
+                </div>
+              </form>
+
+              <aside className="rounded-[24px] bg-white p-6 shadow-sm">
+                <h4 className="text-base font-semibold text-slate-900">Upgrade summary</h4>
+                <p className="mt-2 text-sm text-slate-500">Your profile is currently visible as a standard professional profile.</p>
+
+                <div className="mt-5 grid gap-3">
+                  {upgradePlans.map((plan) => {
+                    const isSelected = upgradePlan === plan.key;
+
+                    return (
+                      <button
+                        key={plan.key}
+                        type="button"
+                        onClick={() => {
+                          setUpgradePlan(plan.key);
+                          setHasOpenedRazorpay(false);
+                        }}
+                        className={`rounded-2xl border p-4 text-left transition ${
+                          isSelected
+                            ? "border-[#1ec28e] bg-[#effaf6]"
+                            : "border-slate-200 bg-white hover:border-[#1ec28e]/40 hover:bg-slate-50"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <div>
+                            <p className="text-base font-semibold text-slate-900">{plan.name}</p>
+                            <p className="text-sm text-slate-500">{plan.duration}</p>
+                          </div>
+                          <p className="text-lg font-semibold text-[#1ec28e]">{plan.price}</p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-5 rounded-2xl border border-slate-100 bg-[#f7faf8] p-4">
+                  <p className="text-sm font-semibold text-slate-900">Boost status</p>
+                  <p className="mt-2 text-sm text-slate-600">
+                    {profileBoostedUntil ? `Active until ${new Date(profileBoostedUntil).toLocaleDateString()}` : "Not upgraded yet"}
+                  </p>
+                </div>
+
+                <div className="mt-4 rounded-2xl bg-[#effaf6] p-4 text-sm text-slate-600">
+                  <p className="font-semibold text-slate-900">Ranking benefit</p>
+                  <p className="mt-2">Upgraded profiles appear higher than standard professionals in search and discovery lists.</p>
+                </div>
+                </aside>
+              </div>
+
+              {profileBoostedUntil ? (
+                <div className="rounded-[24px] bg-white p-6 shadow-sm">
+                  <h4 className="text-base font-semibold text-slate-900">Upgrade timeline</h4>
+                  <p className="mt-1 text-sm text-slate-500">Live remaining duration for your active profile boost.</p>
+                  <UpgradeTimeline boostedUntil={profileBoostedUntil} />
+                </div>
+              ) : null}
+              </div>
+          ) : activeSection === "settings" ? (
+            <div className="mt-6 grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
+              <div className="rounded-[24px] bg-white p-6 shadow-sm">
+                <div className="flex items-center gap-4">
+                  <Image
+                    src={avatarSrc}
+                    alt="Profile preview"
+                    width={96}
+                    height={96}
+                    className="h-24 w-24 rounded-3xl border border-slate-100 object-cover"
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-slate-500">Profile Photo</p>
+                    <p className="mt-1 text-base font-semibold text-slate-900">Update your public image</p>
+                    <label className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#1ec28e] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#18ab7d]">
+                      <Upload className="h-4 w-4" />
+                      Choose photo
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(event) => setPhotoFile(event.target.files?.[0] ?? null)}
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                <div className="mt-6 rounded-2xl bg-[#f7faf8] p-4 text-sm text-slate-600">
+                  <p className="font-semibold text-slate-900">Certificates</p>
+                  <p className="mt-1">Upload certificates, awards, or proof documents.</p>
+                </div>
+
+                <label className="mt-4 block space-y-2 text-sm font-medium text-slate-700">
+                  Add certificates
+                  <div className="flex min-h-14 items-center gap-3 rounded-full border border-dashed border-slate-300 px-4 text-sm text-slate-500">
+                    <Upload className="h-4 w-4 text-slate-400" />
+                    <span>{certificateUploads.length > 0 ? `${certificateUploads.length} file(s) selected` : "Choose one or more files"}</span>
+                  </div>
+                  <input
+                    type="file"
+                    multiple
+                    accept=".pdf,.png,.jpg,.jpeg,.webp"
+                    className="hidden"
+                    onChange={(event) => setCertificateUploads(Array.from(event.target.files ?? []))}
+                  />
+                </label>
+
+                {certificateList.length > 0 && (
+                  <div className="mt-4 rounded-2xl border border-slate-100 bg-white p-4">
+                    <p className="text-sm font-semibold text-slate-900">Saved certificates</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {certificateList.map((certificate) => (
+                        <a
+                          key={certificate}
+                          href={certificate}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="rounded-full bg-[#f7faf8] px-3 py-1 text-xs text-slate-600 transition hover:bg-[#eaf7f1] hover:text-[#1ec28e]"
+                        >
+                          {certificate.split("/").pop()}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <form onSubmit={handleProfileSave} className="rounded-[24px] bg-white p-6 shadow-sm">
+                <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900">Edit Profile</h3>
+                    <p className="text-sm text-slate-500">Update your profile information and details.</p>
+                  </div>
+                  <Settings className="h-5 w-5 text-[#1ec28e]" />
+                </div>
+
+                {/* First Name + Last Name */}
+                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                  <label className="space-y-2 text-sm font-medium text-slate-700">
+                    First Name
+                    <input
+                      type="text"
+                      value={profileFirstName}
+                      onChange={(event) => setProfileFirstName(event.target.value)}
+                      placeholder="Enter first name"
+                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                    />
+                  </label>
+
+                  <label className="space-y-2 text-sm font-medium text-slate-700">
+                    Last Name
+                    <input
+                      type="text"
+                      value={profileLastName}
+                      onChange={(event) => setProfileLastName(event.target.value)}
+                      placeholder="Enter last name"
+                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                    />
+                  </label>
+                </div>
+
+                {/* Email + Phone */}
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  <label className="space-y-2 text-sm font-medium text-slate-700">
+                    Email Address
+                    <input
+                      type="email"
+                      value={profileEmail}
+                      onChange={(event) => setProfileEmail(event.target.value)}
+                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                    />
+                  </label>
+
+                  <label className="space-y-2 text-sm font-medium text-slate-700">
+                    Phone Number
+                    <input
+                      type="tel"
+                      value={profileContactNumber}
+                      onChange={(event) => setProfileContactNumber(event.target.value)}
+                      placeholder="e.g. +91 98765 43210"
+                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                    />
+                  </label>
+                </div>
+
+                {/* Address */}
+                <div className="mt-4">
+                  <label className="space-y-2 text-sm font-medium text-slate-700">
+                    Address
+                    <input
+                      type="text"
+                      value={profileAddress}
+                      onChange={(event) => setProfileAddress(event.target.value)}
+                      placeholder="Enter your address"
+                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                    />
+                  </label>
+                </div>
+
+                {/* City + Postal Code + Country */}
+                <div className="mt-4 grid gap-4 md:grid-cols-3">
+                  <label className="space-y-2 text-sm font-medium text-slate-700">
+                    City
+                    <input
+                      type="text"
+                      value={profileCity}
+                      onChange={(event) => setProfileCity(event.target.value)}
+                      placeholder="Enter city"
+                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                    />
+                  </label>
+
+                  <label className="space-y-2 text-sm font-medium text-slate-700">
+                    Postal Code
+                    <input
+                      type="text"
+                      value={profilePostalCode}
+                      onChange={(event) => setProfilePostalCode(event.target.value)}
+                      placeholder="Enter postal code"
+                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                    />
+                  </label>
+
+                  <label className="space-y-2 text-sm font-medium text-slate-700">
+                    Country
+                    <input
+                      type="text"
+                      value={profileCountry}
+                      onChange={(event) => setProfileCountry(event.target.value)}
+                      placeholder="Enter country"
+                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                    />
+                  </label>
+                </div>
+
+                {/* Social Links - Row 1 */}
+                <div className="mt-4">
+                  <p className="mb-3 text-sm font-medium text-slate-700">Social Links</p>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <label className="space-y-2 text-sm font-medium text-slate-700">
+                      Facebook
+                      <input
+                        type="url"
+                        value={profileFacebook}
+                        onChange={(event) => setProfileFacebook(event.target.value)}
+                        placeholder="https://facebook.com/username"
+                        className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                      />
+                    </label>
+
+                    <label className="space-y-2 text-sm font-medium text-slate-700">
+                      Google
+                      <input
+                        type="url"
+                        value={profileGoogle}
+                        onChange={(event) => setProfileGoogle(event.target.value)}
+                        placeholder="https://google.com/username"
+                        className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                {/* Social Links - Row 2 */}
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  <label className="space-y-2 text-sm font-medium text-slate-700">
+                    Twitter
+                    <input
+                      type="url"
+                      value={profileTwitter}
+                      onChange={(event) => setProfileTwitter(event.target.value)}
+                      placeholder="https://twitter.com/username"
+                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                    />
+                  </label>
+
+                  <label className="space-y-2 text-sm font-medium text-slate-700">
+                    Pinterest
+                    <input
+                      type="url"
+                      value={profilePinterest}
+                      onChange={(event) => setProfilePinterest(event.target.value)}
+                      placeholder="https://pinterest.com/username"
+                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                    />
+                  </label>
+                </div>
+
+                {/* About Me */}
+                <div className="mt-4">
+                  <label className="space-y-2 text-sm font-medium text-slate-700">
+                    About Me
+                    <textarea
+                      value={profileAboutMe}
+                      onChange={(event) => setProfileAboutMe(event.target.value)}
+                      placeholder="Tell us about yourself, your experience, and expertise..."
+                      rows={4}
+                      className="w-full rounded-lg border border-slate-200 px-3 py-2 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                    />
+                  </label>
+                </div>
+
+                {/* Specialization and Location (kept for backward compatibility) */}
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  <label className="space-y-2 text-sm font-medium text-slate-700">
+                    Specialization
+                    <input
+                      type="text"
+                      value={profileSpecialization}
+                      onChange={(event) => setProfileSpecialization(event.target.value)}
+                      placeholder="e.g. UI/UX Design"
+                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                    />
+                  </label>
+
+                  <label className="space-y-2 text-sm font-medium text-slate-700">
+                    Location
+                    <input
+                      type="text"
+                      value={profileLocation}
+                      onChange={(event) => setProfileLocation(event.target.value)}
+                      placeholder="Enter your city or address"
+                      className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                    />
+                  </label>
+                </div>
+
+                {profileError && (
+                  <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{profileError}</div>
+                )}
+
+                {profileMessage && (
+                  <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                    {profileMessage}
+                  </div>
+                )}
+
+                <div className="mt-6 flex items-center gap-3">
+                  <button
+                    type="submit"
+                    disabled={savingProfile}
+                    className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#1ec28e] px-5 text-sm font-medium text-white transition hover:bg-[#18ab7d] disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    <Save className="h-4 w-4" />
+                    {savingProfile ? "Saving..." : "Update Profile"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          ) : (
+            <>
+              <div className="mt-6 rounded-[24px] bg-white p-5 shadow-sm md:p-6">
+                <div className="grid gap-5 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:items-start">
+                  <div className="flex justify-center lg:justify-start">
+                    <Image
+                      src={avatarSrc}
+                      alt="Professional profile"
+                      width={92}
+                      height={92}
+                      className="h-20 w-20 rounded-3xl border border-slate-100 object-cover"
+                    />
+                  </div>
+
+                  <div className="text-center lg:text-left">
+                    <p className="text-sm font-medium text-[#1ec28e]">Professional Profile</p>
+                    <h3 className="mt-1 text-2xl font-semibold text-slate-900">{profileName || "Professional User"}</h3>
+
+                    {(profileSpecialization || profileContactNumber) && (
+                      <div className="mt-2 flex flex-wrap items-center justify-center gap-2 text-xs lg:justify-start">
+                        {profileSpecialization ? (
+                          <span className="rounded-full bg-[#f7faf8] px-3 py-1 text-slate-600">{profileSpecialization}</span>
+                        ) : null}
+                        {profileContactNumber ? (
+                          <span className="rounded-full bg-[#f7faf8] px-3 py-1 text-slate-600">{profileContactNumber}</span>
+                        ) : null}
+                      </div>
+                    )}
+
+                    <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-xs text-slate-500 lg:justify-start">
+                      <span className="rounded-full bg-[#effaf6] px-3 py-1 text-[#1ec28e]">Professional</span>
+                      {certificateList.length > 0 ? (
+                        <span className="rounded-full bg-slate-100 px-3 py-1">{certificateList.length} Certificates</span>
+                      ) : null}
+                      {profileBoostedUntil ? (
+                        <span className="rounded-full bg-amber-50 px-3 py-1 text-amber-700">Boost active</span>
+                      ) : null}
+                    </div>
+
+                    {profileLocation ? (
+                      <a
+                        href={mapsHref}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-[#1ec28e] transition hover:text-[#18ab7d]"
+                      >
+                        {profileLocation}
+                      </a>
+                    ) : null}
+                  </div>
+
+                  <div className="flex items-start justify-center lg:justify-end">
+                    <button
+                      type="button"
+                      onClick={() => setActiveSection("settings")}
+                      className="inline-flex h-11 items-center gap-2 rounded-full bg-[#1ec28e] px-5 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
+                    >
+                      <Settings className="h-4 w-4" />
+                      Edit
+                    </button>
+                  </div>
+                </div>
+
+                {certificateList.length > 0 && (
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {certificateList.slice(0, 4).map((certificate) => (
+                      <a
+                        key={certificate}
+                        href={certificate}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-full bg-[#f7faf8] px-3 py-1 text-xs text-slate-600 transition hover:bg-[#eaf7f1] hover:text-[#1ec28e]"
+                      >
+                        {certificate.split("/").pop()}
+                      </a>
+                    ))}
+                    {certificateList.length > 4 && (
+                      <span className="rounded-full bg-[#f7faf8] px-3 py-1 text-xs text-slate-600">
+                        +{certificateList.length - 4} more
+                      </span>
+                    )}
+                  </div>
+                )}
+
+              </div>
+
+              <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                {overviewCards.map((card) => {
+                  const Icon = card.icon;
+
+                  return (
+                    <div key={card.title} className="rounded-[24px] bg-white p-5 shadow-sm">
+                      <div className={`mx-auto grid h-16 w-16 place-items-center rounded-2xl ${card.iconBg}`}>
+                        <Icon className="h-7 w-7" />
+                      </div>
+                      <h3 className="mt-4 text-center text-base font-semibold text-slate-900">{card.title}</h3>
+                      <p className="mt-2 text-center text-sm text-slate-500">{card.description}</p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+                <div>
+                  <div className="mb-4 flex items-center justify-between gap-4">
+                    <h3 className="text-lg font-semibold text-slate-900">Featured Course</h3>
+                    <div className="flex items-center gap-2 rounded-full bg-white p-1 shadow-sm">
+                      {[1, 2, 3].map((pageNumber) => (
+                        <button
+                          key={pageNumber}
+                          onClick={() => setFeaturedPage(pageNumber as FeaturedPage)}
+                          className={`min-w-10 rounded-full px-3 py-2 text-sm font-medium transition ${
+                            featuredPage === pageNumber ? "bg-[#1ec28e] text-white" : "text-slate-500 hover:bg-slate-100"
+                          }`}
+                        >
+                          {pageNumber}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {featuredContent}
+                </div>
+
+                <aside className="rounded-[24px] bg-white p-4 shadow-sm">
+                  {featuredPage === 2 ? (
+                    <>
+                      <div className="space-y-3">
+                        <div className="relative overflow-hidden rounded-[18px] bg-slate-950">
+                          <iframe
+                            className="aspect-video w-full"
+                            src={`https://www.youtube.com/embed/${detailVideos[0].youtubeId}`}
+                            title={detailVideos[0].title}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        </div>
+
+                        <div className="relative overflow-hidden rounded-[18px] bg-slate-950">
+                          <iframe
+                            className="aspect-video w-full"
+                            src={`https://www.youtube.com/embed/${detailVideos[1].youtubeId}`}
+                            title={detailVideos[1].title}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        </div>
+                      </div>
+
+                    <div className="mt-5">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-base font-semibold text-slate-900">YouTube Learning Playlist</h4>
+                          <span className="text-sm font-semibold text-[#1ec28e]">Live</span>
+                        </div>
+
+                        <div className="mt-4 rounded-2xl bg-[#f7faf8] p-4">
+                          <p className="text-sm font-semibold text-slate-900">Courses included</p>
+                          <ul className="mt-3 space-y-2 text-sm text-slate-500">
+                            <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-[#1ec28e]" />CSS Grid and Flexbox</li>
+                            <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-[#1ec28e]" />Responsive layout practice</li>
+                            <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-[#1ec28e]" />Portfolio project walkthroughs</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="relative overflow-hidden rounded-[18px]">
+                        <Image src="/offer-video.png" alt="Detail course" width={600} height={360} className="h-52 w-full object-cover" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
+                        <button className="absolute inset-0 m-auto grid h-14 w-14 place-items-center rounded-full bg-white/95 text-[#1ec28e] shadow-lg">
+                          <Video className="h-6 w-6 fill-current" />
+                        </button>
+                      </div>
+
+                      <div className="mt-5">
+                        <div className="flex items-center justify-between gap-4">
+                          <h4 className="text-base font-semibold text-slate-900">The Complete HTML & CSS Bootcamp 2023 Edition</h4>
+                          <span className="text-lg font-semibold text-[#1ec28e]">$49.00</span>
+                        </div>
+
+                        <div className="mt-4 rounded-2xl bg-[#f7faf8] p-4">
+                          <p className="text-sm font-semibold text-slate-900">Course included</p>
+                          <ul className="mt-3 space-y-2 text-sm text-slate-500">
+                            <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-[#1ec28e]" />24 videos by this course</li>
+                            <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-[#1ec28e]" />Access on mobile devices</li>
+                            <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-[#1ec28e]" />Access at any time</li>
+                            <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-[#1ec28e]" />Certificate of completion</li>
+                          </ul>
+                        </div>
+
+                        <div className="mt-4 rounded-2xl border border-[#e7f2ee] bg-white p-4">
+                          <p className="text-sm font-semibold text-slate-900">What you will learn?</p>
+                          <ul className="mt-3 space-y-2 text-sm text-slate-500">
+                            <li className="flex items-start gap-2"><span className="mt-1 h-2 w-2 rounded-full bg-[#1ec28e]" />Improve UI fundamentals</li>
+                            <li className="flex items-start gap-2"><span className="mt-1 h-2 w-2 rounded-full bg-[#1ec28e]" />Create responsive layouts</li>
+                            <li className="flex items-start gap-2"><span className="mt-1 h-2 w-2 rounded-full bg-[#1ec28e]" />Build professional projects</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </aside>
+              </div>
+            </>
           )}
-        </div>
-      ) : activeSection === "add" ? (
-        <DashboardAddSection
-          userName={user.name}
-          addContentTab={addContentTab} setAddContentTab={setAddContentTab}
-          isBookFormOpen={isBookFormOpen} setIsBookFormOpen={setIsBookFormOpen}
-          isVideoFormOpen={isVideoFormOpen} setIsVideoFormOpen={setIsVideoFormOpen}
-          bookNameInput={bookNameInput} setBookNameInput={setBookNameInput}
-          bookMrpInput={bookMrpInput} setBookMrpInput={setBookMrpInput}
-          bookCategoryInput={bookCategoryInput} setBookCategoryInput={setBookCategoryInput}
-          bookInstructorInput={bookInstructorInput} setBookInstructorInput={setBookInstructorInput}
-          bookModeInput={bookModeInput} setBookModeInput={setBookModeInput}
-          bookDescriptionInput={bookDescriptionInput} setBookDescriptionInput={setBookDescriptionInput}
-          bookTypeInput={bookTypeInput} setBookTypeInput={setBookTypeInput}
-          bookLevelInput={bookLevelInput} setBookLevelInput={setBookLevelInput}
-          bookCoursePackageInput={bookCoursePackageInput} setBookCoursePackageInput={setBookCoursePackageInput}
-          bookImageFile={bookImageFile} setBookImageFile={setBookImageFile}
-          bookLinkInput={bookLinkInput} setBookLinkInput={setBookLinkInput}
-          pendingBookFiles={pendingBookFiles} setPendingBookFiles={setPendingBookFiles}
-          bookFormError={bookFormError}
-          handleBookSave={handleBookSave}
-          youtubeLinkInput={youtubeLinkInput} setYoutubeLinkInput={setYoutubeLinkInput}
-          videoMrpInput={videoMrpInput} setVideoMrpInput={setVideoMrpInput}
-          videoInstructorInput={videoInstructorInput} setVideoInstructorInput={setVideoInstructorInput}
-          videoModeInput={videoModeInput} setVideoModeInput={setVideoModeInput}
-          videoDescriptionInput={videoDescriptionInput} setVideoDescriptionInput={setVideoDescriptionInput}
-          videoTypeInput={videoTypeInput} setVideoTypeInput={setVideoTypeInput}
-          videoLevelInput={videoLevelInput} setVideoLevelInput={setVideoLevelInput}
-          videoCoursePackageInput={videoCoursePackageInput} setVideoCoursePackageInput={setVideoCoursePackageInput}
-          pendingVideoFiles={pendingVideoFiles} setPendingVideoFiles={setPendingVideoFiles}
-          youtubeLinkError={youtubeLinkError}
-          handleVideoSave={handleVideoSave}
-          addedBooks={addedBooks} addedVideos={addedVideos}
-          likedBookIds={likedBookIds} likedVideoIds={likedVideoIds}
-          handleToggleLikeBook={handleToggleLikeBook} handleToggleLikeVideo={handleToggleLikeVideo}
-          handleEditBook={handleEditBook} handleEditVideo={handleEditVideo}
-          handleDeleteBookWithConfirm={handleDeleteBookWithConfirm}
-          handleDeleteVideoWithConfirm={handleDeleteVideoWithConfirm}
-        />
-      ) : activeSection === "upgrade" ? (
-        <DashboardUpgradeSection
-          upgradePlan={upgradePlan} setUpgradePlan={setUpgradePlan}
-          profileBoostedUntil={profileBoostedUntil}
-          profileError={profileError} profileMessage={profileMessage}
-          processingUpgrade={processingUpgrade}
-          hasOpenedRazorpay={hasOpenedRazorpay}
-          handleOpenRazorpay={handleOpenRazorpay}
-          handleUpgradeSubmit={handleUpgradeSubmit}
-          setHasOpenedRazorpay={setHasOpenedRazorpay}
-        />
-      ) : activeSection === "settings" ? (
-        <DashboardSettingsSection
-          avatarSrc={avatarSrc}
-          profileFirstName={profileFirstName} setProfileFirstName={setProfileFirstName}
-          profileLastName={profileLastName} setProfileLastName={setProfileLastName}
-          profileEmail={profileEmail} setProfileEmail={setProfileEmail}
-          profileContactNumber={profileContactNumber} setProfileContactNumber={setProfileContactNumber}
-          profileAddress={profileAddress} setProfileAddress={setProfileAddress}
-          profileCity={profileCity} setProfileCity={setProfileCity}
-          profilePostalCode={profilePostalCode} setProfilePostalCode={setProfilePostalCode}
-          profileCountry={profileCountry} setProfileCountry={setProfileCountry}
-          profileFacebook={profileFacebook} setProfileFacebook={setProfileFacebook}
-          profileGoogle={profileGoogle} setProfileGoogle={setProfileGoogle}
-          profileTwitter={profileTwitter} setProfileTwitter={setProfileTwitter}
-          profilePinterest={profilePinterest} setProfilePinterest={setProfilePinterest}
-          profileAboutMe={profileAboutMe} setProfileAboutMe={setProfileAboutMe}
-          profileSpecialization={profileSpecialization} setProfileSpecialization={setProfileSpecialization}
-          profileLocation={profileLocation} setProfileLocation={setProfileLocation}
-          certificateUploads={certificateUploads} setCertificateUploads={setCertificateUploads}
-          certificateList={certificateList}
-          setPhotoFile={setPhotoFile}
-          profileError={profileError} profileMessage={profileMessage}
-          savingProfile={savingProfile}
-          handleProfileSave={handleProfileSave}
-        />
-      ) : (
-        <DashboardOverviewSection
-          avatarSrc={avatarSrc}
-          profileName={profileName}
-          profileSpecialization={profileSpecialization}
-          profileContactNumber={profileContactNumber}
-          profileLocation={profileLocation}
-          profileBoostedUntil={profileBoostedUntil}
-          certificateList={certificateList}
-          mapsHref={mapsHref}
-          featuredPage={featuredPage}
-          setFeaturedPage={setFeaturedPage}
-          setActiveSection={setActiveSection}
-        />
-      )}
-    </section>
+        </section>
       </div>
     </main>
   );

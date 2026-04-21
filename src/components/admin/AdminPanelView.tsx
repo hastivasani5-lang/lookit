@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import {
@@ -7,18 +7,23 @@ import {
   DollarSign,
   FolderTree,
   Home,
-  PencilLine,
   ShieldCheck,
-  Trash2,
-  X,
   UploadCloud,
   Users,
   BellRing,
-  Eye,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import SiteLogo from "@/components/SiteLogo";
+import AdminAlertsPanel from "@/components/admin/AdminAlertsPanel";
+import AdminApprovalsPanel from "@/components/admin/AdminApprovalsPanel";
+import AdminCategoriesPanel from "@/components/admin/AdminCategoriesPanel";
+import AdminPayoutsPanel from "@/components/admin/AdminPayoutsPanel";
+import AdminPanelModals from "@/components/admin/AdminPanelModals";
+import AdminReviewsPanel from "@/components/admin/AdminReviewsPanel";
+import AdminUploadsPanel from "@/components/admin/AdminUploadsPanel";
+import AdminUsersPanel from "@/components/admin/AdminUsersPanel";
+import AdminWorkspace from "@/components/admin/AdminWorkspace";
 
 import type { ProfessionalNotification } from "@/types/notifications";
 const ADMIN_PROFILE = {
@@ -503,9 +508,57 @@ export default function AdminPanelView() {
   const reviewsTotalPages = Math.max(1, Math.ceil(reviewEntries.length / ITEMS_PER_PAGE));
   const reviewsPageStart = (reviewsCurrentPage - 1) * ITEMS_PER_PAGE;
   const paginatedReviewEntries = reviewEntries.slice(reviewsPageStart, reviewsPageStart + ITEMS_PER_PAGE);
-  const dashboardTodayTotalPages = Math.max(1, Math.ceil(approvalRequests.length / DASHBOARD_ITEMS_PER_PAGE));
+  const now = new Date();
+  const isSameCalendarDay = (value: string) => {
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) {
+      return false;
+    }
+
+    return (
+      parsed.getFullYear() === now.getFullYear() &&
+      parsed.getMonth() === now.getMonth() &&
+      parsed.getDate() === now.getDate()
+    );
+  };
+
+  const dashboardTodayRows =
+    todayTableActiveTab === "Student"
+      ? studentsList
+          .filter((student) => isSameCalendarDay(student.joinedAt))
+          .map((student) => ({
+          id: `student-${student.id}`,
+          name: student.name,
+          email: student.email,
+          meta: student.grade || "-",
+          status: "Active",
+          updated: student.joinedAt || "-",
+        }))
+      : todayTableActiveTab === "Teacher"
+        ? professionalUsers
+            .filter((professional) => isSameCalendarDay(professional.joinedAt))
+            .map((professional) => ({
+            id: `teacher-${professional.id}`,
+            name: professional.name,
+            email: professional.email,
+            meta: professional.specialization || "-",
+            status: "Active",
+            updated: professional.joinedAt || "-",
+          }))
+        : notifications
+            .filter((notification) => isSameCalendarDay(notification.createdAt))
+            .map((notification) => ({
+            id: notification.id,
+            name: notification.professionalName,
+            email: notification.professionalEmail,
+            meta: "Alert",
+            status: "Sent",
+            updated: new Date(notification.createdAt).toLocaleString(),
+          }));
+
+  const dashboardTodayTotalPages = Math.max(1, Math.ceil(dashboardTodayRows.length / DASHBOARD_ITEMS_PER_PAGE));
   const dashboardTodayPageStart = (dashboardTodayCurrentPage - 1) * DASHBOARD_ITEMS_PER_PAGE;
-  const paginatedDashboardTodayRows = approvalRequests.slice(
+  const paginatedDashboardTodayRows = dashboardTodayRows.slice(
     dashboardTodayPageStart,
     dashboardTodayPageStart + DASHBOARD_ITEMS_PER_PAGE,
   );
@@ -1289,9 +1342,9 @@ export default function AdminPanelView() {
   }, [activeSection]);
 
   useEffect(() => {
-    const totalPages = Math.max(1, Math.ceil(approvalRequests.length / DASHBOARD_ITEMS_PER_PAGE));
+    const totalPages = Math.max(1, Math.ceil(dashboardTodayRows.length / DASHBOARD_ITEMS_PER_PAGE));
     setDashboardTodayCurrentPage((currentPage) => Math.min(currentPage, totalPages));
-  }, [approvalRequests.length]);
+  }, [dashboardTodayRows.length]);
 
   useEffect(() => {
     if (activeSection !== "Dashboard") {
@@ -1713,10 +1766,10 @@ export default function AdminPanelView() {
                         <tr key={request.id} className="border-t border-slate-100 text-slate-700">
                           <td className="px-4 py-3 font-medium text-slate-800">{request.name}</td>
                           <td className="px-4 py-3">{request.email}</td>
-                          <td className="px-4 py-3">-</td>
+                          <td className="px-4 py-3">{request.meta}</td>
                           <td className="px-4 py-3">
                             <span className="inline-flex rounded-full bg-[#e8f9ee] px-2.5 py-1 text-xs font-semibold text-[#178c43]">
-                              Active
+                              {request.status}
                             </span>
                           </td>
                           <td className="px-4 py-3 text-xs text-slate-500">{request.updated}</td>
@@ -1727,16 +1780,10 @@ export default function AdminPanelView() {
                         <tr key={request.id} className="border-t border-slate-100 text-slate-700">
                           <td className="px-4 py-3 font-medium text-slate-800">{request.name}</td>
                           <td className="px-4 py-3">{request.email}</td>
-                          <td className="px-4 py-3">{request.specialization || "-"}</td>
+                          <td className="px-4 py-3">{request.meta}</td>
                           <td className="px-4 py-3">
                             <span
-                              className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
-                                request.status === "approved"
-                                  ? "bg-[#e8f9ee] text-[#178c43]"
-                                  : request.status === "rejected"
-                                    ? "bg-[#ffe7e7] text-[#cc2a2a]"
-                                    : "bg-[#f1f5f9] text-slate-600"
-                              }`}
+                              className="inline-flex rounded-full bg-[#e8f9ee] px-2.5 py-1 text-xs font-semibold text-[#178c43]"
                             >
                               {request.status}
                             </span>
@@ -1749,7 +1796,7 @@ export default function AdminPanelView() {
                         <tr key={request.id} className="border-t border-slate-100 text-slate-700">
                           <td className="px-4 py-3 font-medium text-slate-800">{request.name}</td>
                           <td className="px-4 py-3">{request.email}</td>
-                          <td className="px-4 py-3">Alert</td>
+                          <td className="px-4 py-3">{request.meta}</td>
                           <td className="px-4 py-3">
                             <span className="inline-flex rounded-full bg-[#e7f4ff] px-2.5 py-1 text-xs font-semibold text-[#2c6fb8]">
                               Sent
@@ -1759,7 +1806,7 @@ export default function AdminPanelView() {
                         </tr>
                       ))}
 
-                      {approvalRequests.length === 0 ? (
+                      {dashboardTodayRows.length === 0 ? (
                         <tr>
                           <td colSpan={5} className="px-4 py-4 text-center text-sm text-slate-500">
                             No records available.
@@ -1770,12 +1817,12 @@ export default function AdminPanelView() {
                   </table>
                 </div>
 
-                {approvalRequests.length > 0 ? (
+                {dashboardTodayRows.length > 0 ? (
                   <div className="mt-3 rounded-[24px] border border-slate-300 bg-slate-100 px-4 py-3 sm:px-5">
                     <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                       <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
                         <span>
-                          Showing {Math.min(dashboardTodayPageStart + 1, approvalRequests.length)} to {Math.min(dashboardTodayPageStart + DASHBOARD_ITEMS_PER_PAGE, approvalRequests.length)} of {approvalRequests.length} entries
+                          Showing {Math.min(dashboardTodayPageStart + 1, dashboardTodayRows.length)} to {Math.min(dashboardTodayPageStart + DASHBOARD_ITEMS_PER_PAGE, dashboardTodayRows.length)} of {dashboardTodayRows.length} entries
                         </span>
                         <span className="rounded-full border border-emerald-300 bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
                           Page {dashboardTodayCurrentPage} / {dashboardTodayTotalPages}
@@ -1869,1284 +1916,114 @@ export default function AdminPanelView() {
               </div>
 
               {activeSection === "Approvals" ? (
-                <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                    <div className="rounded-xl bg-[#f8fafc] p-4">
-                      <p className="text-sm text-slate-500">Total Requests</p>
-                      <p className="mt-1 text-2xl font-semibold text-slate-800">{approvalCounts.total}</p>
-                    </div>
-                    <div className="rounded-xl bg-[#f8fafc] p-4">
-                      <p className="text-sm text-slate-500">Pending</p>
-                      <p className="mt-1 text-2xl font-semibold text-slate-800">{approvalCounts.pending}</p>
-                    </div>
-                    <div className="rounded-xl bg-[#f8fafc] p-4">
-                      <p className="text-sm text-slate-500">Approved</p>
-                      <p className="mt-1 text-2xl font-semibold text-[#178c43]">{approvalCounts.approved}</p>
-                    </div>
-                    <div className="rounded-xl bg-[#f8fafc] p-4">
-                      <p className="text-sm text-slate-500">Rejected</p>
-                      <p className="mt-1 text-2xl font-semibold text-[#cc2a2a]">{approvalCounts.rejected}</p>
-                    </div>
-                  </div>
-
-                  <ul className="mt-5 flex flex-col gap-3">
-                    {paginatedApprovalRequests.map((request) => {
-                      const statusStyle = approvalStatusStyles[request.status];
-                      return (
-                        <li key={request.id} className={`flex flex-wrap items-center justify-between gap-4 rounded-2xl neumorph-admin-card p-4 shadow-[4px_4px_16px_#d0dbd6,-4px_-4px_16px_#ffffff] ${statusStyle.row}`}>
-                          <div className="flex-1 min-w-[120px] font-medium text-slate-800">{request.name}</div>
-                          <div className="flex-1 min-w-[120px] text-slate-700">{request.specialization || '-'}</div>
-                          <div className="flex-1 min-w-[100px] text-slate-700">{request.updated}</div>
-                          <div className="flex-1 min-w-[100px]">
-                            <span className={`inline-flex min-w-24 items-center justify-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${statusStyle.pill}`}>
-                              {statusStyle.label}
-                            </span>
-                          </div>
-                          <div className="flex flex-1 justify-end gap-2 min-w-[180px]">
-                            <button
-                              type="button"
-                              onClick={() => updateApprovalStatus(request.id, "approved")}
-                              className="rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-3 py-1.5 text-xs font-semibold text-[#178c43] transition hover:bg-[#dff6e8]"
-                            >
-                              Approve
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => updateApprovalStatus(request.id, "rejected")}
-                              className="rounded-full border border-[#f5c1c1] bg-[#ffe7e7] px-3 py-1.5 text-xs font-semibold text-[#cc2a2a] transition hover:bg-[#ffdcdc]"
-                            >
-                              Reject
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                openDetailModal({
-                                  title: "Approval Request Details",
-                                  entries: [
-                                    { label: "Name", value: request.name },
-                                    { label: "Type", value: request.specialization },
-                                    { label: "Updated", value: request.updated },
-                                    { label: "Status", value: request.status },
-                                  ],
-                                })
-                              }
-                              className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
-                            >
-                              <Eye className="h-3.5 w-3.5" />
-                              View
-                            </button>
-                          </div>
-                        </li>
-                      );
-                    })}
-
-                    {approvalRequests.length === 0 ? (
-                      <li className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">No approval requests found.</li>
-                    ) : null}
-                  </ul>
-
-                  {approvalRequests.length > 0 ? (
-                    <div className="mt-4 rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex flex-wrap items-center gap-2 text-sm text-slate-600">
-                          <span>
-                            Showing {Math.min((approvalsCurrentPage - 1) * ITEMS_PER_PAGE + 1, approvalRequests.length)} to {Math.min(approvalsCurrentPage * ITEMS_PER_PAGE, approvalRequests.length)} of {approvalRequests.length} entries
-                          </span>
-                          <span className="rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-2.5 py-0.5 text-xs font-semibold text-[#178c43]">
-                            Page {approvalsCurrentPage} / {approvalTotalPages}
-                          </span>
-                        </div>
-
-                        <div className="flex flex-wrap items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setApprovalsCurrentPage((page) => page - 1)}
-                            disabled={approvalsCurrentPage === 1}
-                            className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
-                          >
-                            Prev
-                          </button>
-
-                          <div className="flex flex-wrap items-center gap-2">
-                            {Array.from({ length: approvalTotalPages }, (_, i) => i + 1).map((page) => (
-                              <button
-                                key={page}
-                                type="button"
-                                onClick={() => setApprovalsCurrentPage(page)}
-                                className={`inline-flex h-9 min-w-9 items-center justify-center rounded-xl border text-sm font-semibold transition ${
-                                  page === approvalsCurrentPage
-                                    ? "border-[#178c43] bg-[#178c43] text-white shadow-[0_8px_18px_rgba(23,140,67,0.25)]"
-                                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                                }`}
-                              >
-                                {page}
-                              </button>
-                            ))}
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => setApprovalsCurrentPage((page) => page + 1)}
-                            disabled={approvalsCurrentPage === approvalTotalPages}
-                            className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
-                          >
-                            Next
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
+                <AdminApprovalsPanel
+                  approvalCounts={approvalCounts}
+                  paginatedApprovalRequests={paginatedApprovalRequests}
+                  approvalStatusStyles={approvalStatusStyles}
+                  updateApprovalStatus={updateApprovalStatus}
+                  openDetailModal={openDetailModal}
+                  approvalRequests={approvalRequests}
+                  approvalsCurrentPage={approvalsCurrentPage}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                  approvalTotalPages={approvalTotalPages}
+                  setApprovalsCurrentPage={setApprovalsCurrentPage}
+                />
               ) : activeSection === "Reviews" ? (
-                <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-xl bg-[#f8fafc] p-4">
-                      <p className="text-xs text-slate-500">Total Reviews</p>
-                      <p className="mt-1 text-2xl font-semibold text-slate-800">{reviewCounts.total}</p>
-                    </div>
-                    <div className="rounded-xl bg-[#f8fafc] p-4">
-                      <p className="text-xs text-slate-500">Flagged Reviews</p>
-                      <p className="mt-1 text-2xl font-semibold text-[#cc2a2a]">{reviewCounts.flagged}</p>
-                    </div>
-                  </div>
-
-                  <ul className="mt-5 flex flex-col gap-3">
-                    {reviewsError ? (
-                      <li className="rounded-2xl border border-red-200 bg-red-50 p-4 text-xs text-red-700">{reviewsError}</li>
-                    ) : null}
-
-                    {reviewsLoading ? (
-                      <li className="rounded-2xl border border-slate-200 bg-white p-4 text-xs text-slate-500">Loading reviews...</li>
-                    ) : null}
-
-                    {!reviewsLoading && reviewEntries.length === 0 ? (
-                      <li className="rounded-2xl border border-slate-200 bg-white p-4 text-xs text-slate-500">No reviews found.</li>
-                    ) : null}
-
-                    {!reviewsLoading && paginatedReviewEntries.map((review) => (
-                      <li
-                        key={review.id}
-                        className={`rounded-3xl neumorph-admin-card px-6 py-5 shadow-[4px_4px_16px_#d0dbd6,-4px_-4px_16px_#ffffff] ${review.flagged ? "bg-[#fff1f1]" : "bg-white"}`}
-                      >
-                        <div className="grid gap-4 text-center sm:grid-cols-2 lg:grid-cols-12 lg:items-center">
-                          <div className="text-sm font-semibold text-slate-800 lg:col-span-2 md:text-base">{review.userName}</div>
-
-                          <div className="lg:col-span-2">
-                            <div className="text-sm font-semibold text-slate-800 md:text-base">{review.professionalName}</div>
-                            <div className="text-[11px] text-slate-500">{review.professionalDetails}</div>
-                          </div>
-
-                          <div className="space-y-2 lg:col-span-3">
-                            <p className="text-xs leading-relaxed text-slate-700 md:text-sm">{review.review}</p>
-                            {review.flagged ? (
-                              <span className="inline-flex rounded-full border border-[#f5c1c1] bg-[#ffe7e7] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-[#cc2a2a]">
-                                Flagged as inappropriate
-                              </span>
-                            ) : null}
-                          </div>
-
-                          <div className="text-sm font-semibold text-slate-800 lg:col-span-1 lg:text-center md:text-base">{review.rating}/5</div>
-
-                          <div className="text-xs text-slate-600 lg:col-span-2 lg:whitespace-normal md:text-sm">{review.createdAt}</div>
-
-                          <div className="sm:col-span-2 lg:col-span-2 lg:justify-self-center">
-                            <button
-                              type="button"
-                              onClick={() => void deleteReview(review.id)}
-                              className="inline-flex items-center gap-1 rounded-full border border-[#f5c1c1] bg-[#ffe7e7] px-4 py-1.5 text-[11px] font-semibold text-[#cc2a2a] transition hover:bg-[#ffdcdc] md:text-xs"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {!reviewsLoading && reviewEntries.length > 0 ? (
-                    <div className="mt-4 rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600">
-                          <span>
-                            Showing {Math.min(reviewsPageStart + 1, reviewEntries.length)} to {Math.min(reviewsPageStart + ITEMS_PER_PAGE, reviewEntries.length)} of {reviewEntries.length} entries
-                          </span>
-                          <span className="rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-2.5 py-0.5 text-xs font-semibold text-[#178c43]">
-                            Page {reviewsCurrentPage} / {reviewsTotalPages}
-                          </span>
-                        </div>
-
-                        <div className="flex flex-wrap items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setReviewsCurrentPage((page) => Math.max(1, page - 1))}
-                            disabled={reviewsCurrentPage === 1}
-                            className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
-                          >
-                            Prev
-                          </button>
-
-                          <div className="flex flex-wrap items-center gap-2">
-                            {Array.from({ length: reviewsTotalPages }, (_, i) => i + 1).map((page) => (
-                              <button
-                                key={page}
-                                type="button"
-                                onClick={() => setReviewsCurrentPage(page)}
-                                className={`inline-flex h-9 min-w-9 items-center justify-center rounded-xl border text-xs font-semibold transition ${
-                                  page === reviewsCurrentPage
-                                    ? "border-[#178c43] bg-[#178c43] text-white shadow-[0_8px_18px_rgba(23,140,67,0.25)]"
-                                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                                }`}
-                              >
-                                {page}
-                              </button>
-                            ))}
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => setReviewsCurrentPage((page) => Math.min(reviewsTotalPages, page + 1))}
-                            disabled={reviewsCurrentPage === reviewsTotalPages}
-                            className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
-                          >
-                            Next
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
+                <AdminReviewsPanel
+                  reviewCounts={reviewCounts}
+                  reviewsError={reviewsError}
+                  reviewsLoading={reviewsLoading}
+                  reviewEntries={reviewEntries}
+                  paginatedReviewEntries={paginatedReviewEntries}
+                  reviewsPageStart={reviewsPageStart}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                  reviewsCurrentPage={reviewsCurrentPage}
+                  reviewsTotalPages={reviewsTotalPages}
+                  onDeleteReview={deleteReview}
+                  onReviewsPageChange={setReviewsCurrentPage}
+                />
               ) : activeSection === "Alerts" ? (
-                <div className="mt-6 space-y-5">
-                  <div className="rounded-xl border border-slate-200 bg-white p-3">
-                    <div className="flex w-full max-w-sm items-center gap-2 rounded-xl bg-slate-50 p-1">
-                      <button
-                        type="button"
-                        onClick={() => setAlertsView("professionals")}
-                        className={`flex-1 rounded-lg px-3 py-2 text-xs font-semibold transition ${
-                          alertsView === "professionals"
-                            ? "bg-[#2d6a4f] text-white"
-                            : "text-slate-600 hover:bg-white"
-                        }`}
-                      >
-                        Professional
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setAlertsView("students")}
-                        className={`flex-1 rounded-lg px-3 py-2 text-xs font-semibold transition ${
-                          alertsView === "students"
-                            ? "bg-[#2d6a4f] text-white"
-                            : "text-slate-600 hover:bg-white"
-                        }`}
-                      >
-                        Students
-                      </button>
-                    </div>
-                  </div>
-
-                  {alertsView === "professionals" ? (
-                    <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <h3 className="text-lg font-semibold text-slate-800">Professional Notifications</h3>
-                          <p className="text-sm text-slate-500">Latest profile, certificate, and upgrade changes from professionals.</p>
-                        </div>
-                      </div>
-
-                      <div className="mt-5 overflow-hidden rounded-xl">
-                        {notificationsLoading ? (
-                          <div className="bg-white p-4 text-sm text-slate-500">Loading notifications...</div>
-                        ) : notifications.length > 0 ? (
-                          <div className="divide-y divide-slate-100">
-                            {paginatedNotifications.map((notification) => (
-                              <div key={notification.id} className="bg-white p-4">
-                                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                                  <div className="space-y-1">
-                                    <p className="font-semibold text-slate-800">{notification.professionalName}</p>
-                                    <p className="text-xs text-slate-500">{notification.professionalEmail}</p>
-                                    <p className="text-sm text-slate-700">{notification.summary}</p>
-                                    <p className="text-xs text-slate-500">{notification.details}</p>
-                                  </div>
-                                  <span className="inline-flex w-fit rounded-full border border-[#dbeafe] bg-[#eff6ff] px-3 py-1 text-xs font-semibold text-[#2563eb]">
-                                    {new Date(notification.createdAt).toLocaleString()}
-                                  </span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="bg-white p-4 text-sm text-slate-500">No professional updates yet.</div>
-                        )}
-                      </div>
-
-                      {notifications.length > 0 && (
-                        <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
-                          <p className="text-xs text-slate-600 sm:text-sm">
-                            Showing {Math.min(alertsProfessionalsPageStart + 1, notifications.length)} to{" "}
-                            {Math.min(alertsProfessionalsPageStart + ITEMS_PER_PAGE, notifications.length)} of {notifications.length} entries
-                          </p>
-                          <div className="flex items-center gap-2">
-                            <span className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700">
-                              Page {alertsProfessionalsCurrentPage} / {alertsProfessionalsTotalPages}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => setAlertsProfessionalsCurrentPage(Math.max(1, alertsProfessionalsCurrentPage - 1))}
-                              disabled={alertsProfessionalsCurrentPage === 1}
-                              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                              Prev
-                            </button>
-                            {Array.from({ length: alertsProfessionalsTotalPages }, (_, i) => i + 1).map((page) => (
-                              <button
-                                key={page}
-                                type="button"
-                                onClick={() => setAlertsProfessionalsCurrentPage(page)}
-                                className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
-                                  alertsProfessionalsCurrentPage === page
-                                    ? "border-[#178c43] bg-[#178c43] text-white"
-                                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                                }`}
-                              >
-                                {page}
-                              </button>
-                            ))}
-                            <button
-                              type="button"
-                              onClick={() => setAlertsProfessionalsCurrentPage(Math.min(alertsProfessionalsTotalPages, alertsProfessionalsCurrentPage + 1))}
-                              disabled={alertsProfessionalsCurrentPage === alertsProfessionalsTotalPages}
-                              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                              Next
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <h3 className="text-lg font-semibold text-slate-800">Student Submissions</h3>
-                          <p className="text-sm text-slate-500">Messages submitted from students through the Contact page form.</p>
-                        </div>
-                      </div>
-
-                      <div className="mt-5 overflow-hidden rounded-xl">
-                        {contactMessagesLoading ? (
-                          <div className="bg-white p-4 text-sm text-slate-500">Loading contact submissions...</div>
-                        ) : contactMessages.length > 0 ? (
-                          <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
-                              <thead className="bg-slate-50 text-left text-slate-500">
-                                <tr>
-                                  <th className="px-4 py-3">Name</th>
-                                  <th className="px-4 py-3">Email</th>
-                                  <th className="px-4 py-3">Phone</th>
-                                  <th className="px-4 py-3">Subject</th>
-                                  <th className="px-4 py-3">Message</th>
-                                  <th className="px-4 py-3">Submitted</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {paginatedContactMessages.map((entry) => (
-                                  <tr key={entry.id} className="border-t border-slate-100 text-slate-700">
-                                    <td className="px-4 py-3 font-medium text-slate-800">{entry.name}</td>
-                                    <td className="px-4 py-3">{entry.email}</td>
-                                    <td className="px-4 py-3">{entry.phone || "-"}</td>
-                                    <td className="px-4 py-3">{entry.subject}</td>
-                                    <td className="px-4 py-3 max-w-[340px]">
-                                      <p className="line-clamp-3">{entry.message}</p>
-                                    </td>
-                                    <td className="px-4 py-3 text-xs text-slate-500">{new Date(entry.createdAt).toLocaleString()}</td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        ) : (
-                          <div className="bg-white p-4 text-sm text-slate-500">No contact submissions yet.</div>
-                        )}
-                      </div>
-
-                      {contactMessages.length > 0 && (
-                        <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
-                          <p className="text-xs text-slate-600 sm:text-sm">
-                            Showing {Math.min(alertsStudentsPageStart + 1, contactMessages.length)} to{" "}
-                            {Math.min(alertsStudentsPageStart + ITEMS_PER_PAGE, contactMessages.length)} of {contactMessages.length} entries
-                          </p>
-                          <div className="flex items-center gap-2">
-                            <span className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700">
-                              Page {alertsStudentsCurrentPage} / {alertsStudentsTotalPages}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => setAlertStudentsCurrentPage(Math.max(1, alertsStudentsCurrentPage - 1))}
-                              disabled={alertsStudentsCurrentPage === 1}
-                              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                              Prev
-                            </button>
-                            {Array.from({ length: alertsStudentsTotalPages }, (_, i) => i + 1).map((page) => (
-                              <button
-                                key={page}
-                                type="button"
-                                onClick={() => setAlertStudentsCurrentPage(page)}
-                                className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
-                                  alertsStudentsCurrentPage === page
-                                    ? "border-[#178c43] bg-[#178c43] text-white"
-                                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                                }`}
-                              >
-                                {page}
-                              </button>
-                            ))}
-                            <button
-                              type="button"
-                              onClick={() => setAlertStudentsCurrentPage(Math.min(alertsStudentsTotalPages, alertsStudentsCurrentPage + 1))}
-                              disabled={alertsStudentsCurrentPage === alertsStudentsTotalPages}
-                              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                              Next
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
+                <AdminAlertsPanel
+                  alertsView={alertsView}
+                  setAlertsView={setAlertsView}
+                  notificationsLoading={notificationsLoading}
+                  notifications={notifications}
+                  paginatedNotifications={paginatedNotifications}
+                  alertsProfessionalsPageStart={alertsProfessionalsPageStart}
+                  alertsProfessionalsCurrentPage={alertsProfessionalsCurrentPage}
+                  alertsProfessionalsTotalPages={alertsProfessionalsTotalPages}
+                  onAlertsProfessionalsPageChange={setAlertsProfessionalsCurrentPage}
+                  contactMessagesLoading={contactMessagesLoading}
+                  contactMessages={contactMessages}
+                  paginatedContactMessages={paginatedContactMessages}
+                  alertsStudentsPageStart={alertsStudentsPageStart}
+                  alertsStudentsCurrentPage={alertsStudentsCurrentPage}
+                  alertsStudentsTotalPages={alertsStudentsTotalPages}
+                  onAlertsStudentsPageChange={setAlertStudentsCurrentPage}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                />
               ) : activeSection === "Payouts" ? (
-                <div className="mt-6 space-y-4">
-                  <div className="grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-xl border border-slate-200 bg-white p-4">
-                      <p className="text-sm text-slate-500">Total Payments</p>
-                      <p className="mt-1 text-2xl font-semibold text-slate-800">{payoutCounts.total}</p>
-                    </div>
-                    <div className="rounded-xl border border-slate-200 bg-white p-4">
-                      <p className="text-sm text-slate-500">Pending</p>
-                      <p className="mt-1 text-2xl font-semibold text-amber-600">{payoutCounts.pending}</p>
-                    </div>
-                    <div className="rounded-xl border border-slate-200 bg-white p-4">
-                      <p className="text-sm text-slate-500">Completed</p>
-                      <p className="mt-1 text-2xl font-semibold text-[#178c43]">{payoutCounts.completed}</p>
-                    </div>
-                  </div>
-
-                  <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-                    <table className="w-full text-sm">
-                      <thead className="bg-slate-50 text-center text-slate-500">
-                        <tr>
-                          <th className="px-4 py-3">Professional</th>
-                          <th className="px-4 py-3">Plan</th>
-                          <th className="px-4 py-3">Amount</th>
-                          <th className="px-4 py-3">Transaction ID</th>
-                          <th className="px-4 py-3">Paid At</th>
-                          <th className="px-4 py-3">Status</th>
-                          <th className="px-4 py-3">View</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {payoutsLoading ? (
-                          <tr>
-                            <td colSpan={7} className="px-4 py-4 text-sm text-slate-500">Loading payments...</td>
-                          </tr>
-                        ) : payoutEntries.length === 0 ? (
-                          <tr>
-                            <td colSpan={7} className="px-4 py-4 text-sm text-slate-500">No payments yet.</td>
-                          </tr>
-                        ) : paginatedPayoutEntries.map((entry) => (
-                          <tr key={entry.id} className="border-t border-slate-100 text-xs text-slate-700">
-                            <td className="px-4 py-3 align-middle text-center">
-                              <div className="font-semibold text-slate-800">{entry.professionalName}</div>
-                              <div className="text-xs text-slate-500">{entry.professionalEmail}</div>
-                            </td>
-                            <td className="px-4 py-3 align-middle text-center">{entry.plan}</td>
-                            <td className="px-4 py-3 align-middle text-center font-semibold text-slate-800">{entry.amount}</td>
-                            <td className="px-4 py-3 align-middle text-center text-xs text-slate-600">{entry.transactionId}</td>
-                            <td className="px-4 py-3 align-middle text-center">{entry.paidAt}</td>
-                            <td className="px-4 py-3 align-middle text-center">
-                              <span
-                                className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${
-                                  entry.status === "completed"
-                                    ? "border border-[#bfe9cb] bg-[#e8f9ee] text-[#178c43]"
-                                    : "border border-amber-200 bg-amber-50 text-amber-700"
-                                }`}
-                              >
-                                {entry.status}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3 align-middle text-center">
-                              <div className="flex justify-center">
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    openDetailModal({
-                                      title: "Payout Details",
-                                      entries: [
-                                        { label: "Professional", value: entry.professionalName },
-                                        { label: "Email", value: entry.professionalEmail },
-                                        { label: "Plan", value: entry.plan },
-                                        { label: "Amount", value: entry.amount },
-                                        { label: "Transaction ID", value: entry.transactionId },
-                                        { label: "Paid At", value: entry.paidAt },
-                                        { label: "Status", value: entry.status },
-                                      ],
-                                    })
-                                  }
-                                  className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
-                                >
-                                  <Eye className="h-3.5 w-3.5" />
-                                  View
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-
-                    {!payoutsLoading && payoutEntries.length > 0 ? (
-                      <div className="mt-4 rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
-                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                          <div className="flex flex-wrap items-center gap-2 text-sm text-slate-600">
-                            <span>
-                              Showing {Math.min((payoutsCurrentPage - 1) * ITEMS_PER_PAGE + 1, payoutEntries.length)} to {Math.min(payoutsCurrentPage * ITEMS_PER_PAGE, payoutEntries.length)} of {payoutEntries.length} entries
-                            </span>
-                            <span className="rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-2.5 py-0.5 text-xs font-semibold text-[#178c43]">
-                              Page {payoutsCurrentPage} / {payoutsTotalPages}
-                            </span>
-                          </div>
-
-                          <div className="flex flex-wrap items-center gap-2">
-                            <button
-                              type="button"
-                              onClick={() => setPayoutsCurrentPage((page) => page - 1)}
-                              disabled={payoutsCurrentPage === 1}
-                              className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
-                            >
-                              Prev
-                            </button>
-
-                            <div className="flex flex-wrap items-center gap-2">
-                              {Array.from({ length: payoutsTotalPages }, (_, i) => i + 1).map((page) => (
-                                <button
-                                  key={page}
-                                  type="button"
-                                  onClick={() => setPayoutsCurrentPage(page)}
-                                  className={`inline-flex h-9 min-w-9 items-center justify-center rounded-xl border text-sm font-semibold transition ${
-                                    page === payoutsCurrentPage
-                                      ? "border-[#178c43] bg-[#178c43] text-white shadow-[0_8px_18px_rgba(23,140,67,0.25)]"
-                                      : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                                  }`}
-                                >
-                                  {page}
-                                </button>
-                              ))}
-                            </div>
-
-                            <button
-                              type="button"
-                              onClick={() => setPayoutsCurrentPage((page) => page + 1)}
-                              disabled={payoutsCurrentPage === payoutsTotalPages}
-                              className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
-                            >
-                              Next
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
+                <AdminPayoutsPanel
+                  payoutCounts={payoutCounts}
+                  payoutsLoading={payoutsLoading}
+                  payoutEntries={payoutEntries}
+                  paginatedPayoutEntries={paginatedPayoutEntries}
+                  openDetailModal={openDetailModal}
+                  payoutsCurrentPage={payoutsCurrentPage}
+                  payoutsTotalPages={payoutsTotalPages}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                  setPayoutsCurrentPage={setPayoutsCurrentPage}
+                />
               ) : activeSection === "Uploads" ? (
-                <div className="mt-6 space-y-4">
-                  <div className="rounded-xl border border-slate-200 bg-white p-3">
-                    <div className="flex w-full max-w-sm items-center gap-2 rounded-xl bg-slate-50 p-1">
-                      <button
-                        type="button"
-                        onClick={() => setUploadView("professional-uploads")}
-                        className={`flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition ${
-                          uploadView === "professional-uploads"
-                            ? "bg-[#2d6a4f] text-white"
-                            : "text-slate-600 hover:bg-white"
-                        }`}
-                      >
-                        Professional Uploads
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setUploadView("student-purchases")}
-                        className={`flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition ${
-                          uploadView === "student-purchases"
-                            ? "bg-[#2d6a4f] text-white"
-                            : "text-slate-600 hover:bg-white"
-                        }`}
-                      >
-                        Student Purchases
-                      </button>
-                    </div>
-                  </div>
-
-                  {uploadView === "professional-uploads" ? (
-                    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-                      <div className="border-b border-slate-200 px-4 py-3">
-                        <h3 className="font-semibold text-slate-800">Professionals</h3>
-                      </div>
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-[15px]">
-                          <thead className="bg-slate-50 text-left text-slate-500">
-                            <tr>
-                              <th className="px-4 py-3">Name</th>
-                              <th className="px-4 py-3">Email</th>
-                              <th className="px-4 py-3">Categories</th>
-                              <th className="px-4 py-3">Books</th>
-                              <th className="px-4 py-3">Videos</th>
-                              <th className="px-4 py-3 text-right">View</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {uploadsLoading ? (
-                              <tr>
-                                <td colSpan={6} className="px-4 py-4 text-base text-slate-500">Loading professionals...</td>
-                              </tr>
-                            ) : professionalUploadRows.length === 0 ? (
-                              <tr>
-                                <td colSpan={6} className="px-4 py-4 text-base text-slate-500">No professionals found.</td>
-                              </tr>
-                            ) : (
-                              paginatedProfessionalUploadRows.map((professional) => (
-                                <tr key={professional.id} className="border-t border-slate-100 text-slate-700">
-                                  <td className="px-4 py-3 font-medium text-slate-800">{professional.name}</td>
-                                  <td className="px-4 py-3 text-sm text-slate-600">{professional.email}</td>
-                                  <td className="px-4 py-3">{professional.categories.length}</td>
-                                  <td className="px-4 py-3">{professional.booksCount}</td>
-                                  <td className="px-4 py-3">{professional.videosCount}</td>
-                                  <td className="px-4 py-3">
-                                    <div className="flex justify-end">
-                                      <button
-                                        type="button"
-                                        onClick={() => router.push(`/admin/uploads/professionals/${professional.id}`)}
-                                        className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
-                                      >
-                                        <Eye className="h-3.5 w-3.5" />
-                                        View
-                                      </button>
-                                    </div>
-                                  </td>
-                                </tr>
-                              ))
-                            )}
-                          </tbody>
-                        </table>
-                      </div>
-
-                      {professionalUploadRows.length > 0 ? (
-                        <div className="mt-4 rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
-                          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                            <div className="flex flex-wrap items-center gap-2 text-base text-slate-600">
-                              <span>
-                                Showing {Math.min((uploadsProfessionalsCurrentPage - 1) * ITEMS_PER_PAGE + 1, professionalUploadRows.length)} to {Math.min(uploadsProfessionalsCurrentPage * ITEMS_PER_PAGE, professionalUploadRows.length)} of {professionalUploadRows.length} entries
-                              </span>
-                              <span className="rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-2.5 py-0.5 text-sm font-semibold text-[#178c43]">
-                                Page {uploadsProfessionalsCurrentPage} / {uploadsProfessionalsTotalPages}
-                              </span>
-                            </div>
-
-                            <div className="flex flex-wrap items-center gap-2">
-                              <button
-                                type="button"
-                                onClick={() => setUploadsProfessionalsCurrentPage((page) => page - 1)}
-                                disabled={uploadsProfessionalsCurrentPage === 1}
-                                className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
-                              >
-                                Prev
-                              </button>
-
-                              <div className="flex flex-wrap items-center gap-2">
-                                {Array.from({ length: uploadsProfessionalsTotalPages }, (_, i) => i + 1).map((page) => (
-                                  <button
-                                    key={page}
-                                    type="button"
-                                    onClick={() => setUploadsProfessionalsCurrentPage(page)}
-                                    className={`inline-flex h-9 min-w-9 items-center justify-center rounded-xl border text-sm font-semibold transition ${
-                                      page === uploadsProfessionalsCurrentPage
-                                        ? "border-[#178c43] bg-[#178c43] text-white shadow-[0_8px_18px_rgba(23,140,67,0.25)]"
-                                        : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                                    }`}
-                                  >
-                                    {page}
-                                  </button>
-                                ))}
-                              </div>
-
-                              <button
-                                type="button"
-                                onClick={() => setUploadsProfessionalsCurrentPage((page) => page + 1)}
-                                disabled={uploadsProfessionalsCurrentPage === uploadsProfessionalsTotalPages}
-                                className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
-                              >
-                                Next
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ) : null}
-                    </div>
-                  ) : (
-                    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-                      <div className="border-b border-slate-200 px-4 py-3">
-                        <h3 className="font-semibold text-slate-800">Students</h3>
-                      </div>
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-[15px]">
-                          <thead className="bg-slate-50 text-left text-slate-500">
-                            <tr>
-                              <th className="px-4 py-3">Name</th>
-                              <th className="px-4 py-3">Email</th>
-                              <th className="px-4 py-3">Purchased Books</th>
-                              <th className="px-4 py-3">Watched Videos</th>
-                              <th className="px-4 py-3">Last Activity</th>
-                              <th className="px-4 py-3 text-right">View</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {uploadsLoading ? (
-                              <tr>
-                                <td colSpan={6} className="px-4 py-4 text-base text-slate-500">Loading students...</td>
-                              </tr>
-                            ) : studentUploadRows.length === 0 ? (
-                              <tr>
-                                <td colSpan={6} className="px-4 py-4 text-base text-slate-500">No students found.</td>
-                              </tr>
-                            ) : (
-                              paginatedStudentUploadRows.map((student) => (
-                                <tr key={student.id} className="border-t border-slate-100 text-slate-700">
-                                  <td className="px-4 py-3 font-medium text-slate-800">{student.name}</td>
-                                  <td className="px-4 py-3 text-sm text-slate-600">{student.email}</td>
-                                  <td className="px-4 py-3">{student.purchasedBooksCount}</td>
-                                  <td className="px-4 py-3">{student.watchedVideosCount}</td>
-                                  <td className="px-4 py-3">{new Date(student.lastActivity).toLocaleDateString()}</td>
-                                  <td className="px-4 py-3">
-                                    <div className="flex justify-end">
-                                      <button
-                                        type="button"
-                                        onClick={() => router.push(`/admin/uploads/students/${student.id}`)}
-                                        className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
-                                      >
-                                        <Eye className="h-3.5 w-3.5" />
-                                        View
-                                      </button>
-                                    </div>
-                                  </td>
-                                </tr>
-                              ))
-                            )}
-                          </tbody>
-                        </table>
-                      </div>
-
-                      {studentUploadRows.length > 0 ? (
-                        <div className="mt-4 rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
-                          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                            <div className="flex flex-wrap items-center gap-2 text-base text-slate-600">
-                              <span>
-                                Showing {Math.min((uploadsStudentsCurrentPage - 1) * ITEMS_PER_PAGE + 1, studentUploadRows.length)} to {Math.min(uploadsStudentsCurrentPage * ITEMS_PER_PAGE, studentUploadRows.length)} of {studentUploadRows.length} entries
-                              </span>
-                              <span className="rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-2.5 py-0.5 text-sm font-semibold text-[#178c43]">
-                                Page {uploadsStudentsCurrentPage} / {uploadsStudentsTotalPages}
-                              </span>
-                            </div>
-
-                            <div className="flex flex-wrap items-center gap-2">
-                              <button
-                                type="button"
-                                onClick={() => setUploadsStudentsCurrentPage((page) => page - 1)}
-                                disabled={uploadsStudentsCurrentPage === 1}
-                                className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
-                              >
-                                Prev
-                              </button>
-
-                              <div className="flex flex-wrap items-center gap-2">
-                                {Array.from({ length: uploadsStudentsTotalPages }, (_, i) => i + 1).map((page) => (
-                                  <button
-                                    key={page}
-                                    type="button"
-                                    onClick={() => setUploadsStudentsCurrentPage(page)}
-                                    className={`inline-flex h-9 min-w-9 items-center justify-center rounded-xl border text-sm font-semibold transition ${
-                                      page === uploadsStudentsCurrentPage
-                                        ? "border-[#178c43] bg-[#178c43] text-white shadow-[0_8px_18px_rgba(23,140,67,0.25)]"
-                                        : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                                    }`}
-                                  >
-                                    {page}
-                                  </button>
-                                ))}
-                              </div>
-
-                              <button
-                                type="button"
-                                onClick={() => setUploadsStudentsCurrentPage((page) => page + 1)}
-                                disabled={uploadsStudentsCurrentPage === uploadsStudentsTotalPages}
-                                className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
-                              >
-                                Next
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ) : null}
-                    </div>
-                  )}
-                </div>
+                <AdminUploadsPanel
+                  uploadView={uploadView}
+                  setUploadView={setUploadView}
+                  uploadsLoading={uploadsLoading}
+                  professionalUploadRows={professionalUploadRows}
+                  paginatedProfessionalUploadRows={paginatedProfessionalUploadRows}
+                  studentUploadRows={studentUploadRows}
+                  paginatedStudentUploadRows={paginatedStudentUploadRows}
+                  uploadsProfessionalsCurrentPage={uploadsProfessionalsCurrentPage}
+                  uploadsProfessionalsTotalPages={uploadsProfessionalsTotalPages}
+                  setUploadsProfessionalsCurrentPage={setUploadsProfessionalsCurrentPage}
+                  uploadsStudentsCurrentPage={uploadsStudentsCurrentPage}
+                  uploadsStudentsTotalPages={uploadsStudentsTotalPages}
+                  setUploadsStudentsCurrentPage={setUploadsStudentsCurrentPage}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                  onOpenProfessional={(id: string) => router.push(`/admin/uploads/professionals/${id}`)}
+                  onOpenStudent={(id: string) => router.push(`/admin/uploads/students/${id}`)}
+                />
               ) : activeSection === "Categories" ? (
-                <div className="mt-6 space-y-5">
-                  <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-                    <table className="w-full text-sm">
-                      <thead className="bg-slate-50 text-left text-slate-500">
-                        <tr>
-                          <th className="px-4 py-3">Category</th>
-                          <th className="px-4 py-3">Type</th>
-                          <th className="px-4 py-3">Description</th>
-                          <th className="px-4 py-3">Professionals</th>
-                          <th className="px-4 py-3 text-right">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {paginatedCategories.map((category) => (
-                          <tr key={category.id} className="border-t border-slate-100 text-slate-700">
-                            <td className="px-4 py-3 font-medium text-slate-800">{category.name}</td>
-                            <td className="px-4 py-3">{category.type}</td>
-                            <td className="px-4 py-3">{category.description}</td>
-                            <td className="px-4 py-3">{category.professionals}</td>
-                            <td className="px-4 py-3">
-                              <div className="flex justify-end gap-2">
-                                <button
-                                  type="button"
-                                  onClick={() => editCategory(category.id)}
-                                  className="inline-flex items-center gap-1 rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-3 py-1.5 text-xs font-semibold text-[#178c43] transition hover:bg-[#dff6e8]"
-                                >
-                                  <PencilLine className="h-3.5 w-3.5" />
-                                  Edit
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => deleteCategory(category.id)}
-                                  className="inline-flex items-center gap-1 rounded-full border border-[#f5c1c1] bg-[#ffe7e7] px-3 py-1.5 text-xs font-semibold text-[#cc2a2a] transition hover:bg-[#ffdcdc]"
-                                >
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                  Delete
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    openDetailModal({
-                                      title: "Professional Category Details",
-                                      entries: [
-                                        { label: "Category", value: category.name },
-                                        { label: "Type", value: category.type },
-                                        { label: "Description", value: category.description },
-                                        { label: "Professionals", value: String(category.professionals) },
-                                      ],
-                                    })
-                                  }
-                                  className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
-                                >
-                                  <Eye className="h-3.5 w-3.5" />
-                                  View
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-
-                        {categoriesList.length === 0 ? (
-                          <tr>
-                            <td colSpan={5} className="px-4 py-4 text-sm text-slate-500">No categories found.</td>
-                          </tr>
-                        ) : null}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {categoriesList.length > 0 ? (
-                    <div className="rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex flex-wrap items-center gap-2 text-sm text-slate-600">
-                          <span>
-                            Showing {Math.min((categoriesCurrentPage - 1) * ITEMS_PER_PAGE + 1, categoriesList.length)} to {Math.min(categoriesCurrentPage * ITEMS_PER_PAGE, categoriesList.length)} of {categoriesList.length} entries
-                          </span>
-                          <span className="rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-2.5 py-0.5 text-xs font-semibold text-[#178c43]">
-                            Page {categoriesCurrentPage} / {categoryTotalPages}
-                          </span>
-                        </div>
-
-                        <div className="flex flex-wrap items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setCategoriesCurrentPage((page) => page - 1)}
-                            disabled={categoriesCurrentPage === 1}
-                            className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
-                          >
-                            Prev
-                          </button>
-
-                          <div className="flex flex-wrap items-center gap-2">
-                            {Array.from({ length: categoryTotalPages }, (_, i) => i + 1).map((page) => (
-                              <button
-                                key={page}
-                                type="button"
-                                onClick={() => setCategoriesCurrentPage(page)}
-                                className={`inline-flex h-9 min-w-9 items-center justify-center rounded-xl border text-sm font-semibold transition ${
-                                  page === categoriesCurrentPage
-                                    ? "border-[#178c43] bg-[#178c43] text-white shadow-[0_8px_18px_rgba(23,140,67,0.25)]"
-                                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                                }`}
-                              >
-                                {page}
-                              </button>
-                            ))}
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => setCategoriesCurrentPage((page) => page + 1)}
-                            disabled={categoriesCurrentPage === categoryTotalPages}
-                            className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
-                          >
-                            Next
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
+                <AdminCategoriesPanel
+                  paginatedCategories={paginatedCategories}
+                  categoriesList={categoriesList}
+                  editCategory={editCategory}
+                  deleteCategory={deleteCategory}
+                  openDetailModal={openDetailModal}
+                  categoriesCurrentPage={categoriesCurrentPage}
+                  categoryTotalPages={categoryTotalPages}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                  setCategoriesCurrentPage={setCategoriesCurrentPage}
+                />
               ) : activeSection === "Users" ? (
-                <div className="mt-6 overflow-visible rounded-2xl neumorph-admin-card border border-transparent p-4 shadow-[8px_8px_24px_#d0dbd6,-8px_-8px_24px_#ffffff]">
-                  <div className="flex gap-3 border-b border-slate-200 px-2 py-3 mb-2">
-                    <button
-                      type="button"
-                      onClick={() => setUsersTab("students")}
-                      className={`rounded-full px-6 py-2 text-xs font-semibold neumorph-admin-btn transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#1ec28e] focus:ring-offset-2 shadow-[4px_4px_12px_#d0dbd6,-4px_-4px_12px_#ffffff] ${
-                        usersTab === "students"
-                          ? "bg-[#e8f9ee] text-[#178c43] border border-[#bfe9cb]"
-                          : "bg-[#f6fefb] text-[#2c5a48] border border-transparent hover:shadow-inner"
-                      }`}
-                    >
-                      Students
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setUsersTab("professionals")}
-                      className={`rounded-full px-6 py-2 text-xs font-semibold neumorph-admin-btn transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#1ec28e] focus:ring-offset-2 shadow-[4px_4px_12px_#d0dbd6,-4px_-4px_12px_#ffffff] ${
-                        usersTab === "professionals"
-                          ? "bg-[#e8f9ee] text-[#178c43] border border-[#bfe9cb]"
-                          : "bg-[#f6fefb] text-[#2c5a48] border border-transparent hover:shadow-inner"
-                      }`}
-                    >
-                      Professionals
-                    </button>
-                  </div>
-
-                  {usersLoading ? <p className="px-4 py-3 text-sm text-slate-500">Loading users...</p> : null}
-                  {usersError ? <p className="px-4 py-3 text-sm text-red-600">{usersError}</p> : null}
-
-                  {usersTab === "students" ? (
-                    <div>
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                          <thead className="bg-[#f6fefb] text-left text-[#178c43]">
-                            <tr>
-                              <th className="px-5 py-3 font-semibold">MEMBER</th>
-                              <th className="px-5 py-3 font-semibold">NAME</th>
-                              <th className="px-5 py-3 font-semibold">MEMBERSHIP STATUS</th>
-                              <th className="px-5 py-3 font-semibold">MEMBER SINCE</th>
-                              <th className="px-5 py-3 font-semibold text-right">ACTION</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {studentsList.slice((studentsCurrentPage - 1) * ITEMS_PER_PAGE, studentsCurrentPage * ITEMS_PER_PAGE).map((student) => {
-                              const isSelected = selectedStudentId === student.id;
-                              return (
-                                <tr
-                                  key={student.id}
-                                  onClick={() => openStudentDetails(student.id)}
-                                  className={`cursor-pointer transition duration-150 border-b border-slate-100 ${
-                                    isSelected ? "bg-[#e8f9ee]" : "bg-white hover:bg-slate-50"
-                                  }`}
-                                >
-                                  <td className="px-5 py-4 align-middle">
-                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center text-white font-semibold">
-                                      {student.name.charAt(0).toUpperCase()}
-                                    </div>
-                                  </td>
-                                  <td className="px-5 py-4 align-middle">
-                                    <div className="font-semibold text-slate-800">{student.name}</div>
-                                    <div className="text-xs text-slate-500">{student.email}</div>
-                                  </td>
-                                  <td className="px-5 py-4 align-middle">
-                                    <span className="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-                                      Active
-                                    </span>
-                                  </td>
-                                  <td className="px-5 py-4 align-middle text-slate-700">{student.joinedAt}</td>
-                                  <td className="px-5 py-4 align-middle">
-                                    <div className="flex justify-end gap-2">
-                                      <button
-                                        type="button"
-                                        onClick={(event) => {
-                                          event.stopPropagation();
-                                        }}
-                                        className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                                      >
-                                        <PencilLine className="h-3.5 w-3.5" />
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={(event) => {
-                                          event.stopPropagation();
-                                          openStudentDetails(student.id);
-                                        }}
-                                        className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-green-200 bg-green-50 text-green-600 hover:bg-green-100"
-                                      >
-                                        <Eye className="h-3.5 w-3.5" />
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={(event) => {
-                                          event.stopPropagation();
-                                          void deleteStudent(student.id);
-                                        }}
-                                        className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-red-200 bg-red-50 text-red-600 hover:bg-red-100"
-                                      >
-                                        <Trash2 className="h-3.5 w-3.5" />
-                                      </button>
-                                    </div>
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
-                      <div className="mt-3 rounded-[24px] border border-slate-300 bg-slate-100 px-4 py-3 sm:px-5">
-                        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                          <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
-                            <span>
-                              Showing {Math.min((studentsCurrentPage - 1) * ITEMS_PER_PAGE + 1, studentsList.length)} to {Math.min(studentsCurrentPage * ITEMS_PER_PAGE, studentsList.length)} of {studentsList.length} entries
-                            </span>
-                            <span className="rounded-full border border-emerald-300 bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
-                              Page {studentsCurrentPage} / {Math.max(1, Math.ceil(studentsList.length / ITEMS_PER_PAGE))}
-                            </span>
-                          </div>
-
-                          <div className="flex flex-wrap items-center gap-3">
-                            <button
-                              type="button"
-                              onClick={() => setStudentsCurrentPage((page) => Math.max(1, page - 1))}
-                              disabled={studentsCurrentPage === 1}
-                              className="inline-flex h-10 items-center rounded-2xl border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
-                            >
-                              Prev
-                            </button>
-
-                            <div className="flex flex-wrap items-center gap-3">
-                              {Array.from({ length: Math.max(1, Math.ceil(studentsList.length / ITEMS_PER_PAGE)) }, (_, i) => i + 1).map((page) => (
-                                <button
-                                  key={page}
-                                  type="button"
-                                  onClick={() => setStudentsCurrentPage(page)}
-                                  className={`inline-flex h-10 min-w-10 items-center justify-center rounded-2xl border text-sm font-semibold transition ${
-                                    page === studentsCurrentPage
-                                      ? "border-emerald-700 bg-emerald-700 text-white shadow-[0_8px_20px_rgba(16,185,129,0.32)]"
-                                      : "border-slate-300 bg-slate-100 text-slate-700 hover:bg-white"
-                                  }`}
-                                >
-                                  {page}
-                                </button>
-                              ))}
-                            </div>
-
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setStudentsCurrentPage((page) =>
-                                  Math.min(Math.max(1, Math.ceil(studentsList.length / ITEMS_PER_PAGE)), page + 1),
-                                )
-                              }
-                              disabled={studentsCurrentPage === Math.max(1, Math.ceil(studentsList.length / ITEMS_PER_PAGE))}
-                              className="inline-flex h-10 items-center rounded-2xl border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
-                            >
-                              Next
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div>
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                          <thead className="bg-slate-50 text-left text-slate-500">
-                            <tr>
-                              <th className="px-4 py-3 font-semibold">MEMBER</th>
-                              <th className="px-4 py-3 font-semibold">NAME</th>
-                              <th className="px-4 py-3 font-semibold">SPECIALIZATION</th>
-                              <th className="px-4 py-3 font-semibold">MEMBER SINCE</th>
-                              <th className="px-4 py-3 text-right font-semibold">ACTION</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {professionalUsers.slice((professionalsCurrentPage - 1) * ITEMS_PER_PAGE, professionalsCurrentPage * ITEMS_PER_PAGE).map((professional) => (
-                              <tr
-                                key={professional.id}
-                                className="cursor-pointer border-b border-slate-100 bg-white transition hover:bg-slate-50"
-                                onClick={() =>
-                                  openDetailModal({
-                                    title: "Professional Details",
-                                    subtitle: professional.email,
-                                    entries: [
-                                      { label: "Name", value: professional.name },
-                                      { label: "Email", value: professional.email },
-                                      { label: "Provider", value: professional.provider },
-                                      { label: "Specialization", value: professional.specialization || "-" },
-                                      { label: "Contact Number", value: professional.contactNumber || "-" },
-                                      { label: "Location", value: professional.location || "-" },
-                                      { label: "Certificates", value: String(professional.certificatesCount) },
-                                      { label: "Reviews", value: String(professional.reviewsCount) },
-                                      {
-                                        label: "Profile Boosted Until",
-                                        value: professional.profileBoostedUntil ? new Date(professional.profileBoostedUntil).toLocaleString() : "-",
-                                      },
-                                      { label: "Joined", value: professional.joinedAt },
-                                    ],
-                                  })
-                                }
-                              >
-                                <td className="px-4 py-4">
-                                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-300 to-blue-400 flex items-center justify-center text-white font-semibold">
-                                    {professional.name.charAt(0).toUpperCase()}
-                                  </div>
-                                </td>
-                                <td className="px-4 py-4">
-                                  <div className="font-medium text-slate-800">{professional.name}</div>
-                                  <div className="text-xs text-slate-500">{professional.email}</div>
-                                </td>
-                                <td className="px-4 py-4 text-slate-700">{professional.specialization || "-"}</td>
-                                <td className="px-4 py-4 text-slate-700">{professional.joinedAt}</td>
-                                <td className="px-4 py-4">
-                                  <div className="flex justify-end gap-2">
-                                    <button
-                                      type="button"
-                                      onClick={(event) => {
-                                        event.stopPropagation();
-                                      }}
-                                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                                    >
-                                      <PencilLine className="h-3.5 w-3.5" />
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={(event) => {
-                                        event.stopPropagation();
-                                        openDetailModal({
-                                          title: "Professional Details",
-                                          subtitle: professional.email,
-                                          entries: [
-                                            { label: "Name", value: professional.name },
-                                            { label: "Email", value: professional.email },
-                                            { label: "Provider", value: professional.provider },
-                                            { label: "Specialization", value: professional.specialization || "-" },
-                                            { label: "Contact Number", value: professional.contactNumber || "-" },
-                                            { label: "Location", value: professional.location || "-" },
-                                            { label: "Certificates", value: String(professional.certificatesCount) },
-                                            { label: "Reviews", value: String(professional.reviewsCount) },
-                                            {
-                                              label: "Profile Boosted Until",
-                                              value: professional.profileBoostedUntil ? new Date(professional.profileBoostedUntil).toLocaleString() : "-",
-                                            },
-                                            { label: "Joined", value: professional.joinedAt },
-                                          ],
-                                        });
-                                      }}
-                                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-green-200 bg-green-50 text-green-600 hover:bg-green-100"
-                                    >
-                                      <Eye className="h-3.5 w-3.5" />
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={(event) => {
-                                        event.stopPropagation();
-                                        void deleteProfessional(professional.backendId);
-                                      }}
-                                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-red-200 bg-red-50 text-red-600 hover:bg-red-100"
-                                    >
-                                      <Trash2 className="h-3.5 w-3.5" />
-                                    </button>
-                                  </div>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                      <div className="mt-3 rounded-[24px] border border-slate-300 bg-slate-100 px-4 py-3 sm:px-5">
-                        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                          <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
-                            <span>
-                              Showing {Math.min((professionalsCurrentPage - 1) * ITEMS_PER_PAGE + 1, professionalUsers.length)} to {Math.min(professionalsCurrentPage * ITEMS_PER_PAGE, professionalUsers.length)} of {professionalUsers.length} entries
-                            </span>
-                            <span className="rounded-full border border-emerald-300 bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
-                              Page {professionalsCurrentPage} / {Math.max(1, Math.ceil(professionalUsers.length / ITEMS_PER_PAGE))}
-                            </span>
-                          </div>
-
-                          <div className="flex flex-wrap items-center gap-3">
-                            <button
-                              type="button"
-                              onClick={() => setProfessionalsCurrentPage((page) => Math.max(1, page - 1))}
-                              disabled={professionalsCurrentPage === 1}
-                              className="inline-flex h-10 items-center rounded-2xl border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
-                            >
-                              Prev
-                            </button>
-
-                            <div className="flex flex-wrap items-center gap-3">
-                              {Array.from({ length: Math.max(1, Math.ceil(professionalUsers.length / ITEMS_PER_PAGE)) }, (_, i) => i + 1).map((page) => (
-                                <button
-                                  key={page}
-                                  type="button"
-                                  onClick={() => setProfessionalsCurrentPage(page)}
-                                  className={`inline-flex h-10 min-w-10 items-center justify-center rounded-2xl border text-sm font-semibold transition ${
-                                    page === professionalsCurrentPage
-                                      ? "border-emerald-700 bg-emerald-700 text-white shadow-[0_8px_20px_rgba(16,185,129,0.32)]"
-                                      : "border-slate-300 bg-slate-100 text-slate-700 hover:bg-white"
-                                  }`}
-                                >
-                                  {page}
-                                </button>
-                              ))}
-                            </div>
-
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setProfessionalsCurrentPage((page) =>
-                                  Math.min(Math.max(1, Math.ceil(professionalUsers.length / ITEMS_PER_PAGE)), page + 1),
-                                )
-                              }
-                              disabled={professionalsCurrentPage === Math.max(1, Math.ceil(professionalUsers.length / ITEMS_PER_PAGE))}
-                              className="inline-flex h-10 items-center rounded-2xl border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
-                            >
-                              Next
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <AdminUsersPanel
+                  usersTab={usersTab}
+                  setUsersTab={setUsersTab}
+                  usersLoading={usersLoading}
+                  usersError={usersError}
+                  studentsList={studentsList}
+                  selectedStudentId={selectedStudentId}
+                  openStudentDetails={openStudentDetails}
+                  deleteStudent={deleteStudent}
+                  studentsCurrentPage={studentsCurrentPage}
+                  setStudentsCurrentPage={setStudentsCurrentPage}
+                  professionalUsers={professionalUsers}
+                  openDetailModal={openDetailModal}
+                  deleteProfessional={deleteProfessional}
+                  professionalsCurrentPage={professionalsCurrentPage}
+                  setProfessionalsCurrentPage={setProfessionalsCurrentPage}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                />
               ) : (
                 <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   <div className="rounded-xl border border-slate-200 bg-[#fff9fa] p-4">
@@ -3168,291 +2045,33 @@ export default function AdminPanelView() {
         </div>
       </section>
 
-      {isCategoryFormOpen ? (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/40 backdrop-blur-sm p-4">
-          <div className="w-full max-w-3xl rounded-2xl bg-white p-4 shadow-2xl sm:p-5">
-            <h3 className="text-base font-semibold text-slate-800">
-              {editingCategoryId !== null ? "Edit Professional Category" : "Add Professional Category"}
-            </h3>
-
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <input
-                type="text"
-                value={categoryName}
-                onChange={(event) => setCategoryName(event.target.value)}
-                placeholder="Category name"
-                className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-[#1ec28e]"
-              />
-              <input
-                type="text"
-                value={categoryType}
-                onChange={(event) => setCategoryType(event.target.value)}
-                placeholder="Category type"
-                className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-[#1ec28e]"
-              />
-              <textarea
-                value={categoryDescription}
-                onChange={(event) => setCategoryDescription(event.target.value)}
-                placeholder="Category description"
-                rows={4}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-[#1ec28e] sm:col-span-2"
-              />
-            </div>
-
-            <div className="mt-4 flex flex-wrap justify-end gap-2">
-              <button
-                type="button"
-                onClick={closeCategoryForm}
-                className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={saveCategory}
-                className="rounded-full bg-[#1ec28e] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ad7d]"
-              >
-                {editingCategoryId !== null ? "Update Category" : "Add Category"}
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {adminProfileOpen ? (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/40 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h3 className="text-lg font-semibold text-slate-800">Admin Profile</h3>
-                <p className="text-sm text-slate-500">Manage your admin session from here.</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setAdminProfileOpen(false)}
-                className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
-              <div className="flex items-center gap-3">
-                <Image
-                  src={ADMIN_PROFILE.avatar}
-                  alt="Admin profile"
-                  width={56}
-                  height={56}
-                  className="h-14 w-14 rounded-full object-cover"
-                />
-                <div>
-                  <p className="text-base font-semibold text-slate-800">{ADMIN_PROFILE.name}</p>
-                  <p className="text-sm text-slate-500">System Administrator</p>
-                  <p className="text-sm text-slate-600">{ADMIN_PROFILE.email}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:justify-end">
-              <button
-                type="button"
-                onClick={() => setAdminProfileOpen(false)}
-                className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
-              >
-                Close
-              </button>
-              <button
-                type="button"
-                onClick={onLogout}
-                className="rounded-full bg-[#1ec28e] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ad7d]"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {detailModal ? (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/40 backdrop-blur-sm p-4">
-          <div className="w-full max-w-2xl rounded-2xl bg-white p-5 shadow-2xl">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h3 className="text-lg font-semibold text-slate-800">{detailModal.title}</h3>
-                {detailModal.subtitle ? <p className="text-sm text-slate-500">{detailModal.subtitle}</p> : null}
-              </div>
-              <button
-                type="button"
-                onClick={() => setDetailModal(null)}
-                className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              {detailModal.entries.map((entry) => (
-                <div key={entry.label} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
-                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{entry.label}</p>
-                  <p className="mt-1 text-sm font-semibold text-slate-800">{entry.value}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {selectedStudent && !editingStudent ? (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/40 backdrop-blur-sm p-4">
-          <div className="w-full max-w-4xl rounded-3xl bg-white p-6 shadow-2xl">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h3 className="text-lg font-semibold text-slate-800">User Details</h3>
-                <p className="text-sm text-slate-500">Complete backend user details.</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSelectedStudentId(null)}
-                className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-              <div className="rounded-2xl bg-[#f8fafc] p-5">
-                <p className="text-sm text-slate-500">Role</p>
-                <p className="mt-1 text-lg font-semibold text-slate-800">{selectedStudentMeta?.role ?? "student"}</p>
-                <p className="mt-4 text-sm text-slate-500">Name</p>
-                <p className="mt-1 text-lg font-semibold text-slate-800">{selectedStudent.name}</p>
-                <p className="mt-4 text-sm text-slate-500">Email</p>
-                <p className="mt-1 text-sm font-medium text-slate-800">{selectedStudent.email}</p>
-                <p className="mt-4 text-sm text-slate-500">Backend ID</p>
-                <p className="mt-1 text-xs font-medium text-slate-800 break-all">{selectedStudentMeta?.backendId ?? "-"}</p>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <label className="space-y-1 text-sm">
-                  <span className="text-slate-500">Provider</span>
-                  <input value={selectedStudentMeta?.provider ?? "-"} readOnly className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-800 outline-none" />
-                </label>
-                <label className="space-y-1 text-sm">
-                  <span className="text-slate-500">Joined</span>
-                  <input value={selectedStudentMeta ? new Date(selectedStudentMeta.createdAt).toLocaleString() : "-"} readOnly className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-800 outline-none" />
-                </label>
-                <label className="space-y-1 text-sm">
-                  <span className="text-slate-500">Contact Number</span>
-                  <input value={selectedStudentMeta?.contactNumber || "-"} readOnly className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-800 outline-none" />
-                </label>
-                <label className="space-y-1 text-sm">
-                  <span className="text-slate-500">Specialization</span>
-                  <input value={selectedStudentMeta?.specialization || "-"} readOnly className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-800 outline-none" />
-                </label>
-                <label className="space-y-1 text-sm sm:col-span-2">
-                  <span className="text-slate-500">Location</span>
-                  <textarea value={selectedStudentMeta?.location || "-"} readOnly rows={2} className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 outline-none" />
-                </label>
-                <label className="space-y-1 text-sm">
-                  <span className="text-slate-500">Certificates</span>
-                  <input value={String(selectedStudentMeta?.certificatesCount ?? 0)} readOnly className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-800 outline-none" />
-                </label>
-                <label className="space-y-1 text-sm">
-                  <span className="text-slate-500">Reviews</span>
-                  <input value={String(selectedStudentMeta?.reviewsCount ?? 0)} readOnly className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-800 outline-none" />
-                </label>
-                <label className="space-y-1 text-sm sm:col-span-2">
-                  <span className="text-slate-500">Profile Boosted Until</span>
-                  <input value={selectedStudentMeta?.profileBoostedUntil ? new Date(selectedStudentMeta.profileBoostedUntil).toLocaleString() : "-"} readOnly className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-800 outline-none" />
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {editingStudent && studentDraft ? (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/40 backdrop-blur-sm p-4">
-          <div className="w-full max-w-2xl rounded-2xl bg-white p-5 shadow-2xl">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h3 className="text-lg font-semibold text-slate-800">Edit Student</h3>
-                <p className="text-sm text-slate-500">Update the student record and save changes.</p>
-              </div>
-              <button
-                type="button"
-                onClick={closeEditStudent}
-                className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              {editableStudentFields.map((field) => (
-                <label key={field.key} className="space-y-1 text-sm">
-                  <span className="text-slate-500">{field.label}</span>
-                  <input
-                    value={studentDraft[field.key]}
-                    onChange={(event) =>
-                      setStudentDraft((current) =>
-                        current
-                          ? {
-                              ...current,
-                              [field.key]:
-                                field.key === "category"
-                                  ? (event.target.value as StudentCategory)
-                                  : event.target.value,
-                            }
-                          : current,
-                      )
-                    }
-                    className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-[#1ec28e]"
-                  />
-                </label>
-              ))}
-              <label className="space-y-1 text-sm">
-                <span className="text-slate-500">Age</span>
-                <input
-                  type="number"
-                  value={studentDraft.age}
-                  onChange={(event) =>
-                    setStudentDraft((current) => (current ? { ...current, age: Number(event.target.value) } : current))
-                  }
-                  className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-[#1ec28e]"
-                />
-              </label>
-              <label className="space-y-1 text-sm">
-                <span className="text-slate-500">Marks</span>
-                <input
-                  type="number"
-                  value={studentDraft.marks}
-                  onChange={(event) =>
-                    setStudentDraft((current) => (current ? { ...current, marks: Number(event.target.value) } : current))
-                  }
-                  className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-[#1ec28e]"
-                />
-              </label>
-            </div>
-
-            <div className="mt-5 flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={closeEditStudent}
-                className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={saveStudent}
-                className="rounded-full bg-[#1ec28e] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ad7d]"
-              >
-                Save Changes
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <AdminPanelModals
+        isCategoryFormOpen={isCategoryFormOpen}
+        editingCategoryId={editingCategoryId}
+        categoryName={categoryName}
+        setCategoryName={setCategoryName}
+        categoryType={categoryType}
+        setCategoryType={setCategoryType}
+        categoryDescription={categoryDescription}
+        setCategoryDescription={setCategoryDescription}
+        closeCategoryForm={closeCategoryForm}
+        saveCategory={saveCategory}
+        adminProfileOpen={adminProfileOpen}
+        setAdminProfileOpen={setAdminProfileOpen}
+        ADMIN_PROFILE={ADMIN_PROFILE}
+        onLogout={onLogout}
+        detailModal={detailModal}
+        setDetailModal={setDetailModal}
+        selectedStudent={selectedStudent}
+        editingStudent={editingStudent}
+        setSelectedStudentId={setSelectedStudentId}
+        selectedStudentMeta={selectedStudentMeta}
+        studentDraft={studentDraft}
+        editableStudentFields={editableStudentFields}
+        setStudentDraft={setStudentDraft}
+        closeEditStudent={closeEditStudent}
+        saveStudent={saveStudent}
+      />
     </main>
   );
 }

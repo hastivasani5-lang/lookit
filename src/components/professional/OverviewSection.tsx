@@ -93,21 +93,32 @@ export default function OverviewSection({
 
           {certificateList.length > 0 && (
             <div className="mt-5 border-t border-slate-100 pt-4">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Certificates</p>
-              <div className="flex flex-wrap gap-1.5">
-                {certificateList.slice(0, 3).map((certificate) => (
-                  <a
-                    key={certificate}
-                    href={certificate}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="rounded-lg bg-slate-50 px-2.5 py-1 text-xs text-slate-600 transition hover:bg-[#effaf6] hover:text-[#1ec28e]"
-                  >
-                    {certificate.split("/").pop()}
-                  </a>
-                ))}
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                Certificates ({certificateList.length})
+              </p>
+              <div className="flex flex-col gap-1.5">
+                {certificateList.slice(0, 3).map((certificate, idx) => {
+                  const raw = certificate.split("/").pop() ?? "";
+                  const ext = raw.split(".").pop()?.toLowerCase() ?? "";
+                  const isPdf = ext === "pdf";
+                  const label = `Certificate ${idx + 1}${isPdf ? " (PDF)" : ""}`;
+                  return (
+                    <a
+                      key={certificate}
+                      href={certificate}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-[#effaf6] hover:text-[#1ec28e]"
+                    >
+                      <svg className="h-4 w-4 shrink-0 text-[#1ec28e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      {label}
+                    </a>
+                  );
+                })}
                 {certificateList.length > 3 && (
-                  <span className="rounded-lg bg-slate-50 px-2.5 py-1 text-xs text-slate-500">
+                  <span className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500">
                     +{certificateList.length - 3} more
                   </span>
                 )}

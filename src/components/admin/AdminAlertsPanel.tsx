@@ -1,0 +1,277 @@
+import { BellRing } from "lucide-react";
+import type { ProfessionalNotification } from "@/types/notifications";
+
+type AlertsView = "professionals" | "students";
+
+type ContactMessage = {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  subject: string;
+  message: string;
+  createdAt: string;
+};
+
+type AdminAlertsPanelProps = {
+  alertsView: AlertsView;
+  setAlertsView: (view: AlertsView) => void;
+  notificationsLoading: boolean;
+  notifications: ProfessionalNotification[];
+  paginatedNotifications: ProfessionalNotification[];
+  alertsProfessionalsPageStart: number;
+  alertsProfessionalsCurrentPage: number;
+  alertsProfessionalsTotalPages: number;
+  onAlertsProfessionalsPageChange: (page: number) => void;
+  contactMessagesLoading: boolean;
+  contactMessages: ContactMessage[];
+  paginatedContactMessages: ContactMessage[];
+  alertsStudentsPageStart: number;
+  alertsStudentsCurrentPage: number;
+  alertsStudentsTotalPages: number;
+  onAlertsStudentsPageChange: (page: number) => void;
+  itemsPerPage: number;
+};
+
+const getInitials = (value: string) =>
+  value
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("") || "NA";
+
+export default function AdminAlertsPanel({
+  alertsView,
+  setAlertsView,
+  notificationsLoading,
+  notifications,
+  paginatedNotifications,
+  alertsProfessionalsPageStart,
+  alertsProfessionalsCurrentPage,
+  alertsProfessionalsTotalPages,
+  onAlertsProfessionalsPageChange,
+  contactMessagesLoading,
+  contactMessages,
+  paginatedContactMessages,
+  alertsStudentsPageStart,
+  alertsStudentsCurrentPage,
+  alertsStudentsTotalPages,
+  onAlertsStudentsPageChange,
+  itemsPerPage,
+}: AdminAlertsPanelProps) {
+  return (
+    <div className="mt-6 space-y-5">
+      <div className="rounded-xl border border-slate-200 bg-white p-3">
+        <div className="flex w-full max-w-sm items-center gap-2 rounded-xl bg-slate-50 p-1">
+          <button
+            type="button"
+            onClick={() => setAlertsView("professionals")}
+            className={`flex-1 rounded-lg px-3 py-2 text-xs font-semibold transition ${
+              alertsView === "professionals" ? "bg-[#2d6a4f] text-white" : "text-slate-600 hover:bg-white"
+            }`}
+          >
+            Professional
+          </button>
+          <button
+            type="button"
+            onClick={() => setAlertsView("students")}
+            className={`flex-1 rounded-lg px-3 py-2 text-xs font-semibold transition ${
+              alertsView === "students" ? "bg-[#2d6a4f] text-white" : "text-slate-600 hover:bg-white"
+            }`}
+          >
+            Students
+          </button>
+        </div>
+      </div>
+
+      {alertsView === "professionals" ? (
+        <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-800">Professional Notifications</h3>
+              <p className="text-sm text-slate-500">Latest profile, certificate, and upgrade changes from professionals.</p>
+            </div>
+          </div>
+
+          <div className="mt-5 overflow-hidden rounded-xl">
+            {notificationsLoading ? (
+              <div className="bg-white p-4 text-sm text-slate-500">Loading notifications...</div>
+            ) : notifications.length > 0 ? (
+              <div className="space-y-3">
+                {paginatedNotifications.map((notification) => (
+                  <div
+                    key={notification.id}
+                    className="rounded-2xl border border-slate-200 bg-white px-4 py-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:px-5"
+                  >
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="flex min-w-0 items-start gap-3">
+                        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-sm font-bold text-emerald-700">
+                          {getInitials(notification.professionalName)}
+                        </span>
+
+                        <div className="min-w-0 space-y-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="font-semibold text-slate-800">{notification.professionalName}</p>
+                            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-700">
+                              <BellRing className="h-3 w-3" />
+                              Update
+                            </span>
+                          </div>
+                          <p className="truncate text-xs text-slate-500">{notification.professionalEmail}</p>
+                          <p className="text-sm font-medium text-slate-700">{notification.summary}</p>
+                          <p className="rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-slate-600">{notification.details}</p>
+                        </div>
+                      </div>
+
+                      <span className="inline-flex w-fit shrink-0 rounded-full border border-[#dbeafe] bg-[#eff6ff] px-3 py-1 text-xs font-semibold text-[#2563eb]">
+                        {new Date(notification.createdAt).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white p-4 text-sm text-slate-500">No professional updates yet.</div>
+            )}
+          </div>
+
+          {notifications.length > 0 ? (
+            <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
+              <p className="text-xs text-slate-600 sm:text-sm">
+                Showing {Math.min(alertsProfessionalsPageStart + 1, notifications.length)} to{" "}
+                {Math.min(alertsProfessionalsPageStart + itemsPerPage, notifications.length)} of {notifications.length} entries
+              </p>
+              <div className="flex items-center gap-2">
+                <span className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700">
+                  Page {alertsProfessionalsCurrentPage} / {alertsProfessionalsTotalPages}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => onAlertsProfessionalsPageChange(Math.max(1, alertsProfessionalsCurrentPage - 1))}
+                  disabled={alertsProfessionalsCurrentPage === 1}
+                  className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Prev
+                </button>
+                {Array.from({ length: alertsProfessionalsTotalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    type="button"
+                    onClick={() => onAlertsProfessionalsPageChange(page)}
+                    className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
+                      alertsProfessionalsCurrentPage === page
+                        ? "border-[#178c43] bg-[#178c43] text-white"
+                        : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => onAlertsProfessionalsPageChange(Math.min(alertsProfessionalsTotalPages, alertsProfessionalsCurrentPage + 1))}
+                  disabled={alertsProfessionalsCurrentPage === alertsProfessionalsTotalPages}
+                  className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          ) : null}
+        </div>
+      ) : (
+        <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-800">Student Submissions</h3>
+              <p className="text-sm text-slate-500">Messages submitted from students through the Contact page form.</p>
+            </div>
+          </div>
+
+          <div className="mt-5 overflow-hidden rounded-xl">
+            {contactMessagesLoading ? (
+              <div className="bg-white p-4 text-sm text-slate-500">Loading contact submissions...</div>
+            ) : contactMessages.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-slate-50 text-left text-slate-500">
+                    <tr>
+                      <th className="px-4 py-3">Name</th>
+                      <th className="px-4 py-3">Email</th>
+                      <th className="px-4 py-3">Phone</th>
+                      <th className="px-4 py-3">Subject</th>
+                      <th className="px-4 py-3">Message</th>
+                      <th className="px-4 py-3">Submitted</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedContactMessages.map((entry) => (
+                      <tr key={entry.id} className="border-t border-slate-100 text-slate-700">
+                        <td className="px-4 py-3 font-medium text-slate-800">{entry.name}</td>
+                        <td className="px-4 py-3">{entry.email}</td>
+                        <td className="px-4 py-3">{entry.phone || "-"}</td>
+                        <td className="px-4 py-3">{entry.subject}</td>
+                        <td className="px-4 py-3 max-w-[340px]">
+                          <p className="line-clamp-3">{entry.message}</p>
+                        </td>
+                        <td className="px-4 py-3 text-xs text-slate-500">{new Date(entry.createdAt).toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="bg-white p-4 text-sm text-slate-500">No contact submissions yet.</div>
+            )}
+          </div>
+
+          {contactMessages.length > 0 ? (
+            <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
+              <p className="text-xs text-slate-600 sm:text-sm">
+                Showing {Math.min(alertsStudentsPageStart + 1, contactMessages.length)} to{" "}
+                {Math.min(alertsStudentsPageStart + itemsPerPage, contactMessages.length)} of {contactMessages.length} entries
+              </p>
+              <div className="flex items-center gap-2">
+                <span className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700">
+                  Page {alertsStudentsCurrentPage} / {alertsStudentsTotalPages}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => onAlertsStudentsPageChange(Math.max(1, alertsStudentsCurrentPage - 1))}
+                  disabled={alertsStudentsCurrentPage === 1}
+                  className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Prev
+                </button>
+                {Array.from({ length: alertsStudentsTotalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    type="button"
+                    onClick={() => onAlertsStudentsPageChange(page)}
+                    className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
+                      alertsStudentsCurrentPage === page
+                        ? "border-[#178c43] bg-[#178c43] text-white"
+                        : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => onAlertsStudentsPageChange(Math.min(alertsStudentsTotalPages, alertsStudentsCurrentPage + 1))}
+                  disabled={alertsStudentsCurrentPage === alertsStudentsTotalPages}
+                  className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          ) : null}
+        </div>
+      )}
+    </div>
+  );
+}

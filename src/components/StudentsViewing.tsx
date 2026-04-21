@@ -359,7 +359,7 @@ export default function StudentsViewing() {
 
                 {/* ENROLL BUTTON */}
                 <button
-                  className="w-full py-2 rounded-lg text-sm font-semibold transition-all duration-300 bg-gray-50 text-[#1e2a55] hover:bg-[#1ec28e] hover:text-white group/btn flex items-center justify-center gap-2"
+                  className="w-full py-2 rounded-lg text-sm font-semibold transition-all duration-300  bg-gradient-to-r from-emerald-600 to-teal-600 text-white  group/btn flex items-center justify-center gap-2"
                   onClick={e => {
                     e.stopPropagation();
                     router.push(`/course/${encodeURIComponent(course.title)}`);

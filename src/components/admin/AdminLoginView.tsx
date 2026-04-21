@@ -1,11 +1,11 @@
 "use client";
-
+ 
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import SiteLogo from "@/components/SiteLogo";
-
+ 
 export default function AdminLoginView() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -13,26 +13,26 @@ export default function AdminLoginView() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+ 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
     setIsSubmitting(true);
-
+ 
     try {
       const response = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
+ 
       const data = (await response.json().catch(() => ({}))) as { message?: string };
-
+ 
       if (!response.ok) {
         setError(data.message || "Login failed.");
         return;
       }
-
+ 
       router.refresh();
     } catch {
       setError("Unable to login. Please try again.");
@@ -40,7 +40,7 @@ export default function AdminLoginView() {
       setIsSubmitting(false);
     }
   };
-
+ 
   return (
     <main className="min-h-screen bg-[#eef5f3] px-4 py-8 md:px-8 md:py-12 font-sans">
       <section className="mx-auto grid w-full max-w-6xl overflow-hidden rounded-[28px] neumorph-admin-card bg-white lg:grid-cols-2">
@@ -48,10 +48,10 @@ export default function AdminLoginView() {
           <div className="mb-10 flex items-center gap-3">
             <SiteLogo size="admin" priority />
           </div>
-
+ 
           <h1 className="text-4xl font-semibold leading-tight text-slate-800 sm:text-5xl">Welcome to login system</h1>
           <p className="mt-3 text-sm text-slate-400">Sign in by entering the information below</p>
-
+ 
           <form onSubmit={onSubmit} className="mt-8 max-w-md space-y-3">
             <label className="relative block">
               <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -65,7 +65,7 @@ export default function AdminLoginView() {
                 required
               />
             </label>
-
+ 
             <label className="relative block">
               <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
@@ -86,9 +86,9 @@ export default function AdminLoginView() {
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </label>
-
+ 
             {error ? <p className="px-1 text-sm text-red-600">{error}</p> : null}
-
+ 
             <div className="pt-5">
               <button
                 type="submit"
@@ -100,7 +100,7 @@ export default function AdminLoginView() {
             </div>
           </form>
         </div>
-
+ 
         <div className="relative hidden min-h-[560px] overflow-hidden bg-[#e6f7ef] lg:block">
                 <style>{`
                   .neumorph-admin-card {
@@ -122,3 +122,5 @@ export default function AdminLoginView() {
     </main>
   );
 }
+ 
+ 

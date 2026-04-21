@@ -11,7 +11,7 @@ const ShopWhyChoose = () => {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-[#f7f9fb] px-6 md:px-16 ">
+    <section className="relative overflow-hidden bg-[#f7f9fb] text-black px-6 md:px-16 ">
 
       {/* BACKGROUND */}
       <div className="absolute right-0 top-0 w-[500px] h-[500px] bg-gradient-to-tr from-[#1ec28e]/10 to-transparent blur-3xl opacity-60"></div>
@@ -47,11 +47,12 @@ const ShopWhyChoose = () => {
 
           {/* CTA */}
           <div className="mt-8 flex items-center gap-6">
-            <button className="bg-blue-600 text-white px-6 py-3 rounded-full font-semibold shadow hover:bg-blue-700 transition">
+            <button className=" bg-gradient-to-r from-emerald-600 to-teal-600  text-white
+            px-6 py-3 rounded-full font-semibold shadow  transition">
               Shop Now →
             </button>
 
-            <button className="bg-blue-50 text-blue-600 px-6 py-3 rounded-full font-semibold shadow hover:bg-blue-100 transition">
+            <button className="bg-white border-2 border-gradient-to-r from-emerald-600 to-teal-600 text-[#1ec28e] px-6 py-3 rounded-full font-semibold shadow transition">
               View Products
             </button>
           </div>

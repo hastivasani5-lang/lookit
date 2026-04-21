@@ -41,7 +41,7 @@ const AboutHero = () => {
           </div>
 
           {/* BUTTON */}
-          <button className="bg-[#2d3a8c] hover:bg-[#1f2a6c] text-white px-6 py-3 rounded-lg font-medium transition">
+          <button className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-lg font-medium transition hover:scale-105 hover:shadow-md">
             Read More
           </button>
         </div>

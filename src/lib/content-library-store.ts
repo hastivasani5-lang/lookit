@@ -176,7 +176,8 @@ async function writeStore(store: LibraryStore) {
     return;
   }
 
-  await fs.writeFile(LIBRARY_FILE, JSON.stringify(store, null, 2), "utf-8");
+  await fs.writeFile(LIBRARY_FILE + ".tmp", JSON.stringify(store, null, 2), "utf-8");
+  await fs.rename(LIBRARY_FILE + ".tmp", LIBRARY_FILE);
 }
 
 function getOrCreateProfessionalLibrary(store: LibraryStore, professionalId: string): ProfessionalLibrary {

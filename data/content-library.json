@@ -69,5 +69,19 @@
       ]
     }
   },
-  "students": {}
+  "students": {
+    "42d3d5d9-e80d-4f0e-9db0-aa949fcfb800": {
+      "purchasedBooks": [
+        {
+          "id": "purchased-book-1776765686106-bv3c0j",
+          "purchasedAt": "2026-04-21T10:01:26.106Z",
+          "title": "web",
+          "source": "Hasti",
+          "amount": "₹12.00",
+          "accessUrl": ""
+        }
+      ],
+      "watchedVideos": []
+    }
+  }
 }

@@ -80,8 +80,8 @@ export default function FollowersPage() {
   const weekCount  = followers.filter((f) => Date.now() - new Date(f.followedAt).getTime() < 604800000).length;
 
   return (
-    <main className="min-h-screen w-full bg-[#f0f4f8]">
-      <section className="flex min-h-screen flex-col lg:flex-row">
+    <main className="h-screen w-full overflow-hidden bg-[#f0f4f8]" suppressHydrationWarning>
+      <section className="flex h-full flex-col lg:flex-row">
         <Suspense fallback={null}>
           <DashboardSidebar
             profileName={session?.user?.name ?? "Professional User"}
@@ -90,7 +90,7 @@ export default function FollowersPage() {
           />
         </Suspense>
 
-        <div className="flex-1 overflow-y-auto bg-[#f0f4f8] px-4 py-5 md:px-6 lg:px-7">
+        <div className="flex-1 overflow-y-auto bg-[#f0f4f8] px-4 py-5 md:px-6 lg:px-7 lg:h-full">
 
           {/* Header */}
           <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

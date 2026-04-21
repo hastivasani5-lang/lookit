@@ -27,7 +27,7 @@ export default async function ProfessionalReviewsPage() {
           avatarSrc={user?.image || "/person.png"}
         />
 
-        <div className="flex-1 bg-[#f0f4f8] px-4 py-5 md:px-6 lg:px-7">
+        <div className="flex-1 overflow-y-auto bg-[#f0f4f8] px-4 py-5 md:px-6 lg:px-7">
           <div className="mb-6">
             <p className="text-xs font-bold uppercase tracking-widest text-[#1ec28e]">
               Professional Dashboard

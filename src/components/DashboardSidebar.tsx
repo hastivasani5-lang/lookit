@@ -29,7 +29,7 @@ export default function DashboardSidebar({ profileName, profileEmail, avatarSrc 
 
   return (
     <aside
-      className="flex flex-col border-b border-white/10 px-5 py-6 lg:sticky lg:top-0 lg:h-full lg:border-b-0 lg:border-r lg:border-white/10"
+      className="flex w-full shrink-0 flex-col border-b border-white/10 px-5 py-6 lg:sticky lg:top-0 lg:h-screen lg:w-[260px] lg:overflow-y-auto lg:border-b-0 lg:border-r lg:border-white/10"
       style={{ background: "linear-gradient(160deg, #0d7a57 0%, #15a374 40%, #1ec28e 100%)" }}
     >
       <div className="flex items-center gap-3 px-2 pb-7">

@@ -257,7 +257,7 @@ function CalendarWidget() {
 
 export default function StudentProfileDashboard({ user, library }: StudentProfileDashboardProps) {
   const profileStorageKey = `student-profile-preview-${user.id}`;
-  const [activeTab, setActiveTab] = useState<DashboardTab>("profile");
+  const [activeTab, setActiveTab] = useState<DashboardTab>("buy-courses");
   const [likes, setLikes] = useState(678);
   const [actionMessage, setActionMessage] = useState("");
   const [editName, setEditName] = useState(user.name);
@@ -469,13 +469,16 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
           <article className="rounded-2xl border border-[#dbe8e4] bg-white p-5 shadow-[0_20px_40px_rgba(15,23,42,0.08)] md:p-6">
             {/* Minimal tab system for Profile and Calendar */}
             <div className="flex flex-wrap items-center gap-2 mb-4">
+              
               <button
                 type="button"
-                onClick={() => setActiveTab("profile")}
-                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "profile" ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
+                onClick={() => setActiveTab("buy-courses")}
+                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "buy-courses" ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
               >
-                Profile
+                Buy           
               </button>
+
+
               <button
                 type="button"
                 onClick={() => setActiveTab("calendar")}
@@ -483,6 +486,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
               >
                 Calendar
               </button>
+
               <button
                 type="button"
                 onClick={() => setActiveTab("wishlist")}
@@ -490,13 +494,15 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
               >
                 Wishlist
               </button>
+
               <button
                 type="button"
                 onClick={() => setActiveTab("following")}
                 className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "following" ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
               >
                 Following
-              </button>
+              </button> 
+
             </div>
             {activeTab === "wishlist" && (
               <div className="my-6">
@@ -550,51 +556,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                 <CalendarWidget />
               </div>
             )}
-
-            {activeTab === "profile" ? (
-              <div className="mt-6 space-y-6">
-                <section>
-                  <h3 className="text-2xl font-bold text-[#1f2937]">Personal Details</h3>
-                  <div className="mt-3 grid gap-2 text-sm text-[#4b5563] md:grid-cols-2">
-                    <p><span className="font-semibold text-[#111827]">Full Name :</span> {editName}</p>
-                    <p><span className="font-semibold text-[#111827]">Location :</span> {editLocation}</p>
-                    <p><span className="font-semibold text-[#111827]">Languages :</span> English, German</p>
-                    <p><span className="font-semibold text-[#111827]">Website :</span> {editWebsite.replace("https://", "")}</p>
-                    <p><span className="font-semibold text-[#111827]">Email :</span> {editEmail}</p>
-                    <p><span className="font-semibold text-[#111827]">Phone :</span> {editPhone}</p>
-                  </div>
-                </section>
-
-                <section>
-                  <h3 className="text-2xl font-bold text-[#1f2937]">My Skills</h3>
-                  <div className="mt-4 grid gap-4 md:grid-cols-2">
-                    {skillRows.map((skill) => (
-                      <div key={skill.label}>
-                        <div className="mb-1 flex items-center justify-between text-sm">
-                          <p className="text-[#4b5563]">{skill.label}</p>
-                          <p className="font-semibold text-[#374151]">{skill.value}%</p>
-                        </div>
-                        <div className="h-2 rounded-full bg-[#eceff5]">
-                          <div className="h-2 rounded-full bg-[linear-gradient(90deg,#1ec28e_0%,#18ab7d_100%)]" style={{ width: `${skill.value}%` }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-
-                <section>
-                  <h3 className="text-2xl font-bold text-[#1f2937]">Biography</h3>
-                  <p className="mt-3 text-sm leading-7 text-[#4b5563]">
-                    At Lookit, I focus on practical learning and real project outcomes. My dashboard keeps track of purchased courses,
-                    profile progress, and useful actions in one place so learning stays consistent and simple.
-                  </p>
-                  <p className="mt-3 text-sm leading-7 text-[#4b5563]">
-                    Joined on {formatDate(user.createdAt)}. I can quickly switch between profile details, purchased courses,
-                    followers, and reviews without leaving this page.
-                  </p>
-                </section>
-              </div>
-            ) : null}
+ 
 
             {activeTab === "edit" ? (
               <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -718,7 +680,63 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
               </div>
             ) : null}
 
-         
+            {activeTab === "buy-courses" && (
+              <div className="mt-6 space-y-8">
+                {/* Purchased Videos */}
+                <section>
+                  <h3 className="text-xl font-bold text-[#1f2937] mb-4 flex items-center gap-2">
+                    <Video className="h-5 w-5 text-[#b45309]" /> Purchased Videos
+                  </h3>
+                  {library.watchedVideos.length === 0 ? (
+                    <div className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-4">
+                      <p className="text-[#4b5563] text-sm">No purchased videos yet.</p>
+                    </div>
+                  ) : (
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {library.watchedVideos.map((video) => (
+                        <div key={video.id} className="overflow-hidden rounded-2xl border border-[#dbe8e4] bg-white shadow-sm">
+                          <div className="flex h-28 items-center justify-center bg-[#f1e9e0]">
+                            <Video className="h-10 w-10 text-[#b45309]" />
+                          </div>
+                          <div className="p-4">
+                            <span className="rounded bg-[#b45309] px-2 py-0.5 text-[11px] font-semibold text-white">Video</span>
+                            <h4 className="mt-2 text-base font-bold text-[#1f2937]">{video.title}</h4>
+                            <p className="mt-2 text-lg font-bold text-[#2c5a48]">{video.amount}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </section>
+
+                {/* Purchased Books */}
+                <section>
+                  <h3 className="text-xl font-bold text-[#1f2937] mb-4 flex items-center gap-2">
+                    <BookOpen className="h-5 w-5 text-[#0891b2]" /> Purchased Books
+                  </h3>
+                  {library.purchasedBooks.length === 0 ? (
+                    <div className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-4">
+                      <p className="text-[#4b5563] text-sm">No purchased books yet.</p>
+                    </div>
+                  ) : (
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {library.purchasedBooks.map((book) => (
+                        <div key={book.id} className="overflow-hidden rounded-2xl border border-[#dbe8e4] bg-white shadow-sm">
+                          <div className="flex h-28 items-center justify-center bg-[#dff3fa]">
+                            <BookOpen className="h-10 w-10 text-[#0891b2]" />
+                          </div>
+                          <div className="p-4">
+                            <span className="rounded bg-[#0891b2] px-2 py-0.5 text-[11px] font-semibold text-white">Book</span>
+                            <h4 className="mt-2 text-base font-bold text-[#1f2937]">{book.title}</h4>
+                            <p className="mt-2 text-lg font-bold text-[#2c5a48]">{book.amount}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </section>
+              </div>
+            )}
 
            </article>
 

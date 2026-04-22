@@ -2,14 +2,24 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Search, ArrowRight, BookOpen, Users, Star, Award } from "lucide-react";
+
+const rotatingWords = ["Categories", "Courses", "Experts", "Skills", "Knowledge"];
 
 export default function HeroCourses() {
   const router = useRouter();
   const [searchText, setSearchText] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const [wordIndex, setWordIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setWordIndex((prev) => (prev + 1) % rotatingWords.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -36,8 +46,19 @@ export default function HeroCourses() {
           {/* Heading */}
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#1e2a55] leading-tight">
             Explore Top{" "}
-            <span className="bg-gradient-to-r from-[#1ec28e] to-[#18a97a] bg-clip-text text-transparent">
-              Categories
+            <span className="relative inline-block min-w-[200px]">
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={wordIndex}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  className="inline-block bg-gradient-to-r from-[#1ec28e] to-[#18a97a] bg-clip-text text-transparent"
+                >
+                  {rotatingWords[wordIndex]}
+                </motion.span>
+              </AnimatePresence>
             </span>{" "}
             & Start Learning
           </h1>

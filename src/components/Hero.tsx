@@ -3,9 +3,20 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
+
+const rotatingWords = ["Learning", "Teaching", "Growing", "Exploring", "Achieving"];
 
 const HeroSection = () => {
+  const [wordIndex, setWordIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setWordIndex((prev) => (prev + 1) % rotatingWords.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-[#e9f7ef] via-[#e6f4f1] to-[#eef5ff] px-4 py-14 sm:px-6 sm:py-20 lg:px-16">
 
@@ -37,7 +48,22 @@ const HeroSection = () => {
             transition={{ duration: 0.7 }}
             className="text-xl font-bold leading-tight text-gray-900 md:text-2xl lg:text-[48px]"
           >
-            Growup Your Learning <br />
+            Growup Your{" "}
+            <span className="relative inline-block min-w-[220px]">
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={wordIndex}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  className="inline-block bg-gradient-to-r from-[#1ec28e] to-[#0d7a57] bg-clip-text text-transparent"
+                >
+                  {rotatingWords[wordIndex]}
+                </motion.span>
+              </AnimatePresence>
+            </span>
+            <br />
             Skills with Educate
           </motion.h1>
 

@@ -13,7 +13,7 @@ export type ProfessionalUser = {
 };
 
 export type DashboardSection = "overview" | "add" | "upgrade" | "settings";
-export type AddContentTab = "books" | "videos";
+export type AddContentTab = "books" | "videos" | "classes";
 
 export type SearchResultItem = {
   id: string;
@@ -67,16 +67,17 @@ export const upgradePlans: Array<{
 
 export const RAZORPAY_PAYMENT_LINK = "https://razorpay.me/@jenildineshbhaigadhiya";
 
-import { LayoutGrid, Upload, CreditCard, Settings, BookOpen, Star, Users } from "lucide-react";
+import { LayoutGrid, Upload, CreditCard, Settings, Star, Users, BookOpen } from "lucide-react";
 
 export const sidebarItems: Array<{ label: string; icon: typeof LayoutGrid; section?: DashboardSection; href?: string }> = [
-  { label: "Overview",        icon: LayoutGrid, section: "overview" },
-  { label: "Add",             icon: Upload,     section: "add" },
-  { label: "Upgrade Profile", icon: CreditCard, section: "upgrade" },
-  { label: "Purchases",       icon: Users,      href: "/dashboard/teachers/purchases" },
-  { label: "Followers",       icon: Users,      href: "/dashboard/teachers/followers" },
-  { label: "Reviews",         icon: Star,       href: "/dashboard/teachers/reviews" },
-  { label: "Settings",        icon: Settings,   section: "settings" },
+  { label: "Overview",          icon: LayoutGrid, section: "overview" },
+  { label: "Add",               icon: Upload,     section: "add" },
+  { label: "Upgrade Profile",   icon: CreditCard, section: "upgrade" },
+  { label: "Purchases",         icon: Users,      href: "/dashboard/teachers/purchases" },
+  { label: "Advance Bookings",  icon: BookOpen,   href: "/dashboard/teachers/advance-bookings" },
+  { label: "Followers",         icon: Users,      href: "/dashboard/teachers/followers" },
+  { label: "Reviews",           icon: Star,       href: "/dashboard/teachers/reviews" },
+  { label: "Settings",          icon: Settings,   section: "settings" },
 ];
 
 export const overviewCards = [

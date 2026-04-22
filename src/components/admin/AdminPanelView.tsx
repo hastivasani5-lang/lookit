@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 import {
@@ -245,7 +245,7 @@ const initialPayoutEntries: PayoutEntry[] = [
     professionalName: "Riya Sharma",
     professionalEmail: "riya.sharma@example.com",
     plan: "Pro (1 month boost)",
-    amount: "₹799",
+    amount: "?799",
     transactionId: "TXN-PRF-12091",
     paidAt: "Today, 10:24 AM",
     status: "completed",
@@ -255,7 +255,7 @@ const initialPayoutEntries: PayoutEntry[] = [
     professionalName: "Aarav Mehta",
     professionalEmail: "aarav.mehta@example.com",
     plan: "Starter (1 week boost)",
-    amount: "₹299",
+    amount: "?299",
     transactionId: "TXN-PRF-12088",
     paidAt: "Today, 09:02 AM",
     status: "pending",
@@ -265,7 +265,7 @@ const initialPayoutEntries: PayoutEntry[] = [
     professionalName: "Neha Verma",
     professionalEmail: "neha.verma@example.com",
     plan: "Elite (3 month boost)",
-    amount: "₹1499",
+    amount: "?1499",
     transactionId: "TXN-PRF-12076",
     paidAt: "Yesterday, 06:45 PM",
     status: "completed",
@@ -275,7 +275,7 @@ const initialPayoutEntries: PayoutEntry[] = [
     professionalName: "Kunal Patel",
     professionalEmail: "kunal.patel@example.com",
     plan: "Premium (2 month boost)",
-    amount: "₹1199",
+    amount: "?1199",
     transactionId: "TXN-PRF-12063",
     paidAt: "2 days ago",
     status: "pending",
@@ -1288,7 +1288,7 @@ export default function AdminPanelView() {
           id: 100000 + index,
           professionalName: payment.studentName,
           professionalEmail: payment.studentEmail,
-          plan: `${payment.plan} • ${payment.professionalName}`,
+          plan: `${payment.plan} � ${payment.professionalName}`,
           amount: payment.amount,
           transactionId: payment.transactionId,
           paidAt: new Date(payment.paidAt).toLocaleString(),
@@ -1450,7 +1450,7 @@ export default function AdminPanelView() {
             />
             <div className="flex items-center gap-4 text-sm">
               <span className="hidden text-slate-600 sm:inline">Open For Order</span>
-              <span className="h-2.5 w-2.5 rounded-full bg-[#1ec28e] shadow-[1px_1px_3px_#bfe9cb,-1px_-1px_3px_#ffffff]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 shadow-[1px_1px_3px_#bfe9cb,-1px_-1px_3px_#ffffff]" />
               <Bell className="h-5 w-5 text-[#1ec28e]" />
               <button
                 type="button"
@@ -1908,7 +1908,7 @@ export default function AdminPanelView() {
                   <button
                     type="button"
                     onClick={openAddCategoryForm}
-                    className="rounded-full bg-[#1ec28e] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ad7d]"
+                    className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ad7d]"
                   >
                     Add Category
                   </button>

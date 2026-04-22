@@ -98,7 +98,7 @@ export default function FindExpertsFlow() {
                     ${isTop ? "md:mb-20" : "md:mt-20"}`}
                   >
                     {/* STEP BADGE */}
-                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-[#1ec28e] text-white w-12 h-12 flex items-center justify-center rounded-full text-sm font-bold shadow">
+                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white w-12 h-12 flex items-center justify-center rounded-full text-sm font-bold shadow">
                       {item.step}
                     </div>
 

@@ -62,8 +62,8 @@ export default function MiniCalendar() {
               <button
                 className={`h-8 w-8 rounded-full text-sm font-medium transition ${
                   isToday(day)
-                    ? "bg-[#1ec28e] text-white shadow-md"
-                    : "text-slate-700 hover:bg-[#1ec28e]/10 hover:text-[#1ec28e]"
+                    ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md"
+                    : "text-slate-700 hover:bg-gradient-to-r from-emerald-600 to-teal-600/10 hover:text-[#1ec28e]"
                 }`}
               >
                 {day}
@@ -76,7 +76,7 @@ export default function MiniCalendar() {
       {/* Today badge */}
       <div className="border-t border-slate-100 px-5 py-3">
         <div className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-[#1ec28e]" />
+          <span className="h-2 w-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600" />
           <span className="text-xs text-slate-500">Today: <span className="font-semibold text-slate-700">{today.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}</span></span>
         </div>
       </div>

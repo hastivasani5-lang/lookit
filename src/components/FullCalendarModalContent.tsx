@@ -14,7 +14,7 @@ export default function FullCalendarModalContent() {
         className="custom-calendar rounded-2xl shadow-lg border border-[#d1f5e0] bg-white p-4"
         tileClassName={({ date, view }) =>
           view === 'month' && date.toDateString() === new Date().toDateString()
-            ? 'bg-[#1ec28e] text-white font-bold rounded-full' : ''
+            ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-full' : ''
         }
       />
       <style jsx global>{`

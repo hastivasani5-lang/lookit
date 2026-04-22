@@ -163,7 +163,7 @@ export default function DetailsPage() {
         <Navbar />
         <div className="flex-1 flex flex-col items-center justify-center gap-4 px-4 text-center">
           <p className="text-lg font-semibold text-gray-700">{loadError || "Item not found."}</p>
-          <Link href="/shop" className="rounded-full bg-[#1ec28e] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#169e6d]">
+          <Link href="/shop" className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-2 text-sm font-semibold text-white transition hover:opacity-90">
             Back to Shop
           </Link>
         </div>

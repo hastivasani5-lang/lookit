@@ -48,7 +48,7 @@ export default function UpgradeProgressChart({
         {!isActive && (
           <button
             onClick={onUpgrade}
-            className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-[#1ec28e] px-3 text-xs font-semibold text-white transition hover:bg-[#17a87a]"
+            className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3 text-xs font-semibold text-white transition hover:opacity-90"
           >
             <CreditCard className="h-3.5 w-3.5" />
             Upgrade
@@ -115,7 +115,7 @@ export default function UpgradeProgressChart({
         <div className="flex-1 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="h-3 w-3 rounded-full bg-[#1ec28e]" />
+              <span className="h-3 w-3 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600" />
               <span className="text-xs text-slate-600">Days Used</span>
             </div>
             <span className="text-sm font-bold text-slate-900">{isActive ? daysUsed : 0}</span>

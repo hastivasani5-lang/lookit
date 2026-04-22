@@ -85,7 +85,7 @@ export default function SettingsSection({
           <div>
             <p className="text-sm font-medium text-slate-500">Profile Photo</p>
             <p className="mt-1 text-base font-semibold text-slate-900">Update your public image</p>
-            <label className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#1ec28e] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#18ab7d]">
+            <label className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-medium text-white transition hover:opacity-90">
               <Upload className="h-4 w-4" />
               Choose photo
               <input
@@ -272,7 +272,7 @@ export default function SettingsSection({
 
         <div className="mt-6 flex items-center gap-3">
           <button type="submit" disabled={savingProfile}
-            className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#1ec28e] px-5 text-sm font-medium text-white transition hover:bg-[#18ab7d] disabled:cursor-not-allowed disabled:opacity-70">
+            className="inline-flex h-10 items-center gap-2 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 px-5 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70">
             <Save className="h-4 w-4" />
             {savingProfile ? "Saving..." : "Update Profile"}
           </button>

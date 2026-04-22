@@ -239,14 +239,14 @@ export default function StudentsViewing() {
             All{" "}
             <span className="relative inline-block">
               Latest Courses
-              <span className="absolute left-0 -bottom-1 w-full h-[3px] bg-[#1ec28e] rounded-full"></span>
+              <span className="absolute left-0 -bottom-1 w-full h-[3px] bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full"></span>
             </span>
           </h2>
           <div className="flex gap-2">
             <button
               onClick={handlePrev}
               disabled={currentPage === 1}
-              className="flex items-center justify-center w-10 h-10 rounded-full bg-white border border-gray-200 text-[#1e2a55] shadow-sm hover:bg-[#1ec28e] hover:text-white hover:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-[#1e2a55]"
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-white border border-gray-200 text-[#1e2a55] shadow-sm hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white hover:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-[#1e2a55]"
               aria-label="Previous"
             >
               <ChevronLeft size={20} />
@@ -254,7 +254,7 @@ export default function StudentsViewing() {
             <button
               onClick={handleNext}
               disabled={currentPage === totalPages}
-              className="flex items-center justify-center w-10 h-10 rounded-full bg-white border border-gray-200 text-[#1e2a55] shadow-sm hover:bg-[#1ec28e] hover:text-white hover:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-[#1e2a55]"
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-white border border-gray-200 text-[#1e2a55] shadow-sm hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white hover:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-[#1e2a55]"
               aria-label="Next"
             >
               <ChevronRight size={20} />
@@ -295,7 +295,7 @@ export default function StudentsViewing() {
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
 
                 {/* QUICK ACTION BUTTON (HOVER) */}
-                <button className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm text-[#1e2a55] p-1.5 rounded-full opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-md hover:bg-[#1ec28e] hover:text-white" onClick={e => e.stopPropagation()}>
+                <button className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm text-[#1e2a55] p-1.5 rounded-full opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-md hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white" onClick={e => e.stopPropagation()}>
                   <BookOpen size={16} />
                 </button>
               </div>

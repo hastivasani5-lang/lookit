@@ -39,7 +39,7 @@ const courses = [
     lessons: "15 Lessons",
     students: "1600 Students",
     color: "bg-[#eef7f3]",
-    badgeColor: "bg-[#1ec28e]",
+    badgeColor: "bg-gradient-to-r from-emerald-600 to-teal-600",
   },
 ];
 
@@ -120,7 +120,7 @@ const Courses = () => {
           <div className="w-full lg:w-1/2" data-aos="fade-right">
             
             <div className="flex items-center justify-center gap-2 text-sm text-gray-500 lg:justify-start">
-              <span className="h-2 w-2 rounded-full bg-primary"></span>
+              <span className="h-2 w-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600"></span>
               CORE FEATURES
             </div>
 
@@ -151,7 +151,7 @@ Available all programs
               onClick={() => setActiveFilter(item)}
               className={`rounded-full px-5 py-2 text-sm font-medium transition ${
                 activeFilter === item
-                  ? "bg-[#1ec28e] text-white hover:bg-[#18ab7d]"
+                  ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:opacity-90"
                   : "bg-gray-100 text-[#1ec28e] hover:bg-[#e6faf4]"
               }`}
             >
@@ -168,20 +168,20 @@ Available all programs
                 <div className="flex flex-col items-center justify-between gap-6 lg:flex-row lg:items-center">
                   <div className="w-full lg:w-1/2" data-aos="fade-right">
                     <div className="flex items-center justify-center gap-2 text-sm text-[#1ec28e] lg:justify-start">
-                      <span className="h-2 w-2 rounded-full bg-[#1ec28e]"></span>
+                      <span className="h-2 w-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600"></span>
                       UPCOMING COURSES
                     </div>
-                    <div className="mt-3 w-full h-px bg-[#1ec28e]/30"></div>
+                    <div className="mt-3 w-full h-px bg-gradient-to-r from-emerald-600 to-teal-600/30"></div>
                   </div>
                   <div className="w-full lg:w-1/2 flex items-center justify-end gap-2" data-aos="fade-left">
                     <h3 className="text-xl font-semibold leading-tight text-gray-800 md:text-2xl lg:text-right">
                       Upcoming & Trending Classes
                     </h3>
                     {/* Slider buttons */}
-                    <button onClick={() => scrollSlider('left')} className="ml-2 rounded-full bg-[#e6faf4] text-[#1ec28e] p-2 shadow hover:bg-[#1ec28e] hover:text-white transition" aria-label="Scroll left">
+                    <button onClick={() => scrollSlider('left')} className="ml-2 rounded-full bg-[#e6faf4] text-[#1ec28e] p-2 shadow hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white transition" aria-label="Scroll left">
                       <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
                     </button>
-                    <button onClick={() => scrollSlider('right')} className="rounded-full bg-[#e6faf4] text-[#1ec28e] p-2 shadow hover:bg-[#1ec28e] hover:text-white transition" aria-label="Scroll right">
+                    <button onClick={() => scrollSlider('right')} className="rounded-full bg-[#e6faf4] text-[#1ec28e] p-2 shadow hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white transition" aria-label="Scroll right">
                       <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
                     </button>
                   </div>
@@ -204,7 +204,7 @@ Available all programs
           <button
             type="button"
             onClick={() => setIsFilterDrawerOpen(true)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#1ec28e] text-white shadow-sm hover:bg-[#18ab7d] transition"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-sm hover:opacity-90 transition"
             aria-label="Open filters"
           >
             <SlidersHorizontal className="h-4 w-4" />
@@ -295,7 +295,7 @@ Available all programs
    {/* ENROL NOW button: hidden by default, centered and visible on group-hover */}
    <div className="absolute inset-0 flex items-center justify-center opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-200">
      <button
-       className="rounded-full bg-[#1ec28e] px-6 py-2 text-sm text-white font-semibold shadow hover:bg-[#18ab7d] transition whitespace-nowrap"
+       className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-2 text-sm text-white font-semibold shadow hover:opacity-90 transition whitespace-nowrap"
        style={{ minWidth: 140 }}
       onClick={() => router.push('/enroll-now')}
      >
@@ -338,7 +338,7 @@ Available all programs
               <button
                 type="button"
                 onClick={() => setIsFilterDrawerOpen(false)}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#1ec28e] text-white hover:bg-[#18ab7d] transition"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:opacity-90 transition"
                 aria-label="Close"
               >
                 <X className="h-4 w-4" />
@@ -356,7 +356,7 @@ Available all programs
                   }}
                   className={`w-full rounded-xl px-4 py-3 text-left text-sm font-medium transition ${
                     activeFilter === item
-                      ? "bg-[#1ec28e] text-white hover:bg-[#18ab7d]"
+                      ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:opacity-90"
                       : "bg-gray-100 text-[#1ec28e] hover:bg-[#e6faf4]"
                   }`}
                 >

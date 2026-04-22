@@ -24,7 +24,7 @@ const HeroSection = () => {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute w-[500px] h-[500px] bg-[#1ec28e]/15 rounded-full blur-3xl top-[-150px] left-[-150px]"
+          className="absolute w-[500px] h-[500px] bg-gradient-to-r from-emerald-600 to-teal-600/15 rounded-full blur-3xl top-[-150px] left-[-150px]"
         />
 
         {/* Floating Blue Blob */}
@@ -54,7 +54,7 @@ const HeroSection = () => {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute w-[300px] h-[300px] bg-[#1ec28e]/10 rounded-full blur-3xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+          className="absolute w-[300px] h-[300px] bg-gradient-to-r from-emerald-600 to-teal-600/10 rounded-full blur-3xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
         />
       </div>
 
@@ -108,7 +108,7 @@ const HeroSection = () => {
               ★
             </div>
 
-            <div className="bg-[#1ec28e] text-white px-4 py-2 rounded-full text-sm font-medium">
+            <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 rounded-full text-sm font-medium">
               1k+
             </div>
 

@@ -157,9 +157,9 @@ function CalendarWidget() {
       {/* Calendar */}
       <div className="rounded-2xl border border-[#dbe8e4] bg-white p-5 shadow-sm w-full max-w-sm">
         <div className="flex items-center justify-between mb-4">
-          <button onClick={prevMonth} className="w-8 h-8 rounded-full bg-[#f0faf7] hover:bg-[#1ec28e] hover:text-white text-[#1ec28e] font-bold transition flex items-center justify-center">‹</button>
+          <button onClick={prevMonth} className="w-8 h-8 rounded-full bg-[#f0faf7] hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white text-[#1ec28e] font-bold transition flex items-center justify-center">‹</button>
           <span className="font-bold text-[#1f2937]">{monthNames[viewMonth]} {viewYear}</span>
-          <button onClick={nextMonth} className="w-8 h-8 rounded-full bg-[#f0faf7] hover:bg-[#1ec28e] hover:text-white text-[#1ec28e] font-bold transition flex items-center justify-center">›</button>
+          <button onClick={nextMonth} className="w-8 h-8 rounded-full bg-[#f0faf7] hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white text-[#1ec28e] font-bold transition flex items-center justify-center">›</button>
         </div>
         <div className="grid grid-cols-7 mb-2">
           {dayNames.map(d => (
@@ -177,7 +177,7 @@ function CalendarWidget() {
                 key={dateStr}
                 onClick={() => setSelectedDate(isSelected ? null : dateStr)}
                 className={`mx-auto w-8 h-8 rounded-full text-sm font-medium transition flex items-center justify-center
-                  ${isSelected ? "bg-[#1ec28e] text-white" :
+                  ${isSelected ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" :
                     isToday ? "bg-[#e8f7f1] text-[#1ec28e] font-bold ring-2 ring-[#1ec28e]" :
                     "hover:bg-[#f0faf7] text-[#374151]"}`}
               >
@@ -232,7 +232,7 @@ function CalendarWidget() {
           ) : (
             [...timeline].reverse().map((entry, i) => (
               <div key={i} className="flex items-center gap-3 rounded-xl bg-[#f8fbfa] border border-[#dbe8e4] px-3 py-2">
-                <div className="w-2 h-2 rounded-full bg-[#1ec28e] shrink-0" />
+                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 shrink-0" />
                 <div className="flex-1 text-xs text-[#374151]">
                   <span className="font-semibold">{entry.start}</span> → <span className="font-semibold">{entry.end}</span>
                 </div>
@@ -458,7 +458,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
               onClick={async () => {
                 await signOut({ callbackUrl: "/" });
               }}
-              className="w-full rounded-lg bg-linear-to-r from-emerald-600 to-teal-600 text-white px-3 py-2.5 text-xs font-semibold"
+              className="w-full rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-3 py-2.5 text-xs font-semibold"
             >
               Logout
             </button>
@@ -473,7 +473,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
               <button
                 type="button"
                 onClick={() => setActiveTab("buy-courses")}
-                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "buy-courses" ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
+                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "buy-courses" ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
               >
                 Buy           
               </button>
@@ -482,7 +482,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
               <button
                 type="button"
                 onClick={() => setActiveTab("calendar")}
-                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "calendar" ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
+                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "calendar" ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
               >
                 Calendar
               </button>
@@ -490,7 +490,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
               <button
                 type="button"
                 onClick={() => setActiveTab("wishlist")}
-                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "wishlist" ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
+                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "wishlist" ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
               >
                 Wishlist
               </button>
@@ -498,7 +498,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
               <button
                 type="button"
                 onClick={() => setActiveTab("following")}
-                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "following" ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
+                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "following" ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
               >
                 Following
               </button> 
@@ -605,7 +605,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                   <button
                     type="button"
                     onClick={handleEditSave}
-                    className="rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 text-white px-5 py-2.5 text-sm font-semibold"
+                    className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-5 py-2.5 text-sm font-semibold"
                   >
                     Save Changes
                   </button>
@@ -614,7 +614,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                     onClick={async () => {
                       await signOut({ callbackUrl: "/" });
                     }}
-                    className="rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 text-white px-5 py-2.5 text-sm font-semibold"
+                    className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-5 py-2.5 text-sm font-semibold"
                   >
                     Logout
                   </button>
@@ -630,7 +630,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                       {course.kind === "book" ? <BookOpen className="h-12 w-12 text-[#0891b2]" /> : <Video className="h-12 w-12 text-[#b45309]" />}
                     </div>
                     <div className="p-4">
-                      <span className="rounded bg-primary px-2 py-0.5 text-[11px] font-semibold text-white">{course.badge}</span>
+                      <span className="rounded bg-gradient-to-r from-emerald-600 to-teal-600 px-2 py-0.5 text-[11px] font-semibold text-white">{course.badge}</span>
                       <h4 className="mt-3 text-xl font-bold text-[#1f2937]">{course.title}</h4>
                       <p className="mt-1 text-sm text-[#6b7280]">Structured student content with practical lessons.</p>
                       <div className="mt-3 flex items-center justify-between text-sm">
@@ -670,10 +670,10 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                 <h4 className="text-xl font-bold text-[#1f2937]">Student Reviews Center</h4>
                 <p className="mt-2 text-sm text-[#4b5563]">Write and manage reviews for professionals directly from your student dashboard.</p>
                 <div className="mt-4 flex flex-wrap gap-3">
-                  <Link href="/dashboard/students/reviews" className="rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 text-sm font-semibold">
+                  <Link href="/dashboard/students/reviews" className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 text-sm font-semibold">
                     Open Reviews Page
                   </Link>
-                  <Link href="/dashboard/students/library" className="rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 text-sm font-semibold">
+                  <Link href="/dashboard/students/library" className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 text-sm font-semibold">
                     Open Library
                   </Link>
                 </div>

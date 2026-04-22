@@ -28,7 +28,7 @@ export default function HeroCourses() {
           transition={{ duration: 0.6 }}
         >
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-[#1ec28e]/10 text-[#1ec28e] px-3 py-1 rounded-full text-xs font-medium mb-5">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600/10 text-[#1ec28e] px-3 py-1 rounded-full text-xs font-medium mb-5">
             <BookOpen className="w-3 h-3" />
             Online learning platform
           </div>
@@ -82,7 +82,7 @@ export default function HeroCourses() {
           {/* Stats */}
           <div className="mt-8 flex items-center gap-8 flex-wrap">
             <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-full bg-[#1ec28e]/10 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600/10 flex items-center justify-center">
                 <Users className="w-4 h-4 text-[#1ec28e]" />
               </div>
               <div>
@@ -91,7 +91,7 @@ export default function HeroCourses() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-full bg-[#1ec28e]/10 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600/10 flex items-center justify-center">
                 <Award className="w-4 h-4 text-[#1ec28e]" />
               </div>
               <div>
@@ -100,7 +100,7 @@ export default function HeroCourses() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-full bg-[#1ec28e]/10 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600/10 flex items-center justify-center">
                 <Star className="w-4 h-4 text-[#1ec28e]" />
               </div>
               <div>

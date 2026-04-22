@@ -129,28 +129,32 @@ export default function UpcomingClasses() {
               {[...classes, ...classes].map((cls, index) => (
                 <div key={`${cls.id}-${index}`} className="relative flex justify-center">
                   <div className="absolute w-48 h-48 bg-[#1ec28e]/20 rounded-3xl rotate-12 top-6" />
-                  <div className="relative bg-white rounded-2xl shadow-lg p-6 w-72 text-center">
+                  <div className="relative bg-white rounded-2xl shadow-lg p-6 w-72 text-center" style={{ minHeight: 340 }}>
+                    {/* Profile Image - fixed uniform size */}
                     <div className="absolute -top-10 left-1/2 -translate-x-1/2">
-                      <Image
-                        src={cls.professionalImage || PLACEHOLDER_SVG}
-                        alt={cls.professionalName}
-                        width={80}
-                        height={80}
-                        className="rounded-full border-4 border-white shadow-md object-cover"
-                        onError={(e) => { (e.target as HTMLImageElement).src = PLACEHOLDER_SVG; }}
-                      />
+                      <div className="h-20 w-20 rounded-full border-4 border-white shadow-md overflow-hidden bg-[#e6f4ef] flex-shrink-0">
+                        <Image
+                          src={cls.professionalImage || PLACEHOLDER_SVG}
+                          alt={cls.professionalName}
+                          width={80}
+                          height={80}
+                          className="h-full w-full object-cover object-center"
+                          onError={(e) => { (e.target as HTMLImageElement).src = PLACEHOLDER_SVG; }}
+                        />
+                      </div>
                     </div>
                     <div className="mt-12">
-                      <h3 className="text-base font-bold text-gray-800 line-clamp-1">{cls.title}</h3>
-                      <p className="text-sm text-[#1ec28e] font-semibold mt-1">{cls.professionalName}</p>
+                      <h3 className="text-base font-bold text-gray-800 truncate">{cls.title}</h3>
+                      <p className="text-sm text-[#1ec28e] font-semibold mt-1 truncate">{cls.professionalName}</p>
                       <div className="mt-3 space-y-1 text-xs text-gray-500">
                         <p>📅 {cls.date} &nbsp; ⏰ {cls.time}</p>
                         {cls.duration && <p>⏱ {cls.duration}</p>}
                         <p>📡 {cls.platform}</p>
                       </div>
-                      {cls.description && (
-                        <p className="text-gray-400 text-xs mt-2 line-clamp-2">{cls.description}</p>
-                      )}
+                      {/* Description - fixed 2 lines with ellipsis */}
+                      <p className="text-gray-400 text-xs mt-2 line-clamp-2" style={{ minHeight: "2.5rem" }}>
+                        {cls.description || "\u00A0"}
+                      </p>
                       <button
                         type="button"
                         onClick={() => openBooking(cls)}

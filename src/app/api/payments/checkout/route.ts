@@ -41,7 +41,7 @@ export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id || session.user.role !== "student") {
-    return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
+    return NextResponse.json({ message: "Only students can make purchases. Please log in with a student account." }, { status: 401 });
   }
 
   const body = (await request.json().catch(() => ({}))) as CheckoutPayload;

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
+import { useSession } from "next-auth/react";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -17,6 +18,9 @@ function parsePrice(value: string) {
 }
 
 export default function CartPageClient() {
+  const { data: session } = useSession();
+  const isStudent = session?.user?.role === "student";
+  const isLoggedIn = !!session?.user?.id;
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cardName, setCardName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
@@ -144,6 +148,22 @@ export default function CartPageClient() {
                   <h2 className="text-xl font-bold text-gray-900 mb-2">Payment Checkout</h2>
                   <p className="mb-4 text-sm text-gray-600">Securely pay for your items below.</p>
 
+                  {!isLoggedIn ? (
+                    <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-4 text-sm text-amber-800">
+                      <p className="font-semibold">Please log in to checkout</p>
+                      <Link href="/login" className="mt-2 inline-flex rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:scale-105">
+                        Log In
+                      </Link>
+                    </div>
+                  ) : !isStudent ? (
+                    <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-4 text-sm text-amber-800">
+                      <p className="font-semibold">Student account required</p>
+                      <p className="mt-1 text-xs">Only students can purchase books and videos. Please log in with a student account.</p>
+                      <Link href="/login" className="mt-3 inline-flex rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:scale-105">
+                        Switch Account
+                      </Link>
+                    </div>
+                  ) : (
                   <form onSubmit={handlePayment} className="space-y-4">
                     <input
                       type="text"
@@ -200,6 +220,7 @@ export default function CartPageClient() {
                       </div>
                     ) : null}
                   </form>
+                  )}
                 </div>
               </div>
             )}

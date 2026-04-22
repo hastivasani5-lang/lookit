@@ -18,13 +18,7 @@ const instructors = [
     bg: "bg-[#eaf4fb]",
     roleColor: "text-blue-500 bg-blue-100",
   },
-  {
-    name: "Anjelina Watson",
-    role: "Finance Specialist",
-    img: "/pro2.jpeg",
-    bg: "bg-[#eaf7f3]",
-    roleColor: "text-[#1ec28e] bg-gradient-to-r from-emerald-600 to-teal-600/10",
-  },
+ 
   {
     name: "Jakulin Farnandez",
     role: "Data Analyst",

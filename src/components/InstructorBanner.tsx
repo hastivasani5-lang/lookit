@@ -7,25 +7,12 @@ import { motion } from "framer-motion";
 
 const HeroSection = () => {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-[#e9f7ef] via-[#e6f4f1] to-[#eef5ff] px-4 py-14 sm:px-6 sm:py-20 lg:px-16">
+    <section className="relative overflow-hidden  bg-gradient-to-br from-[#e9f7ef] via-[#e6f4f1] to-[#eef5ff] px-4 py-14 sm:px-6 sm:py-20 lg:px-16">
 
       {/* ANIMATED BACKGROUND SHAPES - Clean & Non-redundant */}
       <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden">
         
-        {/* Floating Green Blob */}
-        <motion.div
-          animate={{
-            x: [0, 30, 0],
-            y: [0, -20, 0],
-            scale: [1, 1.1, 1],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute w-[500px] h-[500px] bg-gradient-to-r from-emerald-600 to-teal-600/15 rounded-full blur-3xl top-[-150px] left-[-150px]"
-        />
+      
 
         {/* Floating Blue Blob */}
         <motion.div

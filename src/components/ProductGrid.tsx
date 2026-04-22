@@ -150,24 +150,19 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps
     <div className="flex-1">
       <div className="mb-6 flex items-center justify-between gap-2">
         <div className="flex gap-2">
-          <button
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition bg-gradient-to-r from-emerald-600 to-teal-600 text-white ${activeTab === "all" ? "" : "opacity-70"}`}
-            onClick={() => handleTab("all")}
-          >
-            All
-          </button>
-          <button
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition bg-gradient-to-r from-emerald-600 to-teal-600 text-white ${activeTab === "book" ? "" : "opacity-70"}`}
-            onClick={() => handleTab("book")}
-          >
-            Books
-          </button>
-          <button
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition bg-gradient-to-r from-emerald-600 to-teal-600 text-white ${activeTab === "video" ? "" : "opacity-70"}`}
-            onClick={() => handleTab("video")}
-          >
-            Videos
-          </button>
+          {(["all", "book", "video"] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => handleTab(tab)}
+              className={`rounded-lg px-4 py-2 text-sm font-semibold transition border ${
+                activeTab === tab
+                  ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-transparent"
+                  : "bg-[#eef5f3] text-[#1ec28e] border-[#d1e7dd] hover:bg-gradient-to-r hover:from-emerald-600 hover:to-teal-600 hover:text-white hover:border-transparent"
+              }`}
+            >
+              {tab === "all" ? "All" : tab === "book" ? "Books" : "Videos"}
+            </button>
+          ))}
         </div>
         <input
           type="text"
@@ -273,3 +268,7 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps
 };
 
 export default ProductGrid;
+
+
+
+

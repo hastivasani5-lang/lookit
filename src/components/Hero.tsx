@@ -24,7 +24,7 @@ const HeroSection = () => {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute w-[500px] h-[500px] bg-gradient-to-r from-emerald-600 to-teal-600/15 rounded-full blur-3xl top-[-150px] left-[-150px]"
+          className="absolute w-[500px] h-[500px] bg-[#1ec28e]/15 rounded-full blur-3xl top-[-150px] left-[-150px]"
         />
 
         {/* Floating Blue Blob */}
@@ -54,7 +54,7 @@ const HeroSection = () => {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute w-[300px] h-[300px] bg-gradient-to-r from-emerald-600 to-teal-600/10 rounded-full blur-3xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+          className="absolute w-[300px] h-[300px] bg-[#1ec28e]/10 rounded-full blur-3xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
         />
       </div>
 
@@ -103,7 +103,7 @@ const HeroSection = () => {
             transition={{ delay: 0.3 }}
             className="mt-8 mb-10 flex flex-wrap items-center gap-4 sm:mb-16 sm:gap-6 md:justify-center lg:justify-start"
           >
-            <button className=" bg-gradient-to-r from-emerald-600 to-teal-600  text-white px-6 py-3 rounded-full font-medium transition flex items-center gap-2">
+            <button className=" bg-linear-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-full font-medium transition flex items-center gap-2">
               GET STARTED →
             </button>
 
@@ -123,7 +123,7 @@ const HeroSection = () => {
               ★
             </div>
 
-            <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 rounded-full text-sm font-medium">
+            <div className="bg-[#1ec28e] text-white px-4 py-2 rounded-full text-sm font-medium">
               1k+
             </div>
 

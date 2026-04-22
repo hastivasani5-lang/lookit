@@ -41,7 +41,7 @@ export default function UpcomingClasses() {
           {/* LEFT */}
           <div className="w-full lg:w-1/2" data-aos="fade-right">
             <div className="flex items-center justify-center gap-2 text-sm text-gray-500 lg:justify-start">
-              <span className="h-2 w-2 rounded-full bg-primary"></span>
+              <span className="h-2 w-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600"></span>
               Upcoming Classes
             </div>
 
@@ -72,7 +72,7 @@ export default function UpcomingClasses() {
             {instructors.concat(instructors).map((item, index) => (
               <div key={index} className="relative flex justify-center">
                 {/* Background Shape */}
-                <div className="absolute w-48 h-48 bg-[#1ec28e]/20 rounded-3xl rotate-12 top-6"></div>
+                <div className="absolute w-48 h-48 bg-gradient-to-r from-emerald-600 to-teal-600/20 rounded-3xl rotate-12 top-6"></div>
                 {/* Card */}
                 <div className="relative bg-white rounded-2xl shadow-lg p-6 w-72 text-center">
                   {/* Profile Image */}

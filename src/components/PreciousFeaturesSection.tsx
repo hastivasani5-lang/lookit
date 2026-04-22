@@ -82,7 +82,7 @@ export default function PreciousFeaturesSection() {
                  {/* DOTS */}
                  <div className="absolute right-3 top-8 hidden grid-cols-4 gap-1 sm:grid sm:right-10 sm:top-12 lg:right-20">
                    {Array.from({ length: 12 }).map((_, i) => (
-                     <span key={i} className="w-1.5 h-1.5 bg-[#1ec28e] rounded-full"></span>
+                     <span key={i} className="w-1.5 h-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full"></span>
                    ))}
                  </div>
        
@@ -94,7 +94,7 @@ export default function PreciousFeaturesSection() {
                  {/* EXPERIENCE CARD */}
                  <div className="absolute bottom-4 right-2 flex items-center gap-3 rounded-xl bg-white px-3 py-2 shadow-lg animate-float sm:bottom-8 sm:right-0 sm:px-5 sm:py-2.5 lg:bottom-16 lg:px-6 lg:py-3">
        
-                   <div className="w-10 h-10 bg-[#1ec28e] text-white rounded-full flex items-center justify-center">
+                   <div className="w-10 h-10 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full flex items-center justify-center">
                      ★
                    </div>
        

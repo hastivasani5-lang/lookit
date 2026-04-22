@@ -51,7 +51,7 @@ export default function AboutSection() {
         <div className="relative flex justify-center lg:justify-end order-1 lg:order-2">
           
           {/* Background Shape */}
-          <div className="absolute w-[320px] h-[320px] bg-[#1ec28e] rounded-[60%_40%_60%_40%] right-0 top-10 -z-10"></div>
+          <div className="absolute w-[320px] h-[320px] bg-gradient-to-r from-emerald-600 to-teal-600 rounded-[60%_40%_60%_40%] right-0 top-10 -z-10"></div>
 
           {/* Orange Pattern */}
           <div className="absolute left-10 top-20 w-[120px] h-[120px] border-r-[6px] border-[#f59e0b] border-dashed rotate-45"></div>

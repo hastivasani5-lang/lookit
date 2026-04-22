@@ -96,7 +96,7 @@ export default function BlogSection() {
         <div className="flex flex-col items-center justify-between gap-6 lg:flex-row lg:items-center mb-16">
           <div className="w-full lg:w-1/2" data-aos="fade-right">
             <div className="flex items-center justify-center gap-2 text-sm text-gray-500 lg:justify-start">
-              <span className="w-2 h-2 bg-[#1ec28e] rounded-full"></span>
+              <span className="w-2 h-2 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full"></span>
               LATEST BLOG
             </div>
             <div className="mt-3 w-full h-px bg-gray-300"></div>
@@ -142,7 +142,7 @@ export default function BlogSection() {
                       blog.color === "blue"
                         ? "bg-[#22a6df]"
                         : blog.color === "green"
-                        ? "bg-[#1ec28e]"
+                        ? "bg-gradient-to-r from-emerald-600 to-teal-600"
                         : "bg-[#ff8a3d]"
                     }`}
                   >

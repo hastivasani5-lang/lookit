@@ -164,7 +164,7 @@ export default function TeacherVideoDetailsPage() {
                       </div>
                     )}
                     {/* Status badge */}
-                    <span className="absolute left-3 top-3 rounded-full bg-[#1ec28e] px-3 py-1 text-xs font-bold text-white shadow">
+                    <span className="absolute left-3 top-3 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-3 py-1 text-xs font-bold text-white shadow">
                       Published
                     </span>
                   </div>
@@ -204,7 +204,7 @@ export default function TeacherVideoDetailsPage() {
                         <p className="mt-1 text-xs text-slate-400">Added {formatDate(video.createdAt)}</p>
                         {video.url && (
                           <a href={video.url} target="_blank" rel="noreferrer"
-                            className="mt-3 inline-flex h-9 items-center gap-2 rounded-xl bg-[#effaf6] px-4 text-sm font-semibold text-[#1ec28e] transition hover:bg-[#1ec28e] hover:text-white">
+                            className="mt-3 inline-flex h-9 items-center gap-2 rounded-xl bg-[#effaf6] px-4 text-sm font-semibold text-[#1ec28e] transition hover:bg-gradient-to-r hover:from-emerald-600 hover:to-teal-600 hover:text-white">
                             <Play className="h-4 w-4" />
                             Watch Video
                           </a>
@@ -219,7 +219,7 @@ export default function TeacherVideoDetailsPage() {
                   {editing ? (
                     <>
                       <button type="button" onClick={() => void handleSave()} disabled={saving}
-                        className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#1ec28e] py-2.5 text-sm font-bold text-white transition hover:bg-[#17a87a] disabled:opacity-60">
+                        className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 py-2.5 text-sm font-bold text-white transition hover:opacity-90 disabled:opacity-60">
                         <Save className="h-4 w-4" />
                         {saving ? "Saving..." : "Save Changes"}
                       </button>

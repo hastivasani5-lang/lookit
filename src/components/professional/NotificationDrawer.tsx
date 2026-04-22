@@ -98,7 +98,7 @@ export default function NotificationDrawer({
                           {new Date(f.followedAt).toLocaleString("en-IN", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
                         </p>
                       </div>
-                      <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[#1ec28e]" />
+                      <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600" />
                     </div>
                   ))}
                 </div>
@@ -133,7 +133,7 @@ export default function NotificationDrawer({
                           {p.amount} · {new Date(p.paidAt).toLocaleString("en-IN", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
                         </p>
                       </div>
-                      <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[#1ec28e]" />
+                      <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600" />
                     </div>
                   ))}
                 </div>
@@ -166,7 +166,7 @@ export default function NotificationDrawer({
                           {new Date(r.createdAt).toLocaleString("en-IN", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
                         </p>
                       </div>
-                      <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[#1ec28e]" />
+                      <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600" />
                     </div>
                   ))}
                 </div>

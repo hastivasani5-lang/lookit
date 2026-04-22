@@ -101,7 +101,7 @@ export default function PageBanner() {
             type="submit"
             whileTap={{ scale: 0.9 }}
             whileHover={{ scale: 1.05 }}
-            className="rounded-xl bg-primary px-6 py-3 text-sm font-semibold text- bg-[#e6efed] transition hover:bg-[#18ab7d]"
+            className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-3 text-sm font-semibold text- bg-[#e6efed] transition hover:opacity-90"
           >
             Search
           </motion.button>
@@ -119,7 +119,7 @@ export default function PageBanner() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.7 }}
               transition={{ delay: i * 0.02 }}
-              className="w-1.5 h-1.5 bg-primary rounded-full"
+              className="w-1.5 h-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full"
             ></motion.span>
           ))}
       </div>

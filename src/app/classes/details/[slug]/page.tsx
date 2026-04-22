@@ -140,7 +140,7 @@ export default function ClassDetailsPage() {
             <p className="text-gray-700 mb-6 max-w-2xl leading-relaxed">
               {cls.description}
             </p>
-            <button className="px-8 py-2 rounded-full bg-[#1ec28e] text-white font-semibold hover:bg-[#169e6d] transition mb-8">
+            <button className="px-8 py-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold hover:opacity-90 transition mb-8">
               Enroll Now
             </button>
             {/* Instructor Videos Slider */}

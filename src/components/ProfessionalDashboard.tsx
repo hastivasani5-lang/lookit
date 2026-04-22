@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import UpgradeTimeline from "@/components/UpgradeTimeline";
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// -- Sub-components ------------------------------------------------------------
 import AddSection from "@/components/professional/AddSection";
 import MiniCalendar from "@/components/professional/MiniCalendar";
 import NotificationDrawer from "@/components/professional/NotificationDrawer";
@@ -35,7 +35,7 @@ import SettingsSection from "@/components/professional/SettingsSection";
 import UpgradeProgressChart from "@/components/professional/UpgradeProgressChart";
 import UpgradeSection from "@/components/professional/UpgradeSection";
 
-// ── Types & static data ───────────────────────────────────────────────────────
+// -- Types & static data -------------------------------------------------------
 import {
   type AddContentTab,
   type AddedBook,
@@ -72,7 +72,7 @@ type ProfessionalDashboardProps = {
   user: ProfessionalUser;
 };
 
-// ── Suppress unused-import warnings for static data used in sub-components ───
+// -- Suppress unused-import warnings for static data used in sub-components ---
 void overviewCards; void coursePageOne; void coursePageTwo; void coursePageThree; void detailVideos; void upgradePlans; void RAZORPAY_PAYMENT_LINK;
 
 export default function ProfessionalDashboard({ user }: ProfessionalDashboardProps) {
@@ -236,15 +236,15 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       <div className="divide-y divide-slate-100 rounded-2xl border border-slate-100 bg-white overflow-hidden">
         {allCourses.map((course, index) => (
           <div key={`${course.title}-${index}`} className="flex items-center gap-4 px-4 py-3 hover:bg-[#f6fefb] transition">
-            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#1ec28e]/10 text-[#1ec28e] text-sm font-bold">
+            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600/10 text-[#1ec28e] text-sm font-bold">
               {index + 1}
             </div>
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold text-slate-900">{course.title}</p>
-              <p className="mt-0.5 text-xs text-slate-500">{course.academy} · {course.lessons}</p>
+              <p className="mt-0.5 text-xs text-slate-500">{course.academy} � {course.lessons}</p>
             </div>
             <div className="flex shrink-0 items-center gap-3">
-              <span className="hidden rounded-full bg-[#1ec28e]/10 px-2.5 py-0.5 text-xs font-medium text-[#1ec28e] sm:inline">{course.tag}</span>
+              <span className="hidden rounded-full bg-gradient-to-r from-emerald-600 to-teal-600/10 px-2.5 py-0.5 text-xs font-medium text-[#1ec28e] sm:inline">{course.tag}</span>
               <span className="flex items-center gap-1 text-xs text-amber-500">
                 <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
                 {course.rating}
@@ -508,7 +508,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   }, [isMounted, user.role]);
 
   const handleBookSave = async () => {
-    // ── EDIT MODE ──────────────────────────────────────────────────────────
+    // -- EDIT MODE ----------------------------------------------------------
     if (editingBookId) {
       const trimmedName = bookNameInput.trim();
       const trimmedMrp = bookTypeInput === "free" ? "0" : bookMrpInput.trim();
@@ -564,7 +564,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       return;
     }
 
-    // ── ADD MODE (original logic) ──────────────────────────────────────────
+    // -- ADD MODE (original logic) ------------------------------------------
     const files = pendingBookFiles;
     if (files.length === 0) {
       if (bookLinkInput.trim()) {
@@ -768,7 +768,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   };
 
   const handleVideoSave = async () => {
-    // ── EDIT MODE ──────────────────────────────────────────────────────────
+    // -- EDIT MODE ----------------------------------------------------------
     if (editingVideoId) {
       const trimmedName = bookNameInput.trim();
       const trimmedMrp = videoTypeInput === "free" ? "0" : videoMrpInput.trim();
@@ -819,7 +819,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       return;
     }
 
-    // ── ADD MODE (original logic) ──────────────────────────────────────────
+    // -- ADD MODE (original logic) ------------------------------------------
     const files = pendingVideoFiles;
     if (files.length === 0 && !youtubeLinkInput.trim()) {
       setYoutubeLinkError("Please select video files or provide a YouTube link before saving.");
@@ -1029,7 +1029,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       .split("\n")
       .map((review) => review.trim())
       .filter(Boolean)
-      .join(" • ");
+      .join(" � ");
 
     return [
       ...overviewCards.map((card) => ({
@@ -1041,14 +1041,14 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       ...coursePageOne.map((course, index) => ({
         id: `course-1-${index}`,
         title: course.title,
-        description: `${course.tag} • ${course.academy} • ${course.lessons}`,
+        description: `${course.tag} � ${course.academy} � ${course.lessons}`,
         section: "overview" as const,
         featuredTargetPage: 1 as const,
       })),
       ...coursePageTwo.map((course, index) => ({
         id: `course-2-${index}`,
         title: course.title,
-        description: `${course.tag} • ${course.academy}`,
+        description: `${course.tag} � ${course.academy}`,
         section: "overview" as const,
         featuredTargetPage: 2 as const,
         openUrl: `https://www.youtube.com/watch?v=${course.youtubeId}`,
@@ -1056,14 +1056,14 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       ...coursePageThree.map((course, index) => ({
         id: `course-3-${index}`,
         title: course.title,
-        description: `${course.tag} • ${course.academy} • ${course.lessons}`,
+        description: `${course.tag} � ${course.academy} � ${course.lessons}`,
         section: "overview" as const,
         featuredTargetPage: 3 as const,
       })),
       ...addedBooks.map((book) => ({
         id: book.id,
         title: book.name,
-        description: `${book.category} • MRP ₹${book.mrp} • ${book.source === "amazon" ? "Amazon link" : book.fileName}`,
+        description: `${book.category} � MRP ?${book.mrp} � ${book.source === "amazon" ? "Amazon link" : book.fileName}`,
         section: "add" as const,
         addTab: "books" as const,
         openUrl: book.url,
@@ -1071,7 +1071,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       ...addedVideos.map((video) => ({
         id: video.id,
         title: video.name,
-        description: `${video.source === "youtube" ? "YouTube" : "Video File"} • ${video.sizeLabel}`,
+        description: `${video.source === "youtube" ? "YouTube" : "Video File"} � ${video.sizeLabel}`,
         section: "add" as const,
         addTab: "videos" as const,
         openUrl: video.url,
@@ -1079,7 +1079,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       {
         id: "profile-overview",
         title: profileName || "Professional Profile",
-        description: `${profileEmail} • ${profileSpecialization || "No specialization"} • ${profileContactNumber || "No contact"}`,
+        description: `${profileEmail} � ${profileSpecialization || "No specialization"} � ${profileContactNumber || "No contact"}`,
         section: "settings" as const,
       },
       {
@@ -1181,7 +1181,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   return (
     <div className="min-h-screen w-full bg-[#f0f4f8]">
 
-      {/* ── MOBILE TOPBAR ── */}
+      {/* -- MOBILE TOPBAR -- */}
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/20 px-4 py-3 lg:hidden"
         style={{ background: "linear-gradient(135deg, #0d7a57 0%, #1ec28e 100%)" }}>
         <div className="flex items-center gap-2">
@@ -1215,7 +1215,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
         </div>
       </header>
 
-      {/* ── MOBILE SIDEBAR DRAWER ── */}
+      {/* -- MOBILE SIDEBAR DRAWER -- */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div className="absolute inset-0 bg-black/40" onClick={() => setSidebarOpen(false)} />
@@ -1272,10 +1272,10 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
         </div>
       )}
 
-      {/* ── DESKTOP + MOBILE LAYOUT ── */}
+      {/* -- DESKTOP + MOBILE LAYOUT -- */}
       <div className="flex lg:h-screen">
 
-        {/* ── DESKTOP SIDEBAR ── */}
+        {/* -- DESKTOP SIDEBAR -- */}
         <aside
           className="hidden w-[260px] shrink-0 flex-col border-r border-white/10 px-5 py-6 lg:sticky lg:top-0 lg:flex lg:h-screen lg:overflow-y-auto"
           style={{ background: "linear-gradient(160deg, #0d7a57 0%, #15a374 40%, #1ec28e 100%)" }}
@@ -1325,14 +1325,14 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
           </button>
         </aside>
 
-        {/* ── MAIN CONTENT ── */}
+        {/* -- MAIN CONTENT -- */}
         <section className="min-h-screen flex-1 overflow-y-auto bg-[#f0f4f8] lg:h-screen">
           <div className="mx-auto max-w-7xl px-4 py-5 md:px-6 lg:px-7">
 
             {/* Desktop topbar */}
             <div className="mb-6 hidden items-center justify-between gap-4 lg:flex">
               <div>
-                <h2 className="text-xl font-bold text-slate-800">Welcome back, {profileName?.split(" ")[0] || "Professional"} 👋</h2>
+                <h2 className="text-xl font-bold text-slate-800">Welcome back, {profileName?.split(" ")[0] || "Professional"} ??</h2>
                 <p className="text-sm text-slate-500">Here&apos;s what&apos;s happening with your profile today.</p>
               </div>
               <div className="flex items-center gap-3">
@@ -1347,7 +1347,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                     className="relative grid h-11 w-11 place-items-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:text-[#1ec28e]">
                     <Bell className="h-4 w-4" />
                     {(notifFollows.length + notifPurchases.length + notifReviews.length) > 0 && (
-                      <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#1ec28e] text-[10px] font-bold text-white">
+                      <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-[10px] font-bold text-white">
                         {Math.min(99, notifFollows.length + notifPurchases.length + notifReviews.length)}
                       </span>
                     )}
@@ -1358,7 +1358,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
 
             {/* Mobile search + welcome */}
             <div className="mb-5 lg:hidden">
-              <h2 className="mb-3 text-lg font-bold text-slate-800">Welcome back, {profileName?.split(" ")[0] || "Professional"} 👋</h2>
+              <h2 className="mb-3 text-lg font-bold text-slate-800">Welcome back, {profileName?.split(" ")[0] || "Professional"} ??</h2>
               <div className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 shadow-sm">
                 <Search className="h-4 w-4 shrink-0 text-slate-400" />
                 <input type="text" placeholder="Search..." value={searchQuery}
@@ -1367,7 +1367,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
               </div>
             </div>
 
-            {/* ── SECTIONS ── */}
+            {/* -- SECTIONS -- */}
             {searchQuery.trim() ? (
               <div className="rounded-2xl bg-white p-5 shadow-sm">
                 <div className="mb-4 flex items-center justify-between gap-3">

@@ -222,13 +222,13 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps
                   <button
                     type="button"
                     onClick={() => handleAddToCart(item)}
-                    className="rounded-lg bg-[#1ec28e] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[#169e6d]"
+                    className="rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 px-3 py-2 text-sm font-semibold text-white transition hover:opacity-90"
                   >
                     {isInCart ? "Added" : "Add Cart"}
                   </button>
                   <Link
                     href={`/shop/details/${item.slug}`}
-                    className="rounded-lg border border-[#1ec28e] px-3 py-2 text-center text-sm font-semibold text-[#1ec28e] transition hover:bg-[#1ec28e] hover:text-white"
+                    className="rounded-lg border border-[#1ec28e] px-3 py-2 text-center text-sm font-semibold text-[#1ec28e] transition hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white"
                   >
                     View Details
                   </Link>
@@ -253,7 +253,7 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps
               key={index + 1}
               onClick={() => setPage(index + 1)}
               className={`rounded px-3 py-1 ${
-                currentPage === index + 1 ? "bg-[#1ec28e] text-white" : "bg-gray-100 text-gray-600"
+                currentPage === index + 1 ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" : "bg-gray-100 text-gray-600"
               }`}
             >
               {index + 1}

@@ -47,7 +47,7 @@ export default function AdminPanelModals(props: AdminPanelModalsProps) {
             </div>
             <div className="mt-4 flex flex-wrap justify-end gap-2">
               <button type="button" onClick={closeCategoryForm} className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50">Cancel</button>
-              <button type="button" onClick={saveCategory} className="rounded-full bg-[#1ec28e] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ad7d]">{editingCategoryId !== null ? "Update Category" : "Add Category"}</button>
+              <button type="button" onClick={saveCategory} className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ad7d]">{editingCategoryId !== null ? "Update Category" : "Add Category"}</button>
             </div>
           </div>
         </div>
@@ -68,7 +68,7 @@ export default function AdminPanelModals(props: AdminPanelModalsProps) {
             </div>
             <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:justify-end">
               <button type="button" onClick={() => setAdminProfileOpen(false)} className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50">Close</button>
-              <button type="button" onClick={onLogout} className="rounded-full bg-[#1ec28e] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ad7d]">Logout</button>
+              <button type="button" onClick={onLogout} className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ad7d]">Logout</button>
             </div>
           </div>
         </div>
@@ -128,7 +128,7 @@ export default function AdminPanelModals(props: AdminPanelModalsProps) {
             </div>
             <div className="mt-5 flex justify-end gap-2">
               <button type="button" onClick={closeEditStudent} className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50">Cancel</button>
-              <button type="button" onClick={saveStudent} className="rounded-full bg-[#1ec28e] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ad7d]">Save Changes</button>
+              <button type="button" onClick={saveStudent} className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ad7d]">Save Changes</button>
             </div>
           </div>
         </div>

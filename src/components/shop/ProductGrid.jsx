@@ -61,7 +61,7 @@ export default function ProductGrid({ items }) {
                 <li key={cat}>
                   <button
                     className={`w-full text-left px-3 py-2 rounded-lg font-thin transition
-                      ${selectedCategory === cat ? "bg-[#1ec28e] text-white" : "bg-gray-100 text-gray-700 hover:bg-[#e6faf4]"}`}
+                      ${selectedCategory === cat ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-[#e6faf4]"}`}
                     onClick={() => { setSelectedCategory(cat); setSidebarOpen(false); }}
                   >
                     {cat}
@@ -78,7 +78,7 @@ export default function ProductGrid({ items }) {
                 <li key={range.label}>
                   <button
                     className={`w-full text-left px-3 py-2 rounded-lg font-thin transition
-                      ${selectedPrice.label === range.label ? "bg-[#1ec28e] text-white" : "bg-gray-100 text-gray-700 hover:bg-[#e6faf4]"}`}
+                      ${selectedPrice.label === range.label ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-[#e6faf4]"}`}
                     onClick={() => { setSelectedPrice(range); setSidebarOpen(false); }}
                   >
                     {range.label}
@@ -95,7 +95,7 @@ export default function ProductGrid({ items }) {
                 <li key={rating}>
                   <button
                     className={`flex items-center gap-1 px-3 py-2 rounded-lg font-thin transition
-                      ${selectedRating === rating ? "bg-[#1ec28e] text-white" : "bg-gray-100 text-gray-700 hover:bg-[#e6faf4]"}`}
+                      ${selectedRating === rating ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-[#e6faf4]"}`}
                     onClick={() => setSelectedRating(selectedRating === rating ? null : rating)}
                   >
                     {Array.from({ length: rating }).map((_, i) => (
@@ -111,7 +111,7 @@ export default function ProductGrid({ items }) {
 
       {/* Sidebar toggle button for mobile */}
       <button
-        className="fixed top-24 left-4 z-30 p-2 bg-[#1ec28e] text-white rounded-full shadow-lg lg:hidden"
+        className="fixed top-24 left-4 z-30 p-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full shadow-lg lg:hidden"
         onClick={() => setSidebarOpen(true)}
         aria-label="Open filters"
       >

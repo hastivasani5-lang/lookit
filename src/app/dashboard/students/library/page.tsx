@@ -18,7 +18,7 @@ function EmptyState({ href, label, message }: { href: string; label: string; mes
     <div className="mt-4 rounded-2xl border border-dashed border-gray-300 bg-white p-8 text-center text-sm text-gray-600">
       {message}
       <div className="mt-4">
-        <Link href={href} className="inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#18ab7d]">
+        <Link href={href} className="inline-flex rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90">
           {label}
         </Link>
       </div>
@@ -37,7 +37,7 @@ export default async function StudentLibraryPage() {
           <section className="mx-auto w-full max-w-5xl rounded-4xl border border-[#dbe8e4] bg-white p-6 shadow-[0_22px_45px_rgba(15,23,42,0.07)] md:p-8">
             <h1 className="text-3xl font-bold text-gray-900">Purchased Content</h1>
             <p className="mt-3 text-sm text-gray-600">Please sign in to view your purchased books and videos.</p>
-            <Link href="/login" className="mt-6 inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#18ab7d]">
+            <Link href="/login" className="mt-6 inline-flex rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90">
               Go to Login
             </Link>
           </section>
@@ -128,7 +128,7 @@ export default async function StudentLibraryPage() {
                             href={book.accessUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+                            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
                           >
                             <ExternalLink className="h-4 w-4" />
                             Open Book
@@ -176,7 +176,7 @@ export default async function StudentLibraryPage() {
                             href={video.accessUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+                            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
                           >
                             <ExternalLink className="h-4 w-4" />
                             Open Video

@@ -30,7 +30,7 @@ export default function ContentTypeTabs({
             onClick={() => onContentTypeChange(tab.value)}
             className={`rounded-full px-5 py-2 text-sm font-semibold transition ${
               isActive
-                ? "bg-primary text-white shadow-md"
+                ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md"
                 : "bg-white text-gray-700 shadow-sm hover:bg-[#e6f7f1]"
             }`}
           >

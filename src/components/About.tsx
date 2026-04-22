@@ -40,7 +40,7 @@ const About = () => {
 				<div data-aos="fade-left" className="mx-auto w-full max-w-115 self-start lg:mx-0 lg:pt-2">
 					{/* SMALL TITLE */}
 					<p className="mb-3 flex items-center justify-center gap-2 text-[11px] tracking-widest text-gray-500 lg:justify-start">
-						<span className="w-1.5 h-1.5 bg-[#1ec28e] rounded-full"></span>
+						<span className="w-1.5 h-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full"></span>
 						ABOUT US
 					</p>
 

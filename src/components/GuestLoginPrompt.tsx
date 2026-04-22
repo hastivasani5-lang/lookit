@@ -67,7 +67,7 @@ export default function GuestLoginPrompt() {
           <div className="mt-3 flex items-center gap-2">
             <Link
               href="/login"
-              className="inline-flex h-9 items-center rounded-full bg-[#1ec28e] px-4 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+              className="inline-flex h-9 items-center rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 text-sm font-semibold text-white transition hover:opacity-90"
             >
               Go to Login
             </Link>

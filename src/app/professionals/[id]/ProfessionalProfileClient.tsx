@@ -445,7 +445,7 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
                     className={`inline-flex flex-1 items-center justify-center gap-2 rounded-full py-2.5 text-sm font-bold transition disabled:opacity-60 ${
                       isFollowing
                         ? "border-2 border-[#1ec28e] bg-white text-[#1ec28e] hover:bg-red-50 hover:border-red-400 hover:text-red-500"
-                        : "bg-[#1ec28e] text-white hover:bg-[#17a87a]"
+                        : "bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:opacity-90"
                     }`}
                   >
                     {followLoading ? (
@@ -460,7 +460,7 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
                 ) : (
                   <Link
                     href="/login"
-                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-[#1ec28e] py-2.5 text-sm font-bold text-white transition hover:bg-[#17a87a]"
+                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 py-2.5 text-sm font-bold text-white transition hover:opacity-90"
                   >
                     <UserPlus className="h-4 w-4" />
                     Follow
@@ -540,7 +540,7 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
                           href={savedFacebook}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 rounded-full bg-[#f0f7f5] px-4 py-2 text-sm font-medium text-[#1ec28e] transition hover:bg-[#1ec28e] hover:text-white"
+                          className="inline-flex items-center gap-2 rounded-full bg-[#f0f7f5] px-4 py-2 text-sm font-medium text-[#1ec28e] transition hover:bg-gradient-to-r hover:from-emerald-600 hover:to-teal-600 hover:text-white"
                         >
                           Facebook
                         </a>
@@ -550,7 +550,7 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
                           href={savedGoogle}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 rounded-full bg-[#f0f7f5] px-4 py-2 text-sm font-medium text-[#1ec28e] transition hover:bg-[#1ec28e] hover:text-white"
+                          className="inline-flex items-center gap-2 rounded-full bg-[#f0f7f5] px-4 py-2 text-sm font-medium text-[#1ec28e] transition hover:bg-gradient-to-r hover:from-emerald-600 hover:to-teal-600 hover:text-white"
                         >
                           Google
                         </a>
@@ -560,7 +560,7 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
                           href={savedTwitter}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 rounded-full bg-[#f0f7f5] px-4 py-2 text-sm font-medium text-[#1ec28e] transition hover:bg-[#1ec28e] hover:text-white"
+                          className="inline-flex items-center gap-2 rounded-full bg-[#f0f7f5] px-4 py-2 text-sm font-medium text-[#1ec28e] transition hover:bg-gradient-to-r hover:from-emerald-600 hover:to-teal-600 hover:text-white"
                         >
                           Twitter
                         </a>
@@ -570,7 +570,7 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
                           href={savedPinterest}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 rounded-full bg-[#f0f7f5] px-4 py-2 text-sm font-medium text-[#1ec28e] transition hover:bg-[#1ec28e] hover:text-white"
+                          className="inline-flex items-center gap-2 rounded-full bg-[#f0f7f5] px-4 py-2 text-sm font-medium text-[#1ec28e] transition hover:bg-gradient-to-r hover:from-emerald-600 hover:to-teal-600 hover:text-white"
                         >
                           Pinterest
                         </a>
@@ -590,7 +590,7 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
                     onClick={() => setActiveTab(tab.value)}
                     className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
                       activeTab === tab.value
-                        ? "bg-primary text-white"
+                        ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white"
                         : "bg-[#eef7f4] text-gray-700 hover:bg-[#dff1eb]"
                     }`}
                   >
@@ -654,7 +654,7 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
                               href={item.url}
                               target="_blank"
                               rel="noreferrer"
-                              className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+                              className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
                             >
                               Open Free
                             </a>
@@ -673,7 +673,7 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
                               type="button"
                               onClick={() => handleAddToCart(item)}
                               disabled={!canAddToCart}
-                              className="w-full rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#18ab7d] disabled:cursor-not-allowed disabled:opacity-60"
+                              className="w-full rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                             >
                               {canAddToCart && cartItemIds.includes(item.id) ? "Added" : "Add to Cart"}
                             </button>
@@ -682,7 +682,7 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
                                 href={item.url}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="inline-flex w-full items-center justify-center rounded-full border border-primary px-4 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary hover:text-white"
+                                className="inline-flex w-full items-center justify-center rounded-full border border-primary px-4 py-2.5 text-sm font-semibold text-primary transition hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white"
                               >
                                 Open
                               </a>
@@ -712,7 +712,7 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
                 {canAddToCart ? (
                   <Link
                     href="/cart"
-                    className="mt-3 inline-flex rounded-full bg-primary px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#18ab7d]"
+                    className="mt-3 inline-flex rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-xs font-semibold text-white transition hover:opacity-90"
                   >
                     Go to Cart
                   </Link>
@@ -826,14 +826,14 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
             {isStudent ? (
               <button
                 type="submit"
-                className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+                className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
               >
                 Submit Review
               </button>
             ) : (
               <Link
                 href="/login"
-                className="inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+                className="inline-flex rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
               >
                 Login to Submit Review
               </Link>
@@ -856,7 +856,7 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
                 <li key={review.id} className="border-b border-gray-100 last:border-0 pb-6 last:pb-0">
                   <div className="flex items-start gap-3">
                     <div className="flex-shrink-0">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold text-sm">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-emerald-600 to-teal-600/10 text-primary font-semibold text-sm">
                         {review.name.charAt(0).toUpperCase()}
                       </div>
                     </div>

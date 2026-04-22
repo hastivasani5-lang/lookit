@@ -260,7 +260,7 @@ const Navbar = () => {
                       </div>
                       <button
                         onClick={() => signOut({ callbackUrl: "/" })}
-                        className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 text-sm font-semibold text-white transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+                        className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-sm font-semibold text-white transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
                       >
                         <LogOut className="h-4 w-4" />
                         Logout
@@ -282,7 +282,7 @@ const Navbar = () => {
             ) : (
               <Link
                 href="/login"
-                className="hidden rounded-full bg-linear-to-r from-emerald-600 to-teal-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-md hover:scale-105 active:scale-100 sm:flex"
+                className="hidden rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-md hover:scale-105 active:scale-100 sm:flex"
               >
                 Get Started
               </Link>
@@ -322,7 +322,7 @@ const Navbar = () => {
                     />
                     <button
                       onClick={() => runSearch()}
-                      className="rounded-full bg-linear-to-r from-emerald-600 to-teal-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-md active:scale-95"
+                      className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-md active:scale-95"
                     >
                       Search
                     </button>
@@ -399,7 +399,7 @@ const Navbar = () => {
                   >
                     <Link
                       href="/login"
-                      className="flex w-full items-center justify-center rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-sm transition-all duration-200 active:scale-95"
+                      className="flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-sm transition-all duration-200 active:scale-95"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       Get Started
@@ -421,7 +421,7 @@ const Navbar = () => {
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-r from-emerald-600 to-teal-600 text-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl active:scale-95"
+            className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl active:scale-95"
             aria-label="Back to top"
           >
             <ArrowUp className="h-5 w-5" />

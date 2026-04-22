@@ -451,11 +451,11 @@ export default function CourseGridSection({
 
 <div className="flex flex-wrap gap-2 mt-3">
 
-  <span className="text-xs font-medium px-3 py-1.5 rounded-full bg-[#eef5f3] text-[#1ec28e] border border-[#d1e7dd] transition hover:bg-[#1ec28e] hover:text-white">
+  <span className="text-xs font-medium px-3 py-1.5 rounded-full bg-[#eef5f3] text-[#1ec28e] border border-[#d1e7dd] transition hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white">
     {course.category}
   </span>
 
-  <span className="text-xs font-medium px-3 py-1.5 rounded-full bg-[#eef5f3] text-[#1ec28e] border border-[#d1e7dd] transition hover:bg-[#1ec28e] hover:text-white">
+  <span className="text-xs font-medium px-3 py-1.5 rounded-full bg-[#eef5f3] text-[#1ec28e] border border-[#d1e7dd] transition hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white">
     UI/UX
   </span>
 

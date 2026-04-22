@@ -103,7 +103,7 @@ const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
           ) : (
             <button
               type="button"
-              className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
+              className="px-4 py-2 rounded bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:bg-green-700 disabled:opacity-50"
               onClick={handleNext}
               disabled={!answers[steps[step].key]}
             >

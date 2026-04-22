@@ -56,14 +56,14 @@ export default function SignupPage() {
               <button
                 type="button"
                 onClick={() => setRole("student")}
-                className={`px-6 py-2 rounded-l-full font-semibold border transition-all ${role === "student" ? "bg-[#1ec28e] text-white border-[#1ec28e]" : " text-[#195a44] border--200"}`}
+                className={`px-6 py-2 rounded-l-full font-semibold border transition-all ${role === "student" ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-[#1ec28e]" : " text-[#195a44] border--200"}`}
               >
                 Student
               </button>
               <button
                 type="button"
                 onClick={() => setRole("professional")}
-                className={`px-6 py-2 rounded-r-full font-semibold border transition-all ${role === "professional" ? "bg-[#1ec28e] text-white border-[#1ec28e]" : " text-[#195a44] border--200"}`}
+                className={`px-6 py-2 rounded-r-full font-semibold border transition-all ${role === "professional" ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-[#1ec28e]" : " text-[#195a44] border--200"}`}
               >
                 Professional
               </button>
@@ -112,7 +112,7 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-12 rounded-lg bg-[#1ec28e] text-white font-semibold text-lg transition hover:bg-[#15996b] disabled:opacity-60 flex items-center justify-center"
+                className="w-full h-12 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold text-lg transition hover:bg-[#15996b] disabled:opacity-60 flex items-center justify-center"
               >
                 {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : "Create account"}
               </button>

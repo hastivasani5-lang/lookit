@@ -130,7 +130,7 @@ export default function CoursesFilteredLayout({
         <button
           type="button"
           onClick={() => setIsFiltersOpen(true)}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white"
           aria-label="Open filters"
         >
           <SlidersHorizontal className="h-4 w-4" />
@@ -205,7 +205,7 @@ export default function CoursesFilteredLayout({
             <button
               type="button"
               onClick={() => setIsFiltersOpen(false)}
-              className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white"
+              className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2.5 text-sm font-semibold text-white"
             >
               Apply Filters
             </button>

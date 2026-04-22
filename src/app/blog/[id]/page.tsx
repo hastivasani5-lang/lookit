@@ -77,7 +77,7 @@ export default function BlogDetailPage({ params }: { params: Promise<{ id: strin
             <Image src={blog.image} alt={blog.title} width={900} height={400} className="w-full h-[340px] object-cover" />
             {/* Category badge */}
             {blog.tags && blog.tags[0] && (
-              <span className="absolute top-4 left-4 bg-[#1ec28e] text-white px-4 py-1 rounded-full text-xs font-semibold shadow">{blog.tags[0]}</span>
+              <span className="absolute top-4 left-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-1 rounded-full text-xs font-semibold shadow">{blog.tags[0]}</span>
             )}
           </div>
 

@@ -122,7 +122,7 @@ export default function AddSection({
                     type="button"
                     onClick={() => setAddContentTab("books")}
                     className={`flex-1 rounded-xl px-4 py-2 text-sm font-medium transition ${
-                      addContentTab === "books" ? "bg-[#1ec28e] text-white" : "text-slate-600 hover:bg-white"
+                      addContentTab === "books" ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" : "text-slate-600 hover:bg-white"
                     }`}
                   >
                     Books
@@ -131,7 +131,7 @@ export default function AddSection({
                     type="button"
                     onClick={() => setAddContentTab("videos")}
                     className={`flex-1 rounded-xl px-4 py-2 text-sm font-medium transition ${
-                      addContentTab === "videos" ? "bg-[#1ec28e] text-white" : "text-slate-600 hover:bg-white"
+                      addContentTab === "videos" ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" : "text-slate-600 hover:bg-white"
                     }`}
                   >
                     Videos
@@ -150,7 +150,7 @@ export default function AddSection({
                       <button
                         type="button"
                         onClick={() => setIsBookFormOpen((current) => !current)}
-                        className="inline-flex h-10 items-center justify-center rounded-xl bg-[#1ec28e] px-4 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
+                        className="inline-flex h-10 items-center justify-center rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 text-sm font-medium text-white transition hover:opacity-90"
                       >
                         {isBookFormOpen ? "Close" : "Add+"}
                       </button>
@@ -559,7 +559,7 @@ export default function AddSection({
                       <button
                         type="button"
                         onClick={() => setIsVideoFormOpen((current) => !current)}
-                        className="inline-flex h-10 items-center justify-center rounded-xl bg-[#1ec28e] px-4 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
+                        className="inline-flex h-10 items-center justify-center rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 text-sm font-medium text-white transition hover:opacity-90"
                       >
                         {isVideoFormOpen ? "Close" : "Add+"}
                       </button>

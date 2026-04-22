@@ -23,7 +23,7 @@ const instructors = [
     role: "Finance Specialist",
     img: "/pro2.jpeg",
     bg: "bg-[#eaf7f3]",
-    roleColor: "text-[#1ec28e] bg-[#1ec28e]/10",
+    roleColor: "text-[#1ec28e] bg-gradient-to-r from-emerald-600 to-teal-600/10",
   },
   {
     name: "Jakulin Farnandez",
@@ -63,7 +63,7 @@ const Instructors = () => {
           <div className="w-full lg:w-1/2" data-aos="fade-right">
             
             <div className="flex items-center justify-center gap-2 text-sm text-gray-500 lg:justify-start">
-              <span className="w-2 h-2 bg-[#1ec28e] rounded-full"></span>
+              <span className="w-2 h-2 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full"></span>
               INSTRUCTORS
             </div>
 
@@ -157,7 +157,7 @@ Professional Instructor
           {/* ✅ LEFT ARROW */}
           <button
             type="button"
-            className="instructors-swiper-prev absolute left-0 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#1ec28e]/25 bg-white text-[#1ec28e] shadow-lg transition hover:bg-[#1ec28e] hover:text-white md:flex md:-left-4 lg:-left-6"
+            className="instructors-swiper-prev absolute left-0 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#1ec28e]/25 bg-white text-[#1ec28e] shadow-lg transition hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white md:flex md:-left-4 lg:-left-6"
           >
             <ArrowLeft size={23} />
           </button>
@@ -165,7 +165,7 @@ Professional Instructor
           {/* ✅ RIGHT ARROW */}
           <button
             type="button"
-            className="instructors-swiper-next absolute right-0 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#1ec28e]/25 bg-white text-[#1ec28e] shadow-lg transition hover:bg-[#1ec28e] hover:text-white md:flex md:-right-4 lg:-right-6"
+            className="instructors-swiper-next absolute right-0 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#1ec28e]/25 bg-white text-[#1ec28e] shadow-lg transition hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white md:flex md:-right-4 lg:-right-6"
           >
             <ArrowRight size={23} />
           </button>

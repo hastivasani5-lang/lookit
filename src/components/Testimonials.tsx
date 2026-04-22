@@ -58,7 +58,7 @@ const Testimonials = () => {
           <div className="w-full lg:w-1/2" data-aos="fade-right">
            
             <div className="flex items-center justify-center gap-2 text-sm text-gray-500 lg:justify-start">
-              <span className="w-2 h-2 bg-[#1ec28e] rounded-full"></span>
+              <span className="w-2 h-2 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full"></span>
               TESTIMONIALS
 
             </div>
@@ -101,7 +101,7 @@ Dedicated Learners
       </div>
  
       {/* ✅ GREEN HALF CIRCLE */}
-      <div className="absolute left-1/2 top-[80px] h-[220px] w-[220px] -translate-x-1/2 rounded-full bg-[#1ec28e] sm:top-[60px] sm:h-[300px] sm:w-[300px]"></div>
+      <div className="absolute left-1/2 top-[80px] h-[220px] w-[220px] -translate-x-1/2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 sm:top-[60px] sm:h-[300px] sm:w-[300px]"></div>
  
       {/* MAIN IMAGE */}
       <Image
@@ -194,14 +194,14 @@ Dedicated Learners
         <button
           onClick={goPrev}
           aria-label="Previous testimonial"
-          className="w-10 h-10 rounded-full border-2 border-[#1ec28e] bg-white text-[#1ec28e] flex items-center justify-center font-bold transition-all duration-300 hover:bg-[#1ec28e] hover:text-white hover:scale-110 active:scale-95"
+          className="w-10 h-10 rounded-full border-2 border-[#1ec28e] bg-white text-[#1ec28e] flex items-center justify-center font-bold transition-all duration-300 hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white hover:scale-110 active:scale-95"
         >
           ←
         </button>
         <button
           onClick={goNext}
           aria-label="Next testimonial"
-          className="w-10 h-10 rounded-full border-2 border-[#1ec28e] bg-white text-[#1ec28e] flex items-center justify-center font-bold transition-all duration-300 hover:bg-[#1ec28e] hover:text-white hover:scale-110 active:scale-95"
+          className="w-10 h-10 rounded-full border-2 border-[#1ec28e] bg-white text-[#1ec28e] flex items-center justify-center font-bold transition-all duration-300 hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white hover:scale-110 active:scale-95"
         >
           →
         </button>
@@ -219,7 +219,7 @@ Dedicated Learners
  
  
  
-  <div className="relative flex flex-col items-center justify-between gap-6 rounded-[24px] bg-[#1ec28e] px-6 py-6 text-center md:flex-row md:px-10 md:py-8 md:text-left">
+  <div className="relative flex flex-col items-center justify-between gap-6 rounded-[24px] bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-6 text-center md:flex-row md:px-10 md:py-8 md:text-left">
  
     {/* TEXT */}
     <h3 className="text-white text-lg md:text-2xl font-semibold text-center md:text-left">

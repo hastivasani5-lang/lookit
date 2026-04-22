@@ -176,13 +176,13 @@ export default function TopRatedProfessionalsSection({ professionals, embedded =
                       <span className="text-[8px] font-bold text-emerald-600">•</span>
                     </div>
                     <span className="text-xs">Language: {item.language}</span>
-                  </div>
+                  </div> 
                 </div>
 
                 <div className="mt-4 flex w-full gap-2">
                   <Link
                     href={`/professionals/${item.id}`}
-                    className="flex-1 inline-flex items-center justify-center rounded-full bg-linear-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:scale-[1.02] hover:shadow-md active:scale-95"
+                    className="flex-1 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:scale-[1.02] hover:shadow-md active:scale-95"
                   >
                     View Profile
                   </Link>

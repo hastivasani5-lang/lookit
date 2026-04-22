@@ -36,14 +36,14 @@ export default function UpgradeSection({
       {/* ── Status banner if already boosted ── */}
       {profileBoostedUntil && (
         <div className="flex items-center gap-4 rounded-2xl border border-[#1ec28e]/30 bg-[#effaf6] px-5 py-4">
-          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#1ec28e]/20 text-[#1ec28e]">
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600/20 text-[#1ec28e]">
             <CreditCard className="h-5 w-5" />
           </div>
           <div className="flex-1">
             <p className="text-sm font-bold text-slate-900">Profile Boost Active</p>
             <p className="text-xs text-slate-500">Active until {new Date(profileBoostedUntil).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}</p>
           </div>
-          <span className="rounded-full bg-[#1ec28e] px-3 py-1 text-xs font-bold text-white">Live</span>
+          <span className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-3 py-1 text-xs font-bold text-white">Live</span>
         </div>
       )}
 
@@ -71,13 +71,13 @@ export default function UpgradeSection({
               onClick={() => { setUpgradePlan(plan.key); setHasOpenedRazorpay(false); }}
               className={`relative cursor-pointer rounded-2xl border-2 p-6 transition-all ${
                 isSelected
-                  ? "border-[#1ec28e] bg-[#1ec28e] text-white shadow-xl scale-[1.02]"
+                  ? "border-[#1ec28e] bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-xl scale-[1.02]"
                   : "border-slate-200 bg-white hover:border-[#1ec28e]/50 hover:shadow-md"
               }`}
             >
               {isPro && !isSelected && (
                 <div className="absolute -right-0 -top-0 overflow-hidden rounded-tr-2xl" style={{ width: 56, height: 56 }}>
-                  <div className="absolute right-[-14px] top-[10px] w-[72px] rotate-45 bg-[#1ec28e] py-1 text-center text-[10px] font-bold text-white">New</div>
+                  <div className="absolute right-[-14px] top-[10px] w-[72px] rotate-45 bg-gradient-to-r from-emerald-600 to-teal-600 py-1 text-center text-[10px] font-bold text-white">New</div>
                 </div>
               )}
               <p className={`text-xs font-bold uppercase tracking-widest ${isSelected ? "text-white/80" : "text-[#1ec28e]"}`}>
@@ -104,7 +104,7 @@ export default function UpgradeSection({
                 className={`mt-6 w-full rounded-xl py-2.5 text-sm font-bold transition ${
                   isSelected
                     ? "bg-white text-[#1ec28e] hover:bg-white/90"
-                    : "border border-[#1ec28e] bg-white text-[#1ec28e] hover:bg-[#1ec28e] hover:text-white"
+                    : "border border-[#1ec28e] bg-white text-[#1ec28e] hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white"
                 }`}
               >
                 {isSelected ? "Pay Now" : "Buy Now"}
@@ -137,7 +137,7 @@ export default function UpgradeSection({
           <button
             type="button"
             onClick={handleOpenRazorpay}
-            className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#1ec28e] px-5 text-sm font-bold text-white transition hover:bg-[#17a87a]"
+            className="inline-flex h-10 items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-5 text-sm font-bold text-white transition hover:opacity-90"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />

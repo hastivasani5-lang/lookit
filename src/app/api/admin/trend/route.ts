@@ -14,8 +14,7 @@ export async function GET() {
 
   const users = await getAllUsers();
 
-  // Last 7 days
-  const now = new Date();
+   const now = new Date();
   const days: { label: string; date: string }[] = [];
 
   for (let i = 6; i >= 0; i--) {

@@ -1572,7 +1572,7 @@ export default function AdminPanelView() {
         .neumorph-admin-btn:active {
           box-shadow: 1px 1px 2px #d0dbd6, -1px -1px 2px #ffffff;
         }
-      `}</style>
+      hg`}</style>
 
           {activeSection === "Dashboard" ? (
             <div className="rounded-2xl neumorph-admin-card p-4 sm:p-5">
@@ -1944,6 +1944,7 @@ export default function AdminPanelView() {
                   </div>
                 ) : null}
               </div>
+              
             </div>
           ) : (
             <div className="rounded-2xl bg-white p-6">

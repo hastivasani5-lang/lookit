@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 
 type DashboardTab =
-  | "profile"
   | "calendar"
   | "wishlist"
   | "following"
@@ -28,7 +27,6 @@ type DashboardTab =
   | "followers"
   | "reviews"
   | "buy-courses";
-
 type CourseCard = {
   id: string;
   title: string;
@@ -257,7 +255,7 @@ function CalendarWidget() {
 
 export default function StudentProfileDashboard({ user, library }: StudentProfileDashboardProps) {
   const profileStorageKey = `student-profile-preview-${user.id}`;
-  const [activeTab, setActiveTab] = useState<DashboardTab>("profile");
+  const [activeTab, setActiveTab] = useState<DashboardTab>("buy-courses");
   const [likes, setLikes] = useState(678);
   const [actionMessage, setActionMessage] = useState("");
   const [editName, setEditName] = useState(user.name);
@@ -406,9 +404,9 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
 
     window.localStorage.setItem(profileStorageKey, JSON.stringify(payload));
     setActionMessage("Profile details saved locally.");
-    setActiveTab("profile");
+    setActiveTab("buy-courses");
   };
-
+    setActiveTab("buy-courses");
   return (
     <section className="h-full w-full p-3 md:p-4">
       <div className="grid h-full gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
@@ -469,13 +467,16 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
           <article className="rounded-2xl border border-[#dbe8e4] bg-white p-5 shadow-[0_20px_40px_rgba(15,23,42,0.08)] md:p-6">
             {/* Minimal tab system for Profile and Calendar */}
             <div className="flex flex-wrap items-center gap-2 mb-4">
+              
               <button
                 type="button"
-                onClick={() => setActiveTab("profile")}
-                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "profile" ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
+                onClick={() => setActiveTab("buy-courses")}
+                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "buy-courses" ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
               >
-                Profile
+                Buy           
               </button>
+
+
               <button
                 type="button"
                 onClick={() => setActiveTab("calendar")}
@@ -483,6 +484,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
               >
                 Calendar
               </button>
+
               <button
                 type="button"
                 onClick={() => setActiveTab("wishlist")}
@@ -490,20 +492,14 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
               >
                 Wishlist
               </button>
+
               <button
                 type="button"
                 onClick={() => setActiveTab("following")}
                 className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "following" ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
               >
                 Following
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("buy-courses")}
-                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "buy-courses" ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
-              >
-                Buy Karelu
-              </button>
+              </button> 
             </div>
             {activeTab === "wishlist" && (
               <div className="my-6">
@@ -558,50 +554,6 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
               </div>
             )}
 
-            {activeTab === "profile" ? (
-              <div className="mt-6 space-y-6">
-                <section>
-                  <h3 className="text-2xl font-bold text-[#1f2937]">Personal Details</h3>
-                  <div className="mt-3 grid gap-2 text-sm text-[#4b5563] md:grid-cols-2">
-                    <p><span className="font-semibold text-[#111827]">Full Name :</span> {editName}</p>
-                    <p><span className="font-semibold text-[#111827]">Location :</span> {editLocation}</p>
-                    <p><span className="font-semibold text-[#111827]">Languages :</span> English, German</p>
-                    <p><span className="font-semibold text-[#111827]">Website :</span> {editWebsite.replace("https://", "")}</p>
-                    <p><span className="font-semibold text-[#111827]">Email :</span> {editEmail}</p>
-                    <p><span className="font-semibold text-[#111827]">Phone :</span> {editPhone}</p>
-                  </div>
-                </section>
-
-                <section>
-                  <h3 className="text-2xl font-bold text-[#1f2937]">My Skills</h3>
-                  <div className="mt-4 grid gap-4 md:grid-cols-2">
-                    {skillRows.map((skill) => (
-                      <div key={skill.label}>
-                        <div className="mb-1 flex items-center justify-between text-sm">
-                          <p className="text-[#4b5563]">{skill.label}</p>
-                          <p className="font-semibold text-[#374151]">{skill.value}%</p>
-                        </div>
-                        <div className="h-2 rounded-full bg-[#eceff5]">
-                          <div className="h-2 rounded-full bg-[linear-gradient(90deg,#1ec28e_0%,#18ab7d_100%)]" style={{ width: `${skill.value}%` }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-
-                <section>
-                  <h3 className="text-2xl font-bold text-[#1f2937]">Biography</h3>
-                  <p className="mt-3 text-sm leading-7 text-[#4b5563]">
-                    At Lookit, I focus on practical learning and real project outcomes. My dashboard keeps track of purchased courses,
-                    profile progress, and useful actions in one place so learning stays consistent and simple.
-                  </p>
-                  <p className="mt-3 text-sm leading-7 text-[#4b5563]">
-                    Joined on {formatDate(user.createdAt)}. I can quickly switch between profile details, purchased courses,
-                    followers, and reviews without leaving this page.
-                  </p>
-                </section>
-              </div>
-            ) : null}
 
             {activeTab === "edit" ? (
               <div className="mt-6 grid gap-4 md:grid-cols-2">

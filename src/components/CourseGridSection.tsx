@@ -427,42 +427,24 @@ export default function CourseGridSection({
           return (
           <a key={i} href={courseHref} onClick={(e) => handleCourseClick(e, course, courseHref)} className="group block cursor-pointer" aria-label={`Open ${course.title}`}>
 
-            {/* SVG MASK SHAPE */}
-            <div className="relative h-64 w-full sm:h-72">
-
-              <svg
-                viewBox="0 0 300 260"
-                className="absolute w-full h-full"
-                preserveAspectRatio="none"
-              >
-                <defs>
-                  <clipPath id={`clip-${i}`} clipPathUnits="objectBoundingBox">
-                    <path d="M0.05,0.15 Q0.05,0 0.2,0 H0.85 Q1,0 1,0.15 V0.75 Q1,1 0.8,1 H0.2 Q0,1 0,0.75 Z" />
-                  </clipPath>
-                </defs>
-
-                <foreignObject
-                  x="0"
-                  y="0"
-                  width="100%"
-                  height="100%"
-                  clipPath={`url(#clip-${i})`}
-                >
-                  <div className="w-full h-full relative">
-                    <Image
-                      src={course.img}
-                      alt={course.title}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                      className="object-cover"
-                    />
-                  </div>
-                </foreignObject>
-              </svg>
+            {/* IMAGE */}
+            <div className="relative h-56 w-full sm:h-64 rounded-2xl overflow-hidden shadow-lg">
+              <Image
+                src={course.img}
+                alt={course.title}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "/instructor.avif";
+                }}
+              />
+              {/* Gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
               {/* FLOAT BUTTON */}
-              <div className={`absolute bottom-[-20px] right-6 ${course.color} w-16 h-16 rounded-full flex items-center justify-center shadow-xl`}>
-                <ArrowUpRight className="text-white" size={24} />
+              <div className={`absolute bottom-4 right-4 ${course.color} w-12 h-12 rounded-full flex items-center justify-center shadow-xl`}>
+                <ArrowUpRight className="text-white" size={20} />
               </div>
 
               {/* Price badge */}
@@ -479,7 +461,7 @@ export default function CourseGridSection({
             </div>
 
             {/* CONTENT */}
-            <div className="mt-12">
+            <div className="mt-5">
 
               <h3 className="text-xl font-semibold text-gray-900">
                 {course.title}

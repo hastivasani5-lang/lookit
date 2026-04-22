@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUp, LogOut, Menu, X, Search, ShoppingCart, UserCircle2, Compass, Briefcase, Layers, Store, Info, Mail, Home, LibraryBig } from "lucide-react";
+import { ArrowUp, Bell, LogOut, Menu, X, Search, ShoppingCart, UserCircle2, Compass, Briefcase, Layers, Store, Info, Mail, Home } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -15,18 +15,6 @@ type SearchProfessional = {
   specialization: string;
 };
 
-type SearchResult = {
-  label: string;
-  href: string;
-  type: string;
-};
-
-function getNavHref(label: string) {
-  if (label === "Home") return "/";
-  if (label === "Find Experts") return "/directory";
-  return `/${label.toLowerCase().replace(/\s+/g, "")}`;
-}
-
 const navItems = [
   { name: "Home", href: "/", icon: Home },
   { name: "Find Experts", href: "/directory", icon: Compass },
@@ -38,7 +26,6 @@ const navItems = [
 ];
 
 const Navbar = () => {
-    // ...existing code...
   const router = useRouter();
   const { data: session, status } = useSession();
   const [hasMounted, setHasMounted] = useState(false);
@@ -52,13 +39,15 @@ const Navbar = () => {
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
   const mobileMenuRef = useRef<HTMLDivElement | null>(null);
   const searchMenuRef = useRef<HTMLDivElement | null>(null);
+  const notifRef = useRef<HTMLDivElement | null>(null);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [notifications, setNotifications] = useState<Array<{ id: string; message: string; type: string; read: boolean; createdAt: string }>>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => { setHasMounted(true); }, []);
 
   useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  useEffect(() => {
-    const onOutsideClick = (event: MouseEvent) => {
+    const handler = (event: MouseEvent) => {
       if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
         setProfileMenuOpen(false);
       }
@@ -68,26 +57,22 @@ const Navbar = () => {
       if (searchMenuRef.current && !searchMenuRef.current.contains(event.target as Node)) {
         setSearchOpen(false);
       }
+      if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+        setNotifOpen(false);
+      }
     };
-
-    document.addEventListener("mousedown", onOutsideClick);
-    return () => document.removeEventListener("mousedown", onOutsideClick);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   useEffect(() => {
-    const onEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setSearchOpen(false);
-      }
-    };
+    const onEscape = (e: KeyboardEvent) => { if (e.key === "Escape") setSearchOpen(false); };
     document.addEventListener("keydown", onEscape);
     return () => document.removeEventListener("keydown", onEscape);
   }, []);
 
   useEffect(() => {
-    const onScroll = () => {
-      setShowScrollTop(window.scrollY > 180);
-    };
+    const onScroll = () => setShowScrollTop(window.scrollY > 180);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -95,20 +80,18 @@ const Navbar = () => {
 
   useEffect(() => {
     if (!searchOpen || professionalResultsLoaded) return;
-    const loadProfessionals = async () => {
+    const load = async () => {
       try {
-        const response = await fetch("/api/professionals", { cache: "no-store" });
-        const payload = (await response.json().catch(() => ({}))) as { professionals?: SearchProfessional[] };
-        if (response.ok && Array.isArray(payload.professionals)) {
-          setProfessionalResults(payload.professionals);
-        }
+        const res = await fetch("/api/professionals", { cache: "no-store" });
+        const payload = (await res.json().catch(() => ({}))) as { professionals?: SearchProfessional[] };
+        if (res.ok && Array.isArray(payload.professionals)) setProfessionalResults(payload.professionals);
       } catch {
         setProfessionalResults([]);
       } finally {
         setProfessionalResultsLoaded(true);
       }
     };
-    void loadProfessionals();
+    void load();
   }, [professionalResultsLoaded, searchOpen]);
 
   const displayName = session?.user?.name?.trim() || "Student";
@@ -116,30 +99,61 @@ const Navbar = () => {
   const isAuthenticated = status === "authenticated";
   const isStudent = session?.user?.role === "student";
 
+  useEffect(() => {
+    if (!isStudent) return;
+    const load = async () => {
+      try {
+        const res = await fetch("/api/student/notifications", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = (await res.json()) as {
+          notifications: Array<{ id: string; message: string; type: string; read: boolean; createdAt: string }>;
+          unreadCount: number;
+        };
+        setNotifications(data.notifications);
+        setUnreadCount(data.unreadCount);
+      } catch { /* ignore */ }
+    };
+    void load();
+    const interval = setInterval(() => { void load(); }, 30_000);
+    return () => clearInterval(interval);
+  }, [isStudent]);
+
+  const openNotifications = async () => {
+    setNotifOpen((o) => !o);
+    if (unreadCount > 0) {
+      try {
+        await fetch("/api/student/notifications", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ markAllRead: true }),
+        });
+        setUnreadCount(0);
+        setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+      } catch { /* ignore */ }
+    }
+  };
+
   const searchResults = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return [];
-    const pageResults = navItems
+    const pages = navItems
       .filter((item) => item.name.toLowerCase().includes(query))
       .map((item) => ({ label: item.name, href: item.href, type: "Page" }));
-    const professionalMatches = professionalResults
+    const pros = professionalResults
       .filter((p) => `${p.name} ${p.specialization}`.toLowerCase().includes(query))
       .map((p) => ({ label: p.name, href: `/professionals/${p.id}`, type: p.specialization }));
-    return [...pageResults, ...professionalMatches].slice(0, 6);
+    return [...pages, ...pros].slice(0, 6);
   }, [professionalResults, searchQuery]);
 
   const runSearch = (value?: string) => {
     const query = (value ?? searchQuery).trim();
     if (!query) return;
-    const normalizedQuery = query.toLowerCase();
-    const exactPage = navItems.find(
-      (item) => item.name.toLowerCase() === normalizedQuery || item.name.toLowerCase().includes(normalizedQuery)
-    );
-    if (exactPage) router.push(exactPage.href);
+    const q = query.toLowerCase();
+    const page = navItems.find((item) => item.name.toLowerCase().includes(q));
+    if (page) { router.push(page.href); }
     else {
-      const match = professionalResults.find((p) => p.name.toLowerCase().includes(normalizedQuery));
-      if (match) router.push(`/professionals/${match.id}`);
-      else router.push(`/professionals?search=${encodeURIComponent(query)}`);
+      const pro = professionalResults.find((p) => p.name.toLowerCase().includes(q));
+      router.push(pro ? `/professionals/${pro.id}` : `/professionals?search=${encodeURIComponent(query)}`);
     }
     setSearchOpen(false);
     setSearchQuery("");
@@ -160,12 +174,10 @@ const Navbar = () => {
     <>
       <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-xl shadow-sm transition-all duration-300 border-b border-white/20">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-8">
-          {/* Logo */}
           <Link href="/" className="group flex items-center">
             <SiteLogo size="nav" priority />
           </Link>
 
-          {/* Desktop Nav - Redesigned with pill style */}
           <nav className="hidden items-center gap-1 lg:flex">
             {navItems.map((item) => (
               <Link
@@ -177,12 +189,9 @@ const Navbar = () => {
                 <span className="absolute bottom-0 left-1/2 h-0.5 w-0 bg-linear-to-r from-emerald-500 to-teal-500 transition-all duration-300 group-hover:w-1/2 group-hover:left-1/4" />
               </Link>
             ))}
-            {/* Language Switcher removed as requested */}
           </nav>
 
-          {/* Right Icons */}
           <div className="flex items-center gap-2">
-            {/* Search Button - Enhanced */}
             <button
               onClick={() => { setSearchOpen(true); setMobileMenuOpen(false); }}
               className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50/80 text-gray-600 transition-all duration-200 hover:bg-emerald-100 hover:text-emerald-600 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
@@ -191,7 +200,6 @@ const Navbar = () => {
               <Search className="h-4.5 w-4.5" />
             </button>
 
-            {/* Cart - Enhanced with animation */}
             {isStudent ? (
               <Link href="/cart" className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-50/80 text-gray-600 transition-all duration-200 hover:bg-emerald-100 hover:text-emerald-600 hover:scale-105">
                 <ShoppingCart className="h-4.5 w-4.5" />
@@ -206,25 +214,68 @@ const Navbar = () => {
             )}
 
             {isStudent ? (
-              <Link
-                href="/dashboard/students/library"
-                className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-50/80 text-gray-600 transition-all duration-200 hover:bg-emerald-100 hover:text-emerald-600 hover:scale-105"
-                aria-label="Purchased books and videos"
-              >
-                <LibraryBig className="h-4.5 w-4.5" />
-              </Link>
+              <div className="relative" ref={notifRef}>
+                <button
+                  onClick={openNotifications}
+                  className="relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-50/80 text-gray-600 transition-all duration-200 hover:bg-emerald-100 hover:text-emerald-600 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
+                  aria-label="Notifications"
+                >
+                  <Bell className="h-4.5 w-4.5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </button>
+                <AnimatePresence>
+                  {notifOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ duration: 0.18 }}
+                      className="absolute right-0 mt-3 w-80 overflow-hidden rounded-2xl border border-gray-100/80 bg-white/95 shadow-xl backdrop-blur-xl"
+                    >
+                      <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
+                        <p className="text-sm font-semibold text-gray-900">Notifications</p>
+                        {notifications.length > 0 && (
+                          <span className="text-xs text-gray-400">{notifications.length} total</span>
+                        )}
+                      </div>
+                      <div className="max-h-72 overflow-y-auto">
+                        {notifications.length === 0 ? (
+                          <div className="flex flex-col items-center justify-center px-4 py-8 text-center">
+                            <Bell className="mb-2 h-8 w-8 text-gray-200" />
+                            <p className="text-sm text-gray-400">No notifications yet</p>
+                          </div>
+                        ) : (
+                          notifications.map((n) => (
+                            <div
+                              key={n.id}
+                              className={`flex gap-3 border-b border-gray-50 px-4 py-3 last:border-0 transition-colors ${!n.read ? "bg-emerald-50/60" : "bg-white"}`}
+                            >
+                              <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-100">
+                                <Bell className="h-3.5 w-3.5 text-emerald-600" />
+                              </div>
+                              <div className="min-w-0">
+                                <p className="text-sm leading-snug text-gray-800">{n.message}</p>
+                                <p className="mt-1 text-xs text-gray-400">{new Date(n.createdAt).toLocaleString()}</p>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             ) : null}
 
-            {/* Profile / Auth */}
             {isAuthenticated ? (
               <div className="relative" ref={profileMenuRef}>
                 <button
                   onClick={() => {
-                    if (isStudent) {
-                      setProfileMenuOpen(false);
-                      router.push("/dashboard/students/profile");
-                      return;
-                    }
+                    if (isStudent) { router.push("/dashboard/students/profile"); return; }
                     setProfileMenuOpen((o) => !o);
                   }}
                   className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-100 bg-white shadow-sm transition-all duration-200 hover:shadow-md hover:scale-105 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
@@ -260,21 +311,11 @@ const Navbar = () => {
                       </div>
                       <button
                         onClick={() => signOut({ callbackUrl: "/" })}
-                        className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-sm font-semibold text-white transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+                        className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 text-sm font-semibold text-white transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
                       >
                         <LogOut className="h-4 w-4" />
                         Logout
                       </button>
-
-                      {isStudent ? (
-                        <Link
-                          href="/dashboard/students/library"
-                          className="mt-2 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-emerald-100 bg-emerald-50 text-sm font-semibold text-emerald-700 transition-all duration-200 hover:bg-emerald-100 hover:shadow-sm"
-                          onClick={() => setProfileMenuOpen(false)}
-                        >
-                          My Purchased Books
-                        </Link>
-                      ) : null}
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -282,13 +323,12 @@ const Navbar = () => {
             ) : (
               <Link
                 href="/login"
-                className="hidden rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-md hover:scale-105 active:scale-100 sm:flex"
+                className="hidden rounded-full bg-linear-to-r from-emerald-600 to-teal-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-md hover:scale-105 active:scale-100 sm:flex"
               >
                 Get Started
               </Link>
             )}
 
-            {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMobileMenuOpen((o) => !o)}
               className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50/80 transition-all duration-200 hover:bg-emerald-100 lg:hidden"
@@ -298,7 +338,6 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Search Modal - Enhanced Design */}
         <AnimatePresence>
           {searchOpen && (
             <motion.div
@@ -322,7 +361,7 @@ const Navbar = () => {
                     />
                     <button
                       onClick={() => runSearch()}
-                      className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-md active:scale-95"
+                      className="rounded-full bg-linear-to-r from-emerald-600 to-teal-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-md active:scale-95"
                     >
                       Search
                     </button>
@@ -348,9 +387,7 @@ const Navbar = () => {
                               <p className="text-sm font-semibold text-gray-800 group-hover:text-emerald-700">{item.label}</p>
                               <p className="text-xs text-gray-500">{item.type}</p>
                             </div>
-                            <span className="text-xs font-medium text-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                              Open →
-                            </span>
+                            <span className="text-xs font-medium text-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity">Open →</span>
                           </motion.button>
                         ))}
                       </div>
@@ -362,10 +399,10 @@ const Navbar = () => {
           )}
         </AnimatePresence>
 
-        {/* Mobile Menu - Enhanced with icons and animations */}
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
+              ref={mobileMenuRef}
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
@@ -374,32 +411,22 @@ const Navbar = () => {
             >
               <nav className="flex flex-col space-y-1 px-4 py-4">
                 {navItems.map((item, idx) => (
-                  <motion.div
-                    key={item.name}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.05 }}
-                  >
+                  <motion.div key={item.name} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.05 }}>
                     <Link
                       href={item.href}
                       className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-linear-to-r hover:from-emerald-50/50 hover:to-teal-50/50 hover:text-emerald-700"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <item.icon className="h-4.5 w-4.5 text-gray-400 group-hover:text-emerald-500" />
+                      <item.icon className="h-4.5 w-4.5 text-gray-400" />
                       {item.name}
                     </Link>
                   </motion.div>
                 ))}
                 {!isAuthenticated && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.35 }}
-                    className="mt-3 px-2"
-                  >
+                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="mt-3 px-2">
                     <Link
                       href="/login"
-                      className="flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-sm transition-all duration-200 active:scale-95"
+                      className="flex w-full items-center justify-center rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-sm transition-all duration-200 active:scale-95"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       Get Started
@@ -412,7 +439,6 @@ const Navbar = () => {
         </AnimatePresence>
       </header>
 
-      {/* Scroll to top button - Enhanced */}
       <AnimatePresence>
         {showScrollTop && (
           <motion.button
@@ -421,7 +447,7 @@ const Navbar = () => {
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl active:scale-95"
+            className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-r from-emerald-600 to-teal-600 text-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl active:scale-95"
             aria-label="Back to top"
           >
             <ArrowUp className="h-5 w-5" />

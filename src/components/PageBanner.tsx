@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { Search } from "lucide-react";
+import { Search, BookOpen, Users, Star } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function PageBanner() {
@@ -13,117 +12,73 @@ export default function PageBanner() {
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const query = searchTerm.trim();
-
-    router.push(
-      query
-        ? `/directory?search=${encodeURIComponent(query)}`
-        : "/directory"
-    );
+    router.push(query ? `/directory?search=${encodeURIComponent(query)}` : "/directory");
   };
 
   return (
-    <section className="relative bg-[#e6efed] py-20 px-4 md:px-10 lg:px-16 overflow-hidden">
+    <section className="relative overflow-hidden py-20 px-4 md:px-10 lg:px-16"
+      style={{ background: "linear-gradient(135deg, #0d7a57 0%, #1ec28e 55%, #34d399 100%)" }}>
 
-      {/* BACKGROUND */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute left-[-20%] top-0 w-[120%] h-full bg-[radial-gradient(circle_at_left,rgba(30,194,142,0.15),transparent_60%)]"></div>
-      </div>
+      {/* Decorative circles */}
+      <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-white/10 pointer-events-none" />
+      <div className="absolute -bottom-20 -left-20 w-72 h-72 rounded-full bg-white/10 pointer-events-none" />
+      <div className="absolute top-1/2 left-1/4 w-40 h-40 rounded-full bg-white/5 pointer-events-none" />
 
-      <div className="max-w-[1200px] mx-auto relative z-10 text-center">
+      <div className="max-w-4xl mx-auto relative z-10 text-center">
 
-        {/* ICON (UPDATED) */}
-        <motion.div
-          initial={{ opacity: 0, y: -30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="flex justify-center mb-6"
-        >
-          <motion.div
-            animate={{ y: [0, -10, 0] }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            whileHover={{ scale: 1.1, rotate: 5 }}
-          >
-            <Image
-              src="/book-hand.png"
-              alt="book"
-              width={90}
-              height={60}
-              className="drop-shadow-[0_10px_20px_rgba(0,0,0,0.15)]"
-            />
-          </motion.div>
+        {/* Badge */}
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+          className="inline-flex items-center gap-2 rounded-full bg-white/20 backdrop-blur-sm px-4 py-1.5 text-sm font-semibold text-white mb-6">
+          <Star className="w-4 h-4 fill-yellow-300 text-yellow-300" />
+          Trusted by 80,000+ learners
         </motion.div>
 
-        {/* TITLE */}
-        <motion.h1
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-          className="text-3xl md:text-5xl font-bold text-[#0f172a] mb-3"
-        >
-          Find the Best Experts
+        {/* Title */}
+        <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
+          className="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-4">
+          Find the Best<br />
+          <span className="text-yellow-300">Experts</span> Near You
         </motion.h1>
 
-        {/* SUBTITLE */}
-        <motion.p
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.4 }}
-          className="text-gray-500 text-sm md:text-base"
-        >
-          Search and connect with top professionals near you
+        {/* Subtitle */}
+        <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
+          className="text-white/80 text-base md:text-lg mb-8 max-w-xl mx-auto">
+          Search and connect with top professionals. Learn from the best in your field.
         </motion.p>
 
-        {/* SEARCH BAR */}
-        <motion.form
-          onSubmit={handleSearch}
-          initial={{ opacity: 0, y: 50, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          whileHover={{ scale: 1.02 }}
-          className="mx-auto mt-8 flex w-full max-w-4xl items-center gap-3 rounded-2xl border border-white/70 bg-white p-2.5 shadow-[0_12px_30px_rgba(15,23,42,0.08)]"
-        >
-          <label className="flex flex-1 items-center gap-2 rounded-xl bg-[#f4f6f5] px-4 py-3">
-            <Search className="h-4 w-4 text-gray-400" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Search experts..."
-              className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
-            />
+        {/* Search Bar */}
+        <motion.form onSubmit={handleSearch}
+          initial={{ opacity: 0, y: 30, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mx-auto flex w-full max-w-2xl items-center gap-2 rounded-2xl bg-white p-2 shadow-2xl">
+          <label className="flex flex-1 items-center gap-2 rounded-xl bg-gray-50 px-4 py-3">
+            <Search className="h-4 w-4 text-gray-400 shrink-0" />
+            <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search courses, experts, categories..."
+              className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400 text-gray-800" />
           </label>
-
-          <motion.button
-            type="submit"
-            whileTap={{ scale: 0.9 }}
-            whileHover={{ scale: 1.05 }}
-            className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-3 text-sm font-semibold text- bg-[#e6efed] transition hover:opacity-90"
-          >
+          <button type="submit"
+            className="rounded-xl px-6 py-3 text-sm font-bold text-white transition hover:opacity-90 active:scale-95 shrink-0"
+            style={{ background: "linear-gradient(135deg, #0d7a57, #1ec28e)" }}>
             Search
-          </motion.button>
+          </button>
         </motion.form>
 
-      </div>
-
-      {/* DOT PATTERN */}
-      <div className="hidden md:grid grid-cols-8 gap-2 absolute right-16 top-1/2 -translate-y-1/2">
-        {Array(64)
-          .fill(0)
-          .map((_, i) => (
-            <motion.span
-              key={i}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.7 }}
-              transition={{ delay: i * 0.02 }}
-              className="w-1.5 h-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full"
-            ></motion.span>
+        {/* Quick stats */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+          className="mt-10 flex flex-wrap items-center justify-center gap-6">
+          {[
+            { icon: Users, label: "80K+ Students" },
+            { icon: BookOpen, label: "1,200+ Courses" },
+            { icon: Star, label: "4.8 Avg Rating" },
+          ].map((s, i) => (
+            <div key={i} className="flex items-center gap-2 text-white/80 text-sm">
+              <s.icon className="w-4 h-4 text-yellow-300" />
+              <span>{s.label}</span>
+            </div>
           ))}
+        </motion.div>
       </div>
-
     </section>
   );
 }

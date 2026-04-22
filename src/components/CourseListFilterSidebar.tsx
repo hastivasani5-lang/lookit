@@ -53,7 +53,7 @@ export default function CourseListFilterSidebar() {
           ))}
         </div>
       </div>
-      <button className="w-full mt-2 py-2 rounded-xl bg-primary text-white font-semibold">Apply Filter</button>
+      <button className="w-full mt-2 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold">Apply Filter</button>
     </aside>
   );
 }

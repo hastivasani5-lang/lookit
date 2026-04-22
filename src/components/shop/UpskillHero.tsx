@@ -11,8 +11,8 @@ export default function UpskillHero() {
             Faster Way For Your <br /> Grow & Upskill
           </h1>
           <div className="flex gap-4 mt-6">
-            <button className="bg-[#1ec28e] text-white px-6 py-3 rounded-full font-semibold shadow hover:bg-[#18ab7d] transition">Subscribe</button>
-            <button className="bg-[#1ec28e] text-white px-6 py-3 rounded-full font-semibold shadow hover:bg-[#18ab7d] transition">Learn Now</button>
+            <button className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-full font-semibold shadow hover:opacity-90 transition">Subscribe</button>
+            <button className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-full font-semibold shadow hover:opacity-90 transition">Learn Now</button>
           </div>
         </div>
         {/* Right */}

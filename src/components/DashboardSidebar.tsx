@@ -4,17 +4,18 @@ import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { CreditCard, LayoutGrid, LogOut, Settings, Star, Upload, Users } from "lucide-react";
+import { BookOpen, CreditCard, LayoutGrid, LogOut, Settings, Star, Upload, Users } from "lucide-react";
 import Image from "next/image";
 
 const sidebarItems = [
-  { label: "Overview",        href: "/dashboard/teachers",                  icon: LayoutGrid },
-  { label: "Add",             href: "/dashboard/teachers?section=add",      icon: Upload },
-  { label: "Upgrade Profile", href: "/dashboard/teachers?section=upgrade",  icon: CreditCard },
-  { label: "Purchases",       href: "/dashboard/teachers/purchases",        icon: Users },
-  { label: "Followers",       href: "/dashboard/teachers/followers",        icon: Users },
-  { label: "Reviews",         href: "/dashboard/teachers/reviews",          icon: Star },
-  { label: "Settings",        href: "/dashboard/teachers?section=settings", icon: Settings },
+  { label: "Overview",          href: "/dashboard/teachers",                  icon: LayoutGrid },
+  { label: "Add",               href: "/dashboard/teachers?section=add",      icon: Upload },
+  { label: "Upgrade Profile",   href: "/dashboard/teachers?section=upgrade",  icon: CreditCard },
+  { label: "Purchases",         href: "/dashboard/teachers/purchases",        icon: Users },
+  { label: "Advance Bookings",  href: "/dashboard/teachers/advance-bookings", icon: BookOpen },
+  { label: "Followers",         href: "/dashboard/teachers/followers",        icon: Users },
+  { label: "Reviews",           href: "/dashboard/teachers/reviews",          icon: Star },
+  { label: "Settings",          href: "/dashboard/teachers?section=settings", icon: Settings },
 ];
 
 interface DashboardSidebarProps {

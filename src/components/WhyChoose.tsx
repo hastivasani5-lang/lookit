@@ -135,8 +135,8 @@ const WhyChoose = () => {
         {/* ================= LEFT ================= */}
         <div data-aos="fade-right" className="mx-auto max-w-xl lg:mx-0">
 
-          <p className="mb-4 flex items-center justify-center gap-2 text-xs tracking-widest text-gray-500 lg:justify-start">
-            <span className="w-1.5 h-1.5 bg-[#1ec28e] rounded-full"></span>
+          <p className="mb-4 flex items-center justify-center gap-2 text-xs tracking-wides text-black lg:justify-start">
+            <span className="w-1.5 h-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full"></span>
             WHY CHOOSE US?
           </p>
 
@@ -152,7 +152,7 @@ const WhyChoose = () => {
           </p>
 
           {/* FEATURES */}
-          <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+          <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4  text-black">
 
             <div className="flex items-center justify-center gap-2 rounded-lg bg-[#dff3ec] px-4 py-3 text-sm font-medium sm:justify-start">
               <span className="text-[#1ec28e]">✔</span>
@@ -184,7 +184,7 @@ const WhyChoose = () => {
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:justify-start">
 
             <button
-              className="rounded-full bg-[#1ec28e] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#18ab7d] sm:px-7"
+              className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-3 text-sm font-medium text-white transition hover:opacity-90 sm:px-7"
               onClick={() => {
                 if (typeof window !== 'undefined') {
                   window.location.href = '/get-started';
@@ -196,9 +196,9 @@ const WhyChoose = () => {
 
             {/* WAVE */}
             <div className="flex flex-col gap-1">
-              <div className="w-12 h-1 bg-[#1ec28e]/70 rounded-full"></div>
+              <div className="w-12 h-1 bg-gradient-to-r from-emerald-600 to-teal-600/70 rounded-full"></div>
               <div className="w-10 h-1 bg-orange-400 rounded-full"></div>
-              <div className="w-12 h-1 bg-[#1ec28e]/70 rounded-full"></div>
+              <div className="w-12 h-1 bg-gradient-to-r from-emerald-600 to-teal-600/70 rounded-full"></div>
             </div>
 
           </div>
@@ -225,7 +225,7 @@ const WhyChoose = () => {
           {/* DOTS */}
           <div className="absolute right-3 top-8 hidden grid-cols-4 gap-1 sm:grid sm:right-10 sm:top-12 lg:right-20">
             {Array.from({ length: 12 }).map((_, i) => (
-              <span key={i} className="w-1.5 h-1.5 bg-[#1ec28e] rounded-full"></span>
+              <span key={i} className="w-1.5 h-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full"></span>
             ))}
           </div>
 
@@ -237,7 +237,7 @@ const WhyChoose = () => {
           {/* EXPERIENCE CARD */}
           <div className="absolute bottom-4 right-2 flex items-center gap-3 rounded-xl bg-white px-3 py-2 shadow-lg animate-float sm:bottom-8 sm:right-0 sm:px-5 sm:py-2.5 lg:bottom-16 lg:px-6 lg:py-3">
 
-            <div className="w-10 h-10 bg-[#1ec28e] text-white rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full flex items-center justify-center">
               ★
             </div>
 

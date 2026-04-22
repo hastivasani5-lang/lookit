@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 import {
@@ -245,7 +245,7 @@ const initialPayoutEntries: PayoutEntry[] = [
     professionalName: "Riya Sharma",
     professionalEmail: "riya.sharma@example.com",
     plan: "Pro (1 month boost)",
-    amount: "₹799",
+    amount: "?799",
     transactionId: "TXN-PRF-12091",
     paidAt: "Today, 10:24 AM",
     status: "completed",
@@ -255,7 +255,7 @@ const initialPayoutEntries: PayoutEntry[] = [
     professionalName: "Aarav Mehta",
     professionalEmail: "aarav.mehta@example.com",
     plan: "Starter (1 week boost)",
-    amount: "₹299",
+    amount: "?299",
     transactionId: "TXN-PRF-12088",
     paidAt: "Today, 09:02 AM",
     status: "pending",
@@ -265,7 +265,7 @@ const initialPayoutEntries: PayoutEntry[] = [
     professionalName: "Neha Verma",
     professionalEmail: "neha.verma@example.com",
     plan: "Elite (3 month boost)",
-    amount: "₹1499",
+    amount: "?1499",
     transactionId: "TXN-PRF-12076",
     paidAt: "Yesterday, 06:45 PM",
     status: "completed",
@@ -275,7 +275,7 @@ const initialPayoutEntries: PayoutEntry[] = [
     professionalName: "Kunal Patel",
     professionalEmail: "kunal.patel@example.com",
     plan: "Premium (2 month boost)",
-    amount: "₹1199",
+    amount: "?1199",
     transactionId: "TXN-PRF-12063",
     paidAt: "2 days ago",
     status: "pending",
@@ -476,6 +476,20 @@ export default function AdminPanelView() {
   const [payoutsCurrentPage, setPayoutsCurrentPage] = useState(1);
   const [todayTableActiveTab, setTodayTableActiveTab] = useState<"Student" | "Teacher" | "Notification">("Student");
   const [dashboardTodayCurrentPage, setDashboardTodayCurrentPage] = useState(1);
+  const [dashboardStats, setDashboardStats] = useState({
+    studentCount: "...",
+    professionalCount: "...",
+    transactionCount: "...",
+  });
+  const [adminTrendData, setAdminTrendData] = useState<{
+    labels: string[];
+    students: number[];
+    teachers: number[];
+  }>({
+    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    students: [0, 0, 0, 0, 0, 0, 0],
+    teachers: [0, 0, 0, 0, 0, 0, 0],
+  });
   const ITEMS_PER_PAGE = 10;
   const DASHBOARD_ITEMS_PER_PAGE = 10;
   const approvalTotalPages = Math.max(1, Math.ceil(approvalRequests.length / ITEMS_PER_PAGE));
@@ -532,7 +546,7 @@ export default function AdminPanelView() {
           email: student.email,
           meta: student.grade || "-",
           status: "Active",
-          updated: student.joinedAt || "-",
+          updated: new Date(student.joinedAt).toLocaleString(),
         }))
       : todayTableActiveTab === "Teacher"
         ? professionalUsers
@@ -543,7 +557,7 @@ export default function AdminPanelView() {
             email: professional.email,
             meta: professional.specialization || "-",
             status: "Active",
-            updated: professional.joinedAt || "-",
+            updated: new Date(professional.joinedAt).toLocaleString(),
           }))
         : notifications
             .filter((notification) => isSameCalendarDay(notification.createdAt))
@@ -562,10 +576,10 @@ export default function AdminPanelView() {
     dashboardTodayPageStart,
     dashboardTodayPageStart + DASHBOARD_ITEMS_PER_PAGE,
   );
-  const adminTrendLabels = ["January", "February", "March", "April", "May", "June", "July"];
+  const adminTrendLabels = adminTrendData.labels;
   const adminTrendSeries = [
-    { label: "Approvals", color: "#ff5b7a", values: [34, 55, 10, 36, 76, 54, 64] },
-    { label: "Alerts", color: "#3498db", values: [12, 85, 82, 15, 43, 66, 12] },
+    { label: "Students", color: "#ff5b7a", values: adminTrendData.students },
+    { label: "Teachers", color: "#3498db", values: adminTrendData.teachers },
   ];
   const adminTrendMax = Math.max(...adminTrendSeries.flatMap((series) => series.values), 1);
   const adminTrendWidth = 470;
@@ -1165,7 +1179,7 @@ export default function AdminPanelView() {
           address: user.location || "-",
           marks: 0,
           progress: user.specialization || "-",
-          joinedAt: new Date(user.createdAt).toLocaleDateString(),
+          joinedAt: user.createdAt,
         }));
 
         const details = studentUsers.reduce<Record<number, AdminUserDetails>>((accumulator, user, index) => {
@@ -1198,7 +1212,7 @@ export default function AdminPanelView() {
           certificatesCount: user.certificates.length,
           reviewsCount: user.reviews.length,
           profileBoostedUntil: user.profileBoostedUntil,
-          joinedAt: new Date(user.createdAt).toLocaleDateString(),
+          joinedAt: user.createdAt,
         }));
 
         setStudentsList(mappedStudents);
@@ -1288,7 +1302,7 @@ export default function AdminPanelView() {
           id: 100000 + index,
           professionalName: payment.studentName,
           professionalEmail: payment.studentEmail,
-          plan: `${payment.plan} • ${payment.professionalName}`,
+          plan: `${payment.plan} - ${payment.professionalName}`,
           amount: payment.amount,
           transactionId: payment.transactionId,
           paidAt: new Date(payment.paidAt).toLocaleString(),
@@ -1353,6 +1367,63 @@ export default function AdminPanelView() {
 
     setDashboardTodayCurrentPage(1);
   }, [todayTableActiveTab, activeSection]);
+
+  const formatStat = (n: number): string => {
+    if (n < 1000) return String(n);
+    return (n / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+  };
+
+  useEffect(() => {
+    if (activeSection !== "Dashboard") return;
+
+    let isMounted = true;
+    let retryTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    const fetchStats = async () => {
+      try {
+        const response = await fetch("/api/admin/stats", { cache: "no-store" });
+        if (!response.ok) throw new Error("Non-OK response");
+        const data = (await response.json()) as {
+          studentCount: number;
+          professionalCount: number;
+          transactionCount: number;
+        };
+        if (isMounted) {
+          setDashboardStats({
+            studentCount: formatStat(data.studentCount),
+            professionalCount: formatStat(data.professionalCount),
+            transactionCount: formatStat(data.transactionCount),
+          });
+        }
+      } catch (error) {
+        console.error("Failed to load dashboard stats:", error);
+        if (isMounted) {
+          setDashboardStats({ studentCount: "N/A", professionalCount: "N/A", transactionCount: "N/A" });
+          retryTimeout = setTimeout(() => { void fetchStats(); }, 5000);
+        }
+      }
+    };
+
+    void fetchStats();
+
+    const fetchTrend = async () => {
+      try {
+        const res = await fetch("/api/admin/trend", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = (await res.json()) as { labels: string[]; students: number[]; teachers: number[] };
+        if (isMounted) setAdminTrendData(data);
+      } catch {
+        // keep default zeros
+      }
+    };
+
+    void fetchTrend();
+
+    return () => {
+      isMounted = false;
+      if (retryTimeout) clearTimeout(retryTimeout);
+    };
+  }, [activeSection]);
 
   const onLogout = async () => {
     await fetch("/api/admin/logout", { method: "POST" });
@@ -1450,7 +1521,7 @@ export default function AdminPanelView() {
             />
             <div className="flex items-center gap-4 text-sm">
               <span className="hidden text-slate-600 sm:inline">Open For Order</span>
-              <span className="h-2.5 w-2.5 rounded-full bg-[#1ec28e] shadow-[1px_1px_3px_#bfe9cb,-1px_-1px_3px_#ffffff]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 shadow-[1px_1px_3px_#bfe9cb,-1px_-1px_3px_#ffffff]" />
               <Bell className="h-5 w-5 text-[#1ec28e]" />
               <button
                 type="button"
@@ -1501,7 +1572,7 @@ export default function AdminPanelView() {
         .neumorph-admin-btn:active {
           box-shadow: 1px 1px 2px #d0dbd6, -1px -1px 2px #ffffff;
         }
-      `}</style>
+      hg`}</style>
 
           {activeSection === "Dashboard" ? (
             <div className="rounded-2xl neumorph-admin-card p-4 sm:p-5">
@@ -1511,15 +1582,15 @@ export default function AdminPanelView() {
               <div className="grid gap-3 sm:grid-cols-3">
                 <div className="rounded-2xl neumorph-admin-stat p-4">
                   <p className="text-xs text-[#2c5a48]">Students</p>
-                  <p className="text-3xl font-bold text-[#0f2c21]">15.00K</p>
+                  <p className="text-3xl font-bold text-[#0f2c21]">{dashboardStats.studentCount}</p>
                 </div>
                 <div className="rounded-2xl neumorph-admin-stat p-4">
                   <p className="text-xs text-[#2c5a48]">Teachers</p>
-                  <p className="text-3xl font-bold text-[#0f2c21]">200</p>
+                  <p className="text-3xl font-bold text-[#0f2c21]">{dashboardStats.professionalCount}</p>
                 </div>
                 <div className="rounded-2xl neumorph-admin-stat p-4">
                   <p className="text-xs text-[#2c5a48]">Awards</p>
-                  <p className="text-3xl font-bold text-[#0f2c21]">5.6K</p>
+                  <p className="text-3xl font-bold text-[#0f2c21]">{dashboardStats.transactionCount}</p>
                 </div>
               </div>
 
@@ -1528,8 +1599,8 @@ export default function AdminPanelView() {
                   <div className="h-90 rounded-2xl neumorph-admin-card border border-transparent p-4 bg-white!">
                     <div className="mb-3 flex items-center justify-between">
                       <div>
-                        <h3 className="font-semibold text-slate-800">Admin Activity Trend</h3>
-                        <p className="text-xs text-slate-500">Approvals and alerts across recent months.</p>
+                        <h3 className="font-semibold text-slate-800">User & Teacher Registrations</h3>
+                        <p className="text-xs text-slate-500">New students and teachers joined over the last 7 days.</p>
                       </div>
                       <div className="flex items-center gap-3 text-xs text-slate-500">
                         {adminTrendSeries.map((series) => (
@@ -1873,6 +1944,7 @@ export default function AdminPanelView() {
                   </div>
                 ) : null}
               </div>
+              
             </div>
           ) : (
             <div className="rounded-2xl bg-white p-6">
@@ -1908,7 +1980,7 @@ export default function AdminPanelView() {
                   <button
                     type="button"
                     onClick={openAddCategoryForm}
-                    className="rounded-full bg-[#1ec28e] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ad7d]"
+                    className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ad7d]"
                   >
                     Add Category
                   </button>

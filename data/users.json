@@ -9,7 +9,7 @@
     "reviews": [],
     "approvalStatus": "approved",
     "provider": "credentials",
-    "createdAt": "2026-04-21T08:59:10.024Z"
+    "createdAt": "2026-04-22T09:20:27.834Z"
   },
   {
     "id": "07d7028d-3cac-48b0-a23e-071a9ddd1f4a",
@@ -21,7 +21,7 @@
     "reviews": [],
     "approvalStatus": "approved",
     "provider": "credentials",
-    "createdAt": "2026-04-21T04:25:44.198Z"
+    "createdAt": "2026-04-22T09:20:27.834Z"
   },
   {
     "id": "75ef3351-592e-4e2f-a292-e0dc45078093",
@@ -33,7 +33,7 @@
     "reviews": [],
     "approvalStatus": "approved",
     "provider": "credentials",
-    "createdAt": "2026-04-20T03:50:28.302Z"
+    "createdAt": "2026-04-22T09:20:27.834Z"
   },
   {
     "id": "99d3a63f-b39b-475f-a8f1-547705c3eda7",
@@ -71,7 +71,7 @@
     "approvalReviewedBy": "Admin",
     "approvalReviewedAt": "2026-04-21T06:23:38.515Z",
     "provider": "credentials",
-    "createdAt": "2026-04-17T12:12:56.945Z"
+    "createdAt": "2026-04-22T09:20:27.834Z"
   },
   {
     "id": "14db6872-20af-4eea-a8f9-5cd31e07c75c",
@@ -97,7 +97,7 @@
     "approvalReviewedBy": "Admin",
     "approvalReviewedAt": "2026-04-21T06:23:39.771Z",
     "provider": "credentials",
-    "createdAt": "2026-04-17T10:35:33.000Z"
+    "createdAt": "2026-04-22T09:20:27.834Z"
   },
   {
     "id": "7fef6d75-1b77-4bdf-a41c-68f6294084c5",
@@ -200,6 +200,7 @@
     "email": "jeel@gmail.com",
     "passwordHash": "$2a$10$caD69i6fQPQZAX.vU2hQKuhuneHx9RYOsVXUl.P41FfInjk9/WEMq",
     "role": "professional",
+    "image": "/uploads/c50f32c9-00f5-4979-b76a-aa7956e91a4e-1776851824314.png",
     "certificates": [],
     "reviews": [],
     "profileBoostedUntil": "2026-07-15T11:38:42.010Z",
@@ -216,6 +217,7 @@
     "email": "chandhu@gmail.com",
     "passwordHash": "$2a$10$NYy09NuYXakhlkN2f/dmOuYqZojJkeIdt4L2sz0bGVfHvSUygTXua",
     "role": "professional",
+    "image": "/uploads/d27ef8c3-6ce3-412a-a5d7-3630be7e9489-1776851768664.png",
     "certificates": [],
     "reviews": [],
     "profileBoostedUntil": "2026-07-15T11:38:06.823Z",
@@ -264,6 +266,8 @@
     "contactNumber": "871452187528",
     "certificates": [],
     "reviews": [],
+    "profileBoostedUntil": "2026-07-22T09:13:16.249Z",
+    "profileUpgradeTier": "top",
     "approvalStatus": "approved",
     "approvalReviewedBy": "Admin",
     "approvalReviewedAt": "2026-04-15T11:40:30.818Z",
@@ -341,8 +345,8 @@
       "/uploads/certificates/060fe115-29ac-4395-bdfe-c896a31d6b49-1776764714921-rddm8q.pdf"
     ],
     "reviews": [],
-    "profileBoostedUntil": "2026-05-21T09:38:44.442Z",
-    "profileUpgradeTier": "starter",
+    "profileBoostedUntil": "2026-07-22T09:12:34.751Z",
+    "profileUpgradeTier": "top",
     "approvalStatus": "approved",
     "approvalReviewedBy": "Admin",
     "approvalReviewedAt": "2026-04-15T11:40:35.221Z",

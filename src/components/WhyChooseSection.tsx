@@ -118,7 +118,7 @@ export default function WhyChooseSection() {
           </div>
 
           {/* BUTTON */}
-          <button className="bg-[#1ec28e] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#159a6b] transition">
+          <button className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-full font-semibold hover:opacity-90 transition">
             GET STARTED →
           </button>
         </motion.div>

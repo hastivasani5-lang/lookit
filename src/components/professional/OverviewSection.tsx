@@ -84,7 +84,7 @@ export default function OverviewSection({
             <button
               type="button"
               onClick={() => setActiveSection("settings")}
-              className="mt-4 inline-flex h-9 w-full items-center justify-center gap-2 rounded-xl bg-[#1ec28e] px-4 text-sm font-medium text-white transition hover:bg-[#17a87a]"
+              className="mt-4 inline-flex h-9 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 text-sm font-medium text-white transition hover:opacity-90"
             >
               <Edit2 className="h-3.5 w-3.5" />
               Edit Profile
@@ -209,7 +209,7 @@ export default function OverviewSection({
                     key={pageNumber}
                     onClick={() => setFeaturedPage(pageNumber as FeaturedPage)}
                     className={`min-w-8 rounded-lg px-3 py-1 text-xs font-semibold transition ${
-                      featuredPage === pageNumber ? "bg-[#1ec28e] text-white shadow-sm" : "text-slate-500 hover:bg-white"
+                      featuredPage === pageNumber ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-sm" : "text-slate-500 hover:bg-white"
                     }`}
                   >
                     {pageNumber}

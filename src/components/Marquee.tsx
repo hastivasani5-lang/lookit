@@ -2,7 +2,7 @@
 
 const Marquee = () => {
   return (
-    <div className="w-full overflow-hidden bg-[#1ec28e] py-6">
+    <div className="w-full overflow-hidden bg-gradient-to-r from-emerald-600 to-teal-600 py-6">
 
       <div className="flex whitespace-nowrap animate-marquee gap-10 text-white font-semibold text-lg">
 

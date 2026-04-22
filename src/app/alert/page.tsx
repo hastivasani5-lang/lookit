@@ -26,7 +26,7 @@ export default function AlertPage() {
         <div className="mt-8 flex justify-center">
           <Link
             href="/"
-            className="inline-flex items-center rounded-full bg-[#1ec28e] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#18ab7d]"
+            className="inline-flex items-center rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
           >
             Go to Home
           </Link>

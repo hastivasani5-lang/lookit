@@ -150,24 +150,19 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps
     <div className="flex-1">
       <div className="mb-6 flex items-center justify-between gap-2">
         <div className="flex gap-2">
-          <button
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition bg-gradient-to-r from-emerald-600 to-teal-600 text-white ${activeTab === "all" ? "" : "opacity-70"}`}
-            onClick={() => handleTab("all")}
-          >
-            All
-          </button>
-          <button
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition bg-gradient-to-r from-emerald-600 to-teal-600 text-white ${activeTab === "book" ? "" : "opacity-70"}`}
-            onClick={() => handleTab("book")}
-          >
-            Books
-          </button>
-          <button
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition bg-gradient-to-r from-emerald-600 to-teal-600 text-white ${activeTab === "video" ? "" : "opacity-70"}`}
-            onClick={() => handleTab("video")}
-          >
-            Videos
-          </button>
+          {(["all", "book", "video"] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => handleTab(tab)}
+              className={`rounded-lg px-4 py-2 text-sm font-semibold transition border ${
+                activeTab === tab
+                  ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-transparent"
+                  : "bg-[#eef5f3] text-[#1ec28e] border-[#d1e7dd] hover:bg-gradient-to-r hover:from-emerald-600 hover:to-teal-600 hover:text-white hover:border-transparent"
+              }`}
+            >
+              {tab === "all" ? "All" : tab === "book" ? "Books" : "Videos"}
+            </button>
+          ))}
         </div>
         <input
           type="text"
@@ -222,13 +217,13 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps
                   <button
                     type="button"
                     onClick={() => handleAddToCart(item)}
-                    className="rounded-lg bg-[#1ec28e] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[#169e6d]"
+                    className="rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 px-3 py-2 text-sm font-semibold text-white transition hover:opacity-90"
                   >
                     {isInCart ? "Added" : "Add Cart"}
                   </button>
                   <Link
                     href={`/shop/details/${item.slug}`}
-                    className="rounded-lg border border-[#1ec28e] px-3 py-2 text-center text-sm font-semibold text-[#1ec28e] transition hover:bg-[#1ec28e] hover:text-white"
+                    className="rounded-lg border border-[#1ec28e] px-3 py-2 text-center text-sm font-semibold text-[#1ec28e] transition hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white"
                   >
                     View Details
                   </Link>
@@ -253,7 +248,7 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps
               key={index + 1}
               onClick={() => setPage(index + 1)}
               className={`rounded px-3 py-1 ${
-                currentPage === index + 1 ? "bg-[#1ec28e] text-white" : "bg-gray-100 text-gray-600"
+                currentPage === index + 1 ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" : "bg-gray-100 text-gray-600"
               }`}
             >
               {index + 1}
@@ -273,3 +268,7 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps
 };
 
 export default ProductGrid;
+
+
+
+

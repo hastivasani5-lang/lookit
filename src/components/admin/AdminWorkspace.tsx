@@ -168,7 +168,7 @@ export default function AdminWorkspace(props: AdminWorkspaceProps) {
           />
           <div className="flex items-center gap-4 text-sm">
             <span className="hidden text-slate-600 sm:inline">Open For Order</span>
-            <span className="h-2.5 w-2.5 rounded-full bg-[#1ec28e]" />
+            <span className="h-2.5 w-2.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600" />
             <Bell className="h-5 w-5 text-[#1ec28e]" />
             <button type="button" onClick={() => setAdminProfileOpen(true)} className="flex items-center gap-2 rounded-full bg-[#f6fefb] px-2.5 py-1.5">
               <Image src={ADMIN_PROFILE.avatar} alt="Admin profile" width={28} height={28} className="h-7 w-7 rounded-full object-cover border border-[#bfe9cb]" />
@@ -196,7 +196,7 @@ export default function AdminWorkspace(props: AdminWorkspaceProps) {
                   {activeSection === "Users" ? "User Management" : activeSection === "Approvals" ? "Professional Requests" : activeSection === "Reviews" ? "Review Moderation" : activeSection === "Categories" ? "Category Management" : activeSection === "Uploads" ? "Book Upload Center" : activeSection === "Payouts" ? "Teacher Payments" : "Teacher Notifications"}
                 </h2>
               </div>
-              {activeSection === "Categories" ? <button type="button" onClick={openAddCategoryForm} className="rounded-full bg-[#1ec28e] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ad7d]">Add Category</button> : null}
+              {activeSection === "Categories" ? <button type="button" onClick={openAddCategoryForm} className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ad7d]">Add Category</button> : null}
             </div>
 
             {activeSection === "Approvals" ? <AdminApprovalsPanel approvalCounts={approvalCounts} paginatedApprovalRequests={paginatedApprovalRequests} approvalStatusStyles={approvalStatusStyles} updateApprovalStatus={updateApprovalStatus} openDetailModal={openDetailModal} approvalRequests={approvalRequests} approvalsCurrentPage={approvalsCurrentPage} itemsPerPage={ITEMS_PER_PAGE} approvalTotalPages={approvalTotalPages} setApprovalsCurrentPage={setApprovalsCurrentPage} />

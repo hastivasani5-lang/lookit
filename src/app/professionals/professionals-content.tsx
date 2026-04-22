@@ -281,7 +281,7 @@ export default function ProfessionalsContent() {
               <button
                 type="button"
                 onClick={handleTopSearchClick}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:scale-[1.02] hover:shadow-md"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:scale-[1.02] hover:shadow-md"
               >
                 <Search className="h-4 w-4" />
                 Search
@@ -389,7 +389,7 @@ export default function ProfessionalsContent() {
                 <button
                   type="button"
                   onClick={() => setIsFiltersOpen(true)}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white"
                   aria-label="Open filters"
                 >
                   <SlidersHorizontal className="h-4 w-4" />
@@ -458,7 +458,7 @@ export default function ProfessionalsContent() {
                       <div className="mt-auto flex w-full gap-2">
                         <Link
                           href={`/professionals/${item.id}`}
-                          className="flex-1 rounded-full bg-primary px-4 py-2.5 text-center text-sm font-semibold bg-linear-to-r from-emerald-600 to-teal-600 text-white transition"
+                          className="flex-1 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2.5 text-center text-sm font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 text-white transition"
                         >
                           View Profile
                         </Link>
@@ -508,7 +508,7 @@ export default function ProfessionalsContent() {
                   <button
                     type="button"
                     onClick={() => setVisibleCount((prev) => prev + 3)}
-                    className="rounded-full border border-primary px-6 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary hover:text-white"
+                    className="rounded-full border border-primary px-6 py-2.5 text-sm font-semibold text-primary transition hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white"
                   >
                     Load More
                   </button>
@@ -626,7 +626,7 @@ export default function ProfessionalsContent() {
                 <button
                   type="button"
                   onClick={() => setIsFiltersOpen(false)}
-                  className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white"
+                  className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2.5 text-sm font-semibold text-white"
                 >
                   Apply Filters
                 </button>
@@ -639,7 +639,7 @@ export default function ProfessionalsContent() {
       <section className="bg-[#eef5f3] pb-12">
         <div className="mx-auto w-full max-w-400 px-4 md:px-8 lg:px-6 xl:px-4">
           <div className="relative overflow-hidden rounded-3xl border border-[#cfe7df] bg-linear-to-r from-[#e9faf4] via-[#f4fffb] to-[#ecf7f4] p-6 shadow-sm md:p-8">
-            <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-primary/15 blur-2xl" />
+            <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600/15 blur-2xl" />
             <div className="absolute -bottom-12 -left-12 h-36 w-36 rounded-full bg-[#0f172a]/5 blur-2xl" />
 
             <div className="relative flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
@@ -655,7 +655,7 @@ export default function ProfessionalsContent() {
 
               <Link
                 href="/contact"
-                className="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#18ab7d]"
+                className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
               >
                 Talk to an Expert
               </Link>

@@ -112,7 +112,7 @@ export default function ProfessionalReviewsClient() {
             <button
               type="button"
               onClick={() => void loadReviews()}
-              className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#1ec28e] px-4 text-sm font-semibold text-white transition hover:bg-[#17a87a]"
+              className="inline-flex h-10 items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 text-sm font-semibold text-white transition hover:opacity-90"
             >
               <RefreshCcw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
               Refresh
@@ -168,7 +168,7 @@ export default function ProfessionalReviewsClient() {
                 </div>
 
                 {/* Live dot */}
-                <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#1ec28e]" />
+                <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600" />
               </div>
             ))}
           </div>

@@ -202,7 +202,7 @@ export default function LoginPage() {
                 onClick={() => setRole("student")}
                 className={`px-6 py-2 rounded-l-full font-semibold border
                 ${role === "student"
-                  ? "bg-[#1ec28e] text-white border-[#1ec28e]"
+                  ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-[#1ec28e]"
                   : "bg-gray-100 text-[#195a44] border-gray-200"}`}
               >
                 Student
@@ -213,7 +213,7 @@ export default function LoginPage() {
                 onClick={() => setRole("professional")}
                 className={`px-6 py-2 rounded-r-full font-semibold border
                 ${role === "professional"
-                  ? "bg-[#1ec28e] text-white border-[#1ec28e]"
+                  ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-[#1ec28e]"
                   : "bg-gray-100 text-[#195a44] border-gray-200"}`}
               >
                 Professional
@@ -285,7 +285,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-12 bg-[#1ec28e] text-white rounded-lg font-semibold hover:bg-[#15996b] transition disabled:opacity-50 flex items-center justify-center"
+                className="w-full h-12 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg font-semibold hover:bg-[#15996b] transition disabled:opacity-50 flex items-center justify-center"
               >
 
                 {isSubmitting

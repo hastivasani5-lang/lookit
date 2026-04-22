@@ -103,7 +103,7 @@ export default function FollowersPage() {
               <button
                 type="button"
                 onClick={() => void loadFollowers(true)}
-                className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#1ec28e] px-4 text-sm font-semibold text-white transition hover:bg-[#17a87a]"
+                className="inline-flex h-10 items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 text-sm font-semibold text-white transition hover:opacity-90"
               >
                 <RefreshCcw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
                 Refresh
@@ -189,7 +189,7 @@ export default function FollowersPage() {
                         )}
                         {/* Online dot - show if followed today */}
                         {Date.now() - new Date(f.followedAt).getTime() < 86400000 && (
-                          <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-[#1ec28e]" />
+                          <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-gradient-to-r from-emerald-600 to-teal-600" />
                         )}
                       </div>
 

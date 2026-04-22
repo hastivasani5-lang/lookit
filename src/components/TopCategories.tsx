@@ -27,7 +27,7 @@ export default function TopCategories() {
         <div className="mb-10">
           <h2 className="text-2xl md:text-3xl font-bold text-[#1e2a55] relative inline-block">
             Top Categories
-            <span className="absolute left-0 -bottom-1 w-16 h-[3px] bg-[#1ec28e] rounded"></span>
+            <span className="absolute left-0 -bottom-1 w-16 h-[3px] bg-gradient-to-r from-emerald-600 to-teal-600 rounded"></span>
           </h2>
         </div>
 

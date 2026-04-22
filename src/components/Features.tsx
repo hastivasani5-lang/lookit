@@ -15,7 +15,7 @@ const Features = () => {
           <div className="w-full lg:w-1/2" data-aos="fade-right">
             
             <div className="flex items-center justify-center gap-2 text-sm text-gray-500 lg:justify-start">
-              <span className="w-2 h-2 bg-[#1ec28e] rounded-full"></span>
+              <span className="w-2 h-2 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full"></span>
               CORE FEATURES
             </div>
 

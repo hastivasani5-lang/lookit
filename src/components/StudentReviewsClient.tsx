@@ -180,7 +180,7 @@ export default function StudentReviewsClient({ professionals }: StudentReviewsCl
           <button
             type="submit"
             disabled={submitting}
-            className="inline-flex h-12 items-center gap-2 rounded-full bg-[#1ec28e] px-5 text-sm font-medium text-white transition hover:bg-[#18ab7d] disabled:cursor-not-allowed disabled:opacity-70"
+            className="inline-flex h-12 items-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-5 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {submitting ? "Submitting..." : "Submit Review"}
           </button>

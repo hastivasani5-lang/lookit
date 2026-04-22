@@ -14,6 +14,7 @@ const HeroSection = () => {
         
         {/* Floating Green Blob */}
         <motion.div
+          suppressHydrationWarning
           animate={{
             x: [0, 30, 0],
             y: [0, -20, 0],
@@ -29,6 +30,7 @@ const HeroSection = () => {
 
         {/* Floating Blue Blob */}
         <motion.div
+          suppressHydrationWarning
           animate={{
             x: [0, -40, 0],
             y: [0, 30, 0],
@@ -45,6 +47,7 @@ const HeroSection = () => {
 
         {/* Subtle Center Glow */}
         <motion.div
+          suppressHydrationWarning
           animate={{
             opacity: [0.3, 0.6, 0.3],
             scale: [1, 1.05, 1],
@@ -103,7 +106,7 @@ const HeroSection = () => {
             transition={{ delay: 0.3 }}
             className="mt-8 mb-10 flex flex-wrap items-center gap-4 sm:mb-16 sm:gap-6 md:justify-center lg:justify-start"
           >
-            <button className="bg-[#1ec28e] hover:bg-[#18ab7d] text-white px-6 py-3 rounded-full font-medium transition flex items-center gap-2">
+            <button className=" bg-linear-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-full font-medium transition flex items-center gap-2">
               GET STARTED →
             </button>
 

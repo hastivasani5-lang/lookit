@@ -98,6 +98,163 @@ function getWebsiteFromEmail(email: string) {
 }
 
 
+function CalendarWidget() {
+  const today = new Date();
+  const [viewYear, setViewYear] = useState(today.getFullYear());
+  const [viewMonth, setViewMonth] = useState(today.getMonth());
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [workedHours, setWorkedHours] = useState(0);
+  const [isTracking, setIsTracking] = useState(false);
+  const [startTime, setStartTime] = useState<Date | null>(null);
+  const [timeline, setTimeline] = useState<Array<{ start: string; end: string; hours: number }>>([]);
+  const intervalRef = useState<ReturnType<typeof setInterval> | null>(null);
+
+  const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+  const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+  const prevMonth = () => {
+    if (viewMonth === 0) { setViewMonth(11); setViewYear(y => y - 1); }
+    else setViewMonth(m => m - 1);
+  };
+  const nextMonth = () => {
+    if (viewMonth === 11) { setViewMonth(0); setViewYear(y => y + 1); }
+    else setViewMonth(m => m + 1);
+  };
+
+  const todayStr = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+
+  const cells = [];
+  for (let i = 0; i < firstDay; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+
+  const handleStartStop = () => {
+    if (!isTracking) {
+      setStartTime(new Date());
+      setIsTracking(true);
+    } else {
+      const end = new Date();
+      const diffHours = startTime ? (end.getTime() - startTime.getTime()) / 3600000 : 0;
+      const rounded = Math.round(diffHours * 100) / 100;
+      setWorkedHours(h => Math.round((h + rounded) * 100) / 100);
+      setTimeline(prev => [...prev, {
+        start: startTime ? startTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "",
+        end: end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        hours: rounded,
+      }]);
+      setStartTime(null);
+      setIsTracking(false);
+    }
+  };
+
+  const maxHours = 12;
+  const progressPct = Math.min((workedHours / maxHours) * 100, 100);
+
+  return (
+    <div className="flex flex-col lg:flex-row gap-5">
+      {/* Calendar */}
+      <div className="rounded-2xl border border-[#dbe8e4] bg-white p-5 shadow-sm w-full max-w-sm">
+        <div className="flex items-center justify-between mb-4">
+          <button onClick={prevMonth} className="w-8 h-8 rounded-full bg-[#f0faf7] hover:bg-[#1ec28e] hover:text-white text-[#1ec28e] font-bold transition flex items-center justify-center">‹</button>
+          <span className="font-bold text-[#1f2937]">{monthNames[viewMonth]} {viewYear}</span>
+          <button onClick={nextMonth} className="w-8 h-8 rounded-full bg-[#f0faf7] hover:bg-[#1ec28e] hover:text-white text-[#1ec28e] font-bold transition flex items-center justify-center">›</button>
+        </div>
+        <div className="grid grid-cols-7 mb-2">
+          {dayNames.map(d => (
+            <div key={d} className="text-center text-xs font-semibold text-[#9ca3af] py-1">{d}</div>
+          ))}
+        </div>
+        <div className="grid grid-cols-7 gap-y-1">
+          {cells.map((day, i) => {
+            if (!day) return <div key={`empty-${i}`} />;
+            const dateStr = `${viewYear}-${viewMonth}-${day}`;
+            const isToday = dateStr === todayStr;
+            const isSelected = dateStr === selectedDate;
+            return (
+              <button
+                key={dateStr}
+                onClick={() => setSelectedDate(isSelected ? null : dateStr)}
+                className={`mx-auto w-8 h-8 rounded-full text-sm font-medium transition flex items-center justify-center
+                  ${isSelected ? "bg-[#1ec28e] text-white" :
+                    isToday ? "bg-[#e8f7f1] text-[#1ec28e] font-bold ring-2 ring-[#1ec28e]" :
+                    "hover:bg-[#f0faf7] text-[#374151]"}`}
+              >
+                {day}
+              </button>
+            );
+          })}
+        </div>
+        {selectedDate && (
+          <div className="mt-4 rounded-xl bg-[#f0faf7] px-4 py-3 text-sm text-[#1b8c65] font-medium">
+            Selected: {monthNames[viewMonth]} {selectedDate.split("-")[2]}, {viewYear}
+          </div>
+        )}
+        <div className="mt-3 text-xs text-center text-[#9ca3af]">
+          Today: {monthNames[today.getMonth()]} {today.getDate()}, {today.getFullYear()}
+        </div>
+      </div>
+
+      {/* Work Timeline */}
+      <div className="rounded-2xl border border-[#dbe8e4] bg-white p-5 shadow-sm flex-1">
+        <h4 className="font-bold text-[#1f2937] mb-1">Today's Work Hours</h4>
+        <p className="text-xs text-[#9ca3af] mb-4">{today.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}</p>
+
+        {/* Progress bar */}
+        <div className="mb-2 flex items-center justify-between text-sm">
+          <span className="font-semibold text-[#1b8c65]">{workedHours} hrs worked</span>
+          <span className="text-[#9ca3af]">Goal: {maxHours} hrs</span>
+        </div>
+        <div className="h-3 w-full rounded-full bg-[#eceff5] overflow-hidden mb-4">
+          <div
+            className="h-3 rounded-full bg-linear-to-r from-emerald-500 to-teal-500 transition-all duration-500"
+            style={{ width: `${progressPct}%` }}
+          />
+        </div>
+
+        {/* Start/Stop button */}
+        <button
+          onClick={handleStartStop}
+          className={`w-full py-2.5 rounded-xl text-sm font-bold transition mb-5 ${
+            isTracking
+              ? "bg-red-500 hover:bg-red-600 text-white"
+              : "bg-linear-to-r from-emerald-500 to-teal-500 text-white hover:opacity-90"
+          }`}
+        >
+          {isTracking ? `⏹ Stop (started ${startTime?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })})` : "▶ Start Work Session"}
+        </button>
+
+        {/* Timeline entries */}
+        <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+          {timeline.length === 0 ? (
+            <p className="text-xs text-[#9ca3af] text-center py-4">No sessions logged yet. Press Start to begin.</p>
+          ) : (
+            [...timeline].reverse().map((entry, i) => (
+              <div key={i} className="flex items-center gap-3 rounded-xl bg-[#f8fbfa] border border-[#dbe8e4] px-3 py-2">
+                <div className="w-2 h-2 rounded-full bg-[#1ec28e] shrink-0" />
+                <div className="flex-1 text-xs text-[#374151]">
+                  <span className="font-semibold">{entry.start}</span> → <span className="font-semibold">{entry.end}</span>
+                </div>
+                <span className="text-xs font-bold text-[#1ec28e]">{entry.hours}h</span>
+              </div>
+            ))
+          )}
+        </div>
+
+        {timeline.length > 0 && (
+          <button
+            onClick={() => { setTimeline([]); setWorkedHours(0); }}
+            className="mt-3 text-xs text-red-400 hover:text-red-600 transition"
+          >
+            Reset today's log
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function StudentProfileDashboard({ user, library }: StudentProfileDashboardProps) {
   const profileStorageKey = `student-profile-preview-${user.id}`;
   const [activeTab, setActiveTab] = useState<DashboardTab>("profile");
@@ -109,6 +266,8 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
   const [editLocation, setEditLocation] = useState(user.location ?? "USA");
   const [editWebsite, setEditWebsite] = useState(getWebsiteFromEmail(user.email));
   const [profileAnswers, setProfileAnswers] = useState<any>(null);
+  const [followingList, setFollowingList] = useState<Array<{ professionalId: string; professionalName: string | null; professionalImage: string | null; followedAt: string }>>([]);
+  const [followingLoading, setFollowingLoading] = useState(false);
 
   useEffect(() => {
     try {
@@ -147,6 +306,18 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
       // Ignore invalid saved data.
     }
   }, [profileStorageKey]);
+
+  useEffect(() => {
+    if (activeTab !== "following") return;
+    setFollowingLoading(true);
+    fetch(`/api/follows?studentId=${user.id}`)
+      .then((r) => r.json())
+      .then((data) => {
+        setFollowingList(Array.isArray(data) ? data : []);
+      })
+      .catch(() => setFollowingList([]))
+      .finally(() => setFollowingLoading(false));
+  }, [activeTab, user.id]);
 
   const courseCards = useMemo<CourseCard[]>(() => {
     const fromBooks = library.purchasedBooks.slice(0, 3).map((book, index) => ({
@@ -338,30 +509,45 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
 
             {activeTab === "following" && (
               <div className="my-6">
-                <h3 className="text-xl font-bold mb-2 text-[#1f2937]">Following</h3>
-                <div className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-4 w-full max-w-md">
-                  <p className="text-[#4b5563]">You are not following anyone yet.</p>
-                </div>
+                <h3 className="text-xl font-bold mb-4 text-[#1f2937]">Following</h3>
+                {followingLoading ? (
+                  <p className="text-sm text-gray-400">Loading...</p>
+                ) : followingList.length === 0 ? (
+                  <div className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-4">
+                    <p className="text-[#4b5563]">You are not following anyone yet.</p>
+                  </div>
+                ) : (
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {followingList.map((item) => (
+                      <Link
+                        key={item.professionalId}
+                        href={`/professionals/${item.professionalId}`}
+                        className="flex items-center gap-3 rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] px-4 py-3 hover:border-[#1ec28e] hover:bg-[#effaf6] transition-all"
+                      >
+                        <div className="h-10 w-10 rounded-full overflow-hidden bg-[#e8f7f1] flex items-center justify-center text-sm font-bold text-[#1b8c65] shrink-0">
+                          {item.professionalImage ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={item.professionalImage} alt="" className="h-full w-full object-cover" />
+                          ) : (
+                            (item.professionalName ?? "P").charAt(0).toUpperCase()
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-[#1f2937] truncate">{item.professionalName ?? "Professional"}</p>
+                          <p className="text-xs text-[#6b7280]">Following since {new Date(item.followedAt).toLocaleDateString()}</p>
+                        </div>
+                        <span className="text-xs text-[#1ec28e] font-semibold">View →</span>
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
             {activeTab === "calendar" && (
               <div className="my-6">
-                <h3 className="text-xl font-bold mb-2 text-[#1f2937]">Today's Work Calendar</h3>
-                <div className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-4 w-full max-w-md">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="font-semibold text-[#374151]">{new Date().toLocaleDateString()}</span>
-                    <span className="text-sm text-[#1b8c65]">Work Hours</span>
-                  </div>
-                  {/* Example: 3 hours worked today, change value as needed */}
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1 h-4 bg-[#eceff5] rounded-full overflow-hidden">
-                      <div className="h-4 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full" style={{ width: `${(3/12)*100}%` }} />
-                    </div>
-                    <span className="font-semibold text-[#1b8c65]">3 / 12 hrs</span>
-                  </div>
-                  <p className="mt-2 text-xs text-[#6b7280]">You worked 3 hours today.</p>
-                </div>
+                <h3 className="text-xl font-bold mb-4 text-[#1f2937]">Calendar</h3>
+                <CalendarWidget />
               </div>
             )}
 

@@ -22,10 +22,35 @@ type UserRecord = {
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const professionalId = url.searchParams.get("professionalId");
-  if (!professionalId) return NextResponse.json([]);
+  const studentId = url.searchParams.get("studentId");
 
   const raw = await fs.readFile(FOLLOWS_FILE, "utf-8");
   const follows: FollowRecord[] = JSON.parse(raw);
+
+  // If studentId provided, return professionals this student follows
+  if (studentId) {
+    const filtered = follows.filter((f) => f.studentId === studentId);
+    // Enrich with professional info
+    let users: UserRecord[] = [];
+    try {
+      const usersRaw = await fs.readFile(USERS_FILE, "utf-8");
+      users = JSON.parse(usersRaw);
+    } catch { users = []; }
+
+    const enriched = filtered.map((f) => {
+      const professional = users.find((u) => u.id === f.professionalId);
+      return {
+        ...f,
+        professionalName: professional?.name ?? null,
+        professionalEmail: professional?.email ?? null,
+        professionalImage: professional?.image ?? null,
+      };
+    });
+    return NextResponse.json(enriched);
+  }
+
+  if (!professionalId) return NextResponse.json([]);
+
   const filtered = follows.filter((f) => f.professionalId === professionalId);
 
   // Enrich with student info from users.json

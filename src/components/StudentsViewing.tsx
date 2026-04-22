@@ -365,7 +365,7 @@ export default function StudentsViewing() {
                     router.push(`/course/${encodeURIComponent(course.title)}`);
                   }}
                 >
-                  <span>Enroll Now</span>
+                  <span>Buy Now</span>
                   <svg
                     className="w-3.5 h-3.5 transition-transform duration-300 group-hover/btn:translate-x-1"
                     fill="none"

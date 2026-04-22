@@ -737,15 +737,27 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
               {[5, 4, 3, 2, 1].map((star) => {
                 const count = ratingCounts[star as keyof typeof ratingCounts];
                 const percentage = totalReviewsCount > 0 ? (count / totalReviewsCount) * 100 : 0;
+                const barColor =
+                  star === 5 ? "bg-green-500" :
+                  star === 4 ? "bg-lime-400" :
+                  star === 3 ? "bg-yellow-400" :
+                  star === 2 ? "bg-orange-400" :
+                  "bg-red-500";
+                const starColor =
+                  star === 5 ? "text-green-500" :
+                  star === 4 ? "text-lime-400" :
+                  star === 3 ? "text-yellow-400" :
+                  star === 2 ? "text-orange-400" :
+                  "text-red-500";
                 return (
                   <div key={star} className="flex items-center gap-3">
                     <div className="flex w-16 items-center gap-1">
                       <span className="text-sm font-medium text-gray-700">{star}</span>
-                      <FaStar className="h-3.5 w-3.5 text-yellow-400" />
+                      <FaStar className={`h-3.5 w-3.5 ${starColor}`} />
                     </div>
                     <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-yellow-400 rounded-full"
+                      <div
+                        className={`h-full ${barColor} rounded-full transition-all duration-500`}
                         style={{ width: `${percentage}%` }}
                       />
                     </div>

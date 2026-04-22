@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, MapPin, Star, Award } from "lucide-react";
+import { ArrowLeft, ArrowRight, MapPin, Star, Award, UserCheck, UserPlus } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 import type { PublicProfessional } from "@/lib/professional-display";
 
@@ -13,6 +14,53 @@ type Props = {
 };
 
 export default function TopRatedProfessionalsSection({ professionals, embedded = false }: Props) {
+  const { data: session } = useSession();
+  const studentId = session?.user?.id ?? null;
+  const isStudent = session?.user?.role === "student";
+
+  const [followedIds, setFollowedIds] = useState<Set<string>>(new Set());
+  const [followLoading, setFollowLoading] = useState<string | null>(null);
+
+  // Load followed professionals for this student
+  useEffect(() => {
+    if (!studentId) return;
+    fetch(`/api/follows?studentId=${studentId}`)
+      .then((r) => r.json())
+      .then((data: Array<{ professionalId: string }>) => {
+        if (Array.isArray(data)) {
+          setFollowedIds(new Set(data.map((f) => f.professionalId)));
+        }
+      })
+      .catch(() => undefined);
+  }, [studentId]);
+
+  const handleFollow = async (professionalId: string) => {
+    if (!isStudent || !studentId) return;
+    setFollowLoading(professionalId);
+    const alreadyFollowing = followedIds.has(professionalId);
+    try {
+      if (alreadyFollowing) {
+        await fetch("/api/follows", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ studentId, professionalId }),
+        });
+        setFollowedIds((prev) => { const s = new Set(prev); s.delete(professionalId); return s; });
+      } else {
+        await fetch("/api/follows", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ studentId, professionalId }),
+        });
+        setFollowedIds((prev) => new Set([...prev, professionalId]));
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setFollowLoading(null);
+    }
+  };
+
   const trackRef = useRef<HTMLDivElement | null>(null);
 
   const topRatedProfessionals = useMemo(
@@ -134,16 +182,39 @@ export default function TopRatedProfessionalsSection({ professionals, embedded =
                 <div className="mt-4 flex w-full gap-2">
                   <Link
                     href={`/professionals/${item.id}`}
-                    className="flex-1 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:scale-[1.02] hover:shadow-md active:scale-95"
+                    className="flex-1 inline-flex items-center justify-center rounded-full bg-linear-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:scale-[1.02] hover:shadow-md active:scale-95"
                   >
                     View Profile
                   </Link>
-                  <button
-                    type="button"
-                    className="flex-1 inline-flex items-center justify-center rounded-full border border-emerald-600 bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:scale-[1.02] hover:shadow-md active:scale-95"
-                  >
-                    Follow
-                  </button>
+                  {isStudent ? (
+                    <button
+                      type="button"
+                      onClick={() => void handleFollow(item.id)}
+                      disabled={followLoading === item.id}
+                      className={`flex-1 inline-flex items-center justify-center gap-1.5 rounded-full border px-4 py-2 text-sm font-semibold transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-60 ${
+                        followedIds.has(item.id)
+                          ? "border-[#1ec28e] bg-[#effaf6] text-[#1ec28e] hover:border-red-400 hover:bg-red-50 hover:text-red-500"
+                          : "border-primary bg-white text-primary hover:bg-[#e6f7f0]"
+                      }`}
+                    >
+                      {followLoading === item.id ? (
+                        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      ) : followedIds.has(item.id) ? (
+                        <UserCheck className="h-3.5 w-3.5" />
+                      ) : (
+                        <UserPlus className="h-3.5 w-3.5" />
+                      )}
+                      {followedIds.has(item.id) ? "Following" : "Follow"}
+                    </button>
+                  ) : (
+                    <Link
+                      href="/login"
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-full border border-primary bg-white px-4 py-2 text-sm font-semibold text-primary transition-all hover:scale-[1.02] hover:bg-[#e6f7f0] active:scale-95"
+                    >
+                      <UserPlus className="h-3.5 w-3.5" />
+                      Follow
+                    </Link>
+                  )}
                 </div>
               </div>
             </article>

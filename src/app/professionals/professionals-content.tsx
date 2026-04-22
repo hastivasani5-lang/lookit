@@ -485,7 +485,7 @@ export default function ProfessionalsContent() {
                         ) : (
                           <Link
                             href="/login"
-                            className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-primary bg-white px-4 py-2.5 text-sm font-semibold text-primary transition hover:bg-[#e6f7f0]"
+                            className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-primary border text-black px-4 py-2.5 text-sm font-semibold text-primary transition hover:bg-[#e6f7f0]"
                           >
                             <UserPlus className="h-3.5 w-3.5" />
                             Follow

@@ -8,88 +8,66 @@ export default function ContactPage() {
     <>
       <Navbar />
 
-      <main className="min-h-screen bg-[#f6f6f6] pb-12 pt-0">
-        
-      <section className="relative isolate w-full overflow-hidden bg-[#cbefe1] py-12 md:py-14">
+      
+    <main className="min-h-screen bg-[#f6f6f6] pb-12 pt-0">
 
-  {/* Background soft gradient */}
-  <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_-10%,rgba(77,195,157,0.25)_0%,rgba(236,242,239,0)_70%)]" />
-
-  {/* Left Arrow Decoration */}
-  <div className="pointer-events-none absolute left-10 top-1/2 -translate-y-1/2 opacity-40 hidden md:block">
-    <div className="flex gap-2">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <span
-          key={i}
-          className="h-5 w-5 border-l-2 border-t-2 border-[#6f8b93] rotate-[-45deg]"
-        />
-      ))}
-    </div>
-  </div>
-
-  {/* Right Arrow Decoration */}
-  <div className="pointer-events-none absolute right-10 top-1/2 -translate-y-1/2 opacity-40 hidden md:block">
-    <div className="flex gap-2">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <span
-          key={i}
-          className="h-5 w-5 border-l-2 border-t-2 border-[#6f8b93] rotate-[135deg]"
-        />
-      ))}
-    </div>
-  </div>
-
-  {/* Center Content */}
-  <div className="relative mx-auto max-w-[900px] text-center px-6">
-
-    {/* Title */}
-    <h1 className="text-5xl font-extrabold text-[#1b1f2a] md:text-6xl">
+<section className="bg-[#cbefe1]">
+  <div className="mx-auto max-w-6xl px-6 text-center pt-8 md:pt-10 pb-16 md:pb-20">
+    {/* CONTACT US Tag */}
+    <span className="text-sm font-semibold uppercase tracking-wider text-[#5a6b73]">
       Contact Us
-    </h1>
+    </span>
 
-    {/* Wave Line */}
-    <div className="mt-4 flex justify-center">
-      <svg
-        width="120"
-        height="12"
-        viewBox="0 0 120 12"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M0 6C10 0 20 12 30 6C40 0 50 12 60 6C70 0 80 12 90 6C100 0 110 12 120 6"
-          stroke="#7c8f97"
-          strokeWidth="2"
-          fill="none"
-        />
-      </svg>
-    </div>
-
-    {/* Subtitle Text */}
-    <p className="mt-6 text-base text-[#5a6b73] md:text-lg max-w-[600px] mx-auto">
-      Get in touch with us for any questions or support. We are here to help
-      you connect with the right education professionals.
-    </p>
-
+    {/* Main Heading */}
+    <h2 className="mt-2 text-4xl font-bold text-[#1b1f2a] md:text-5xl">
+      We’d love to talk to you
+    </h2>
   </div>
 
-  {/* Logo Strip Bottom */}
-  <div className="relative mx-auto mt-10 max-w-[1000px] rounded-2xl bg-white py-6 px-6 shadow-sm">
-    <div className="flex flex-wrap items-center justify-center gap-8 opacity-60">
+  {/* Cards - Ab niche aa gaye */}
+  <div className="mx-auto max-w-6xl px-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+      
+      {/* Call Us Card */}
+      <div className="rounded-2xl bg-white py-5 px-4 text-center shadow-md transition hover:-translate-y-1">
+        <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#cbefe1] text-[#2c7a64]">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+          </svg>
+        </div>
+        <h3 className="text-base font-semibold text-[#1b1f2a]">CALL US</h3>
+        <p className="mt-1 text-sm text-[#5a6b73]">+1 111 111 11000</p>
+      </div>
 
-      <span className="text-lg font-semibold">logoipsum</span>
-      <span className="text-lg font-semibold">LOGOIPSUM</span>
-      <span className="text-lg font-semibold">Logoipsum</span>
-      <span className="text-lg font-semibold">LOGOIPSUM</span>
+      {/* Email Us Card */}
+      <div className="rounded-2xl bg-white py-5 px-4 text-center shadow-md transition hover:-translate-y-1">
+        <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#cbefe1] text-[#2c7a64]">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <h3 className="text-base font-semibold text-[#1b1f2a]">EMAIL US</h3>
+        <p className="mt-1 text-sm text-[#5a6b73]">hello@consultia.com</p>
+      </div>
+
+      {/* Headquarters Card */}
+      <div className="rounded-2xl bg-white py-5 px-4 text-center shadow-md transition hover:-translate-y-1">
+        <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#cbefe1] text-[#2c7a64]">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+        <h3 className="text-base font-semibold text-[#1b1f2a]">HEADQUARTERS</h3>
+        <p className="mt-1 text-sm text-[#5a6b73]">
+          New York, NY 94105,<br />
+          United States
+        </p>
+      </div>
 
     </div>
   </div>
-
-      </section>
-
-
-
-
+</section>
 
 
 

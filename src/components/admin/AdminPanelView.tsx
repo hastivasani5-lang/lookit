@@ -476,6 +476,11 @@ export default function AdminPanelView() {
   const [payoutsCurrentPage, setPayoutsCurrentPage] = useState(1);
   const [todayTableActiveTab, setTodayTableActiveTab] = useState<"Student" | "Teacher" | "Notification">("Student");
   const [dashboardTodayCurrentPage, setDashboardTodayCurrentPage] = useState(1);
+  const [dashboardStats, setDashboardStats] = useState({
+    studentCount: "...",
+    professionalCount: "...",
+    transactionCount: "...",
+  });
   const ITEMS_PER_PAGE = 10;
   const DASHBOARD_ITEMS_PER_PAGE = 10;
   const approvalTotalPages = Math.max(1, Math.ceil(approvalRequests.length / ITEMS_PER_PAGE));
@@ -1288,7 +1293,7 @@ export default function AdminPanelView() {
           id: 100000 + index,
           professionalName: payment.studentName,
           professionalEmail: payment.studentEmail,
-          plan: `${payment.plan} • ${payment.professionalName}`,
+          plan: `${payment.plan} - ${payment.professionalName}`,
           amount: payment.amount,
           transactionId: payment.transactionId,
           paidAt: new Date(payment.paidAt).toLocaleString(),
@@ -1353,6 +1358,50 @@ export default function AdminPanelView() {
 
     setDashboardTodayCurrentPage(1);
   }, [todayTableActiveTab, activeSection]);
+
+  const formatStat = (n: number): string => {
+    if (n < 1000) return String(n);
+    return (n / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+  };
+
+  useEffect(() => {
+    if (activeSection !== "Dashboard") return;
+
+    let isMounted = true;
+    let retryTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    const fetchStats = async () => {
+      try {
+        const response = await fetch("/api/admin/stats", { cache: "no-store" });
+        if (!response.ok) throw new Error("Non-OK response");
+        const data = (await response.json()) as {
+          studentCount: number;
+          professionalCount: number;
+          transactionCount: number;
+        };
+        if (isMounted) {
+          setDashboardStats({
+            studentCount: formatStat(data.studentCount),
+            professionalCount: formatStat(data.professionalCount),
+            transactionCount: formatStat(data.transactionCount),
+          });
+        }
+      } catch (error) {
+        console.error("Failed to load dashboard stats:", error);
+        if (isMounted) {
+          setDashboardStats({ studentCount: "N/A", professionalCount: "N/A", transactionCount: "N/A" });
+          retryTimeout = setTimeout(() => { void fetchStats(); }, 5000);
+        }
+      }
+    };
+
+    void fetchStats();
+
+    return () => {
+      isMounted = false;
+      if (retryTimeout) clearTimeout(retryTimeout);
+    };
+  }, [activeSection]);
 
   const onLogout = async () => {
     await fetch("/api/admin/logout", { method: "POST" });
@@ -1511,15 +1560,15 @@ export default function AdminPanelView() {
               <div className="grid gap-3 sm:grid-cols-3">
                 <div className="rounded-2xl neumorph-admin-stat p-4">
                   <p className="text-xs text-[#2c5a48]">Students</p>
-                  <p className="text-3xl font-bold text-[#0f2c21]">15.00K</p>
+                  <p className="text-3xl font-bold text-[#0f2c21]">{dashboardStats.studentCount}</p>
                 </div>
                 <div className="rounded-2xl neumorph-admin-stat p-4">
                   <p className="text-xs text-[#2c5a48]">Teachers</p>
-                  <p className="text-3xl font-bold text-[#0f2c21]">200</p>
+                  <p className="text-3xl font-bold text-[#0f2c21]">{dashboardStats.professionalCount}</p>
                 </div>
                 <div className="rounded-2xl neumorph-admin-stat p-4">
                   <p className="text-xs text-[#2c5a48]">Awards</p>
-                  <p className="text-3xl font-bold text-[#0f2c21]">5.6K</p>
+                  <p className="text-3xl font-bold text-[#0f2c21]">{dashboardStats.transactionCount}</p>
                 </div>
               </div>
 

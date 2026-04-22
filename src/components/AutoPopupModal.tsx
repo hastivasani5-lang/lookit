@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ChevronLeft, ChevronRight, X, Check, Globe, Briefcase, Users, Clock, Users2, Share2, GraduationCap, UserPlus, Twitter, Instagram, Facebook } from "lucide-react";
+import React, { useState } from "react";
+import { ChevronLeft, ChevronRight, X, Check, Globe, Briefcase, Users, Clock, Users2, Share2, GraduationCap, UserPlus } from "lucide-react";
 
 interface AutoPopupModalProps {
   onClose: () => void;
@@ -267,12 +267,24 @@ const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step < steps.length - 1) {
       setStep(s => s + 1);
     } else {
-      if (typeof window !== "undefined" && userId) {
-        window.localStorage.setItem(`student_profile_answers_${userId}`, JSON.stringify(answers));
+      // Save to real API
+      try {
+        await fetch("/api/student/profile", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            country: answers.country,
+            profession: answers.profession,
+            source: answers.source,
+            studyTime: answers.studyTime,
+          }),
+        });
+      } catch {
+        // silently ignore — modal still closes
       }
       onClose();
     }
@@ -406,60 +418,42 @@ const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
               
               {/* Options Grid - Don't show for profession input */}
               {!steps[step].showInput && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto pr-2">
-                  {(steps[step].showFlags 
-                    ? filteredCountries 
-                    : steps[step].hasIcons 
-                      ? steps[step].options 
-                      : steps[step].options.map(opt => ({ name: opt, icon: null }))
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-100 overflow-y-auto pr-2">
+                  {(steps[step].showFlags
+                    ? filteredCountries.map((c) => ({ name: c.name, flagUrl: c.flagUrl, icon: null }))
+                    : steps[step].hasIcons
+                      ? (steps[step].options as Array<{ name: string; icon: React.ElementType | null }>).map((o) => ({ name: o.name, flagUrl: null, icon: o.icon }))
+                      : (steps[step].options as string[]).map((opt) => ({ name: opt, flagUrl: null, icon: null }))
                   ).map((item) => {
-                  const optionName = steps[step].showFlags ? item.name : item.name;
-                  const flagUrl = steps[step].showFlags ? item.flagUrl : null;
-                  const OptionIcon = steps[step].hasIcons ? item.icon : null;
-                  const isSelected = answers[steps[step].key] === optionName;
-                  
-                  return (
-                    <button
-                      key={optionName}
-                      onClick={() => handleOptionSelect(optionName)}
-                      className={`
-                        relative group overflow-hidden rounded-xl transition-all duration-300
-                        ${isSelected 
-                          ? "bg-[#1ec28e] text-white shadow-lg transform scale-105" 
-                          : "bg-gray-50 text-gray-700 hover:bg-gray-100 border-2 border-gray-200 hover:border-[#1ec28e]"
-                        }
-                      `}
-                    >
-                      <div className="px-4 py-3 text-left font-medium flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          {flagUrl && (
-                            <img 
-                              src={flagUrl} 
-                              alt={`${optionName} flag`}
-                              className="w-6 h-6 object-cover rounded-sm shadow-sm"
-                            />
-                          )}
-                          {OptionIcon && (
-                            <div className={`p-1.5 rounded-lg ${isSelected ? 'bg-white/20' : 'bg-gray-100'}`}>
-                              <OptionIcon className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-[#1ec28e]'}`} />
-                            </div>
-                          )}
-                          <span>{optionName}</span>
+                    const optionName = item.name;
+                    const flagUrl = item.flagUrl;
+                    const OptionIcon = item.icon;
+                    const isSelected = answers[steps[step].key] === optionName;
+
+                    return (
+                      <button
+                        key={optionName}
+                        onClick={() => handleOptionSelect(optionName)}
+                        className={`relative group overflow-hidden rounded-xl transition-all duration-300 ${isSelected ? "bg-[#1ec28e] text-white shadow-lg transform scale-105" : "bg-gray-50 text-gray-700 hover:bg-gray-100 border-2 border-gray-200 hover:border-[#1ec28e]"}`}
+                      >
+                        <div className="px-4 py-3 text-left font-medium flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            {flagUrl && (
+                              <img src={flagUrl} alt={`${optionName} flag`} className="w-6 h-6 object-cover rounded-sm shadow-sm" />
+                            )}
+                            {OptionIcon && (
+                              <div className={`p-1.5 rounded-lg ${isSelected ? "bg-white/20" : "bg-gray-100"}`}>
+                                <OptionIcon className={`w-5 h-5 ${isSelected ? "text-white" : "text-[#1ec28e]"}`} />
+                              </div>
+                            )}
+                            <span>{optionName}</span>
+                          </div>
+                          {isSelected && <Check className="w-5 h-5 text-white" />}
                         </div>
-                        {isSelected && (
-                          <Check className="w-5 h-5 text-white animate-bounce-in" />
-                        )}
-                      </div>
-                      
-                      {/* Hover Effect */}
-                      <div className={`
-                        absolute inset-0 bg-[#1ec28e] opacity-0 
-                        transition-opacity duration-300 pointer-events-none
-                        ${isSelected ? "opacity-0" : "group-hover:opacity-10"}
-                      `} />
-                    </button>
-                  );
-                })}
+                        <div className={`absolute inset-0 bg-[#1ec28e] opacity-0 transition-opacity duration-300 pointer-events-none ${isSelected ? "opacity-0" : "group-hover:opacity-10"}`} />
+                      </button>
+                    );
+                  })}
                 </div>
               )}
               

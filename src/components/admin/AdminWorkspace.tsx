@@ -193,7 +193,7 @@ export default function AdminWorkspace(props: AdminWorkspaceProps) {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <h2 className="text-2xl font-semibold text-slate-800">
-                  {activeSection === "Users" ? "User Management" : activeSection === "Approvals" ? "Professional Requests" : activeSection === "Reviews" ? "Review Moderation" : activeSection === "Categories" ? "Category Management" : activeSection === "Uploads" ? "Book Upload Center" : activeSection === "Payouts" ? "Teacher Payments" : "Teacher Notifications"}
+                  {activeSection === "Users" ? "User Management" : activeSection === "Approvals" ? "Professional Requests" : activeSection === "Reviews" ? "Review Moderation" : activeSection === "Categories" ? "Category Management" : activeSection === "Uploads" ? "Book Upload Center" : activeSection === "Payouts" ? "Teacher Payments" : activeSection === "Banners" ? "Banner Placements" : "Teacher Notifications"}
                 </h2>
               </div>
               {activeSection === "Categories" ? <button type="button" onClick={openAddCategoryForm} className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#18ad7d]">Add Category</button> : null}

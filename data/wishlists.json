@@ -1,6 +1,16 @@
 {
   "80ef263b-8056-47a0-a99f-46bac7063745": [
     {
+      "id": "3de97eef-7189-4542-8e2a-a64d4fd1eade:book:book-1776830884361-xiv3s5",
+      "title": "react js",
+      "price": "₹11.98",
+      "imageUrl": "/uploads/books/3de97eef-7189-4542-8e2a-a64d4fd1eade-1776830884358-7so3la.png",
+      "contentType": "book",
+      "professionalName": "yug",
+      "slug": "react-js-book-1776830884361-xiv3s5",
+      "addedAt": "2026-04-22T11:41:25.005Z"
+    },
+    {
       "id": "060fe115-29ac-4395-bdfe-c896a31d6b49:book:book-1776831355632-c7m8tm",
       "title": "NODE JS",
       "price": "Free",

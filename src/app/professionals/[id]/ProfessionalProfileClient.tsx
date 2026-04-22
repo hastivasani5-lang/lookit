@@ -95,20 +95,8 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
   const [savedTwitter, setSavedTwitter] = useState("");
   const [savedPinterest, setSavedPinterest] = useState("");
   const [savedAboutMe, setSavedAboutMe] = useState("");
-  const [reviews, setReviews] = useState<ReviewItem[]>([
-    {
-      id: 1,
-      name: "Riya P.",
-      rating: 5,
-      message: "Sessions were structured and super practical. We saw clear progress in 6 weeks.",
-    },
-    {
-      id: 2,
-      name: "Amit K.",
-      rating: 4,
-      message: "Very professional and responsive. Great with parents and school coordination.",
-    },
-  ]);
+  const [reviews, setReviews] = useState<ReviewItem[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
   const [reviewName, setReviewName] = useState("");
   const [reviewText, setReviewText] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
@@ -238,6 +226,28 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
     }
   }, [professional.id]);
 
+  // Load real reviews from API
+  useEffect(() => {
+    if (!professional.id) return;
+    setReviewsLoading(true);
+    fetch(`/api/professionals/${professional.id}/reviews`, { cache: "no-store" })
+      .then((r) => r.json())
+      .then((data: { reviews?: Array<{ id: string; studentName: string; rating: number; review: string; createdAt: string }> }) => {
+        if (Array.isArray(data.reviews)) {
+          setReviews(
+            data.reviews.map((r, i) => ({
+              id: i + 1,
+              name: r.studentName,
+              rating: r.rating,
+              message: r.review,
+            }))
+          );
+        }
+      })
+      .catch(() => undefined)
+      .finally(() => setReviewsLoading(false));
+  }, [professional.id]);
+
   const contentMap: Record<ContentTab, ContentItem[]> = useMemo(
     () => ({
       videos: liveVideos.map((video) => ({
@@ -294,7 +304,6 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
   const submitReview = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!reviewText.trim()) return;
-    // Use logged-in student name if available, else fall back to input
     const nameToUse = (session?.user?.name ?? reviewName).trim();
     if (!nameToUse) return;
 
@@ -309,19 +318,21 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
         }),
       });
 
-      if (!response.ok) {
-        return;
-      }
+      if (!response.ok) return;
 
-      setReviews((prev) => [
-        {
-          id: Date.now(),
-          name: nameToUse,
-          rating: reviewRating,
-          message: reviewText.trim(),
-        },
-        ...prev,
-      ]);
+      // Reload reviews from API to show all real reviews
+      const refreshed = await fetch(`/api/professionals/${professional.id}/reviews`, { cache: "no-store" });
+      const data = (await refreshed.json()) as { reviews?: Array<{ id: string; studentName: string; rating: number; review: string; createdAt: string }> };
+      if (Array.isArray(data.reviews)) {
+        setReviews(
+          data.reviews.map((r, i) => ({
+            id: i + 1,
+            name: r.studentName,
+            rating: r.rating,
+            message: r.review,
+          }))
+        );
+      }
 
       setReviewName("");
       setReviewText("");
@@ -809,7 +820,11 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
         <div className="rounded-2xl border border-[#dbe8e4] bg-white p-6 shadow-sm md:p-8" data-aos="fade-up">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">User Reviews</h2>
           
-          {sortedReviews.length === 0 ? (
+          {reviewsLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            </div>
+          ) : sortedReviews.length === 0 ? (
             <p className="text-center text-gray-500 py-8">No reviews yet. Be the first to review!</p>
           ) : (
             <ul className="space-y-6">

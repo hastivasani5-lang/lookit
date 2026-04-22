@@ -178,6 +178,20 @@
           "accessUrl": "https://www.youtube.com/embed/mh1MZfC0uA8"
         }
       ]
+    },
+    "95637b47-30c2-4410-8797-0169770ae5bd": {
+      "purchasedBooks": [
+        {
+          "id": "purchased-book-1776835172199-ool92n",
+          "purchasedAt": "2026-04-22T05:19:32.199Z",
+          "contentId": "book-1776255850372-xq5rqp",
+          "title": "React js",
+          "source": "krish",
+          "amount": "₹122.00",
+          "accessUrl": ""
+        }
+      ],
+      "watchedVideos": []
     }
   }
 }

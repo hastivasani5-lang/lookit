@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Search, ArrowRight, Headphones, BookOpen, Users } from "lucide-react";
+import { Search, ArrowRight, BookOpen, Users, Star, Award } from "lucide-react";
 
 export default function HeroCourses() {
   const router = useRouter();
@@ -18,190 +18,122 @@ export default function HeroCourses() {
   };
 
   return (
-    <section className="bg-[#f3f7f6] px-6 md:px-12 lg:px-20 py-14 md:py-20 overflow-hidden relative">
-      
-      {/* Subtle background decoration */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#1ec28e]/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#1e2a55]/5 rounded-full blur-3xl" />
-      </div>
-
+    <section className="px-6 md:px-12 lg:px-20 py-14 md:py-20 overflow-hidden relative">
       <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center relative z-10">
-        
-        {/* ================= LEFT CONTENT (Enhanced) ================= */}
+
+        {/* ===== LEFT CONTENT ===== */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
         >
-          {/* Small badge */}
+          {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-[#1ec28e]/10 text-[#1ec28e] px-3 py-1 rounded-full text-xs font-medium mb-5">
             <BookOpen className="w-3 h-3" />
             Online learning platform
           </div>
 
           {/* Heading */}
-          <h1 className="text-2xl md:text-3xl lg:text-5xl font-extrabold text-[#1e2a55] leading-tight">
-            Start learning from the{" "}
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#1e2a55] leading-tight">
+            Explore Top{" "}
             <span className="bg-gradient-to-r from-[#1ec28e] to-[#18a97a] bg-clip-text text-transparent">
-              world’s best
+              Categories
             </span>{" "}
-            institutions
+            & Start Learning
           </h1>
 
           {/* Description */}
           <p className="text-gray-500 mt-4 text-base md:text-lg max-w-lg leading-relaxed">
-            Flexible easy to access learning opportunities can bring a significant
-            change in how individuals prefer to learn. Ellen offers you the beauty of eLearning!
+            Browse through hundreds of expert-led courses across all categories.
+            Find the right skill, the right instructor, and the right path — all in one place.
           </p>
 
-          {/* ================= MODERN GLASS SEARCH BAR ================= */}
+          {/* Search Bar */}
           <div className="mt-8">
             <form onSubmit={handleSearch} className="relative">
               <div
-                className={`flex items-center backdrop-blur-md bg-white/70 border border-[#e0f2ef] shadow-xl rounded-2xl transition-all duration-300 ${
-                  isFocused ? "ring-2 ring-[#1ec28e]/30 shadow-[#1ec28e]/10" : ""
+                className={`flex items-center bg-white border border-gray-200 shadow-xl rounded-2xl transition-all duration-300 ${
+                  isFocused ? "ring-2 ring-[#1ec28e]/30" : ""
                 }`}
               >
-                {/* Icon section with divider */}
                 <div className="flex items-center justify-center h-14 w-14 bg-[#e6faf4] rounded-l-2xl border-r border-[#d1f5e7]">
-                  <Search className="w-6 h-6 text-[#1ec28e]" />
+                  <Search className="w-5 h-5 text-[#1ec28e]" />
                 </div>
-                {/* Input */}
                 <input
                   type="text"
-                  placeholder="What do you want to learn today?"
+                  placeholder="Search categories, courses..."
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
                   onFocus={() => setIsFocused(true)}
                   onBlur={() => setIsFocused(false)}
                   className="flex-1 py-4 px-4 text-base outline-none bg-transparent text-gray-700 placeholder:text-gray-400"
                 />
-                {/* Button section with gradient */}
                 <button
                   type="submit"
-                  className="h-14 px-8 rounded-r-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-base flex items-center gap-2 transition-all duration-200 hover:from-teal-600 hover:to-emerald-600"
+                  className="h-14 px-6 rounded-r-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-sm flex items-center gap-2 hover:from-teal-600 hover:to-emerald-600 transition-all duration-200"
                 >
-                  Search Now
-                  <ArrowRight className="w-5 h-5" />
+                  Search
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </form>
           </div>
 
-          {/* ================= SUPPORT (Enhanced) ================= */}
-          <div className="mt-8 flex items-center gap-4 flex-wrap">
-            {/* Avatars with animation */}
-            <div className="flex -space-x-2">
-              {["/person.png", "/pro1.jpeg", "/pro2.jpeg"].map((src, i) => (
-                <motion.div
-                  key={src}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.2 + i * 0.1 }}
-                  className="relative"
-                >
-                  <Image
-                    src={src}
-                    alt="Student"
-                    width={36}
-                    height={36}
-                    className="rounded-full border-2 border-white shadow-sm"
-                  />
-                </motion.div>
-              ))}
+          {/* Stats */}
+          <div className="mt-8 flex items-center gap-8 flex-wrap">
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-full bg-[#1ec28e]/10 flex items-center justify-center">
+                <Users className="w-4 h-4 text-[#1ec28e]" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-[#1e2a55]">6k+</p>
+                <p className="text-xs text-gray-400">Students</p>
+              </div>
             </div>
-
-            {/* Text with icon */}
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <Headphones className="w-4 h-4 text-[#1ec28e]" />
-              <p>
-                Need help?{" "}
-                <span className="text-[#1ec28e] font-medium cursor-pointer hover:underline">
-                  Contact our support
-                </span>
-              </p>
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-full bg-[#1ec28e]/10 flex items-center justify-center">
+                <Award className="w-4 h-4 text-[#1ec28e]" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-[#1e2a55]">30+</p>
+                <p className="text-xs text-gray-400">Expert Instructors</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-full bg-[#1ec28e]/10 flex items-center justify-center">
+                <Star className="w-4 h-4 text-[#1ec28e]" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-[#1e2a55]">4.8★</p>
+                <p className="text-xs text-gray-400">Avg Rating</p>
+              </div>
             </div>
           </div>
-
- 
         </motion.div>
 
-        {/* ================= RIGHT IMAGE SECTION (Enhanced) ================= */}
+        {/* ===== RIGHT IMAGE ===== */}
         <motion.div
           initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="relative flex justify-center items-center min-h-[400px]"
         >
-          {/* Animated dotted background box */}
           <motion.div
-            animate={{ rotate: [0, 2, 0] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute w-80 h-80 border-2 border-dashed border-[#1ec28e]/30 rounded-3xl -z-10"
-          />
-
-          {/* Main Center Image with hover effect */}
-          <motion.div
-            whileHover={{ scale: 1.02, rotate: 1 }}
-            transition={{ type: "spring", stiffness: 300 }}
-            className="relative z-10 shadow-xl rounded-3xl overflow-hidden"
+            animate={{ y: [0, -14, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            whileHover={{ scale: 1.04 }}
+            className="relative z-10"
           >
             <Image
-              src="/banner-img1.jpg"
-              alt="Student learning"
-              width={280}
-              height={340}
-              className="rounded-3xl object-cover"
+              src="/image.webp"
+              alt="Explore categories"
+              width={520}
+              height={460}
+              className="object-contain drop-shadow-2xl"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
-          </motion.div>
-
-          {/* Top Right Image with floating animation */}
-          <motion.div
-            initial={{ opacity: 0, y: -20, x: 20 }}
-            animate={{ opacity: 1, y: 0, x: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            whileHover={{ scale: 1.05, rotate: 2 }}
-            className="absolute top-0 right-0 shadow-xl rounded-2xl overflow-hidden"
-          >
-            <Image
-              src="/banner-img2.jpg"
-              alt="Student"
-              width={170}
-              height={130}
-              className="rounded-2xl object-cover"
-            />
-          </motion.div>
-
-          {/* Bottom Right Image with floating animation */}
-          <motion.div
-            initial={{ opacity: 0, y: 20, x: 20 }}
-            animate={{ opacity: 1, y: 0, x: 0 }}
-            transition={{ delay: 0.4, duration: 0.5 }}
-            whileHover={{ scale: 1.05, rotate: -2 }}
-            className="absolute bottom-0 right-0 shadow-xl rounded-2xl overflow-hidden"
-          >
-            <Image
-              src="/banner-img3.jpg"
-              alt="Student"
-              width={170}
-              height={170}
-              className="rounded-2xl object-cover"
-            />
-          </motion.div>
-
-          {/* Floating badge on main image */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5 }}
-            className="absolute -bottom-4 -left-4 bg-white rounded-full shadow-lg px-3 py-1.5 flex items-center gap-2"
-          >
-            <Users className="w-4 h-4 text-[#1ec28e]" />
-            <span className="text-xs font-semibold text-gray-700">10k+ active learners</span>
           </motion.div>
         </motion.div>
+
       </div>
     </section>
   );

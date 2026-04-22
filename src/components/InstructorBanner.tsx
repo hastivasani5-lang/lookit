@@ -1,106 +1,188 @@
+
+
 "use client";
 
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-export default function InstructorBanner() {
+const HeroSection = () => {
   return (
-    <section className="relative overflow-hidden bg-[#e6efed]  pb-0 md:pt-4 md:pb-0">
-      {/* BACKGROUND GRADIENT */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute left-[-20%] top-0 h-full w-[120%] bg-[radial-gradient(circle_at_left,rgba(30,194,142,0.15),transparent_60%)]" />
+    <section className="relative overflow-hidden bg-gradient-to-br from-[#e9f7ef] via-[#e6f4f1] to-[#eef5ff] px-4 py-14 sm:px-6 sm:py-20 lg:px-16">
+
+      {/* ANIMATED BACKGROUND SHAPES - Clean & Non-redundant */}
+      <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden">
+        
+        {/* Floating Green Blob */}
+        <motion.div
+          animate={{
+            x: [0, 30, 0],
+            y: [0, -20, 0],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute w-[500px] h-[500px] bg-[#1ec28e]/15 rounded-full blur-3xl top-[-150px] left-[-150px]"
+        />
+
+        {/* Floating Blue Blob */}
+        <motion.div
+          animate={{
+            x: [0, -40, 0],
+            y: [0, 30, 0],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2,
+          }}
+          className="absolute w-[450px] h-[450px] bg-blue-200/20 rounded-full blur-3xl bottom-[-120px] right-[-120px]"
+        />
+
+        {/* Subtle Center Glow */}
+        <motion.div
+          animate={{
+            opacity: [0.3, 0.6, 0.3],
+            scale: [1, 1.05, 1],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute w-[300px] h-[300px] bg-[#1ec28e]/10 rounded-full blur-3xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+        />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-6xl px-4 md:px-6">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:gap-4">
-          {/* LEFT CONTENT */}
-          <div className="flex-1 text-center lg:self-center">
-            {/* ANIMATED BOOK ICON */}
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="mb-4 flex justify-center"
-            >
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                whileHover={{ scale: 1.05, rotate: 3 }}
-              >
-                <Image
-                  src="/book-hand.png"
-                  alt="book"
-                  width={70}
-                  height={48}
-                  className="drop-shadow-md"
-                />
-              </motion.div>
-            </motion.div>
+      <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2">
 
-            {/* TITLE */}
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-3xl md:text-5xl font-bold text-[#0f172a] mb-3"
-            >
-              Instructor
-            </motion.h1>
+        {/* LEFT CONTENT */}
+        <div className="mx-auto w-full md:max-w-2xl md:text-center lg:max-w-none lg:text-left">
 
-
-            {/* DESCRIPTION */}
-            <motion.p
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="mx-auto mt-2 max-w-md text-sm text-gray-600"
-            >
-              Learn from industry experts with years of real-world experience.
-              Our instructors are passionate about helping you succeed.
-            </motion.p>
-          </div>
-
-          {/* RIGHT IMAGE - FIXED: NO BOTTOM GAP */}
+          {/* TAG */}
           <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-1 justify-center lg:justify-end lg:self-end lg:pr-0 lg:-mr-6"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mb-6 inline-flex items-center gap-2 rounded-full bg-[#e8f9f3] px-4 py-2 text-sm font-medium text-[#1ec28e] md:justify-center"
           >
-            <div className="relative inline-block">
-              {/* Glow effect (optional) */}
-              <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-emerald-400 to-teal-400 opacity-20 blur-lg" />
-              <div className="relative">
-                <Image
-                  src="/girls.png"
-                  alt="Instructor"
-                  width={160}
-                  height={160}
-                  className="block h-auto w-44 rounded-xl object-cover sm:w-52 md:w-56 lg:w-64"
-                  priority
-                />
+            ✔ 100% SATISFACTION GUARANTEE
+          </motion.div>
+
+          {/* HEADING */}
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="text-xl font-bold leading-tight text-gray-900 md:text-2xl lg:text-[48px]"
+          >
+            Growup Your Learning <br />
+            Skills with Educate
+          </motion.h1>
+
+          {/* DESCRIPTION */}
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mt-6 max-w-lg text-gray-600 md:mx-auto lg:mx-0"
+          >
+            <span className="font-semibold text-gray-800">Educate</span> the
+            ultimate destination for knowledge seekers and educators alike.
+            We are committed to transforming education.
+          </motion.p>
+ 
+
+          {/* RATING */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="flex flex-wrap items-center gap-4 md:justify-center lg:justify-start"
+          >
+            <div className="w-12 h-12 bg-black text-white flex items-center justify-center rounded-full">
+              ★
+            </div>
+
+            <div className="bg-[#1ec28e] text-white px-4 py-2 rounded-full text-sm font-medium">
+              1k+
+            </div>
+
+            <div>
+              <div className="text-orange-500 text-sm">
+                ★★★★★ <span className="text-gray-500">(4.7 Ratings)</span>
               </div>
-              {/* Badge */}
-              <div className="absolute -top-2 -right-2 rounded-full bg-amber-400 px-2.5 py-0.5 text-[10px] font-bold text-white shadow-md">
-                Top Expert
-              </div>
+              <p className="text-gray-600 text-sm">
+                Students learn daily with educate platform
+              </p>
             </div>
           </motion.div>
         </div>
-      </div>
 
-      {/* DOT PATTERN */}
-      <div className="absolute right-6 top-1/2 hidden -translate-y-1/2 grid-cols-6 gap-1.5 md:grid">
-        {Array.from({ length: 48 }).map((_, i) => (
-          <motion.span
-            key={i}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.5 }}
-            transition={{ delay: i * 0.01 }}
-            className="h-1 w-1 rounded-full bg-primary"
-          />
-        ))}
+        <div className="relative flex items-center justify-center">
+
+          {/* MAIN IMAGE */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            className="relative z-10"
+          >
+            <Image
+              src="/students2.png"
+              alt="hero"
+              width={420}
+              height={520}
+              className="object-contain"
+            />
+          </motion.div>
+ 
+
+          {/* TOP ROTATING SHAPE */}
+          <motion.div
+            animate={{ rotate: [0, 20, -20, 0] }}
+            transition={{ repeat: Infinity, duration: 4 }}
+            className="absolute left-6 top-2 hidden md:block"
+          >
+            <Image src="/hero-arrow.png" width={70} height={70} alt="" />
+          </motion.div>
+
+          {/* DOT GRID */}
+          <motion.div
+            animate={{ y: [0, 15, 0] }}
+            transition={{ repeat: Infinity, duration: 5 }}
+            className="absolute right-0 top-24 hidden md:block"
+          >
+            <Image src="/hero-dot.png" width={70} height={70} alt="" />
+          </motion.div>
+
+          {/* SCRIBBLE LINE */}
+          <motion.div
+            animate={{ y: [0, 20, 0] }}
+            transition={{ repeat: Infinity, duration: 6 }}
+            className="absolute left-0 top-1/2 hidden md:block"
+          >
+            <Image src="/start.png" width={60} height={60} alt="" />
+          </motion.div>
+
+          {/* TOP SMALL LEAF */}
+          <motion.div
+            animate={{ y: [0, -10, 0] }}
+            transition={{ repeat: Infinity, duration: 3 }}
+            className="absolute right-20 top-0 hidden md:block"
+          >
+            <Image src="/mini1.png" width={50} height={50} alt="" />
+          </motion.div>
+
+        </div>
+
       </div>
     </section>
   );
-}
+};
+
+export default HeroSection;

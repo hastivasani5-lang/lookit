@@ -718,7 +718,63 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
               </div>
             ) : null}
 
-         
+            {activeTab === "buy-courses" && (
+              <div className="mt-6 space-y-8">
+                {/* Purchased Videos */}
+                <section>
+                  <h3 className="text-xl font-bold text-[#1f2937] mb-4 flex items-center gap-2">
+                    <Video className="h-5 w-5 text-[#b45309]" /> Purchased Videos
+                  </h3>
+                  {library.watchedVideos.length === 0 ? (
+                    <div className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-4">
+                      <p className="text-[#4b5563] text-sm">No purchased videos yet.</p>
+                    </div>
+                  ) : (
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {library.watchedVideos.map((video) => (
+                        <div key={video.id} className="overflow-hidden rounded-2xl border border-[#dbe8e4] bg-white shadow-sm">
+                          <div className="flex h-28 items-center justify-center bg-[#f1e9e0]">
+                            <Video className="h-10 w-10 text-[#b45309]" />
+                          </div>
+                          <div className="p-4">
+                            <span className="rounded bg-[#b45309] px-2 py-0.5 text-[11px] font-semibold text-white">Video</span>
+                            <h4 className="mt-2 text-base font-bold text-[#1f2937]">{video.title}</h4>
+                            <p className="mt-2 text-lg font-bold text-[#2c5a48]">{video.amount}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </section>
+
+                {/* Purchased Books */}
+                <section>
+                  <h3 className="text-xl font-bold text-[#1f2937] mb-4 flex items-center gap-2">
+                    <BookOpen className="h-5 w-5 text-[#0891b2]" /> Purchased Books
+                  </h3>
+                  {library.purchasedBooks.length === 0 ? (
+                    <div className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-4">
+                      <p className="text-[#4b5563] text-sm">No purchased books yet.</p>
+                    </div>
+                  ) : (
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {library.purchasedBooks.map((book) => (
+                        <div key={book.id} className="overflow-hidden rounded-2xl border border-[#dbe8e4] bg-white shadow-sm">
+                          <div className="flex h-28 items-center justify-center bg-[#dff3fa]">
+                            <BookOpen className="h-10 w-10 text-[#0891b2]" />
+                          </div>
+                          <div className="p-4">
+                            <span className="rounded bg-[#0891b2] px-2 py-0.5 text-[11px] font-semibold text-white">Book</span>
+                            <h4 className="mt-2 text-base font-bold text-[#1f2937]">{book.title}</h4>
+                            <p className="mt-2 text-lg font-bold text-[#2c5a48]">{book.amount}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </section>
+              </div>
+            )}
 
            </article>
 

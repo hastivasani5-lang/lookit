@@ -49,7 +49,7 @@ export default function StudentsPage() {
     if (typeof window === "undefined") return;
     const shown = localStorage.getItem(`student_auto_modal_shown_${userId}`);
     if (!shown) {
-      const timer = setTimeout(() => setShowModal(true), 1500);
+      const timer = setTimeout(() => setShowModal(true), 2000); // 2 seconds after login
       return () => clearTimeout(timer);
     }
   }, [userId]);

@@ -125,3 +125,24 @@ html::-webkit-scrollbar {
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Primary button - use class "btn-primary" anywhere */
+.btn-primary {
+  background-image: linear-gradient(to right, #059669, #0d9488);
+  color: #ffffff;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+

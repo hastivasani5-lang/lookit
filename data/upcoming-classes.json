@@ -42,5 +42,21 @@
       "description": "A UI/UX designer creates intuitive, visually appealing digital products by balancing user needs with aesthetic functionality",
       "createdAt": "2026-04-22T05:47:08.737Z"
     }
+  ],
+  "25fb7f81-cbf6-4e88-84b9-13ad35b8e2d7": [
+    {
+      "id": "class-1776839119282-zptw5s",
+      "professionalId": "25fb7f81-cbf6-4e88-84b9-13ad35b8e2d7",
+      "professionalName": "krish",
+      "professionalImage": "/uploads/25fb7f81-cbf6-4e88-84b9-13ad35b8e2d7-1776254333319.png",
+      "title": "BACKEND API",
+      "date": "2026-04-28",
+      "time": "02:57",
+      "duration": "2hour",
+      "platform": "Other",
+      "link": "https:\\\\jenil.com",
+      "description": "Backend development is the server-side engine of applications, managing databases, server logic, and APIs to process user requests.",
+      "createdAt": "2026-04-22T06:25:19.282Z"
+    }
   ]
 }

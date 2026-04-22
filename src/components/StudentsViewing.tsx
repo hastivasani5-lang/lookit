@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Star, ChevronLeft, ChevronRight, BookOpen, Users } from "lucide-react";
+import { Star, ChevronLeft, ChevronRight, BookOpen, Users, Heart } from "lucide-react";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 
 const courses = [
   {
@@ -216,6 +217,9 @@ const getBadgeStyle = (badge: string) => {
 };
 
 export default function StudentsViewing() {
+  const { data: session } = useSession();
+  const isStudent = session?.user?.role === "student";
+  const [wishlistIds, setWishlistIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 8;
   const totalPages = Math.ceil(courses.length / pageSize);
@@ -229,6 +233,22 @@ export default function StudentsViewing() {
   );
 
   const router = useRouter();
+
+  const handleToggleWishlist = async (courseTitle: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isStudent) return;
+    const id = `course-${encodeURIComponent(courseTitle)}`;
+    try {
+      const res = await fetch("/api/student/wishlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, title: courseTitle, price: "", imageUrl: "", contentType: "book", professionalName: "", slug: "" }),
+      });
+      if (!res.ok) return;
+      const data = (await res.json()) as { wishlisted: boolean };
+      setWishlistIds((prev) => data.wishlisted ? [id, ...prev] : prev.filter((w) => w !== id));
+    } catch { /* ignore */ }
+  };
 
   return (
     <section className="bg-gradient-to-b from-[#f7f9fb] to-white px-6 md:px-16 py-20">
@@ -283,12 +303,23 @@ export default function StudentsViewing() {
                 {/* BADGE WITH GRADIENT */}
                 {course.badge && (
                   <span
-                    className={`absolute top-3 left-3 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-md ${getBadgeStyle(
-                      course.badge
-                    )}`}
+                    className={`absolute top-3 left-3 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-md ${getBadgeStyle(course.badge)}`}
                   >
                     {course.badge}
                   </span>
+                )}
+
+                {/* WISHLIST BUTTON */}
+                {isStudent && (
+                  <button
+                    className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow transition hover:scale-110"
+                    onClick={(e) => handleToggleWishlist(course.title, e)}
+                    aria-label="Wishlist"
+                  >
+                    <Heart
+                      className={`h-4 w-4 transition ${wishlistIds.includes(`course-${encodeURIComponent(course.title)}`) ? "fill-red-500 text-red-500" : "text-gray-400"}`}
+                    />
+                  </button>
                 )}
 
                 {/* OVERLAY ON HOVER */}

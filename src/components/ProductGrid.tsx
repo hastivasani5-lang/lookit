@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { Heart } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useSession } from "next-auth/react";
 
 import { addCartItem, getCartItems } from "@/lib/cart-store";
 import type { ShopCatalogItem } from "@/lib/shop-catalog";
@@ -20,7 +22,8 @@ function placeholderImageFor(contentType: ContentTab) {
 }
 
 const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps) => {
-  // Always show both books and videos by default (on first render)
+  const { data: session } = useSession();
+  const isStudent = session?.user?.role === "student";
   const [activeTab, setActiveTab] = useState<ContentTab | "all">(() => "all");
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -28,6 +31,7 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps
   const [loadError, setLoadError] = useState("");
   const [catalogItems, setCatalogItems] = useState<ShopCatalogItem[]>([]);
   const [cartItemIds, setCartItemIds] = useState<string[]>([]);
+  const [wishlistIds, setWishlistIds] = useState<string[]>([]);
   const lastSentBoundsRef = useRef<{ min: number; max: number } | null>(null);
 
   useEffect(() => {
@@ -81,6 +85,19 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps
   }, []);
 
   useEffect(() => {
+    if (!isStudent) return;
+    const load = async () => {
+      try {
+        const res = await fetch("/api/student/wishlist", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = (await res.json()) as { items: Array<{ id: string }> };
+        setWishlistIds(data.items.map((i) => i.id));
+      } catch { /* ignore */ }
+    };
+    void load();
+  }, [isStudent]);
+
+  useEffect(() => {
     if (!onPriceBoundsChange) {
       return;
     }
@@ -124,6 +141,30 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps
   const totalPages = Math.max(1, Math.ceil(filteredItems.length / itemsPerPage));
   const currentPage = Math.min(page, totalPages);
   const paginatedItems = filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  const handleToggleWishlist = async (item: ShopCatalogItem) => {
+    if (!isStudent) return;
+    try {
+      const res = await fetch("/api/student/wishlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: item.id,
+          title: item.title,
+          price: item.price,
+          imageUrl: item.imageUrl ?? "",
+          contentType: item.contentType,
+          professionalName: item.professionalName,
+          slug: item.slug,
+        }),
+      });
+      if (!res.ok) return;
+      const data = (await res.json()) as { wishlisted: boolean };
+      setWishlistIds((prev) =>
+        data.wishlisted ? [item.id, ...prev] : prev.filter((id) => id !== item.id),
+      );
+    } catch { /* ignore */ }
+  };
 
   const handleAddToCart = (item: ShopCatalogItem) => {
     addCartItem({
@@ -202,6 +243,18 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps
                     className="h-40 w-full object-contain"
                     loading="lazy"
                   />
+                  {isStudent && (
+                    <button
+                      type="button"
+                      onClick={() => handleToggleWishlist(item)}
+                      className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow transition hover:scale-110"
+                      aria-label="Wishlist"
+                    >
+                      <Heart
+                        className={`h-4 w-4 transition ${wishlistIds.includes(item.id) ? "fill-red-500 text-red-500" : "text-gray-400"}`}
+                      />
+                    </button>
+                  )}
                 </div>
 
                 <div className="mt-4 min-h-[125px]">

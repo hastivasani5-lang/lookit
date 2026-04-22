@@ -266,6 +266,8 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
   const [editLocation, setEditLocation] = useState(user.location ?? "USA");
   const [editWebsite, setEditWebsite] = useState(getWebsiteFromEmail(user.email));
   const [profileAnswers, setProfileAnswers] = useState<any>(null);
+  const [wishlistItems, setWishlistItems] = useState<Array<{ id: string; title: string; price: string; imageUrl: string; contentType: string; professionalName: string; slug: string }>>([]);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
   const [followingList, setFollowingList] = useState<Array<{ professionalId: string; professionalName: string | null; professionalImage: string | null; followedAt: string }>>([]);
   const [followingLoading, setFollowingLoading] = useState(false);
 
@@ -306,6 +308,18 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
       // Ignore invalid saved data.
     }
   }, [profileStorageKey]);
+
+  useEffect(() => {
+    if (activeTab !== "wishlist") return;
+    setWishlistLoading(true);
+    fetch("/api/student/wishlist", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((data: { items?: Array<{ id: string; title: string; price: string; imageUrl: string; contentType: string; professionalName: string; slug: string }> }) => {
+        setWishlistItems(Array.isArray(data.items) ? data.items : []);
+      })
+      .catch(() => setWishlistItems([]))
+      .finally(() => setWishlistLoading(false));
+  }, [activeTab]);
 
   useEffect(() => {
     if (activeTab !== "following") return;
@@ -506,10 +520,36 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
             </div>
             {activeTab === "wishlist" && (
               <div className="my-6">
-                <h3 className="text-xl font-bold mb-2 text-[#1f2937]">Wishlist</h3>
-                <div className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-4 w-full max-w-md">
-                  <p className="text-[#4b5563]">Your wishlist is empty.</p>
-                </div>
+                <h3 className="text-xl font-bold mb-4 text-[#1f2937]">Wishlist</h3>
+                {wishlistLoading ? (
+                  <p className="text-sm text-gray-400">Loading...</p>
+                ) : wishlistItems.length === 0 ? (
+                  <div className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-4">
+                    <p className="text-[#4b5563]">Your wishlist is empty. Heart items in the shop or categories to save them here.</p>
+                  </div>
+                ) : (
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {wishlistItems.map((item) => (
+                      <div key={item.id} className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-4 flex flex-col gap-2">
+                        {item.imageUrl && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={item.imageUrl} alt={item.title} className="h-28 w-full object-cover rounded-lg" />
+                        )}
+                        <p className="font-semibold text-[#1f2937] line-clamp-2">{item.title}</p>
+                        {item.professionalName && <p className="text-xs text-gray-500">By {item.professionalName}</p>}
+                        <div className="flex items-center justify-between mt-auto">
+                          <span className="text-sm font-bold text-[#1ec28e]">{item.price || "—"}</span>
+                          <span className="text-xs rounded-full bg-emerald-50 px-2 py-0.5 text-emerald-700 capitalize">{item.contentType}</span>
+                        </div>
+                        {item.slug && (
+                          <Link href={`/shop/details/${item.slug}`} className="mt-1 text-center text-xs font-semibold text-[#1ec28e] hover:underline">
+                            View in Shop →
+                          </Link>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 

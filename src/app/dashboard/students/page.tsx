@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 // Lazy-load everything below the fold
 const Features = dynamic(() => import("@/components/Features"));
@@ -19,20 +20,13 @@ const StatsPixelPerfect = dynamic(() => import("@/components/StatsPixelPerfect")
 const Footer = dynamic(() => import("@/components/Footer"));
 const AutoPopupModal = dynamic(() => import("@/components/AutoPopupModal"));
 
-function getCurrentUserId() {
-  if (typeof window !== "undefined") {
-    return window.localStorage.getItem("current_student_id") || "guest";
-  }
-  return "guest";
-}
-
 export default function StudentsPage() {
+  const { data: session, status } = useSession();
   const [showModal, setShowModal] = useState(false);
   const [belowFoldReady, setBelowFoldReady] = useState(false);
-  const userId = getCurrentUserId();
 
+  // Load below-fold content after first paint
   useEffect(() => {
-    // Load below-fold content after first paint
     let id: number | ReturnType<typeof setTimeout>;
     if (typeof requestIdleCallback !== "undefined") {
       id = requestIdleCallback(() => setBelowFoldReady(true));
@@ -45,21 +39,42 @@ export default function StudentsPage() {
     };
   }, []);
 
+  // Show modal 3s after login if student hasn't filled profile yet
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const shown = localStorage.getItem(`student_auto_modal_shown_${userId}`);
-    if (!shown) {
-      const timer = setTimeout(() => setShowModal(true), 2000); // 2 seconds after login
-      return () => clearTimeout(timer);
-    }
-  }, [userId]);
+    if (status !== "authenticated") return;
+    if (session?.user?.role !== "student") return;
+
+    const userId = session.user.id;
+    if (!userId) return;
+
+    // Check if already dismissed for this user
+    const dismissed = localStorage.getItem(`student_profile_modal_done_${userId}`);
+    if (dismissed) return;
+
+    // Check if profile already has location (country) filled — means already submitted
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch("/api/student/profile/check");
+        if (!res.ok) { setShowModal(true); return; }
+        const data = (await res.json()) as { filled: boolean };
+        if (!data.filled) setShowModal(true);
+      } catch {
+        setShowModal(true);
+      }
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [status, session]);
 
   const handleCloseModal = () => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(`student_auto_modal_shown_${userId}`, "1");
+    const userId = session?.user?.id;
+    if (userId) {
+      localStorage.setItem(`student_profile_modal_done_${userId}`, "1");
     }
     setShowModal(false);
   };
+
+  const userId = session?.user?.id ?? "guest";
 
   return (
     <>

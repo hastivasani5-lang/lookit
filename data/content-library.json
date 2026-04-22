@@ -129,6 +129,39 @@
       "categories": [
         "Development"
       ]
+    },
+    "25fb7f81-cbf6-4e88-84b9-13ad35b8e2d7": {
+      "books": [
+        {
+          "name": "UI/UX",
+          "category": "Art & Design",
+          "mrp": "39.98",
+          "imageUrl": "/uploads/books/25fb7f81-cbf6-4e88-84b9-13ad35b8e2d7-1776856193273-2djkrl.png",
+          "url": "/uploads/book-files/25fb7f81-cbf6-4e88-84b9-13ad35b8e2d7-1776856193274-z5mqp6.pdf",
+          "fileUrl": "/uploads/book-files/25fb7f81-cbf6-4e88-84b9-13ad35b8e2d7-1776856193274-z5mqp6.pdf",
+          "source": "file",
+          "fileName": "2.React Js.pdf",
+          "sizeLabel": "1.4 MB",
+          "id": "book-1776856193277-uymrby",
+          "createdAt": "2026-04-22T11:09:53.277Z"
+        }
+      ],
+      "videos": [
+        {
+          "name": "YouTube Video",
+          "mrp": "0",
+          "url": "https://www.youtube.com/embed/I3jCsVgf564",
+          "source": "youtube",
+          "sizeLabel": "YouTube Link",
+          "level": "Advanced",
+          "isPopular": false,
+          "id": "video-1776856255333-lkazwa",
+          "createdAt": "2026-04-22T11:10:55.333Z"
+        }
+      ],
+      "categories": [
+        "Art & Design"
+      ]
     }
   },
   "students": {

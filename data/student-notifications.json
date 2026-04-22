@@ -1,10 +1,26 @@
 [
   {
+    "id": "0197040a-7219-4380-983b-c689affaaf35",
+    "studentId": "14abcdae-2b38-48bd-acf8-f0abc779977d",
+    "type": "new_content",
+    "message": "New video: \"YouTube Video\" — ₹0",
+    "read": false,
+    "createdAt": "2026-04-22T11:10:55.337Z"
+  },
+  {
+    "id": "40a74f59-a1fd-46b8-9039-ccbde994179d",
+    "studentId": "14abcdae-2b38-48bd-acf8-f0abc779977d",
+    "type": "new_content",
+    "message": "New book: \"UI/UX\" — ₹39.98",
+    "read": false,
+    "createdAt": "2026-04-22T11:09:53.281Z"
+  },
+  {
     "id": "a632fdec-26d5-4842-8192-690fe564636a",
     "studentId": "42d3d5d9-e80d-4f0e-9db0-aa949fcfb800",
     "type": "new_content",
     "message": "Test: New book added",
-    "read": false,
+    "read": true,
     "createdAt": "2026-04-22T10:21:51.888Z"
   }
 ]

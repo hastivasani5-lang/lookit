@@ -11,6 +11,17 @@ import {
   deleteProfessionalVideo,
   getProfessionalLibrary,
 } from "@/lib/content-library-store";
+import { getFollowerIds } from "@/lib/follows-store";
+import { appendStudentNotification } from "@/lib/student-notifications-store";
+
+async function notifyFollowers(professionalId: string, type: "new_content" | "announcement", message: string) {
+  try {
+    const ids = await getFollowerIds(professionalId);
+    await Promise.all(ids.map((sid) => appendStudentNotification(sid, type, message)));
+  } catch (err) {
+    console.error("[notifyFollowers] fan-out error:", err);
+  }
+}
 
 export const runtime = "nodejs";
 
@@ -158,6 +169,7 @@ export async function POST(request: Request) {
       sizeLabel,
     });
 
+    await notifyFollowers(professionalId, "new_content", `New book: "${name}" — ₹${mrp}`);
     return NextResponse.json({ book });
   }
 
@@ -188,6 +200,7 @@ export async function POST(request: Request) {
       sizeLabel: payload.sizeLabel?.trim() || "-",
     });
 
+    await notifyFollowers(professionalId, "new_content", `New book: "${payload.name.trim()}" — ₹${payload.mrp.trim()}`);
     return NextResponse.json({ book });
   }
 
@@ -207,6 +220,7 @@ export async function POST(request: Request) {
       level: payload.level?.trim() || "",
     });
 
+    await notifyFollowers(professionalId, "new_content", `New video: "${payload.name.trim()}" — ₹${payload.mrp.trim()}`);
     return NextResponse.json({ video });
   }
 

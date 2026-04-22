@@ -9,6 +9,8 @@ import {
   deleteClass,
   type UpcomingClass,
 } from "@/lib/upcoming-classes-store";
+import { getFollowerIds } from "@/lib/follows-store";
+import { appendStudentNotification } from "@/lib/student-notifications-store";
 
 export const runtime = "nodejs";
 
@@ -62,6 +64,16 @@ export async function POST(request: Request) {
   };
 
   const saved = await saveClass(user.id, cls);
+
+  try {
+    const ids = await getFollowerIds(user.id);
+    await Promise.all(
+      ids.map((sid) =>
+        appendStudentNotification(sid, "announcement", `${user.name} scheduled: "${cls.title}" on ${cls.date} at ${cls.time}`),
+      ),
+    );
+  } catch { /* fan-out must never break the main response */ }
+
   return NextResponse.json({ class: saved });
 }
 

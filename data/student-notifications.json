@@ -1,0 +1,10 @@
+[
+  {
+    "id": "a632fdec-26d5-4842-8192-690fe564636a",
+    "studentId": "42d3d5d9-e80d-4f0e-9db0-aa949fcfb800",
+    "type": "new_content",
+    "message": "Test: New book added",
+    "read": false,
+    "createdAt": "2026-04-22T10:21:51.888Z"
+  }
+]

@@ -105,6 +105,7 @@ export async function POST(request: Request) {
     const sizeLabel = typeof sizeLabelValue === "string" ? sizeLabelValue.trim() : "-";
     const imageLink = typeof imageLinkValue === "string" ? imageLinkValue.trim() : "";
     const imageFile = formData.get("imageFile");
+    const bookFile = formData.get("bookFile");
 
     if (!name || !category || !mrp) {
       return NextResponse.json({ message: "Missing book details." }, { status: 400 });
@@ -131,12 +132,27 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Book image is required." }, { status: 400 });
     }
 
+    // Save the actual PDF/book file
+    let savedFileUrl = url;
+    if (bookFile instanceof File && bookFile.size > 0) {
+      const pdfUploadDir = path.join(process.cwd(), "public", "uploads", "book-files");
+      await fs.mkdir(pdfUploadDir, { recursive: true });
+
+      const ext = bookFile.name.includes(".") ? `.${bookFile.name.split(".").pop()}` : ".pdf";
+      const pdfFileName = `${professionalId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`;
+      const pdfPath = path.join(pdfUploadDir, pdfFileName);
+      const pdfBuffer = Buffer.from(await bookFile.arrayBuffer());
+      await fs.writeFile(pdfPath, pdfBuffer);
+      savedFileUrl = `/uploads/book-files/${pdfFileName}`;
+    }
+
     const book = await addProfessionalBook(professionalId, {
       name,
       category,
       mrp,
       imageUrl,
-      url,
+      url: savedFileUrl,
+      fileUrl: savedFileUrl,
       source,
       fileName,
       sizeLabel,

@@ -508,6 +508,63 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   }, [isMounted, user.role]);
 
   const handleBookSave = async () => {
+    // ── EDIT MODE ──────────────────────────────────────────────────────────
+    if (editingBookId) {
+      const trimmedName = bookNameInput.trim();
+      const trimmedMrp = bookTypeInput === "free" ? "0" : bookMrpInput.trim();
+      const trimmedCategory = bookCategoryInput.trim();
+      const trimmedUrl = bookLinkInput.trim();
+      const parsedMrp = Number(trimmedMrp);
+
+      if (!trimmedName || !trimmedCategory) {
+        setBookFormError("Please enter book name and category before saving.");
+        return;
+      }
+      if (bookTypeInput === "paid" && (!trimmedMrp || !Number.isFinite(parsedMrp) || parsedMrp <= 0)) {
+        setBookFormError("Please enter a valid price amount.");
+        return;
+      }
+
+      setBookFormError("");
+
+      // Optimistically update local state
+      setAddedBooks((prev) =>
+        prev.map((book) =>
+          book.id === editingBookId
+            ? { ...book, name: trimmedName, mrp: parsedMrp.toFixed(2), category: trimmedCategory, url: trimmedUrl || book.url }
+            : book
+        )
+      );
+
+      try {
+        await fetch(`/api/profile/library/books/${editingBookId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: trimmedName,
+            category: trimmedCategory,
+            mrp: parsedMrp.toFixed(2),
+            url: trimmedUrl || undefined,
+          }),
+        });
+      } catch {
+        // local state already updated; silently ignore network errors
+      }
+
+      // Reset form
+      setBookNameInput("");
+      setBookMrpInput("");
+      setBookCategoryInput("");
+      setBookImageFile(null);
+      setPendingBookFiles([]);
+      setBookImageLinkInput("");
+      setBookLinkInput("");
+      setEditingBookId(null);
+      setIsBookFormOpen(false);
+      return;
+    }
+
+    // ── ADD MODE (original logic) ──────────────────────────────────────────
     const files = pendingBookFiles;
     if (files.length === 0) {
       if (bookLinkInput.trim()) {
@@ -519,12 +576,16 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     }
 
     const trimmedBookName = bookNameInput.trim();
-    const trimmedBookMrp = bookMrpInput.trim();
+    const trimmedBookMrp = bookTypeInput === "free" ? "0" : bookMrpInput.trim();
     const trimmedBookCategory = bookCategoryInput.trim();
     const parsedMrp = Number(trimmedBookMrp);
 
-    if (!trimmedBookName || !trimmedBookMrp || !trimmedBookCategory) {
-      setBookFormError("Please enter book name, MRP, and category/type before uploading.");
+    if (!trimmedBookName || !trimmedBookCategory) {
+      setBookFormError("Please enter book name and category/type before uploading.");
+      return;
+    }
+    if (bookTypeInput === "paid" && !trimmedBookMrp) {
+      setBookFormError("Please enter a price for paid content.");
       return;
     }
 
@@ -544,8 +605,8 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       return;
     }
 
-    if (!Number.isFinite(parsedMrp) || parsedMrp <= 0) {
-      setBookFormError("Please enter a valid MRP amount.");
+    if (bookTypeInput === "paid" && (!Number.isFinite(parsedMrp) || parsedMrp <= 0)) {
+      setBookFormError("Please enter a valid price amount.");
       return;
     }
 
@@ -578,6 +639,8 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
           formData.append("fileName", file.name);
           formData.append("sizeLabel", formatFileSize(file.size));
           formData.append("imageLink", trimmedBookImageLink);
+          // Attach the actual PDF/book file directly
+          formData.append("bookFile", file);
 
           if (bookImageFile) {
             formData.append("imageFile", bookImageFile);
@@ -617,19 +680,19 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
 
   const handleAmazonBookAdd = async () => {
     const trimmedBookName = bookNameInput.trim();
-    const trimmedBookMrp = bookMrpInput.trim();
+    const trimmedBookMrp = bookTypeInput === "free" ? "0" : bookMrpInput.trim();
     const trimmedBookCategory = bookCategoryInput.trim();
     const trimmedBookImageLink = bookImageLinkInput.trim();
     const trimmedBookLink = bookLinkInput.trim();
     const parsedMrp = Number(trimmedBookMrp);
 
-    if (!trimmedBookName || !trimmedBookMrp || !trimmedBookCategory || !trimmedBookLink) {
-      setBookFormError("Please enter book name, MRP, category/type, and Amazon link.");
+    if (!trimmedBookName || !trimmedBookCategory || !trimmedBookLink) {
+      setBookFormError("Please enter book name, category/type, and Amazon link.");
       return;
     }
 
-    if (!Number.isFinite(parsedMrp) || parsedMrp <= 0) {
-      setBookFormError("Please enter a valid MRP amount.");
+    if (bookTypeInput === "paid" && (!trimmedBookMrp || !Number.isFinite(parsedMrp) || parsedMrp <= 0)) {
+      setBookFormError("Please enter a valid price amount.");
       return;
     }
 
@@ -705,6 +768,58 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   };
 
   const handleVideoSave = async () => {
+    // ── EDIT MODE ──────────────────────────────────────────────────────────
+    if (editingVideoId) {
+      const trimmedName = bookNameInput.trim();
+      const trimmedMrp = videoTypeInput === "free" ? "0" : videoMrpInput.trim();
+      const trimmedUrl = youtubeLinkInput.trim();
+      const parsedMrp = Number(trimmedMrp);
+
+      if (!trimmedName) {
+        setYoutubeLinkError("Please enter a video title before saving.");
+        return;
+      }
+      if (videoTypeInput === "paid" && (!trimmedMrp || !Number.isFinite(parsedMrp) || parsedMrp <= 0)) {
+        setYoutubeLinkError("Please enter a valid price amount.");
+        return;
+      }
+
+      setYoutubeLinkError("");
+
+      // Optimistically update local state
+      setAddedVideos((prev) =>
+        prev.map((video) =>
+          video.id === editingVideoId
+            ? { ...video, name: trimmedName, mrp: parsedMrp.toFixed(2), url: trimmedUrl || video.url }
+            : video
+        )
+      );
+
+      try {
+        await fetch(`/api/profile/library/videos/${editingVideoId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: trimmedName,
+            mrp: parsedMrp.toFixed(2),
+            url: trimmedUrl || undefined,
+          }),
+        });
+      } catch {
+        // local state already updated; silently ignore network errors
+      }
+
+      // Reset form
+      setBookNameInput("");
+      setVideoMrpInput("");
+      setYoutubeLinkInput("");
+      setPendingVideoFiles([]);
+      setEditingVideoId(null);
+      setIsVideoFormOpen(false);
+      return;
+    }
+
+    // ── ADD MODE (original logic) ──────────────────────────────────────────
     const files = pendingVideoFiles;
     if (files.length === 0 && !youtubeLinkInput.trim()) {
       setYoutubeLinkError("Please select video files or provide a YouTube link before saving.");
@@ -720,9 +835,9 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       return;
     }
 
-    const trimmedVideoMrp = videoMrpInput.trim();
-    if (!trimmedVideoMrp) {
-      setYoutubeLinkError("Please enter a video MRP.");
+    const trimmedVideoMrp = videoTypeInput === "free" ? "0" : videoMrpInput.trim();
+    if (videoTypeInput === "paid" && !trimmedVideoMrp) {
+      setYoutubeLinkError("Please enter a price for paid content.");
       return;
     }
 
@@ -779,14 +894,14 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
 
   const handleYouTubeAdd = async () => {
     const trimmedLink = youtubeLinkInput.trim();
-    const trimmedMrp = videoMrpInput.trim();
+    const trimmedMrp = videoTypeInput === "free" ? "0" : videoMrpInput.trim();
     if (!trimmedLink) {
       setYoutubeLinkError("Please enter a YouTube link.");
       return;
     }
 
-    if (!trimmedMrp) {
-      setYoutubeLinkError("Please enter a video MRP.");
+    if (videoTypeInput === "paid" && !trimmedMrp) {
+      setYoutubeLinkError("Please enter a price for paid content.");
       return;
     }
 
@@ -1315,6 +1430,8 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                 videoCoursePackageInput={videoCoursePackageInput} setVideoCoursePackageInput={setVideoCoursePackageInput}
                 likedBookIds={likedBookIds} likedVideoIds={likedVideoIds}
                 userName={profileName}
+                editingBookId={editingBookId}
+                editingVideoId={editingVideoId}
                 handleBookSave={handleBookSave} handleVideoSave={handleVideoSave}
                 handleEditBook={handleEditBook} handleEditVideo={handleEditVideo}
                 handleDeleteBookWithConfirm={handleDeleteBookWithConfirm}

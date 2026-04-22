@@ -95,6 +95,7 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
   const [savedTwitter, setSavedTwitter] = useState("");
   const [savedPinterest, setSavedPinterest] = useState("");
   const [savedAboutMe, setSavedAboutMe] = useState("");
+  const [mounted, setMounted] = useState(false);
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [reviewsLoading, setReviewsLoading] = useState(true);
   const [reviewName, setReviewName] = useState("");
@@ -108,6 +109,11 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const [followCount, setFollowCount] = useState(0);
+
+  // Mark component as mounted to avoid hydration mismatches
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Load initial follow state
   useEffect(() => {
@@ -726,17 +732,23 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
             {/* Left: Average rating circle */}
             <div className="flex flex-col items-center justify-center text-center">
               <div className="relative">
-                <div className="text-5xl font-bold text-gray-900">{averageRating}</div>
-                <div className="mt-2">{renderStars(parseFloat(averageRating))}</div>
-                <p className="mt-2 text-sm text-gray-500">Based on {reviews.length} reviews</p>
+                <div className="text-5xl font-bold text-gray-900" suppressHydrationWarning>
+                  {mounted ? averageRating : "0.0"}
+                </div>
+                <div className="mt-2" suppressHydrationWarning>
+                  {mounted ? renderStars(parseFloat(averageRating)) : renderStars(0)}
+                </div>
+                <p className="mt-2 text-sm text-gray-500" suppressHydrationWarning>
+                  Based on {mounted ? reviews.length : 0} reviews
+                </p>
               </div>
             </div>
 
             {/* Right: Rating bars */}
             <div className="space-y-3">
               {[5, 4, 3, 2, 1].map((star) => {
-                const count = ratingCounts[star as keyof typeof ratingCounts];
-                const percentage = totalReviewsCount > 0 ? (count / totalReviewsCount) * 100 : 0;
+                const count = mounted ? ratingCounts[star as keyof typeof ratingCounts] : 0;
+                const percentage = mounted && totalReviewsCount > 0 ? (count / totalReviewsCount) * 100 : 0;
                 return (
                   <div key={star} className="flex items-center gap-3">
                     <div className="flex w-16 items-center gap-1">

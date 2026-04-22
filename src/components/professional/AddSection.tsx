@@ -62,6 +62,8 @@ type AddSectionProps = {
   likedBookIds: Set<string>;
   likedVideoIds: Set<string>;
   userName: string;
+  editingBookId: string | null;
+  editingVideoId: string | null;
   handleBookSave: () => void;
   handleVideoSave: () => void;
   handleEditBook: (book: AddedBook) => void;
@@ -103,6 +105,8 @@ export default function AddSection({
   videoCoursePackageInput, setVideoCoursePackageInput,
   likedBookIds, likedVideoIds,
   userName,
+  editingBookId,
+  editingVideoId,
   handleBookSave, handleVideoSave,
   handleEditBook, handleEditVideo,
   handleDeleteBookWithConfirm, handleDeleteVideoWithConfirm,
@@ -156,6 +160,22 @@ export default function AddSection({
                   {isBookFormOpen ? (
                     <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/35 p-4 backdrop-blur-sm">
                       <div className="w-full max-w-xl rounded-[12px] bg-white shadow-2xl flex flex-col max-h-[90vh]">
+                        {/* Modal Header */}
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+                          <h3 className="text-base font-semibold text-slate-900">
+                            {editingBookId ? "Edit Book" : "Add Book"}
+                          </h3>
+                          <button
+                            type="button"
+                            onClick={() => setIsBookFormOpen(false)}
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
+                            title="Close"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                        </div>
                         <div className="overflow-y-auto flex-1 p-6 space-y-5">
                           {/* Course Title */}
                           <div>
@@ -180,10 +200,18 @@ export default function AddSection({
                                 style={{backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem'}}
                               >
                                 <option value="">Select</option>
-                                <option value="Technology">Technology</option>
+                                <option value="Art & Design">Art &amp; Design</option>
+                                <option value="Development">Development</option>
+                                <option value="Lifestyle">Lifestyle</option>
+                                <option value="Personal Development">Personal Development</option>
                                 <option value="Business">Business</option>
-                                <option value="Design">Design</option>
-                                <option value="Education">Education</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Photography">Photography</option>
+                                <option value="Data Science">Data Science</option>
+                                <option value="Health & Fitness">Health &amp; Fitness</option>
+                                <option value="Music">Music</option>
+                                <option value="Teaching & Academics">Teaching &amp; Academics</option>
                               </select>
                             </div>
                             <div>
@@ -324,6 +352,7 @@ export default function AddSection({
                                 <option value="Advanced">Advanced</option>
                               </select>
                             </div>
+                            {bookTypeInput === "paid" && (
                             <div>
                               <label className="block text-sm font-medium text-slate-900 mb-2">Price</label>
                               <div className="relative h-10 rounded-lg border border-slate-200 focus-within:border-[#1ec28e]">
@@ -339,6 +368,7 @@ export default function AddSection({
                                 />
                               </div>
                             </div>
+                            )}
                           </div>
 
                           {/* Course Post Package */}
@@ -415,7 +445,7 @@ export default function AddSection({
                         <div className="border-t border-slate-200 bg-white p-6 flex gap-3 justify-between">
                           <button
                             type="button"
-                            onClick={() => setIsBookFormOpen(false)}
+                            onClick={handleBookSave}
                             className="inline-flex h-11 items-center justify-center rounded px-6 text-sm font-medium text-white transition"
                             style={{backgroundColor: '#ef5350'}}
                           >
@@ -539,6 +569,22 @@ export default function AddSection({
                   {isVideoFormOpen ? (
                     <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/35 p-4 backdrop-blur-sm">
                       <div className="w-full max-w-xl rounded-[12px] bg-white shadow-2xl flex flex-col max-h-[90vh]">
+                        {/* Modal Header */}
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+                          <h3 className="text-base font-semibold text-slate-900">
+                            {editingVideoId ? "Edit Video" : "Add Video"}
+                          </h3>
+                          <button
+                            type="button"
+                            onClick={() => setIsVideoFormOpen(false)}
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
+                            title="Close"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                        </div>
                         <div className="overflow-y-auto flex-1 p-6 space-y-5">
                           {/* Course Title */}
                           <div>
@@ -563,10 +609,18 @@ export default function AddSection({
                                 style={{backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem'}}
                               >
                                 <option value="">Select</option>
-                                <option value="Technology">Technology</option>
+                                <option value="Art & Design">Art &amp; Design</option>
+                                <option value="Development">Development</option>
+                                <option value="Lifestyle">Lifestyle</option>
+                                <option value="Personal Development">Personal Development</option>
                                 <option value="Business">Business</option>
-                                <option value="Design">Design</option>
-                                <option value="Education">Education</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Photography">Photography</option>
+                                <option value="Data Science">Data Science</option>
+                                <option value="Health & Fitness">Health &amp; Fitness</option>
+                                <option value="Music">Music</option>
+                                <option value="Teaching & Academics">Teaching &amp; Academics</option>
                               </select>
                             </div>
                             <div>
@@ -684,6 +738,7 @@ export default function AddSection({
                                 <option value="Advanced">Advanced</option>
                               </select>
                             </div>
+                            {videoTypeInput === "paid" && (
                             <div>
                               <label className="block text-sm font-medium text-slate-900 mb-2">Price</label>
                               <div className="relative h-10 rounded-lg border border-slate-200 focus-within:border-[#1ec28e]">
@@ -699,6 +754,7 @@ export default function AddSection({
                                 />
                               </div>
                             </div>
+                            )}
                           </div>
 
                           {/* Course Post Package */}
@@ -775,7 +831,7 @@ export default function AddSection({
                         <div className="border-t border-slate-200 bg-white p-6 flex gap-3 justify-between">
                           <button
                             type="button"
-                            onClick={() => setIsVideoFormOpen(false)}
+                            onClick={handleVideoSave}
                             className="inline-flex h-11 items-center justify-center rounded px-6 text-sm font-medium text-white transition"
                             style={{backgroundColor: '#ef5350'}}
                           >

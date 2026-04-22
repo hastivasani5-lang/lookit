@@ -83,6 +83,7 @@ export async function POST(request: Request) {
     items.map(async (item) => {
       if (item.contentType === "book") {
         await appendStudentBookActivity(session.user.id, {
+          contentId: item.contentId || item.id,
           title: item.title,
           source: item.professionalName,
           amount: item.price,
@@ -93,6 +94,7 @@ export async function POST(request: Request) {
 
       if (item.contentType === "video") {
         await appendStudentVideoActivity(session.user.id, {
+          contentId: item.contentId || item.id,
           title: item.title,
           provider: item.professionalName,
           amount: item.price,

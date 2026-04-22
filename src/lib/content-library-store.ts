@@ -13,6 +13,7 @@ export type StoredBook = {
   mrp: string;
   imageUrl: string;
   url: string;
+  fileUrl?: string;
   source: "file" | "amazon";
   fileName: string;
   sizeLabel: string;
@@ -33,6 +34,7 @@ export type StoredVideo = {
 
 export type StudentBookActivity = {
   id: string;
+  contentId?: string;
   title: string;
   source: string;
   amount: string;
@@ -42,6 +44,7 @@ export type StudentBookActivity = {
 
 export type StudentVideoActivity = {
   id: string;
+  contentId?: string;
   title: string;
   provider: string;
   amount: string;

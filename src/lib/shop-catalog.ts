@@ -15,6 +15,7 @@ export type ShopCatalogItem = {
   amount: number;
   imageUrl: string | null;
   sourceUrl: string;
+  fileUrl: string;
   sourceType: "file" | "amazon" | "youtube";
   category: string;
   sizeLabel: string;
@@ -83,6 +84,7 @@ export async function buildShopCatalog(): Promise<ShopCatalogItem[]> {
         amount: parseAmount(book.mrp),
         imageUrl: book.imageUrl || null,
         sourceUrl: book.url || "",
+        fileUrl: book.fileUrl || "",
         sourceType: book.source,
         category: book.category || "General",
         sizeLabel: book.sizeLabel || "-",
@@ -106,6 +108,7 @@ export async function buildShopCatalog(): Promise<ShopCatalogItem[]> {
         amount: parseAmount(video.mrp),
         imageUrl: null,
         sourceUrl: video.url || "",
+        fileUrl: "",
         sourceType: video.source,
         category: "Video",
         sizeLabel: video.sizeLabel || "-",

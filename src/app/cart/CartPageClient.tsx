@@ -7,7 +7,7 @@ import { useSession } from "next-auth/react";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { getCartItems, removeCartItem, type CartItem } from "@/lib/cart-store";
+import { getCartItems, removeCartItem, clearCartItems, type CartItem } from "@/lib/cart-store";
 
 const RAZORPAY_PAYMENT_LINK = "https://razorpay.me/@jenildineshbhaigadhiya";
 
@@ -57,6 +57,43 @@ export default function CartPageClient() {
       return;
     }
 
+    // Card number: must be exactly 12 digits
+    const rawCard = cardNumber.replace(/\s/g, "");
+    if (!/^\d{12}$/.test(rawCard)) {
+      setPaymentError("Card number must be exactly 12 digits.");
+      return;
+    }
+
+    // Expiry: MM/YY format, YY >= 27, MM = valid future month
+    const expiryParts = expiry.split("/");
+    if (expiryParts.length !== 2) {
+      setPaymentError("Please enter expiry in MM/YY format.");
+      return;
+    }
+    const mm = parseInt(expiryParts[0], 10);
+    const yy = parseInt(expiryParts[1], 10);
+    const now = new Date();
+    const currentMonth = now.getMonth() + 1;
+    const currentYY = now.getFullYear() % 100;
+    if (isNaN(mm) || isNaN(yy) || mm < 1 || mm > 12) {
+      setPaymentError("Please enter a valid expiry month (01–12).");
+      return;
+    }
+    if (yy < 27) {
+      setPaymentError("Expiry year must be 27 or later.");
+      return;
+    }
+    if (yy === currentYY && mm < currentMonth) {
+      setPaymentError("Expiry date cannot be in the past.");
+      return;
+    }
+
+    // CVV: exactly 3 digits
+    if (!/^\d{3}$/.test(cvv)) {
+      setPaymentError("CVV must be exactly 3 digits.");
+      return;
+    }
+
     window.open(RAZORPAY_PAYMENT_LINK, "_blank", "noopener,noreferrer");
 
     setIsProcessingPayment(true);
@@ -83,6 +120,9 @@ export default function CartPageClient() {
 
       setPaymentSuccessMessage(payload.message || "Successful");
       setPaymentSuccess(true);
+      // Clear cart after successful payment
+      clearCartItems();
+      setCartItems([]);
     } catch {
       setPaymentSuccess(false);
       setPaymentError("Unable to process payment.");
@@ -165,6 +205,7 @@ export default function CartPageClient() {
                     </div>
                   ) : (
                   <form onSubmit={handlePayment} className="space-y-4">
+                    {/* Card holder name */}
                     <input
                       type="text"
                       value={cardName}
@@ -172,26 +213,67 @@ export default function CartPageClient() {
                       placeholder="Card holder name"
                       className="w-full rounded-xl border border-gray-200 px-4 py-3 text-base outline-none transition focus:border-emerald-400 bg-white/80"
                     />
+
+                    {/* Card number — exactly 12 digits, formatted as XXXX XXXX XXXX */}
                     <input
                       type="text"
+                      inputMode="numeric"
                       value={cardNumber}
-                      onChange={(event) => setCardNumber(event.target.value)}
-                      placeholder="Card number"
-                      className="w-full rounded-xl border border-gray-200 px-4 py-3 text-base outline-none transition focus:border-emerald-400 bg-white/80"
+                      onChange={(event) => {
+                        const digits = event.target.value.replace(/\D/g, "").slice(0, 12);
+                        const formatted = digits.replace(/(.{4})/g, "$1 ").trim();
+                        setCardNumber(formatted);
+                      }}
+                      placeholder="XXXX XXXX XXXX"
+                      maxLength={14}
+                      className="w-full rounded-xl border border-gray-200 px-4 py-3 text-base outline-none transition focus:border-emerald-400 bg-white/80 tracking-widest"
                     />
+
                     <div className="grid grid-cols-2 gap-4">
+                      {/* Expiry — MM/YY, MM = current month onwards, YY = 27 onwards */}
                       <input
                         type="text"
+                        inputMode="numeric"
                         value={expiry}
-                        onChange={(event) => setExpiry(event.target.value)}
+                        onChange={(event) => {
+                          let val = event.target.value.replace(/\D/g, "").slice(0, 4);
+                          if (val.length >= 3) val = val.slice(0, 2) + "/" + val.slice(2);
+                          setExpiry(val);
+                        }}
+                        onBlur={() => {
+                          // Validate on blur
+                          const parts = expiry.split("/");
+                          if (parts.length !== 2) return;
+                          const mm = parseInt(parts[0], 10);
+                          const yy = parseInt(parts[1], 10);
+                          const now = new Date();
+                          const currentMonth = now.getMonth() + 1;
+                          const currentYY = now.getFullYear() % 100;
+                          if (
+                            isNaN(mm) || isNaN(yy) ||
+                            mm < 1 || mm > 12 ||
+                            yy < 27 ||
+                            (yy === currentYY && mm < currentMonth)
+                          ) {
+                            setExpiry("");
+                          }
+                        }}
                         placeholder="MM/YY"
+                        maxLength={5}
                         className="w-full rounded-xl border border-gray-200 px-4 py-3 text-base outline-none transition focus:border-emerald-400 bg-white/80"
                       />
+
+                      {/* CVV — exactly 3 digits */}
                       <input
                         type="password"
+                        inputMode="numeric"
                         value={cvv}
-                        onChange={(event) => setCvv(event.target.value)}
+                        onChange={(event) => {
+                          const digits = event.target.value.replace(/\D/g, "").slice(0, 3);
+                          setCvv(digits);
+                        }}
                         placeholder="CVV"
+                        maxLength={3}
                         className="w-full rounded-xl border border-gray-200 px-4 py-3 text-base outline-none transition focus:border-emerald-400 bg-white/80"
                       />
                     </div>

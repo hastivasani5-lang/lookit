@@ -1,8 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { getApprovalNotifications } from "@/lib/approval-notifications-store";
-import { getProfessionalNotifications } from "@/lib/notifications-store";
+import { getAllUsers } from "@/lib/user-store";
 
 export const runtime = "nodejs";
 
@@ -13,12 +12,9 @@ export async function GET() {
     return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
   }
 
-  const [approvalNotifs, alerts] = await Promise.all([
-    getApprovalNotifications(),
-    getProfessionalNotifications(),
-  ]);
+  const users = await getAllUsers();
 
-  // Build last 7 days labels + counts
+  // Last 7 days
   const now = new Date();
   const days: { label: string; date: string }[] = [];
 
@@ -27,23 +23,21 @@ export async function GET() {
     d.setDate(d.getDate() - i);
     days.push({
       label: d.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-      date: d.toISOString().slice(0, 10), // YYYY-MM-DD
+      date: d.toISOString().slice(0, 10),
     });
   }
 
-  const approvalValues = days.map(({ date }) =>
-    approvalNotifs.filter(
-      (n) => n.createdAt.slice(0, 10) === date && n.audience === "admin" && n.event === "decision",
-    ).length,
+  const studentValues = days.map(({ date }) =>
+    users.filter((u) => u.role === "student" && u.createdAt.slice(0, 10) === date).length,
   );
 
-  const alertValues = days.map(({ date }) =>
-    alerts.filter((n) => n.createdAt.slice(0, 10) === date).length,
+  const teacherValues = days.map(({ date }) =>
+    users.filter((u) => u.role === "professional" && u.createdAt.slice(0, 10) === date).length,
   );
 
   return NextResponse.json({
     labels: days.map((d) => d.label),
-    approvals: approvalValues,
-    alerts: alertValues,
+    students: studentValues,
+    teachers: teacherValues,
   });
 }

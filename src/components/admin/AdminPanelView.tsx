@@ -483,12 +483,12 @@ export default function AdminPanelView() {
   });
   const [adminTrendData, setAdminTrendData] = useState<{
     labels: string[];
-    approvals: number[];
-    alerts: number[];
+    students: number[];
+    teachers: number[];
   }>({
     labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    approvals: [0, 0, 0, 0, 0, 0, 0],
-    alerts: [0, 0, 0, 0, 0, 0, 0],
+    students: [0, 0, 0, 0, 0, 0, 0],
+    teachers: [0, 0, 0, 0, 0, 0, 0],
   });
   const ITEMS_PER_PAGE = 10;
   const DASHBOARD_ITEMS_PER_PAGE = 10;
@@ -578,8 +578,8 @@ export default function AdminPanelView() {
   );
   const adminTrendLabels = adminTrendData.labels;
   const adminTrendSeries = [
-    { label: "Approvals", color: "#ff5b7a", values: adminTrendData.approvals },
-    { label: "Alerts", color: "#3498db", values: adminTrendData.alerts },
+    { label: "Students", color: "#ff5b7a", values: adminTrendData.students },
+    { label: "Teachers", color: "#3498db", values: adminTrendData.teachers },
   ];
   const adminTrendMax = Math.max(...adminTrendSeries.flatMap((series) => series.values), 1);
   const adminTrendWidth = 470;
@@ -1410,7 +1410,7 @@ export default function AdminPanelView() {
       try {
         const res = await fetch("/api/admin/trend", { cache: "no-store" });
         if (!res.ok) return;
-        const data = (await res.json()) as { labels: string[]; approvals: number[]; alerts: number[] };
+        const data = (await res.json()) as { labels: string[]; students: number[]; teachers: number[] };
         if (isMounted) setAdminTrendData(data);
       } catch {
         // keep default zeros
@@ -1599,8 +1599,8 @@ export default function AdminPanelView() {
                   <div className="h-90 rounded-2xl neumorph-admin-card border border-transparent p-4 bg-white!">
                     <div className="mb-3 flex items-center justify-between">
                       <div>
-                        <h3 className="font-semibold text-slate-800">Admin Activity Trend</h3>
-                        <p className="text-xs text-slate-500">Approvals and alerts across recent months.</p>
+                        <h3 className="font-semibold text-slate-800">User & Teacher Registrations</h3>
+                        <p className="text-xs text-slate-500">New students and teachers joined over the last 7 days.</p>
                       </div>
                       <div className="flex items-center gap-3 text-xs text-slate-500">
                         {adminTrendSeries.map((series) => (

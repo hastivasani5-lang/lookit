@@ -436,5 +436,17 @@
     "approvalStatus": "approved",
     "provider": "credentials",
     "createdAt": "2026-04-21T12:35:49.173Z"
+  },
+  {
+    "id": "948adeee-36b9-4e2c-9129-238cc9fc9497",
+    "name": "srk",
+    "email": "srk@gmail.com",
+    "passwordHash": "$2a$10$C2cDOUHEYmGSHJTXgWm7je76/HIsK39BI7oDlOL9WKrPTzjZP4Wka",
+    "role": "student",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-22T03:57:28.586Z"
   }
 ]

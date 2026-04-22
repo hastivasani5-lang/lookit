@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 
 type DashboardTab =
+  | "profile"
   | "calendar"
   | "wishlist"
   | "following"
@@ -27,6 +28,7 @@ type DashboardTab =
   | "followers"
   | "reviews"
   | "buy-courses";
+
 type CourseCard = {
   id: string;
   title: string;
@@ -404,9 +406,9 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
 
     window.localStorage.setItem(profileStorageKey, JSON.stringify(payload));
     setActionMessage("Profile details saved locally.");
-    setActiveTab("buy-courses");
+    setActiveTab("profile");
   };
-    setActiveTab("buy-courses");
+
   return (
     <section className="h-full w-full p-3 md:p-4">
       <div className="grid h-full gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
@@ -500,6 +502,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
               >
                 Following
               </button> 
+
             </div>
             {activeTab === "wishlist" && (
               <div className="my-6">
@@ -553,7 +556,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                 <CalendarWidget />
               </div>
             )}
-
+ 
 
             {activeTab === "edit" ? (
               <div className="mt-6 grid gap-4 md:grid-cols-2">

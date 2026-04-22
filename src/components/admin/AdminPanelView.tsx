@@ -481,6 +481,15 @@ export default function AdminPanelView() {
     professionalCount: "...",
     transactionCount: "...",
   });
+  const [adminTrendData, setAdminTrendData] = useState<{
+    labels: string[];
+    approvals: number[];
+    alerts: number[];
+  }>({
+    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    approvals: [0, 0, 0, 0, 0, 0, 0],
+    alerts: [0, 0, 0, 0, 0, 0, 0],
+  });
   const ITEMS_PER_PAGE = 10;
   const DASHBOARD_ITEMS_PER_PAGE = 10;
   const approvalTotalPages = Math.max(1, Math.ceil(approvalRequests.length / ITEMS_PER_PAGE));
@@ -567,10 +576,10 @@ export default function AdminPanelView() {
     dashboardTodayPageStart,
     dashboardTodayPageStart + DASHBOARD_ITEMS_PER_PAGE,
   );
-  const adminTrendLabels = ["January", "February", "March", "April", "May", "June", "July"];
+  const adminTrendLabels = adminTrendData.labels;
   const adminTrendSeries = [
-    { label: "Approvals", color: "#ff5b7a", values: [34, 55, 10, 36, 76, 54, 64] },
-    { label: "Alerts", color: "#3498db", values: [12, 85, 82, 15, 43, 66, 12] },
+    { label: "Approvals", color: "#ff5b7a", values: adminTrendData.approvals },
+    { label: "Alerts", color: "#3498db", values: adminTrendData.alerts },
   ];
   const adminTrendMax = Math.max(...adminTrendSeries.flatMap((series) => series.values), 1);
   const adminTrendWidth = 470;
@@ -1396,6 +1405,19 @@ export default function AdminPanelView() {
     };
 
     void fetchStats();
+
+    const fetchTrend = async () => {
+      try {
+        const res = await fetch("/api/admin/trend", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = (await res.json()) as { labels: string[]; approvals: number[]; alerts: number[] };
+        if (isMounted) setAdminTrendData(data);
+      } catch {
+        // keep default zeros
+      }
+    };
+
+    void fetchTrend();
 
     return () => {
       isMounted = false;

@@ -160,6 +160,9 @@ async function readStore(): Promise<LibraryStore> {
   }
 }
 
+// ── Write queue to prevent race conditions ────────────────────────────────────
+let writeQueue: Promise<void> = Promise.resolve();
+
 async function writeStore(store: LibraryStore) {
   if (isPostgresConfigured()) {
     await ensureDbSchema();
@@ -176,8 +179,12 @@ async function writeStore(store: LibraryStore) {
     return;
   }
 
-  await fs.writeFile(LIBRARY_FILE + ".tmp", JSON.stringify(store, null, 2), "utf-8");
-  await fs.rename(LIBRARY_FILE + ".tmp", LIBRARY_FILE);
+  // Serialize all writes through a queue to prevent concurrent overwrites
+  writeQueue = writeQueue.then(async () => {
+    await fs.writeFile(LIBRARY_FILE + ".tmp", JSON.stringify(store, null, 2), "utf-8");
+    await fs.rename(LIBRARY_FILE + ".tmp", LIBRARY_FILE);
+  });
+  await writeQueue;
 }
 
 function getOrCreateProfessionalLibrary(store: LibraryStore, professionalId: string): ProfessionalLibrary {
@@ -355,6 +362,7 @@ function getOrCreateStudentLibrary(store: LibraryStore, studentId: string): Stud
 }
 
 export async function appendStudentBookActivity(studentId: string, input: Omit<StudentBookActivity, "id" | "purchasedAt">) {
+  // Re-read inside queue to get latest state
   const store = await readStore();
   const library = getOrCreateStudentLibrary(store, studentId);
 
@@ -370,6 +378,7 @@ export async function appendStudentBookActivity(studentId: string, input: Omit<S
 }
 
 export async function appendStudentVideoActivity(studentId: string, input: Omit<StudentVideoActivity, "id" | "watchedAt">) {
+  // Re-read inside queue to get latest state
   const store = await readStore();
   const library = getOrCreateStudentLibrary(store, studentId);
 

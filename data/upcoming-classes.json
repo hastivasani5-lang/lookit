@@ -1,0 +1,46 @@
+{
+  "060fe115-29ac-4395-bdfe-c896a31d6b49": [
+    {
+      "id": "class-1776836976689-614w8n",
+      "professionalId": "060fe115-29ac-4395-bdfe-c896a31d6b49",
+      "professionalName": "jenil",
+      "professionalImage": "/uploads/060fe115-29ac-4395-bdfe-c896a31d6b49-1776252880713.png",
+      "title": "NODE JS",
+      "date": "2026-04-24",
+      "time": "01:21",
+      "duration": "2hour",
+      "platform": "Microsoft Teams",
+      "link": "https://microsoft.com",
+      "description": "A UI/UX designer creates intuitive, visually appealing digital products by balancing user needs with aesthetic functionality",
+      "createdAt": "2026-04-22T05:49:36.689Z"
+    },
+    {
+      "id": "class-1776836916102-d7kedv",
+      "professionalId": "060fe115-29ac-4395-bdfe-c896a31d6b49",
+      "professionalName": "jenil",
+      "professionalImage": "/uploads/060fe115-29ac-4395-bdfe-c896a31d6b49-1776252880713.png",
+      "title": "REACT JS",
+      "date": "2026-04-23",
+      "time": "14:21",
+      "duration": "1hour",
+      "platform": "Google Meet",
+      "link": "https://google.com",
+      "description": "A UI/UX designer creates intuitive, visually appealing digital products by balancing user needs with aesthetic functionality",
+      "createdAt": "2026-04-22T05:48:36.102Z"
+    },
+    {
+      "id": "class-1776836828737-atadhw",
+      "professionalId": "060fe115-29ac-4395-bdfe-c896a31d6b49",
+      "professionalName": "jenil",
+      "professionalImage": "/uploads/060fe115-29ac-4395-bdfe-c896a31d6b49-1776252880713.png",
+      "title": "UI/UX DESIGN",
+      "date": "2026-04-22",
+      "time": "00:17",
+      "duration": "10 hour",
+      "platform": "YouTube Live",
+      "link": "https://youthube.com",
+      "description": "A UI/UX designer creates intuitive, visually appealing digital products by balancing user needs with aesthetic functionality",
+      "createdAt": "2026-04-22T05:47:08.737Z"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { Edit2, Eye, Heart, Play, Trash2 } from "lucide-react";
+import { Edit2, Eye, Heart, Play, Trash2, Calendar } from "lucide-react";
 import type { AddContentTab, AddedBook, AddedVideo } from "@/components/professional/DashboardTypes";
 
 type AddSectionProps = {
@@ -112,12 +112,106 @@ export default function AddSection({
   handleDeleteBookWithConfirm, handleDeleteVideoWithConfirm,
   handleToggleLikeBook, handleToggleLikeVideo,
 }: AddSectionProps) {
-  // user object needed for instructor select
   const user = { name: userName };
+
+  // ── Upcoming Class state ──────────────────────────────────────────
+  type UpcomingClass = {
+    id: string;
+    title: string;
+    date: string;
+    time: string;
+    duration: string;
+    platform: string;
+    link: string;
+    description: string;
+  };
+
+  const [isClassFormOpen, setIsClassFormOpen] = useState(false);
+  const [classes, setClasses] = useState<UpcomingClass[]>([]);
+  const [classesLoading, setClassesLoading] = useState(false);
+  const [classTitle, setClassTitle] = useState("");
+  const [classDate, setClassDate] = useState("");
+  const [classTime, setClassTime] = useState("");
+  const [classDuration, setClassDuration] = useState("");
+  const [classPlatform, setClassPlatform] = useState("Zoom");
+  const [classLink, setClassLink] = useState("");
+  const [classDescription, setClassDescription] = useState("");
+  const [classFormError, setClassFormError] = useState("");
+  const [editingClassId, setEditingClassId] = useState<string | null>(null);
+
+  // Load classes from API on mount
+  React.useEffect(() => {
+    setClassesLoading(true);
+    fetch("/api/upcoming-classes?mine=1")
+      .then((r) => r.json())
+      .then((data: { classes?: UpcomingClass[] }) => setClasses(data.classes ?? []))
+      .catch(() => {})
+      .finally(() => setClassesLoading(false));
+  }, []);
+
+  const resetClassForm = () => {
+    setClassTitle(""); setClassDate(""); setClassTime("");
+    setClassDuration(""); setClassPlatform("Zoom");
+    setClassLink(""); setClassDescription("");
+    setClassFormError(""); setEditingClassId(null);
+  };
+
+  const handleClassSave = async () => {
+    if (!classTitle.trim() || !classDate || !classTime) {
+      setClassFormError("Please fill in title, date and time.");
+      return;
+    }
+    setClassFormError("");
+    try {
+      const payload = {
+        id: editingClassId || undefined,
+        title: classTitle, date: classDate, time: classTime,
+        duration: classDuration, platform: classPlatform,
+        link: classLink, description: classDescription,
+      };
+      const res = await fetch("/api/upcoming-classes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = (await res.json()) as { class?: UpcomingClass };
+      if (data.class) {
+        setClasses((prev) =>
+          editingClassId
+            ? prev.map((c) => (c.id === editingClassId ? data.class! : c))
+            : [data.class!, ...prev]
+        );
+      }
+    } catch {
+      setClassFormError("Failed to save. Please try again.");
+      return;
+    }
+    resetClassForm();
+    setIsClassFormOpen(false);
+  };
+
+  const handleEditClass = (cls: UpcomingClass) => {
+    setClassTitle(cls.title); setClassDate(cls.date); setClassTime(cls.time);
+    setClassDuration(cls.duration); setClassPlatform(cls.platform);
+    setClassLink(cls.link); setClassDescription(cls.description);
+    setEditingClassId(cls.id);
+    setIsClassFormOpen(true);
+  };
+
+  const handleDeleteClass = async (id: string) => {
+    setClasses((prev) => prev.filter((c) => c.id !== id));
+    await fetch("/api/upcoming-classes", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    }).catch(() => {});
+  };
+
   return (
             <div className="mt-6 space-y-6">
+              {/* Tab switcher */}
               <div className="rounded-[24px] bg-white p-3 shadow-sm">
-                <div className="flex w-full max-w-sm items-center gap-2 rounded-2xl bg-[#f7faf8] p-1">
+                <div className="flex w-full max-w-lg items-center gap-2 rounded-2xl bg-[#f7faf8] p-1">
                   <button
                     type="button"
                     onClick={() => setAddContentTab("books")}
@@ -135,6 +229,15 @@ export default function AddSection({
                     }`}
                   >
                     Videos
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAddContentTab("classes")}
+                    className={`flex-1 rounded-xl px-4 py-2 text-sm font-medium transition whitespace-nowrap ${
+                      addContentTab === "classes" ? "bg-[#1ec28e] text-white" : "text-slate-600 hover:bg-white"
+                    }`}
+                  >
+                    Upcoming Class
                   </button>
                 </div>
               </div>
@@ -938,6 +1041,230 @@ export default function AddSection({
                             ))}
                           </tbody>
                         </table>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {/* ── UPCOMING CLASS TAB ─────────────────────────────────── */}
+              {addContentTab === "classes" && (
+                <>
+                  {/* Header + Add+ button */}
+                  <div className="rounded-[24px] bg-white p-6 shadow-sm">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-900">Upcoming Classes</h3>
+                        <p className="text-sm text-slate-500">Click Add+ to schedule a new class.</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => { resetClassForm(); setIsClassFormOpen((p) => !p); }}
+                        className="inline-flex h-10 items-center justify-center rounded-xl bg-[#1ec28e] px-4 text-sm font-medium text-white transition hover:bg-[#18ab7d]"
+                      >
+                        {isClassFormOpen ? "Close" : "Add+"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Class Form Modal */}
+                  {isClassFormOpen && (
+                    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/35 p-4 backdrop-blur-sm">
+                      <div className="w-full max-w-xl rounded-[12px] bg-white shadow-2xl flex flex-col max-h-[90vh]">
+                        {/* Modal Header */}
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+                          <h3 className="text-base font-semibold text-slate-900">
+                            {editingClassId ? "Edit Class" : "Add Upcoming Class"}
+                          </h3>
+                          <button
+                            type="button"
+                            onClick={() => { setIsClassFormOpen(false); resetClassForm(); }}
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                        </div>
+
+                        <div className="overflow-y-auto flex-1 p-6 space-y-5">
+                          {/* Class Title */}
+                          <div>
+                            <label className="block text-sm font-medium text-slate-800 mb-2">Class Title</label>
+                            <input
+                              type="text"
+                              value={classTitle}
+                              onChange={(e) => setClassTitle(e.target.value)}
+                              placeholder="e.g. React Basics Live Session"
+                              className="w-full h-10 rounded border border-slate-300 px-3 text-sm text-slate-900 outline-none transition focus:border-[#1ec28e]"
+                            />
+                          </div>
+
+                          {/* Date and Time */}
+                          <div className="grid gap-4 md:grid-cols-2">
+                            <div>
+                              <label className="block text-sm font-medium text-slate-800 mb-2">Date</label>
+                              <input
+                                type="date"
+                                value={classDate}
+                                min={new Date().toISOString().split("T")[0]}
+                                onChange={(e) => setClassDate(e.target.value)}
+                                className="w-full h-10 rounded border border-slate-300 px-3 text-sm text-slate-900 outline-none transition focus:border-[#1ec28e]"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-slate-800 mb-2">Time</label>
+                              <input
+                                type="time"
+                                value={classTime}
+                                onChange={(e) => setClassTime(e.target.value)}
+                                className="w-full h-10 rounded border border-slate-300 px-3 text-sm text-slate-900 outline-none transition focus:border-[#1ec28e]"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Duration and Platform */}
+                          <div className="grid gap-4 md:grid-cols-2">
+                            <div>
+                              <label className="block text-sm font-medium text-slate-800 mb-2">Duration</label>
+                              <input
+                                type="text"
+                                value={classDuration}
+                                onChange={(e) => setClassDuration(e.target.value)}
+                                placeholder="e.g. 1 hour"
+                                className="w-full h-10 rounded border border-slate-300 px-3 text-sm text-slate-900 outline-none transition focus:border-[#1ec28e]"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-slate-800 mb-2">Platform</label>
+                              <select
+                                value={classPlatform}
+                                onChange={(e) => setClassPlatform(e.target.value)}
+                                className="w-full h-10 rounded border border-slate-300 px-3 text-sm text-slate-900 outline-none transition focus:border-[#1ec28e]"
+                              >
+                                <option value="Zoom">Zoom</option>
+                                <option value="Google Meet">Google Meet</option>
+                                <option value="Microsoft Teams">Microsoft Teams</option>
+                                <option value="YouTube Live">YouTube Live</option>
+                                <option value="Other">Other</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          {/* Meeting Link */}
+                          <div>
+                            <label className="block text-sm font-medium text-slate-800 mb-2">Meeting Link</label>
+                            <input
+                              type="url"
+                              value={classLink}
+                              onChange={(e) => setClassLink(e.target.value)}
+                              placeholder="https://zoom.us/j/..."
+                              className="w-full h-10 rounded border border-slate-300 px-3 text-sm text-slate-900 outline-none transition focus:border-[#1ec28e]"
+                            />
+                          </div>
+
+                          {/* Description */}
+                          <div>
+                            <label className="block text-sm font-medium text-slate-800 mb-2">Description</label>
+                            <textarea
+                              value={classDescription}
+                              onChange={(e) => setClassDescription(e.target.value)}
+                              placeholder="What will be covered in this class?"
+                              rows={3}
+                              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                            />
+                          </div>
+
+                          {classFormError && (
+                            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-700">{classFormError}</div>
+                          )}
+                        </div>
+
+                        <div className="border-t border-slate-200 bg-white p-6 flex gap-3 justify-between">
+                          <button
+                            type="button"
+                            onClick={() => { setIsClassFormOpen(false); resetClassForm(); }}
+                            className="inline-flex h-11 items-center justify-center rounded px-6 text-sm font-medium text-slate-600 border border-slate-300 transition hover:bg-slate-50"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleClassSave}
+                            className="inline-flex h-11 items-center justify-center rounded px-6 text-sm font-medium text-white transition"
+                            style={{ backgroundColor: "#1ec28e" }}
+                          >
+                            {editingClassId ? "Update Class" : "Schedule Class"}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Classes List */}
+                  <div className="rounded-[24px] bg-white p-6 shadow-sm">
+                    <div className="mb-6 flex items-center justify-between gap-3">
+                      <h4 className="text-base font-semibold text-slate-900">Scheduled Classes</h4>
+                      <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-semibold text-[#1ec28e]">
+                        {classes.length}
+                      </span>
+                    </div>
+
+                    {classesLoading ? (
+                      <div className="flex items-center justify-center py-10">
+                        <div className="w-8 h-8 border-4 border-[#1ec28e] border-t-transparent rounded-full animate-spin" />
+                      </div>
+                    ) : classes.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center rounded-2xl bg-[#f7faf8] px-4 py-10 text-center">
+                        <Calendar className="h-10 w-10 text-slate-300 mb-3" />
+                        <p className="text-sm text-slate-500">No classes scheduled yet.</p>
+                        <p className="text-xs text-slate-400 mt-1">Click Add+ to schedule your first class.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {classes.map((cls) => (
+                          <div key={cls.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-slate-100 bg-[#f7faf8] p-4 hover:shadow-sm transition">
+                            <div className="flex items-start gap-4">
+                              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#effaf6]">
+                                <Calendar className="h-6 w-6 text-[#1ec28e]" />
+                              </div>
+                              <div>
+                                <p className="font-semibold text-slate-900">{cls.title}</p>
+                                <p className="text-xs text-slate-500 mt-0.5">
+                                  📅 {cls.date} &nbsp;⏰ {cls.time}
+                                  {cls.duration && <> &nbsp;⏱ {cls.duration}</>}
+                                  &nbsp;📡 {cls.platform}
+                                </p>
+                                {cls.description && (
+                                  <p className="text-xs text-slate-400 mt-1 line-clamp-1">{cls.description}</p>
+                                )}
+                                {cls.link && (
+                                  <a href={cls.link} target="_blank" rel="noreferrer" className="text-xs text-[#1ec28e] hover:underline mt-0.5 inline-block">
+                                    Join Link ↗
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => handleEditClass(cls)}
+                                className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-200 transition"
+                                title="Edit class"
+                              >
+                                <Edit2 className="h-4 w-4 text-slate-600" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteClass(cls.id)}
+                                className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-200 transition"
+                                title="Delete class"
+                              >
+                                <Trash2 className="h-4 w-4 text-slate-600" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>

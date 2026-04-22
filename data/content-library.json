@@ -3,8 +3,44 @@
     "060fe115-29ac-4395-bdfe-c896a31d6b49": {
       "books": [
         {
+          "name": "NODE JS",
+          "category": "Data Science",
+          "mrp": "0.00",
+          "imageUrl": "/uploads/books/060fe115-29ac-4395-bdfe-c896a31d6b49-1776831355630-8yerq9.png",
+          "url": "",
+          "source": "file",
+          "fileName": "Lookit – Project Progress Report.pdf",
+          "sizeLabel": "412.4 KB",
+          "id": "book-1776831355632-c7m8tm",
+          "createdAt": "2026-04-22T04:15:55.632Z"
+        },
+        {
           "name": "Frontend design",
-          "category": "Design",
+          "category": "Development",
+          "mrp": "70.00",
+          "imageUrl": "/uploads/books/060fe115-29ac-4395-bdfe-c896a31d6b49-1776829461465-8d3zo3.png",
+          "url": "",
+          "source": "file",
+          "fileName": "2.React Js.pdf",
+          "sizeLabel": "1.4 MB",
+          "id": "book-1776829461467-3k2x4p",
+          "createdAt": "2026-04-22T03:44:21.467Z"
+        },
+        {
+          "name": "Full stck devlopment",
+          "category": "Personal Development",
+          "mrp": "50.00",
+          "imageUrl": "/uploads/books/060fe115-29ac-4395-bdfe-c896a31d6b49-1776829405314-7ix8g3.png",
+          "url": "",
+          "source": "file",
+          "fileName": "3.React Bootstrap.pdf",
+          "sizeLabel": "504.6 KB",
+          "id": "book-1776829405316-o84brg",
+          "createdAt": "2026-04-22T03:43:25.316Z"
+        },
+        {
+          "name": "Frontend design",
+          "category": "Lifestyle",
           "mrp": "70.00",
           "imageUrl": "/uploads/books/060fe115-29ac-4395-bdfe-c896a31d6b49-1776755992158-3sp2ky.png",
           "url": "",
@@ -16,7 +52,7 @@
         },
         {
           "name": "Node js",
-          "category": "Business",
+          "category": "Marketing",
           "mrp": "60.00",
           "imageUrl": "/uploads/books/060fe115-29ac-4395-bdfe-c896a31d6b49-1776755961226-gg4o66.png",
           "url": "",
@@ -28,7 +64,7 @@
         },
         {
           "name": "React js",
-          "category": "Design",
+          "category": "Health & Fitness",
           "mrp": "50.00",
           "imageUrl": "/uploads/books/060fe115-29ac-4395-bdfe-c896a31d6b49-1776755926063-gdo43y.png",
           "url": "",
@@ -65,13 +101,56 @@
       ],
       "categories": [
         "Design",
-        "Business"
+        "Business",
+        "Personal Development",
+        "Development",
+        "Lifestyle",
+        "Marketing",
+        "Health & Fitness",
+        "Data Science"
+      ]
+    },
+    "3de97eef-7189-4542-8e2a-a64d4fd1eade": {
+      "books": [
+        {
+          "name": "react js",
+          "category": "Development",
+          "mrp": "11.98",
+          "imageUrl": "/uploads/books/3de97eef-7189-4542-8e2a-a64d4fd1eade-1776830884358-7so3la.png",
+          "url": "",
+          "source": "file",
+          "fileName": "2.React Js.pdf",
+          "sizeLabel": "1.4 MB",
+          "id": "book-1776830884361-xiv3s5",
+          "createdAt": "2026-04-22T04:08:04.361Z"
+        }
+      ],
+      "videos": [],
+      "categories": [
+        "Development"
       ]
     }
   },
   "students": {
     "42d3d5d9-e80d-4f0e-9db0-aa949fcfb800": {
       "purchasedBooks": [
+        {
+          "id": "purchased-book-1776833173972-xg4ns8",
+          "purchasedAt": "2026-04-22T04:46:13.972Z",
+          "contentId": "book-1776829461467-3k2x4p",
+          "title": "Frontend design",
+          "source": "jenil",
+          "amount": "₹70.00",
+          "accessUrl": ""
+        },
+        {
+          "id": "purchased-book-1776832467280-ij2nzc",
+          "purchasedAt": "2026-04-22T04:34:27.280Z",
+          "title": "Frontend design",
+          "source": "jenil",
+          "amount": "₹70.00",
+          "accessUrl": ""
+        },
         {
           "id": "purchased-book-1776827705816-fw4ja1",
           "purchasedAt": "2026-04-22T03:15:05.816Z",

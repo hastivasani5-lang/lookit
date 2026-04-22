@@ -34,6 +34,7 @@ import OverviewSection from "@/components/professional/OverviewSection";
 import SettingsSection from "@/components/professional/SettingsSection";
 import UpgradeProgressChart from "@/components/professional/UpgradeProgressChart";
 import UpgradeSection from "@/components/professional/UpgradeSection";
+import AutoPopupModal from "@/components/AutoPopupModal";
 
 // ── Types & static data ───────────────────────────────────────────────────────
 import {
@@ -79,6 +80,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isMounted, setIsMounted] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [activeSection, setActiveSection] = useState<DashboardSection>("overview");
   const [addContentTab, setAddContentTab] = useState<AddContentTab>("books");
   const [featuredPage, setFeaturedPage] = useState<FeaturedPage>(1);
@@ -156,6 +158,19 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Auto popup modal after 2 seconds
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const autoModalFlag = localStorage.getItem(`professional_auto_modal_shown_${user.id}`);
+      if (!autoModalFlag) {
+        const timer = setTimeout(() => {
+          setShowModal(true);
+        }, 2000); // 2 seconds after login
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [user.id]);
 
   useEffect(() => {
     const section = searchParams?.get("section");
@@ -430,6 +445,13 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
 
     const mb = kb / 1024;
     return `${mb.toFixed(1)} MB`;
+  };
+
+  const handleCloseModal = () => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(`professional_auto_modal_shown_${user.id}`, "1");
+    }
+    setShowModal(false);
   };
 
   const parseHttpUrl = (value: string) => {
@@ -1180,6 +1202,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
 
   return (
     <div className="min-h-screen w-full bg-[#f0f4f8]">
+      {showModal && <AutoPopupModal onClose={handleCloseModal} userId={user.id} />}
 
       {/* ── MOBILE TOPBAR ── */}
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/20 px-4 py-3 lg:hidden"

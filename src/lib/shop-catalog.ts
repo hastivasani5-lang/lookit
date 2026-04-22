@@ -84,7 +84,7 @@ export async function buildShopCatalog(): Promise<ShopCatalogItem[]> {
         amount: parseAmount(book.mrp),
         imageUrl: book.imageUrl || null,
         sourceUrl: book.url || "",
-        fileUrl: book.fileUrl || "",
+        fileUrl: book.fileUrl || book.url || `/api/profile/library/book-file/${book.id}`,
         sourceType: book.source,
         category: book.category || "General",
         sizeLabel: book.sizeLabel || "-",

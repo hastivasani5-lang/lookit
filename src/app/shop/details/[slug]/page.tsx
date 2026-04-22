@@ -147,6 +147,60 @@ export default function DetailsPage() {
 
   const contentUrl = item ? (item.fileUrl || item.sourceUrl || "") : "";
 
+  // PDF Viewer component
+  function PdfViewer({ url, title, sizeLabel, professionalName, contentId }: {
+    url: string; title: string; sizeLabel: string; professionalName: string; contentId: string;
+  }) {
+    const [pdfError, setPdfError] = useState(false);
+    const [checking, setChecking] = useState(true);
+
+    useEffect(() => {
+      // Check if the API endpoint has a real file
+      if (url.startsWith("/api/")) {
+        fetch(url, { method: "HEAD" })
+          .then((r) => { setPdfError(!r.ok); setChecking(false); })
+          .catch(() => { setPdfError(true); setChecking(false); });
+      } else if (url.startsWith("/uploads/")) {
+        setChecking(false); setPdfError(false);
+      } else {
+        setChecking(false); setPdfError(true);
+      }
+    }, [url]);
+
+    if (checking) {
+      return (
+        <div className="flex items-center justify-center py-16 bg-[#f8f8f8] rounded-lg">
+          <div className="w-8 h-8 border-4 border-[#17c28a] border-t-transparent rounded-full animate-spin" />
+        </div>
+      );
+    }
+
+    if (pdfError) {
+      return (
+        <div className="flex flex-col items-center justify-center py-16 text-center bg-[#f8f8f8] rounded-lg">
+          <span className="text-5xl mb-4">📄</span>
+          <p className="font-semibold text-gray-700 text-lg">PDF Preview Not Available</p>
+          <p className="text-sm mt-2 max-w-md text-gray-500">
+            This book ({sizeLabel}) was uploaded before server storage was enabled.
+            The professional needs to re-upload the PDF file.
+          </p>
+          <p className="text-xs mt-3 text-gray-400">By: {professionalName}</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="w-full rounded-lg overflow-hidden border border-[#e0e0e0]" style={{ height: "80vh" }}>
+        <iframe
+          src={url}
+          title={title}
+          className="w-full h-full"
+          style={{ border: "none" }}
+        />
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col bg-[#f4f8f7]">
@@ -366,29 +420,7 @@ export default function DetailsPage() {
                 )
               ) : (
                 /* Book / PDF */
-                contentUrl ? (
-                  <div className="w-full rounded-lg overflow-hidden border border-[#e0e0e0]" style={{ height: "80vh" }}>
-                    <iframe
-                      src={contentUrl}
-                      title={item.title}
-                      className="w-full h-full"
-                      style={{ border: "none" }}
-                    />
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-16 text-center text-gray-500 bg-[#f8f8f8] rounded-lg">
-                    <span className="text-5xl mb-4">📄</span>
-                    <p className="font-semibold text-gray-700 text-lg">PDF not available online</p>
-                    <p className="text-sm mt-2 max-w-md text-gray-500">
-                      The professional uploaded this file locally. The file{" "}
-                      <span className="font-semibold text-[#17c28a]">{item.sizeLabel}</span> is available but
-                      cannot be previewed here. Please contact the professional for access.
-                    </p>
-                    <p className="text-xs mt-3 text-gray-400">
-                      By: <span className="font-medium">{item.professionalName}</span>
-                    </p>
-                  </div>
-                )
+                <PdfViewer url={contentUrl} title={item.title} sizeLabel={item.sizeLabel} professionalName={item.professionalName} contentId={item.contentId} />
               )}
             </section>
           )}

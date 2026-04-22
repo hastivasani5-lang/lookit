@@ -497,6 +497,13 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
               >
                 Following
               </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("buy-courses")}
+                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "buy-courses" ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
+              >
+                Buy Karelu
+              </button>
             </div>
             {activeTab === "wishlist" && (
               <div className="my-6">

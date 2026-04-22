@@ -546,7 +546,7 @@ export default function AdminPanelView() {
           email: student.email,
           meta: student.grade || "-",
           status: "Active",
-          updated: student.joinedAt || "-",
+          updated: new Date(student.joinedAt).toLocaleString(),
         }))
       : todayTableActiveTab === "Teacher"
         ? professionalUsers
@@ -557,7 +557,7 @@ export default function AdminPanelView() {
             email: professional.email,
             meta: professional.specialization || "-",
             status: "Active",
-            updated: professional.joinedAt || "-",
+            updated: new Date(professional.joinedAt).toLocaleString(),
           }))
         : notifications
             .filter((notification) => isSameCalendarDay(notification.createdAt))
@@ -1179,7 +1179,7 @@ export default function AdminPanelView() {
           address: user.location || "-",
           marks: 0,
           progress: user.specialization || "-",
-          joinedAt: new Date(user.createdAt).toLocaleDateString(),
+          joinedAt: user.createdAt,
         }));
 
         const details = studentUsers.reduce<Record<number, AdminUserDetails>>((accumulator, user, index) => {
@@ -1212,7 +1212,7 @@ export default function AdminPanelView() {
           certificatesCount: user.certificates.length,
           reviewsCount: user.reviews.length,
           profileBoostedUntil: user.profileBoostedUntil,
-          joinedAt: new Date(user.createdAt).toLocaleDateString(),
+          joinedAt: user.createdAt,
         }));
 
         setStudentsList(mappedStudents);

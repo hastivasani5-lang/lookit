@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import Image from "next/image";
@@ -22,6 +24,8 @@ const PLACEHOLDER_SVG =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' fill='%23e6f4ef'/%3E%3Ccircle cx='40' cy='30' r='18' fill='%2398b8ab'/%3E%3Crect x='14' y='54' width='52' height='30' rx='20' fill='%2398b8ab'/%3E%3C/svg%3E";
 
 export default function UpcomingClasses() {
+  const { data: session } = useSession();
+  const router = useRouter();
   const [classes, setClasses] = useState<UpcomingClass[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -35,6 +39,9 @@ export default function UpcomingClasses() {
   const [bookingError, setBookingError] = useState("");
   const [bookingSuccess, setBookingSuccess] = useState(false);
 
+  // Login required toast
+  const [showLoginToast, setShowLoginToast] = useState(false);
+
   useEffect(() => {
     AOS.init({ duration: 800, once: true });
     fetch("/api/upcoming-classes")
@@ -45,8 +52,19 @@ export default function UpcomingClasses() {
   }, []);
 
   const openBooking = (cls: UpcomingClass) => {
+    if (!session?.user?.id) {
+      // Not logged in - show toast then redirect
+      setShowLoginToast(true);
+      setTimeout(() => {
+        setShowLoginToast(false);
+        router.push("/login");
+      }, 2000);
+      return;
+    }
     setSelectedClass(cls);
-    setStudentName(""); setStudentEmail(""); setStudentPhone("");
+    setStudentName(session.user.name ?? "");
+    setStudentEmail(session.user.email ?? "");
+    setStudentPhone("");
     setMessage(""); setBookingError(""); setBookingSuccess(false);
   };
 
@@ -171,6 +189,19 @@ export default function UpcomingClasses() {
           </div>
         )}
       </div>
+
+      {/* ── Login Required Toast ──────────────────────────────────────── */}
+      {showLoginToast && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-3 rounded-2xl bg-[#1e2a55] px-6 py-4 shadow-2xl text-white animate-fade-in">
+          <svg className="h-5 w-5 text-[#1ec28e] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+          </svg>
+          <div>
+            <p className="font-semibold text-sm">Login Required</p>
+            <p className="text-xs text-gray-300 mt-0.5">Please login first to book a class. Redirecting...</p>
+          </div>
+        </div>
+      )}
 
       {/* ── Booking Modal ─────────────────────────────────────────────── */}
       {selectedClass && (

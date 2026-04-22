@@ -1,1 +1,24 @@
-{}
+{
+  "80ef263b-8056-47a0-a99f-46bac7063745": [
+    {
+      "id": "060fe115-29ac-4395-bdfe-c896a31d6b49:book:book-1776831355632-c7m8tm",
+      "title": "NODE JS",
+      "price": "Free",
+      "imageUrl": "/uploads/books/060fe115-29ac-4395-bdfe-c896a31d6b49-1776831355630-8yerq9.png",
+      "contentType": "book",
+      "professionalName": "jenil",
+      "slug": "node-js-book-1776831355632-c7m8tm",
+      "addedAt": "2026-04-22T11:14:17.661Z"
+    },
+    {
+      "id": "76da43c0-08fb-4cb3-87d5-f47a2019cc61:book:book-1776853038342-e05r2t",
+      "title": "hello",
+      "price": "Free",
+      "imageUrl": "/uploads/books/76da43c0-08fb-4cb3-87d5-f47a2019cc61-1776853038083-wnpgp0.png",
+      "contentType": "book",
+      "professionalName": "Hasti",
+      "slug": "hello-book-1776853038342-e05r2t",
+      "addedAt": "2026-04-22T11:14:15.131Z"
+    }
+  ]
+}

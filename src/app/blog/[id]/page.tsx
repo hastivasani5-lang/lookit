@@ -1,6 +1,10 @@
 
+"use client";
+
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { use } from "react";
 
 const blogs = [
   {
@@ -35,8 +39,9 @@ const blogs = [
   },
 ];
 
-export default async function BlogDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id: idStr } = await params;
+export default function BlogDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const router = useRouter();
+  const { id: idStr } = use(params);
   const id = Number(idStr);
   const blog = blogs.find((b) => b.id === id);
   if (!blog) return notFound();
@@ -45,6 +50,18 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ id:
     <section className="bg-[#eaf7f2] min-h-[100vh] py-12 px-2 md:px-8 lg:px-0">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl md:text-4xl font-bold text-center mb-2 mt-6 text-[#1a2c47]">Blog Details</h1>
+        {/* Back Button */}
+        <div className="flex justify-start mb-4">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center gap-2 text-sm font-semibold text-[#1ec28e] hover:text-[#169e6d] transition-all group"
+          >
+            <span className="flex items-center justify-center w-8 h-8 rounded-full border-2 border-[#1ec28e] group-hover:bg-[#1ec28e] group-hover:text-white transition-all">
+              ←
+            </span>
+            Back
+          </button>
+        </div>
         {/* Breadcrumbs */}
         <nav className="flex justify-center mb-8 text-sm text-[#1ec28e] gap-2">
           <span>HOME</span>

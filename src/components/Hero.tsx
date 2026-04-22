@@ -9,56 +9,10 @@ const HeroSection = () => {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-[#e9f7ef] via-[#e6f4f1] to-[#eef5ff] px-4 py-14 sm:px-6 sm:py-20 lg:px-16">
 
-      {/* ANIMATED BACKGROUND SHAPES - Clean & Non-redundant */}
+      {/* ANIMATED BACKGROUND SHAPES */}
       <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden">
-        
-        {/* Floating Green Blob */}
-        <motion.div
-          suppressHydrationWarning
-          animate={{
-            x: [0, 30, 0],
-            y: [0, -20, 0],
-            scale: [1, 1.1, 1],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute w-[500px] h-[500px] bg-[#1ec28e]/15 rounded-full blur-3xl top-[-150px] left-[-150px]"
-        />
-
-        {/* Floating Blue Blob */}
-        <motion.div
-          suppressHydrationWarning
-          animate={{
-            x: [0, -40, 0],
-            y: [0, 30, 0],
-            scale: [1, 1.2, 1],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2,
-          }}
-          className="absolute w-[450px] h-[450px] bg-blue-200/20 rounded-full blur-3xl bottom-[-120px] right-[-120px]"
-        />
-
-        {/* Subtle Center Glow */}
-        <motion.div
-          suppressHydrationWarning
-          animate={{
-            opacity: [0.3, 0.6, 0.3],
-            scale: [1, 1.05, 1],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute w-[300px] h-[300px] bg-[#1ec28e]/10 rounded-full blur-3xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-        />
+        <div className="absolute w-125 h-125 bg-[#1ec28e]/15 rounded-full blur-3xl -top-37.5 -left-37.5" />
+        <div className="absolute w-112.5 h-112.5 bg-blue-200/20 rounded-full blur-3xl -bottom-30 -right-30" />
       </div>
 
       <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2">
@@ -155,6 +109,7 @@ const HeroSection = () => {
               alt="hero"
               width={420}
               height={520}
+              priority
               className="object-contain"
             />
           </motion.div>

@@ -56,10 +56,10 @@ type StudentProfileDashboardProps = {
 };
 
 const tabItems: Array<{ key: string; label: string }> = [
+   { key: "following", label: "Following" },
   { key: "buy-courses", label: "Buy Courses" },
   { key: "calendar", label: "Calendar" },
   { key: "wishlist", label: "Wishlist" },
-  { key: "following", label: "Following" },
 ];
 
 const skillRows = [
@@ -718,68 +718,11 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
               </div>
             ) : null}
 
-            <div className="mt-6 flex flex-wrap items-center gap-2 border-t border-[#e5e7eb] pt-4">
-              <button
-                type="button"
-                onClick={() => void handleShare()}
-                className="inline-flex items-center gap-1 rounded-md bg-linear-to-r from-emerald-600 to-teal-600 text-white px-3 py-1.5 text-xs font-semibold"
-              >
-                <Share2 className="h-3.5 w-3.5" /> Share Course
-              </button>
-              <button
-                type="button"
-                onClick={handleReport}
-                className="inline-flex items-center gap-1 rounded-md bg-linear-to-r from-emerald-600 to-teal-600 text-white px-3 py-1.5 text-xs font-semibold"
-              >
-                <TriangleAlert className="h-3.5 w-3.5" /> Report Abuse
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setLikes((current) => current + 1);
-                  setActionMessage("Thanks for the like.");
-                }}
-                className="inline-flex items-center gap-1 rounded-md bg-linear-to-r from-emerald-600 to-teal-600 text-white px-3 py-1.5 text-xs font-semibold"
-              >
-                <Heart className="h-3.5 w-3.5" /> {likes}
-              </button>
-              <button
-                type="button"
-                onClick={handlePrint}
-                className="inline-flex items-center gap-1 rounded-md bg-linear-to-r from-emerald-600 to-teal-600 text-white px-3 py-1.5 text-xs font-semibold"
-              >
-                <Printer className="h-3.5 w-3.5" /> Print
-              </button>
-              <span className="ml-auto inline-flex items-center gap-1 rounded-md bg-[#ecf8f4] px-3 py-1.5 text-xs font-semibold text-[#1b8c65]">
-                <Users className="h-3.5 w-3.5" /> {followersSeed.length} Followers
-              </span>
-            </div>
+         
 
-            {actionMessage ? <p className="mt-3 text-xs font-medium text-[#1b8c65]">{actionMessage}</p> : null}
-          </article>
+           </article>
 
-          <section>
-            <h3 className="mb-4 text-3xl font-bold text-[#1f2937]">Courses By {editName}</h3>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {courseCards.slice(0, 2).map((course) => (
-                <article key={`featured-${course.id}`} className="overflow-hidden rounded-2xl border border-[#dbe8e4] bg-white shadow-sm">
-                  <div className={`flex h-34 items-center justify-center ${course.kind === "book" ? "bg-[#dff3fa]" : "bg-[#f1e9e0]"}`}>
-                    {course.kind === "book" ? <BookOpen className="h-14 w-14 text-[#0891b2]" /> : <Video className="h-14 w-14 text-[#b45309]" />}
-                  </div>
-                  <div className="p-4">
-                    <span className="rounded bg-primary px-2 py-0.5 text-[11px] font-semibold text-white">{course.badge}</span>
-                    <h4 className="mt-3 text-3xl font-bold text-[#1f2937]">{course.title}</h4>
-                    <p className="mt-1 text-sm text-[#6b7280]">Top-selling learning material for students.</p>
-                    <div className="mt-3 flex items-center justify-between text-sm">
-                      <p className="font-semibold text-[#374151]">{course.rating.toFixed(1)}</p>
-                      <p className="text-[#9ca3af]">({course.enrollments.toLocaleString()})</p>
-                    </div>
-                    <p className="mt-2 text-2xl font-bold text-[#2c5a48]">{course.amount}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
+     
         </div>
       </div>
     </section>

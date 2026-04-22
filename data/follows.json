@@ -48,5 +48,15 @@
     "studentId": "42d3d5d9-e80d-4f0e-9db0-aa949fcfb800",
     "professionalId": "d27ef8c3-6ce3-412a-a5d7-3630be7e9489",
     "followedAt": "2026-04-21T13:24:21.026Z"
+  },
+  {
+    "studentId": "95637b47-30c2-4410-8797-0169770ae5bd",
+    "professionalId": "d27ef8c3-6ce3-412a-a5d7-3630be7e9489",
+    "followedAt": "2026-04-22T05:31:25.754Z"
+  },
+  {
+    "studentId": "95637b47-30c2-4410-8797-0169770ae5bd",
+    "professionalId": "c50f32c9-00f5-4979-b76a-aa7956e91a4e",
+    "followedAt": "2026-04-22T05:31:26.929Z"
   }
 ]

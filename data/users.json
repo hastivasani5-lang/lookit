@@ -306,6 +306,8 @@
     "role": "professional",
     "certificates": [],
     "reviews": [],
+    "profileBoostedUntil": "2026-05-21T12:45:28.620Z",
+    "profileUpgradeTier": "pro",
     "approvalStatus": "approved",
     "approvalReviewedBy": "Admin",
     "approvalReviewedAt": "2026-04-15T11:40:36.454Z",
@@ -422,5 +424,17 @@
     "approvalStatus": "approved",
     "provider": "credentials",
     "createdAt": "2026-04-15T09:51:31.802Z"
+  },
+  {
+    "id": "9588a74f-29ea-4f4c-b70a-13489a1da632",
+    "name": "bhai",
+    "email": "bhai@gmail.com",
+    "passwordHash": "$2a$10$78sKfHEubgcHsUWi7ttfVupMJJZXzxLFEHrt.pvCVHkiEMryTad0i",
+    "role": "student",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-21T12:35:49.173Z"
   }
 ]

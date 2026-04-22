@@ -1,108 +1,35 @@
 {
-  "professionals": {
-    "060fe115-29ac-4395-bdfe-c896a31d6b49": {
-      "books": [
-        {
-          "name": "React js",
-          "category": "Education",
-          "mrp": "50.00",
-          "imageUrl": "/uploads/books/060fe115-29ac-4395-bdfe-c896a31d6b49-1776766529776-v5zgjh.png",
-          "url": "",
-          "source": "file",
-          "fileName": "2.React Js.pdf",
-          "sizeLabel": "1.4 MB",
-          "id": "book-1776766529779-iso5ss",
-          "createdAt": "2026-04-21T10:15:29.779Z"
-        },
-        {
-          "name": "Frontend design",
-          "category": "Design",
-          "mrp": "70.00",
-          "imageUrl": "/uploads/books/060fe115-29ac-4395-bdfe-c896a31d6b49-1776755992158-3sp2ky.png",
-          "url": "",
-          "source": "file",
-          "fileName": "2.React Js.pdf",
-          "sizeLabel": "1.4 MB",
-          "id": "book-1776755992160-caujx5",
-          "createdAt": "2026-04-21T07:19:52.160Z"
-        },
-        {
-          "name": "Node js",
-          "category": "Business",
-          "mrp": "60.00",
-          "imageUrl": "/uploads/books/060fe115-29ac-4395-bdfe-c896a31d6b49-1776755961226-gg4o66.png",
-          "url": "",
-          "source": "file",
-          "fileName": "3.React Bootstrap.pdf",
-          "sizeLabel": "504.6 KB",
-          "id": "book-1776755961228-pu9wec",
-          "createdAt": "2026-04-21T07:19:21.228Z"
-        },
-        {
-          "name": "React js",
-          "category": "Design",
-          "mrp": "50.00",
-          "imageUrl": "/uploads/books/060fe115-29ac-4395-bdfe-c896a31d6b49-1776755926063-gdo43y.png",
-          "url": "",
-          "source": "file",
-          "fileName": "2.React Js.pdf",
-          "sizeLabel": "1.4 MB",
-          "id": "book-1776755926065-6wotvq",
-          "createdAt": "2026-04-21T07:18:46.065Z"
-        }
-      ],
-      "videos": [
-        {
-          "name": "YouTube Video",
-          "mrp": "29.89",
-          "url": "https://www.youtube.com/embed/mh1MZfC0uA8",
-          "source": "youtube",
-          "sizeLabel": "YouTube Link",
-          "level": "Intermediate",
-          "isPopular": false,
-          "id": "video-1776756077294-6f9ywv",
-          "createdAt": "2026-04-21T07:21:17.294Z"
-        },
-        {
-          "name": "YouTube Video",
-          "mrp": "40",
-          "url": "https://www.youtube.com/embed/4ZfJ1QdbSWA",
-          "source": "youtube",
-          "sizeLabel": "YouTube Link",
-          "level": "Advanced",
-          "isPopular": false,
-          "id": "video-1776756037823-9sfxds",
-          "createdAt": "2026-04-21T07:20:37.823Z"
-        }
-      ],
-      "categories": [
-        "Design",
-        "Business",
-        "Education"
-      ]
-    }
-  },
+  "professionals": {},
   "students": {
     "42d3d5d9-e80d-4f0e-9db0-aa949fcfb800": {
       "purchasedBooks": [
         {
-          "id": "purchased-book-1776766598637-spp80g",
-          "purchasedAt": "2026-04-21T10:16:38.637Z",
+          "id": "purchased-book-1776827705816-fw4ja1",
+          "purchasedAt": "2026-04-22T03:15:05.816Z",
           "title": "React js",
           "source": "jenil",
           "amount": "₹50.00",
           "accessUrl": ""
-        },
-        {
-          "id": "purchased-book-1776765686106-bv3c0j",
-          "purchasedAt": "2026-04-21T10:01:26.106Z",
-          "title": "web",
-          "source": "Hasti",
-          "amount": "₹12.00",
-          "accessUrl": ""
         }
       ],
-      "watchedVideos": []
+      "watchedVideos": [
+        {
+          "id": "watched-video-1776827715690-o0ttn6",
+          "watchedAt": "2026-04-22T03:15:15.690Z",
+          "title": "YouTube Video",
+          "provider": "jenil",
+          "amount": "₹29.89",
+          "accessUrl": "https://www.youtube.com/embed/mh1MZfC0uA8"
+        },
+        {
+          "id": "watched-video-1776827705815-mkfq2j",
+          "watchedAt": "2026-04-22T03:15:05.815Z",
+          "title": "YouTube Video",
+          "provider": "jenil",
+          "amount": "₹29.89",
+          "accessUrl": "https://www.youtube.com/embed/mh1MZfC0uA8"
+        }
+      ]
     }
   }
 }

@@ -481,6 +481,15 @@ export default function AdminPanelView() {
     professionalCount: "...",
     transactionCount: "...",
   });
+  const [adminTrendData, setAdminTrendData] = useState<{
+    labels: string[];
+    students: number[];
+    teachers: number[];
+  }>({
+    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    students: [0, 0, 0, 0, 0, 0, 0],
+    teachers: [0, 0, 0, 0, 0, 0, 0],
+  });
   const ITEMS_PER_PAGE = 10;
   const DASHBOARD_ITEMS_PER_PAGE = 10;
   const approvalTotalPages = Math.max(1, Math.ceil(approvalRequests.length / ITEMS_PER_PAGE));
@@ -537,7 +546,7 @@ export default function AdminPanelView() {
           email: student.email,
           meta: student.grade || "-",
           status: "Active",
-          updated: student.joinedAt || "-",
+          updated: new Date(student.joinedAt).toLocaleString(),
         }))
       : todayTableActiveTab === "Teacher"
         ? professionalUsers
@@ -548,7 +557,7 @@ export default function AdminPanelView() {
             email: professional.email,
             meta: professional.specialization || "-",
             status: "Active",
-            updated: professional.joinedAt || "-",
+            updated: new Date(professional.joinedAt).toLocaleString(),
           }))
         : notifications
             .filter((notification) => isSameCalendarDay(notification.createdAt))
@@ -567,10 +576,10 @@ export default function AdminPanelView() {
     dashboardTodayPageStart,
     dashboardTodayPageStart + DASHBOARD_ITEMS_PER_PAGE,
   );
-  const adminTrendLabels = ["January", "February", "March", "April", "May", "June", "July"];
+  const adminTrendLabels = adminTrendData.labels;
   const adminTrendSeries = [
-    { label: "Approvals", color: "#ff5b7a", values: [34, 55, 10, 36, 76, 54, 64] },
-    { label: "Alerts", color: "#3498db", values: [12, 85, 82, 15, 43, 66, 12] },
+    { label: "Students", color: "#ff5b7a", values: adminTrendData.students },
+    { label: "Teachers", color: "#3498db", values: adminTrendData.teachers },
   ];
   const adminTrendMax = Math.max(...adminTrendSeries.flatMap((series) => series.values), 1);
   const adminTrendWidth = 470;
@@ -1170,7 +1179,7 @@ export default function AdminPanelView() {
           address: user.location || "-",
           marks: 0,
           progress: user.specialization || "-",
-          joinedAt: new Date(user.createdAt).toLocaleDateString(),
+          joinedAt: user.createdAt,
         }));
 
         const details = studentUsers.reduce<Record<number, AdminUserDetails>>((accumulator, user, index) => {
@@ -1203,7 +1212,7 @@ export default function AdminPanelView() {
           certificatesCount: user.certificates.length,
           reviewsCount: user.reviews.length,
           profileBoostedUntil: user.profileBoostedUntil,
-          joinedAt: new Date(user.createdAt).toLocaleDateString(),
+          joinedAt: user.createdAt,
         }));
 
         setStudentsList(mappedStudents);
@@ -1397,6 +1406,19 @@ export default function AdminPanelView() {
 
     void fetchStats();
 
+    const fetchTrend = async () => {
+      try {
+        const res = await fetch("/api/admin/trend", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = (await res.json()) as { labels: string[]; students: number[]; teachers: number[] };
+        if (isMounted) setAdminTrendData(data);
+      } catch {
+        // keep default zeros
+      }
+    };
+
+    void fetchTrend();
+
     return () => {
       isMounted = false;
       if (retryTimeout) clearTimeout(retryTimeout);
@@ -1550,7 +1572,7 @@ export default function AdminPanelView() {
         .neumorph-admin-btn:active {
           box-shadow: 1px 1px 2px #d0dbd6, -1px -1px 2px #ffffff;
         }
-      `}</style>
+      hg`}</style>
 
           {activeSection === "Dashboard" ? (
             <div className="rounded-2xl neumorph-admin-card p-4 sm:p-5">
@@ -1577,8 +1599,8 @@ export default function AdminPanelView() {
                   <div className="h-90 rounded-2xl neumorph-admin-card border border-transparent p-4 bg-white!">
                     <div className="mb-3 flex items-center justify-between">
                       <div>
-                        <h3 className="font-semibold text-slate-800">Admin Activity Trend</h3>
-                        <p className="text-xs text-slate-500">Approvals and alerts across recent months.</p>
+                        <h3 className="font-semibold text-slate-800">User & Teacher Registrations</h3>
+                        <p className="text-xs text-slate-500">New students and teachers joined over the last 7 days.</p>
                       </div>
                       <div className="flex items-center gap-3 text-xs text-slate-500">
                         {adminTrendSeries.map((series) => (
@@ -1922,6 +1944,7 @@ export default function AdminPanelView() {
                   </div>
                 ) : null}
               </div>
+              
             </div>
           ) : (
             <div className="rounded-2xl bg-white p-6">

@@ -452,5 +452,17 @@
     "approvalStatus": "approved",
     "provider": "credentials",
     "createdAt": "2026-04-22T03:57:28.586Z"
+  },
+  {
+    "id": "123ed980-3081-4c01-95ab-e429cf845c58",
+    "name": "arjav",
+    "email": "arjav@gmail.com",
+    "passwordHash": "$2a$10$GEBhCvIEw9wpWi0yTrSvnO3K5DDQWqsORexEJRiSqqrCiQtBaNXyW",
+    "role": "student",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-22T11:03:12.900Z"
   }
 ]

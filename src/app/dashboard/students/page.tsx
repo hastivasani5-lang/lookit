@@ -98,8 +98,14 @@ export default function StudentsPage() {
     const userId = session.user.id;
     if (!userId) return;
 
-    const dismissed = localStorage.getItem(`student_profile_modal_done_${userId}`);
-    if (dismissed) return;
+    // Check if answers already saved in localStorage
+    const answersRaw = localStorage.getItem(`student_profile_answers_${userId}`);
+    if (answersRaw) {
+      try {
+        const answers = JSON.parse(answersRaw) as { studyTime?: string };
+        if (answers.studyTime) return; // Already filled
+      } catch { /* ignore */ }
+    }
 
     const timer = setTimeout(async () => {
       try {
@@ -116,10 +122,6 @@ export default function StudentsPage() {
   }, [status, session]);
 
   const handleCloseModal = () => {
-    const userId = session?.user?.id;
-    if (userId) {
-      localStorage.setItem(`student_profile_modal_done_${userId}`, "1");
-    }
     setShowModal(false);
   };
 

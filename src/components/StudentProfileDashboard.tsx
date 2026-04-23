@@ -131,7 +131,7 @@ function CalendarWidget({ userId }: { userId: string }) {
   const [sessionStart, setSessionStart] = useState<Date | null>(null);
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
   const [showEarlyLogoutPopup, setShowEarlyLogoutPopup] = useState(false);
-  const [maxHours, setMaxHours] = useState(12);
+  const [maxHours, setMaxHours] = useState(0);
   const logoutTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [mounted, setMounted] = useState(false);
 
@@ -142,9 +142,25 @@ function CalendarWidget({ userId }: { userId: string }) {
   useEffect(() => {
     setMounted(true);
     try {
-      // Load goal
+      // Load goal — try numeric key first, then parse from studyTime string
       const savedGoal = localStorage.getItem(goalKey);
-      if (savedGoal) setMaxHours(Number(savedGoal) || 12);
+      if (savedGoal) {
+        setMaxHours(Number(savedGoal) || 0);
+      } else {
+        // Try to parse from profile answers studyTime string
+        const answersRaw = localStorage.getItem(`student_profile_answers_${userId}`);
+        if (answersRaw) {
+          const answers = JSON.parse(answersRaw) as { studyTime?: string };
+          if (answers.studyTime && answers.studyTime !== "Never") {
+            const match = answers.studyTime.match(/(\d+(\.\d+)?)/);
+            if (match) {
+              const parsed = parseFloat(match[1]);
+              setMaxHours(parsed);
+              localStorage.setItem(goalKey, String(parsed));
+            }
+          }
+        }
+      }
 
       // Load today's session data
       const raw = localStorage.getItem(storageKey);
@@ -154,7 +170,7 @@ function CalendarWidget({ userId }: { userId: string }) {
         if (Array.isArray(data.timeline)) setTimeline(data.timeline);
       }
     } catch { /* ignore */ }
-  }, [storageKey, goalKey]);
+  }, [storageKey, goalKey, userId]);
 
   // Save to localStorage whenever data changes
   useEffect(() => {
@@ -163,6 +179,29 @@ function CalendarWidget({ userId }: { userId: string }) {
       localStorage.setItem(storageKey, JSON.stringify({ workedHours, timeline }));
     } catch { /* ignore */ }
   }, [workedHours, timeline, storageKey, mounted]);
+
+  // Check previous day missed goal and send notification
+  useEffect(() => {
+    if (!mounted || maxHours <= 0) return;
+    try {
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yKey = `${yesterday.getFullYear()}-${yesterday.getMonth()}-${yesterday.getDate()}`;
+      const yStorageKey = `lookit-work-session-${userId}-${yKey}`;
+      const yRaw = localStorage.getItem(yStorageKey);
+      const yWorked = yRaw ? (JSON.parse(yRaw) as { workedHours?: number }).workedHours ?? 0 : 0;
+      const yDateStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, "0")}-${String(yesterday.getDate()).padStart(2, "0")}`;
+
+      if (yWorked < maxHours) {
+        fetch("/api/student/check-missed-goal", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ date: yDateStr, workedHours: yWorked, goalHours: maxHours }),
+        }).catch(() => { /* ignore */ });
+      }
+    } catch { /* ignore */ }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mounted, maxHours]);
 
   // Listen for logout request from logout buttons
   useEffect(() => {
@@ -250,6 +289,29 @@ function CalendarWidget({ userId }: { userId: string }) {
             const dateStr = `${viewYear}-${viewMonth}-${day}`;
             const isToday = dateStr === todayStr;
             const isSelected = dateStr === selectedDate;
+
+            // Determine if this date is in the past (before today)
+            const cellDate = new Date(viewYear, viewMonth, day);
+            const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            const isPast = cellDate < todayMidnight;
+            const isFuture = cellDate > todayMidnight;
+
+            // Read work session for this date
+            let dateMissed = false;
+            let dateMet = false;
+            if (maxHours > 0 && (isPast || isToday) && !isFuture) {
+              try {
+                const dKey = `lookit-work-session-${userId}-${viewYear}-${viewMonth}-${day}`;
+                const dRaw = localStorage.getItem(dKey);
+                const dWorked = dRaw ? (JSON.parse(dRaw) as { workedHours?: number }).workedHours ?? 0 : 0;
+                if (isPast) {
+                  dateMissed = dWorked < maxHours;
+                  dateMet = dWorked >= maxHours;
+                }
+                // today: amber if not met yet (handled below)
+              } catch { /* ignore */ }
+            }
+
             return (
               <button
                 key={dateStr}
@@ -257,6 +319,8 @@ function CalendarWidget({ userId }: { userId: string }) {
                 className={`mx-auto w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 rounded-full text-xs sm:text-sm font-medium transition flex items-center justify-center
                   ${isSelected ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" :
                     isToday ? "bg-[#e8f7f1] text-[#1ec28e] font-bold ring-1 sm:ring-2 ring-[#1ec28e]" :
+                    dateMissed ? "bg-red-100 text-red-600 ring-1 ring-red-400" :
+                    dateMet ? "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-400" :
                     "hover:bg-[#f0faf7] text-[#374151]"}`}
               >
                 {day}

@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
+import "swiper/css/navigation";
 
 import type { PublicProfessional } from "@/lib/professional-display";
 
@@ -68,8 +69,14 @@ const Instructors = () => {
 
         {/* SLIDER */}
         {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="w-8 h-8 border-4 border-[#1ec28e] border-t-transparent rounded-full animate-spin" />
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 animate-pulse">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="rounded-2xl bg-gray-100 p-6 space-y-4">
+                <div className="h-[220px] rounded-xl bg-gray-200" />
+                <div className="h-4 w-3/4 rounded bg-gray-200" />
+                <div className="h-3 w-1/2 rounded bg-gray-200" />
+              </div>
+            ))}
           </div>
         ) : professionals.length === 0 ? (
           <div className="py-10 text-center text-gray-400 text-sm">

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 64" width="260" height="64">
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d7a57"/>
+      <stop offset="100%" stop-color="#1ec28e"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0d7a57"/>
+      <stop offset="100%" stop-color="#1ec28e"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Icon circle -->
+  <circle cx="32" cy="32" r="28" fill="url(#g1)"/>
+
+  <!-- Open book -->
+  <path d="M18 22 Q24 20 32 22 Q40 20 46 22 L46 42 Q40 40 32 42 Q24 40 18 42 Z" fill="white" opacity="0.15"/>
+  <path d="M18 22 Q24 20 32 22 L32 42 Q24 40 18 42 Z" fill="white" opacity="0.9"/>
+  <path d="M32 22 Q40 20 46 22 L46 42 Q40 40 32 42 Z" fill="white" opacity="0.7"/>
+  <line x1="32" y1="22" x2="32" y2="42" stroke="#0d7a57" stroke-width="1.5"/>
+  <!-- Book lines left -->
+  <line x1="21" y1="27" x2="29" y2="27.5" stroke="#1ec28e" stroke-width="1.2" stroke-linecap="round"/>
+  <line x1="21" y1="31" x2="29" y2="31.5" stroke="#1ec28e" stroke-width="1.2" stroke-linecap="round"/>
+  <line x1="21" y1="35" x2="29" y2="35.5" stroke="#1ec28e" stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- Magnifying glass -->
+  <circle cx="41" cy="37" r="5" fill="none" stroke="white" stroke-width="2.2"/>
+  <line x1="44.5" y1="40.5" x2="48" y2="44" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- LOOKIT text -->
+  <text x="72" y="42" font-family="'Segoe UI',Arial,sans-serif" font-size="28" font-weight="800" fill="url(#g2)" letter-spacing="-0.5">Lookit</text>
+
+  <!-- Subtitle -->
+  <text x="73" y="54" font-family="'Segoe UI',Arial,sans-serif" font-size="9.5" font-weight="500" fill="#6b7280" letter-spacing="1.5">EDUCATION DIRECTORY</text>
+</svg>

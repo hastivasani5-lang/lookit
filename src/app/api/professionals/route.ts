@@ -29,5 +29,9 @@ export async function GET() {
 
   return NextResponse.json({
     professionals: visibleProfessionals.map((user, index) => buildPublicProfessional(user, index)),
+  }, {
+    headers: {
+      "Cache-Control": "public, s-maxage=120, stale-while-revalidate=600",
+    },
   });
 }

@@ -2,9 +2,99 @@
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Mail, MapPin, Phone, Send, Bell } from "lucide-react";
-import { useState } from "react";
+import { Mail, MapPin, Phone, Send, Bell, ChevronDown } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
+
+const COUNTRIES = [
+  { name: "India",          code: "IN", dial: "+91",  digits: 10, flag: "🇮🇳" },
+  { name: "United States",  code: "US", dial: "+1",   digits: 10, flag: "🇺🇸" },
+  { name: "United Kingdom", code: "GB", dial: "+44",  digits: 10, flag: "🇬🇧" },
+  { name: "UAE",            code: "AE", dial: "+971",  digits: 9, flag: "🇦🇪" },
+  { name: "Canada",         code: "CA", dial: "+1",   digits: 10, flag: "🇨🇦" },
+  { name: "Australia",      code: "AU", dial: "+61",  digits: 9,  flag: "🇦🇺" },
+  { name: "Germany",        code: "DE", dial: "+49",  digits: 11, flag: "🇩🇪" },
+  { name: "France",         code: "FR", dial: "+33",  digits: 9,  flag: "🇫🇷" },
+  { name: "Singapore",      code: "SG", dial: "+65",  digits: 8,  flag: "🇸🇬" },
+  { name: "Pakistan",       code: "PK", dial: "+92",  digits: 10, flag: "🇵🇰" },
+  { name: "Bangladesh",     code: "BD", dial: "+880", digits: 10, flag: "🇧🇩" },
+  { name: "Nepal",          code: "NP", dial: "+977", digits: 10, flag: "🇳🇵" },
+];
+
+function PhoneInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [mounted, setMounted] = useState(false);
+  const [selected, setSelected] = useState(COUNTRIES[0]);
+  const [open, setOpen] = useState(false);
+  const [digits, setDigits] = useState("");
+  const dropRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => { setMounted(true); }, []);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropRef.current && !dropRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const handleCountrySelect = (country: typeof COUNTRIES[0]) => {
+    setSelected(country);
+    setOpen(false);
+    setDigits("");
+    onChange(`${country.dial}`);
+  };
+
+  const handleDigitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, "");
+    const limited = raw.slice(0, selected.digits);
+    setDigits(limited);
+    onChange(`${selected.dial}${limited}`);
+  };
+
+  if (!mounted) {
+    return (
+      <div className="flex rounded-xl border border-gray-200 bg-gray-50 h-[46px] animate-pulse" />
+    );
+  }
+
+  return (
+    <div className="flex rounded-xl border border-gray-200 bg-gray-50 focus-within:border-[#1ec28e] focus-within:ring-2 focus-within:ring-[#1ec28e]/20 transition">
+      {/* Country selector */}
+      <div className="relative" ref={dropRef}>
+        <button type="button" onClick={() => setOpen((o) => !o)}
+          className="flex items-center gap-1 px-3 py-3 text-sm font-semibold text-gray-700 bg-gray-100 border-r border-gray-200 hover:bg-gray-200 transition whitespace-nowrap h-full">
+          <span>{selected.flag}</span>
+          <span className="text-xs text-gray-500">{selected.dial}</span>
+          <ChevronDown className="w-3 h-3 text-gray-400" />
+        </button>
+        {open && (
+          <div className="absolute left-0 top-full z-[9999] mt-1 w-52 rounded-xl border border-gray-100 bg-white shadow-xl max-h-60 overflow-y-auto">
+            {COUNTRIES.map((c) => (
+              <button key={c.code} type="button" onClick={() => handleCountrySelect(c)}
+                className={`w-full flex items-center gap-2 px-3 py-2.5 text-sm text-left hover:bg-[#effaf6] transition ${selected.code === c.code ? "bg-[#effaf6] font-semibold text-[#1ec28e]" : "text-gray-700"}`}>
+                <span>{c.flag}</span>
+                <span className="flex-1">{c.name}</span>
+                <span className="text-xs text-gray-400">{c.dial}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Number input */}
+      <input
+        type="tel"
+        value={digits}
+        onChange={handleDigitChange}
+        placeholder={`${"X".repeat(selected.digits)}`}
+        maxLength={selected.digits}
+        className="flex-1 bg-transparent px-3 py-3 text-sm outline-none placeholder:text-gray-400 text-gray-800"
+      />
+    </div>
+  );
+}
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
@@ -109,9 +199,10 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Phone</label>
-                      <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                        placeholder="+91 XXXXX XXXXX"
-                        className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-[#1ec28e] focus:bg-white focus:ring-2 focus:ring-[#1ec28e]/20" />
+                      <PhoneInput
+                        value={form.phone}
+                        onChange={(v) => setForm({ ...form, phone: v })}
+                      />
                     </div>
                   </div>
                   <div>

@@ -26,6 +26,7 @@ export default function AdminCategoriesPanel({
   return (
     <div className="mt-6 space-y-5">
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-slate-50 text-left text-slate-500">
             <tr>
@@ -90,53 +91,42 @@ export default function AdminCategoriesPanel({
             ) : null}
           </tbody>
         </table>
+        </div>
       </div>
 
       {categoriesList.length > 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex flex-wrap items-center gap-2 text-sm text-slate-600">
-              <span>
-                Showing {Math.min((categoriesCurrentPage - 1) * itemsPerPage + 1, categoriesList.length)} to {Math.min(categoriesCurrentPage * itemsPerPage, categoriesList.length)} of {categoriesList.length} entries
-              </span>
-              <span className="rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-2.5 py-0.5 text-xs font-semibold text-[#178c43]">
-                Page {categoriesCurrentPage} / {categoryTotalPages}
-              </span>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
+        <div className="mt-4 flex justify-end">
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => setCategoriesCurrentPage((page) => page - 1)}
+              disabled={categoriesCurrentPage === 1}
+              className="inline-flex h-8 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+            >
+              Prev
+            </button>
+            {Array.from({ length: categoryTotalPages }, (_, i) => i + 1).map((page) => (
               <button
+                key={page}
                 type="button"
-                onClick={() => setCategoriesCurrentPage((page) => page - 1)}
-                disabled={categoriesCurrentPage === 1}
-                className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                onClick={() => setCategoriesCurrentPage(page)}
+                className={`inline-flex h-8 min-w-8 items-center justify-center rounded-lg border text-xs font-semibold transition ${
+                  page === categoriesCurrentPage
+                    ? "border-[#178c43] bg-[#178c43] text-white"
+                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                }`}
               >
-                Prev
+                {page}
               </button>
-              <div className="flex flex-wrap items-center gap-2">
-                {Array.from({ length: categoryTotalPages }, (_, i) => i + 1).map((page) => (
-                  <button
-                    key={page}
-                    type="button"
-                    onClick={() => setCategoriesCurrentPage(page)}
-                    className={`inline-flex h-9 min-w-9 items-center justify-center rounded-xl border text-sm font-semibold transition ${
-                      page === categoriesCurrentPage
-                        ? "border-[#178c43] bg-[#178c43] text-white shadow-[0_8px_18px_rgba(23,140,67,0.25)]"
-                        : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                    }`}
-                  >
-                    {page}
-                  </button>
-                ))}
-              </div>
-              <button
-                type="button"
-                onClick={() => setCategoriesCurrentPage((page) => page + 1)}
-                disabled={categoriesCurrentPage === categoryTotalPages}
-                className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
-              >
-                Next
-              </button>
-            </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => setCategoriesCurrentPage((page) => page + 1)}
+              disabled={categoriesCurrentPage === categoryTotalPages}
+              className="inline-flex h-8 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+            >
+              Next
+            </button>
           </div>
         </div>
       ) : null}

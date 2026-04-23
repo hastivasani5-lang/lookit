@@ -93,11 +93,13 @@ export default function AdminUploadsPanel(props: AdminUploadsPanelProps) {
             </table>
           </div>
           {professionalUploadRows.length > 0 ? (
-            <div className="border-t border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600 flex items-center justify-between">
-              <span>Page {uploadsProfessionalsCurrentPage} / {uploadsProfessionalsTotalPages}</span>
-              <div className="flex gap-2">
-                <button type="button" onClick={() => setUploadsProfessionalsCurrentPage((p) => p - 1)} disabled={uploadsProfessionalsCurrentPage === 1} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 disabled:opacity-50">Prev</button>
-                <button type="button" onClick={() => setUploadsProfessionalsCurrentPage((p) => p + 1)} disabled={uploadsProfessionalsCurrentPage === uploadsProfessionalsTotalPages} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 disabled:opacity-50">Next</button>
+            <div className="px-4 py-3 flex justify-end">
+              <div className="flex items-center gap-1">
+                <button type="button" onClick={() => setUploadsProfessionalsCurrentPage((p) => p - 1)} disabled={uploadsProfessionalsCurrentPage === 1} className="inline-flex h-8 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50">Prev</button>
+                {Array.from({ length: uploadsProfessionalsTotalPages }, (_, i) => i + 1).map((page) => (
+                  <button key={page} type="button" onClick={() => setUploadsProfessionalsCurrentPage(page)} className={`inline-flex h-8 min-w-8 items-center justify-center rounded-lg border text-xs font-semibold transition ${page === uploadsProfessionalsCurrentPage ? "border-[#178c43] bg-[#178c43] text-white" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}>{page}</button>
+                ))}
+                <button type="button" onClick={() => setUploadsProfessionalsCurrentPage((p) => p + 1)} disabled={uploadsProfessionalsCurrentPage === uploadsProfessionalsTotalPages} className="inline-flex h-8 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50">Next</button>
               </div>
             </div>
           ) : null}
@@ -129,11 +131,13 @@ export default function AdminUploadsPanel(props: AdminUploadsPanelProps) {
             </table>
           </div>
           {studentUploadRows.length > 0 ? (
-            <div className="border-t border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600 flex items-center justify-between">
-              <span>Page {uploadsStudentsCurrentPage} / {uploadsStudentsTotalPages}</span>
-              <div className="flex gap-2">
-                <button type="button" onClick={() => setUploadsStudentsCurrentPage((p) => p - 1)} disabled={uploadsStudentsCurrentPage === 1} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 disabled:opacity-50">Prev</button>
-                <button type="button" onClick={() => setUploadsStudentsCurrentPage((p) => p + 1)} disabled={uploadsStudentsCurrentPage === uploadsStudentsTotalPages} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 disabled:opacity-50">Next</button>
+            <div className="px-4 py-3 flex justify-end">
+              <div className="flex items-center gap-1">
+                <button type="button" onClick={() => setUploadsStudentsCurrentPage((p) => p - 1)} disabled={uploadsStudentsCurrentPage === 1} className="inline-flex h-8 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50">Prev</button>
+                {Array.from({ length: uploadsStudentsTotalPages }, (_, i) => i + 1).map((page) => (
+                  <button key={page} type="button" onClick={() => setUploadsStudentsCurrentPage(page)} className={`inline-flex h-8 min-w-8 items-center justify-center rounded-lg border text-xs font-semibold transition ${page === uploadsStudentsCurrentPage ? "border-[#178c43] bg-[#178c43] text-white" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}>{page}</button>
+                ))}
+                <button type="button" onClick={() => setUploadsStudentsCurrentPage((p) => p + 1)} disabled={uploadsStudentsCurrentPage === uploadsStudentsTotalPages} className="inline-flex h-8 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50">Next</button>
               </div>
             </div>
           ) : null}

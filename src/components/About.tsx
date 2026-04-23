@@ -7,7 +7,7 @@ const About = () => {
 		<section className="w-full pt-20 pb-0 px-4 md:px-8 bg-[#eef5f3] relative overflow-hidden">
 			{/* LEFT DECORATION */}
 			<div className="absolute top-16 left-10 hidden animate-float md:block">
-				<img src="/leaf.png" alt="leaf" className="w-12.5 h-12.5" />
+				<Image src="/leaf.png" alt="leaf" width={50} height={50} className="h-auto w-auto" />
 			</div>
 
 			{/* RIGHT DECORATION */}

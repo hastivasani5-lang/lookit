@@ -12,6 +12,8 @@ declare module 'lucide-react' {
   // Export all icons as LucideIcon type
   export const ChevronLeft: LucideIcon;
   export const ChevronRight: LucideIcon;
+  export const ChevronDown: LucideIcon;
+  export const ChevronUp: LucideIcon;
   export const X: LucideIcon;
   export const Check: LucideIcon;
   export const Globe: LucideIcon;

@@ -11,6 +11,8 @@ import {
   UploadCloud,
   Users,
   BellRing,
+  Menu,
+  X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -282,78 +284,7 @@ const initialPayoutEntries: PayoutEntry[] = [
   },
 ];
 
-const initialStudents: AdminStudent[] = [
-  {
-    id: 1,
-    name: "Ava Johnson",
-    email: "ava.johnson@example.com",
-    category: "Science",
-    grade: "Grade 10",
-    age: 15,
-    phone: "+1 555 101 2001",
-    guardian: "Michael Johnson",
-    address: "12 Elm Street, Boston, MA",
-    marks: 92,
-    progress: "Excellent",
-    joinedAt: "2026-01-12",
-  },
-  {
-    id: 2,
-    name: "Noah Williams",
-    email: "noah.williams@example.com",
-    category: "Arts",
-    grade: "Grade 11",
-    age: 16,
-    phone: "+1 555 101 2002",
-    guardian: "Sarah Williams",
-    address: "84 Maple Avenue, Austin, TX",
-    marks: 88,
-    progress: "Very Good",
-    joinedAt: "2025-11-28",
-  },
-  {
-    id: 3,
-    name: "Mia Patel",
-    email: "mia.patel@example.com",
-    category: "Commerce",
-    grade: "Grade 12",
-    age: 17,
-    phone: "+1 555 101 2003",
-    guardian: "Rohan Patel",
-    address: "221 Pine Road, Seattle, WA",
-    marks: 95,
-    progress: "Excellent",
-    joinedAt: "2025-09-05",
-  },
-  {
-    id: 4,
-    name: "Ethan Lee",
-    email: "ethan.lee@example.com",
-    category: "Technology",
-    grade: "Grade 9",
-    age: 14,
-    phone: "+1 555 101 2004",
-    guardian: "Grace Lee",
-    address: "67 Cedar Lane, San Jose, CA",
-    marks: 90,
-    progress: "Good",
-    joinedAt: "2026-02-02",
-  },
-  {
-    id: 5,
-    name: "Sophia Martin",
-    email: "sophia.martin@example.com",
-    category: "Sports",
-    grade: "Grade 10",
-    age: 15,
-    phone: "+1 555 101 2005",
-    guardian: "Laura Martin",
-    address: "19 River Street, Denver, CO",
-    marks: 86,
-    progress: "Good",
-    joinedAt: "2025-12-19",
-  },
-];
+const initialStudents: AdminStudent[] = [];
 
 const initialProfessionalCategories: ProfessionalCategory[] = [
   {
@@ -465,6 +396,7 @@ export default function AdminPanelView() {
   const [studentUploadRows, setStudentUploadRows] = useState<StudentActivitySummary[]>([]);
   const [uploadsLoading, setUploadsLoading] = useState(false);
   const [adminProfileOpen, setAdminProfileOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [globalSearchQuery, setGlobalSearchQuery] = useState("");
   const [studentsCurrentPage, setStudentsCurrentPage] = useState(1);
   const [professionalsCurrentPage, setProfessionalsCurrentPage] = useState(1);
@@ -613,6 +545,7 @@ export default function AdminPanelView() {
     const menuMatch = menuItems.find((item) => item.label.toLowerCase().includes(query));
     if (menuMatch) {
       setActiveSection(menuMatch.label);
+      setGlobalSearchQuery("");
       return;
     }
 
@@ -621,6 +554,7 @@ export default function AdminPanelView() {
       setActiveSection("Users");
       setUsersTab("students");
       setSelectedStudentId(studentMatch.id);
+      setGlobalSearchQuery("");
       return;
     }
 
@@ -630,21 +564,25 @@ export default function AdminPanelView() {
     if (professionalMatch) {
       setActiveSection("Users");
       setUsersTab("professionals");
+      setGlobalSearchQuery("");
       return;
     }
 
     if (approvalRequests.some((request) => `${request.name} ${request.email} ${request.specialization}`.toLowerCase().includes(query))) {
       setActiveSection("Approvals");
+      setGlobalSearchQuery("");
       return;
     }
 
     if (reviewEntries.some((review) => `${review.userName} ${review.professionalName} ${review.review}`.toLowerCase().includes(query))) {
       setActiveSection("Reviews");
+      setGlobalSearchQuery("");
       return;
     }
 
     if (categoriesList.some((category) => `${category.name} ${category.type} ${category.description}`.toLowerCase().includes(query))) {
       setActiveSection("Categories");
+      setGlobalSearchQuery("");
       return;
     }
 
@@ -653,11 +591,13 @@ export default function AdminPanelView() {
       studentUploadRows.some((upload) => `${upload.name} ${upload.email}`.toLowerCase().includes(query))
     ) {
       setActiveSection("Uploads");
+      setGlobalSearchQuery("");
       return;
     }
 
     if (payoutEntries.some((payout) => `${payout.professionalName} ${payout.professionalEmail} ${payout.transactionId}`.toLowerCase().includes(query))) {
       setActiveSection("Payouts");
+      setGlobalSearchQuery("");
       return;
     }
 
@@ -668,6 +608,7 @@ export default function AdminPanelView() {
       contactMessages.some((message) => `${message.name} ${message.email} ${message.subject} ${message.message}`.toLowerCase().includes(query))
     ) {
       setActiveSection("Alerts");
+      setGlobalSearchQuery("");
     }
   };
 
@@ -1127,7 +1068,7 @@ export default function AdminPanelView() {
   }, [categoriesList.length]);
 
   useEffect(() => {
-    if (activeSection !== "Users") {
+    if (activeSection !== "Users" && activeSection !== "Dashboard") {
       return;
     }
 
@@ -1382,7 +1323,8 @@ export default function AdminPanelView() {
     const fetchStats = async () => {
       try {
         const response = await fetch("/api/admin/stats", { cache: "no-store" });
-        if (!response.ok) throw new Error("Non-OK response");
+        if (response.status === 401) return; // not logged in, skip silently
+        if (!response.ok) return;
         const data = (await response.json()) as {
           studentCount: number;
           professionalCount: number;
@@ -1395,11 +1337,9 @@ export default function AdminPanelView() {
             transactionCount: formatStat(data.transactionCount),
           });
         }
-      } catch (error) {
-        console.error("Failed to load dashboard stats:", error);
+      } catch {
         if (isMounted) {
-          setDashboardStats({ studentCount: "N/A", professionalCount: "N/A", transactionCount: "N/A" });
-          retryTimeout = setTimeout(() => { void fetchStats(); }, 5000);
+          setDashboardStats({ studentCount: "—", professionalCount: "—", transactionCount: "—" });
         }
       }
     };
@@ -1432,6 +1372,63 @@ export default function AdminPanelView() {
 
   return (
     <main className="min-h-screen bg-[#eef5f3] p-3 sm:p-4 md:p-6 font-sans">
+      {/* Fixed mobile top navbar */}
+      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between bg-[#eef5f3] px-4 py-3 shadow-[0_4px_12px_#d0dbd6] md:hidden">
+        <SiteLogo size="sidebar" priority />
+        <div className="flex items-center gap-3">
+          <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+          <Bell className="h-5 w-5 text-[#1ec28e]" />
+          <button
+            type="button"
+            onClick={() => setAdminProfileOpen(true)}
+            className="flex items-center gap-1.5 rounded-full bg-[#f6fefb] px-2 py-1 shadow-[2px_2px_6px_#d0dbd6,-2px_-2px_6px_#ffffff]"
+          >
+            <img src={"/pro1.jpeg"} alt="Admin" width={24} height={24} className="h-6 w-6 rounded-full object-cover border border-[#bfe9cb]" />
+            <span className="text-xs font-semibold text-slate-700">Admin</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((o) => !o)}
+            className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#eef5f3] shadow-[3px_3px_6px_#d0dbd6,-3px_-3px_6px_#ffffff] text-[#2c5a48] transition hover:shadow-inner"
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
+        {/* Dropdown */}
+        {mobileMenuOpen && (
+          <div className="absolute top-full left-0 right-0 bg-[#eef5f3] shadow-[0_8px_24px_#d0dbd6] p-3 z-50">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.label}
+                  type="button"
+                  onClick={() => { setActiveSection(item.label); setMobileMenuOpen(false); }}
+                  className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition ${
+                    activeSection === item.label
+                      ? "bg-[#2d6a4f] text-white"
+                      : "text-[#2c5a48] hover:bg-[#dff0e8]"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {item.label}
+                </button>
+              );
+            })}
+            <div className="mt-2 border-t border-slate-200 pt-2">
+              <button
+                type="button"
+                onClick={onLogout}
+                className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-red-500 hover:bg-red-50 transition"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
       <section className="flex min-h-[calc(100vh-1.5rem)] w-full overflow-hidden rounded-[28px] neumorph-admin-main bg-[#eef5f3] font-sans">
         <aside className="fixed left-0 top-0 z-30 h-full w-62.5 border-r border-slate-100 bg-[#eef5f3] px-4 py-5 hidden lg:flex flex-col neumorph-admin-sidebar">
           <div className="pb-6">
@@ -1494,7 +1491,33 @@ export default function AdminPanelView() {
           </div>
         </aside>
 
-        <div className={`neumorph-admin-content flex-1 p-3 sm:p-4 md:p-5 transition lg:ml-62.5 h-screen overflow-y-auto hide-scrollbar ${selectedStudent || detailModal || adminProfileOpen || isCategoryFormOpen ? "blur-sm" : ""}`}>
+        <div style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }} className={`neumorph-admin-content flex-1 p-3 sm:p-4 md:p-5 transition lg:ml-62.5 h-screen overflow-y-auto hide-scrollbar ${selectedStudent || detailModal || adminProfileOpen || isCategoryFormOpen ? "blur-sm" : ""}`}>
+          <div className="block lg:hidden" style={{ height: '72px' }} />
+          {/* Mobile search bar - only visible when sidebar converts to mobile menu */}
+          <div className="mb-4 block lg:hidden">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Search anything here..."
+                value={globalSearchQuery}
+                onChange={(event) => setGlobalSearchQuery(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    handleGlobalSearch();
+                  }
+                }}
+                className="h-11 flex-1 rounded-2xl border-none bg-[#f6fefb] px-4 text-sm text-slate-800 shadow-[inset_4px_4px_12px_#d0dbd6,inset_-4px_-4px_12px_#ffffff] outline-none focus:ring-2 focus:ring-[#1ec28e] transition"
+              />
+              <button
+                type="button"
+                onClick={handleGlobalSearch}
+                className="h-11 rounded-2xl bg-[#178c43] px-4 text-sm font-semibold text-white shadow-[2px_2px_8px_#d0dbd6] transition hover:bg-[#14793a]"
+              >
+                Search
+              </button>
+            </div>
+          </div>
                 <style>{`
                   .hide-scrollbar {
                     scrollbar-width: none; /* Firefox */
@@ -1504,7 +1527,7 @@ export default function AdminPanelView() {
                     display: none; /* Chrome/Safari/Webkit */
                   }
                 `}</style>
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl neumorph-admin-card p-4 shadow-[8px_8px_24px_#d0dbd6,-8px_-8px_24px_#ffffff]">
+          <div className="mb-6 mt-4 hidden md:flex flex-wrap items-center justify-between gap-4 rounded-2xl neumorph-admin-card p-4 shadow-[8px_8px_24px_#d0dbd6,-8px_-8px_24px_#ffffff]">
             <input
               type="text"
               placeholder="Search anything here..."
@@ -1542,22 +1565,6 @@ export default function AdminPanelView() {
             </div>
           </div>
 
-          <div className="mb-4 flex gap-2 overflow-x-auto rounded-xl neumorph-admin-card p-2 lg:hidden">
-            {menuItems.map((item) => (
-              <button
-                key={item.label}
-                type="button"
-                onClick={() => setActiveSection(item.label)}
-                className={`whitespace-nowrap rounded-2xl px-4 py-1.5 text-xs font-semibold neumorph-admin-btn transition ${
-                  activeSection === item.label
-                    ? "bg-[#2d6a4f] text-white shadow-[8px_8px_16px_#d0dbd6,-8px_-8px_16px_#ffffff]"
-                    : "bg-[#eef5f3] text-[#2c5a48] shadow-[3px_3px_6px_#d0dbd6,-3px_-3px_6px_#ffffff] hover:shadow-inner"
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
       <style>{`
         .neumorph-admin-sidebar {
           background: #eef5f3;
@@ -1889,57 +1896,38 @@ export default function AdminPanelView() {
                 </div>
 
                 {dashboardTodayRows.length > 0 ? (
-                  <div className="mt-3 rounded-3xl border border-slate-300 bg-slate-100 px-4 py-3 sm:px-5">
-                    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                      <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
-                        <span>
-                          Showing {Math.min(dashboardTodayPageStart + 1, dashboardTodayRows.length)} to {Math.min(dashboardTodayPageStart + DASHBOARD_ITEMS_PER_PAGE, dashboardTodayRows.length)} of {dashboardTodayRows.length} entries
-                        </span>
-                        <span className="rounded-full border border-emerald-300 bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
-                          Page {dashboardTodayCurrentPage} / {dashboardTodayTotalPages}
-                        </span>
-                      </div>
-
-                      <div className="flex flex-wrap items-center gap-3">
+                  <div className="mt-3 flex justify-end">
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setDashboardTodayCurrentPage((page) => Math.max(1, page - 1))}
+                        disabled={dashboardTodayCurrentPage === 1}
+                        className="inline-flex h-8 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                      >
+                        Prev
+                      </button>
+                      {Array.from({ length: dashboardTodayTotalPages }, (_, i) => i + 1).map((page) => (
                         <button
+                          key={page}
                           type="button"
-                          onClick={() => setDashboardTodayCurrentPage((page) => Math.max(1, page - 1))}
-                          disabled={dashboardTodayCurrentPage === 1}
-                          className="inline-flex h-10 items-center rounded-2xl border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
+                          onClick={() => setDashboardTodayCurrentPage(page)}
+                          className={`inline-flex h-8 min-w-8 items-center justify-center rounded-lg border text-xs font-semibold transition ${
+                            page === dashboardTodayCurrentPage
+                              ? "border-[#178c43] bg-[#178c43] text-white"
+                              : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                          }`}
                         >
-                          Prev
+                          {page}
                         </button>
-
-                        <div className="flex flex-wrap items-center gap-2">
-                          {Array.from({ length: dashboardTodayTotalPages }, (_, i) => i + 1).map((page) => (
-                            <button
-                              key={page}
-                              type="button"
-                              onClick={() => setDashboardTodayCurrentPage(page)}
-                              className={`inline-flex h-10 min-w-10 items-center justify-center rounded-2xl border text-sm font-semibold transition ${
-                                page === dashboardTodayCurrentPage
-                                  ? "border-emerald-700 bg-emerald-700 text-white shadow-[0_8px_20px_rgba(16,185,129,0.32)]"
-                                  : "border-slate-300 bg-slate-100 text-slate-700 hover:bg-white"
-                              }`}
-                            >
-                              {page}
-                            </button>
-                          ))}
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setDashboardTodayCurrentPage((page) =>
-                              Math.min(dashboardTodayTotalPages, page + 1),
-                            )
-                          }
-                          disabled={dashboardTodayCurrentPage === dashboardTodayTotalPages}
-                          className="inline-flex h-10 items-center rounded-2xl border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
-                        >
-                          Next
-                        </button>
-                      </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => setDashboardTodayCurrentPage((page) => Math.min(dashboardTodayTotalPages, page + 1))}
+                        disabled={dashboardTodayCurrentPage === dashboardTodayTotalPages}
+                        className="inline-flex h-8 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                      >
+                        Next
+                      </button>
                     </div>
                   </div>
                 ) : null}

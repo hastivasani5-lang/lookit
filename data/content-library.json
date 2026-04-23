@@ -195,6 +195,15 @@
       ],
       "watchedVideos": [
         {
+          "id": "watched-video-1776934077091-epcqbj",
+          "watchedAt": "2026-04-23T08:47:57.091Z",
+          "contentId": "video-1776856255333-lkazwa",
+          "title": "YouTube Video",
+          "provider": "krish",
+          "amount": "Free",
+          "accessUrl": "https://www.youtube.com/embed/I3jCsVgf564"
+        },
+        {
           "id": "watched-video-1776827715690-o0ttn6",
           "watchedAt": "2026-04-22T03:15:15.690Z",
           "title": "YouTube Video",

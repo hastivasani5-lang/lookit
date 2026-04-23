@@ -20,6 +20,7 @@ export default function LoginPage() {
   const [loginError, setLoginError] = useState("");
   const [loginSuccess, setLoginSuccess] = useState("");
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [workHoursGoal, setWorkHoursGoal] = useState("8");
 
   // ── Register state ───────────────────────────────────────
   const [regRole, setRegRole] = useState<UserRole>("student");
@@ -61,6 +62,11 @@ export default function LoginPage() {
     const s = await fetch("/api/auth/session", { cache: "no-store" });
     const sp = await s.json().catch(() => null);
     const role = sp?.user?.role === "professional" ? "professional" : "student";
+    // Save work hours goal for student
+    if (role === "student" && sp?.user?.id) {
+      const goal = Math.max(1, Math.min(24, Number(workHoursGoal) || 8));
+      localStorage.setItem(`lookit-work-goal-${sp.user.id}`, String(goal));
+    }
     window.location.href = role === "professional" ? "/dashboard/teachers" : "/dashboard/students";
   };
 
@@ -168,6 +174,23 @@ export default function LoginPage() {
                 {showLoginPwd ? <EyeOff size={16}/> : <Eye size={16}/>}
               </button>
             </div>
+
+            {/* Work hours goal — student only */}
+            {loginRole === "student" && (
+              <div className="relative mb-4">
+                <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                  🎯 Today's Work Hours Goal
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number" min="1" max="24" value={workHoursGoal}
+                    onChange={(e) => setWorkHoursGoal(e.target.value)}
+                    className="w-20 h-11 px-3 bg-gray-100 rounded-lg border-none outline-none text-sm text-center font-bold text-[#0d7a57] focus:ring-2 focus:ring-[#1ec28e]/30"
+                  />
+                  <span className="text-xs text-gray-400">hours (1–24). You'll be logged out after this.</span>
+                </div>
+              </div>
+            )}
 
             <button type="submit" disabled={loginLoading}
               className="w-full h-11 rounded-lg text-white font-semibold text-sm mb-4 disabled:opacity-60 flex items-center justify-center gap-2 transition hover:opacity-90"

@@ -114,8 +114,12 @@ function getWebsiteFromEmail(email: string) {
 }
 
 
-function CalendarWidget() {
+function CalendarWidget({ userId }: { userId: string }) {
   const today = new Date();
+  const todayKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+  const storageKey = `lookit-work-session-${userId}-${todayKey}`;
+  const goalKey = `lookit-work-goal-${userId}`;
+
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -126,10 +130,38 @@ function CalendarWidget() {
   const intervalRef = useState<ReturnType<typeof setInterval> | null>(null);
   const [sessionStart, setSessionStart] = useState<Date | null>(null);
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
+  const [maxHours, setMaxHours] = useState(12);
   const logoutTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   const dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    setMounted(true);
+    try {
+      // Load goal
+      const savedGoal = localStorage.getItem(goalKey);
+      if (savedGoal) setMaxHours(Number(savedGoal) || 12);
+
+      // Load today's session data
+      const raw = localStorage.getItem(storageKey);
+      if (raw) {
+        const data = JSON.parse(raw) as { workedHours: number; timeline: Array<{ start: string; end: string; hours: number }> };
+        if (typeof data.workedHours === "number") setWorkedHours(data.workedHours);
+        if (Array.isArray(data.timeline)) setTimeline(data.timeline);
+      }
+    } catch { /* ignore */ }
+  }, [storageKey, goalKey]);
+
+  // Save to localStorage whenever data changes
+  useEffect(() => {
+    if (!mounted) return;
+    try {
+      localStorage.setItem(storageKey, JSON.stringify({ workedHours, timeline }));
+    } catch { /* ignore */ }
+  }, [workedHours, timeline, storageKey, mounted]);
 
   const firstDay = new Date(viewYear, viewMonth, 1).getDay();
   const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
@@ -155,11 +187,14 @@ function CalendarWidget() {
       setStartTime(now);
       setSessionStart(now);
       setIsTracking(true);
-      // Set 12hr auto-logout timer
+      // Set goal-based auto-logout timer
       if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
-      logoutTimerRef.current = setTimeout(() => {
-        setShowLogoutPopup(true);
-      }, 12 * 60 * 60 * 1000); // 12 hours
+      const remainingMs = Math.max(0, (maxHours * 3600000) - (workedHours * 3600000));
+      if (remainingMs > 0) {
+        logoutTimerRef.current = setTimeout(() => {
+          setShowLogoutPopup(true);
+        }, remainingMs);
+      }
     } else {
       const end = new Date();
       const diffHours = startTime ? (end.getTime() - startTime.getTime()) / 3600000 : 0;
@@ -272,7 +307,10 @@ function CalendarWidget() {
 
         {timeline.length > 0 && (
           <button
-            onClick={() => { setTimeline([]); setWorkedHours(0); }}
+            onClick={() => {
+              setTimeline([]); setWorkedHours(0);
+              try { localStorage.removeItem(storageKey); } catch { /* ignore */ }
+            }}
             className="mt-1.5 sm:mt-2 lg:mt-3 text-[9px] sm:text-[10px] lg:text-xs text-red-400 hover:text-red-600 transition"
           >
             Reset today's log
@@ -291,7 +329,7 @@ function CalendarWidget() {
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-2">Session Time Limit Reached</h3>
             <p className="text-sm text-gray-500 mb-2">
-              You have been working for <span className="font-semibold text-emerald-600">12 hours</span>.
+              You have been working for <span className="font-semibold text-emerald-600">{maxHours} hours</span> — your goal for today!
             </p>
             <p className="text-sm text-gray-500 mb-6">
               For your wellbeing, please take a break. You will be logged out now.
@@ -673,7 +711,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
             {activeTab === "calendar" && (
               <div className="my-4 sm:my-6">
                 <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-[#1f2937]">Calendar</h3>
-                <CalendarWidget />
+                <CalendarWidget userId={user.id} />
               </div>
             )}
  

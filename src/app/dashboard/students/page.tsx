@@ -3,8 +3,6 @@
 import dynamic from "next/dynamic";
 import Navbar from "@/components/Navbar";
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 // Hero skeleton shown while Hero loads
 const HeroSkeleton = () => (
@@ -63,17 +61,8 @@ const Footer = dynamic(() => import("@/components/Footer"));
 const AutoPopupModal = dynamic(() => import("@/components/AutoPopupModal"));
 
 export default function StudentsPage() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
   const [showModal, setShowModal] = useState(false);
   const [belowFoldReady, setBelowFoldReady] = useState(false);
-
-  // Handle authentication state
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    }
-  }, [status, router]);
 
   // Load below-fold content after first paint
   useEffect(() => {
@@ -89,65 +78,15 @@ export default function StudentsPage() {
     };
   }, []);
 
-  // Show modal 3s after login if student hasn't filled profile yet
-  useEffect(() => {
-    if (status !== "authenticated") return;
-    if (session?.user?.role !== "student") return;
-
-    const userId = session.user.id;
-    if (!userId) return;
-
-    // Check if already dismissed for this user
-    const dismissed = localStorage.getItem(`student_profile_modal_done_${userId}`);
-    if (dismissed) return;
-
-    // Check if profile already has location (country) filled — means already submitted
-    const timer = setTimeout(async () => {
-      try {
-        const res = await fetch("/api/student/profile/check");
-        if (!res.ok) { setShowModal(true); return; }
-        const data = (await res.json()) as { filled: boolean };
-        if (!data.filled) setShowModal(true);
-      } catch {
-        setShowModal(true);
-      }
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, [status, session]);
-
   const handleCloseModal = () => {
-    const userId = session?.user?.id;
-    if (userId) {
-      localStorage.setItem(`student_profile_modal_done_${userId}`, "1");
-    }
     setShowModal(false);
   };
-
-  const userId = session?.user?.id ?? "guest";
-
-  // Show loading state while checking authentication
-  if (status === "loading") {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#1ec28e] border-r-transparent"></div>
-          <p className="mt-4 text-gray-600">Loading dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Don't render dashboard if not authenticated (redirect will happen)
-  if (status === "unauthenticated") {
-    return null;
-  }
 
   return (
     <>
       <Navbar />
       <main className="overflow-x-hidden">
-        {showModal && <AutoPopupModal onClose={handleCloseModal} userId={userId} />}
+        {showModal && <AutoPopupModal onClose={handleCloseModal} userId="guest" />}
         <Hero />
         {belowFoldReady && (
           <>

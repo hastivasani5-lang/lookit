@@ -1,96 +1,70 @@
-
-import { promises as fs } from "fs";
 import { NextResponse, NextRequest } from "next/server";
-
-const FOLLOWS_FILE = process.cwd() + "/data/follows.json";
-const USERS_FILE   = process.cwd() + "/data/users.json";
-
-type FollowRecord = {
-  studentId: string;
-  professionalId: string;
-  followedAt: string;
-};
-
-type UserRecord = {
-  id: string;
-  name: string;
-  email: string;
-  image?: string;
-  role?: string;
-};
+import { addFollow, removeFollow, getFollowsByStudent, getFollowsByProfessional } from "@/lib/follows-store";
+import { getAllUsers } from "@/lib/user-store";
 
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const professionalId = url.searchParams.get("professionalId");
   const studentId = url.searchParams.get("studentId");
 
-  const raw = await fs.readFile(FOLLOWS_FILE, "utf-8");
-  const follows: FollowRecord[] = JSON.parse(raw);
+  try {
+    const users = await getAllUsers();
 
-  // If studentId provided, return professionals this student follows
-  if (studentId) {
-    const filtered = follows.filter((f) => f.studentId === studentId);
-    // Enrich with professional info
-    let users: UserRecord[] = [];
-    try {
-      const usersRaw = await fs.readFile(USERS_FILE, "utf-8");
-      users = JSON.parse(usersRaw);
-    } catch { users = []; }
+    if (studentId) {
+      const follows = await getFollowsByStudent(studentId);
+      const enriched = follows.map((f) => {
+        const professional = users.find((u) => u.id === f.professionalId);
+        return {
+          ...f,
+          professionalName: professional?.name ?? null,
+          professionalEmail: professional?.email ?? null,
+          professionalImage: professional?.image ?? null,
+        };
+      });
+      return NextResponse.json(enriched);
+    }
 
-    const enriched = filtered.map((f) => {
-      const professional = users.find((u) => u.id === f.professionalId);
+    if (!professionalId) return NextResponse.json([]);
+
+    const follows = await getFollowsByProfessional(professionalId);
+    const enriched = follows.map((f) => {
+      const student = users.find((u) => u.id === f.studentId);
       return {
         ...f,
-        professionalName: professional?.name ?? null,
-        professionalEmail: professional?.email ?? null,
-        professionalImage: professional?.image ?? null,
+        studentName: student?.name ?? null,
+        studentEmail: student?.email ?? null,
+        studentImage: student?.image ?? null,
       };
     });
     return NextResponse.json(enriched);
+  } catch (err) {
+    console.error("[follows GET]", err);
+    return NextResponse.json([], { status: 500 });
   }
-
-  if (!professionalId) return NextResponse.json([]);
-
-  const filtered = follows.filter((f) => f.professionalId === professionalId);
-
-  // Enrich with student info from users.json
-  let users: UserRecord[] = [];
-  try {
-    const usersRaw = await fs.readFile(USERS_FILE, "utf-8");
-    users = JSON.parse(usersRaw);
-  } catch { users = []; }
-
-  const enriched = filtered.map((f) => {
-    const student = users.find((u) => u.id === f.studentId);
-    return {
-      ...f,
-      studentName:  student?.name  ?? null,
-      studentEmail: student?.email ?? null,
-      studentImage: student?.image ?? null,
-    };
-  });
-
-  return NextResponse.json(enriched);
 }
 
 export async function POST(req: NextRequest) {
-  const { studentId, professionalId } = await req.json();
-  if (!studentId || !professionalId) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
-  const raw = await fs.readFile(FOLLOWS_FILE, "utf-8");
-  const follows: FollowRecord[] = JSON.parse(raw);
-  if (!follows.find((f) => f.studentId === studentId && f.professionalId === professionalId)) {
-    follows.push({ studentId, professionalId, followedAt: new Date().toISOString() });
-    await fs.writeFile(FOLLOWS_FILE, JSON.stringify(follows, null, 2), "utf-8");
+  try {
+    const { studentId, professionalId } = await req.json();
+    if (!studentId || !professionalId)
+      return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+    await addFollow(studentId, professionalId);
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("[follows POST]", err);
+    return NextResponse.json({ error: "Failed to follow" }, { status: 500 });
   }
-  return NextResponse.json({ ok: true });
 }
 
 export async function DELETE(req: NextRequest) {
-  const { studentId, professionalId } = await req.json();
-  if (!studentId || !professionalId) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
-  const raw = await fs.readFile(FOLLOWS_FILE, "utf-8");
-  let follows: FollowRecord[] = JSON.parse(raw);
-  follows = follows.filter((f) => !(f.studentId === studentId && f.professionalId === professionalId));
-  await fs.writeFile(FOLLOWS_FILE, JSON.stringify(follows, null, 2), "utf-8");
-  return NextResponse.json({ ok: true });
+  try {
+    const { studentId, professionalId } = await req.json();
+    if (!studentId || !professionalId)
+      return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+    await removeFollow(studentId, professionalId);
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("[follows DELETE]", err);
+    return NextResponse.json({ error: "Failed to unfollow" }, { status: 500 });
+  }
 }

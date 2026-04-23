@@ -1,7 +1,9 @@
 import { promises as fs } from "fs";
-import path from "path";
+import { getDataFile } from "@/lib/storage-path";
+import { ensureDbSchema, getDbPool, isPostgresConfigured } from "@/lib/db";
 
-const FILE = path.join(process.cwd(), "data", "advance-bookings.json");
+const FILE = getDataFile("advance-bookings.json");
+const DB_KEY = "advance-bookings";
 
 export type AdvanceBooking = {
   id: string;
@@ -21,6 +23,18 @@ export type AdvanceBooking = {
 };
 
 async function readStore(): Promise<AdvanceBooking[]> {
+  if (isPostgresConfigured()) {
+    await ensureDbSchema();
+    const db = getDbPool();
+    const result = await db.query<{ data: unknown }>(
+      `SELECT data FROM app_data WHERE key = $1 LIMIT 1`,
+      [DB_KEY],
+    );
+    if (result.rows.length === 0) return [];
+    const parsed = result.rows[0].data;
+    return Array.isArray(parsed) ? (parsed as AdvanceBooking[]) : [];
+  }
+
   try {
     const raw = await fs.readFile(FILE, "utf-8");
     const parsed = JSON.parse(raw);
@@ -30,7 +44,19 @@ async function readStore(): Promise<AdvanceBooking[]> {
   }
 }
 
-async function writeStore(data: AdvanceBooking[]) {
+async function writeStore(data: AdvanceBooking[]): Promise<void> {
+  if (isPostgresConfigured()) {
+    await ensureDbSchema();
+    const db = getDbPool();
+    await db.query(
+      `INSERT INTO app_data (key, data, updated_at)
+       VALUES ($1, $2::jsonb, NOW())
+       ON CONFLICT (key)
+       DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()`,
+      [DB_KEY, JSON.stringify(data)],
+    );
+    return;
+  }
   await fs.writeFile(FILE, JSON.stringify(data, null, 2), "utf-8");
 }
 

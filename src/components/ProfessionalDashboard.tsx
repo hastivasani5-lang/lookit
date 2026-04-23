@@ -154,10 +154,20 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   const [notifFollows, setNotifFollows] = useState<Array<{ studentId: string; studentName?: string; followedAt: string }>>([]);
   const [notifPurchases, setNotifPurchases] = useState<Array<{ id: string; studentName: string; items?: Array<{ title: string; contentType: string }>; amount: string; paidAt: string; professionalId: string }>>([]);
   const [notifReviews, setNotifReviews] = useState<Array<{ id: string; studentName: string; rating: number; review: string; createdAt: string; professionalId: string }>>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Fetch notifications on mount (after hydration) to show unread badge
+  useEffect(() => {
+    if (!isMounted) return;
+    void fetchNotifications();
+    const interval = setInterval(() => { void fetchNotifications(); }, 60000);
+    return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMounted]);
 
   // Auto popup modal after 2 seconds - ONLY FOR STUDENTS, NOT FOR PROFESSIONALS
   useEffect(() => {
@@ -1152,12 +1162,33 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       const purchasesData = purchasesRes.ok ? await purchasesRes.json() : { data: [] };
       const reviewsData = reviewsRes.ok ? await reviewsRes.json() : { reviews: [] };
 
-      setNotifFollows(Array.isArray(followsData.data) ? followsData.data : []);
-      // Filter purchases for this professional
+      const follows = Array.isArray(followsData.data) ? followsData.data : [];
       const allPurchases = Array.isArray(purchasesData.data) ? purchasesData.data : [];
-      setNotifPurchases(allPurchases.filter((p: { professionalId?: string }) => !p.professionalId || p.professionalId === user.id));
+      const purchases = allPurchases.filter((p: { professionalId?: string }) => !p.professionalId || p.professionalId === user.id);
       const allReviews = Array.isArray(reviewsData.reviews) ? reviewsData.reviews : [];
-      setNotifReviews(allReviews.filter((r: { professionalId?: string }) => r.professionalId === user.id));
+      const reviews = allReviews.filter((r: { professionalId?: string }) => r.professionalId === user.id);
+
+      setNotifFollows(follows);
+      setNotifPurchases(purchases);
+      setNotifReviews(reviews);
+
+      // Compute unread count based on last-seen timestamp
+      const seenKey = `notif_seen_${user.id}`;
+      const lastSeen = localStorage.getItem(seenKey);
+      const lastSeenTime = lastSeen ? new Date(lastSeen).getTime() : 0;
+
+      const countNew = (items: Array<{ followedAt?: string; paidAt?: string; createdAt?: string }>, dateKey: string) =>
+        items.filter((item) => {
+          const t = new Date((item as Record<string, string>)[dateKey] ?? "").getTime();
+          return !isNaN(t) && t > lastSeenTime;
+        }).length;
+
+      const newCount =
+        countNew(follows, "followedAt") +
+        countNew(purchases, "paidAt") +
+        countNew(reviews, "createdAt");
+
+      setUnreadCount(newCount);
     } catch {
       // silently fail
     } finally {
@@ -1167,8 +1198,15 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
 
   const handleBellClick = () => {
     setNotifOpen((prev) => {
-      if (!prev) void fetchNotifications();
-      return !prev;
+      const opening = !prev;
+      if (opening) {
+        void fetchNotifications();
+        // Mark as seen — clear badge
+        const seenKey = `notif_seen_${user.id}`;
+        localStorage.setItem(seenKey, new Date().toISOString());
+        setUnreadCount(0);
+      }
+      return opening;
     });
   };
 
@@ -1212,9 +1250,9 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
           <button onClick={handleBellClick}
             className="relative grid h-9 w-9 place-items-center rounded-xl bg-white/20 text-white">
             <Bell className="h-4 w-4" />
-            {(notifFollows.length + notifPurchases.length + notifReviews.length) > 0 && (
+            {unreadCount > 0 && (
               <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[9px] font-bold text-[#1ec28e]">
-                {Math.min(99, notifFollows.length + notifPurchases.length + notifReviews.length)}
+                {Math.min(99, unreadCount)}
               </span>
             )}
           </button>
@@ -1364,9 +1402,9 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                   <button onClick={handleBellClick}
                     className="relative grid h-11 w-11 place-items-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:text-[#1ec28e]">
                     <Bell className="h-4 w-4" />
-                    {(notifFollows.length + notifPurchases.length + notifReviews.length) > 0 && (
+                    {unreadCount > 0 && (
                       <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#1ec28e] text-[10px] font-bold text-white">
-                        {Math.min(99, notifFollows.length + notifPurchases.length + notifReviews.length)}
+                        {Math.min(99, unreadCount)}
                       </span>
                     )}
                   </button>

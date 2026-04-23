@@ -238,9 +238,18 @@ const Navbar = () => {
                     >
                       <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
                         <p className="text-sm font-semibold text-gray-900">Notifications</p>
-                        {notifications.length > 0 && (
-                          <span className="text-xs text-gray-400">{notifications.length} total</span>
-                        )}
+                        <div className="flex items-center gap-2">
+                          {notifications.length > 0 && (
+                            <span className="text-xs text-gray-400">{notifications.length} total</span>
+                          )}
+                          <button
+                            onClick={() => setNotifOpen(false)}
+                            className="flex h-6 w-6 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+                            aria-label="Close notifications"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
                       </div>
                       <div className="max-h-72 overflow-y-auto">
                         {notifications.length === 0 ? (

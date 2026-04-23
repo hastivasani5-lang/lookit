@@ -35,7 +35,7 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
         <p className="text-[#1ec28e] font-semibold mb-4">{course.price}</p>
         <p className="mb-6 text-gray-700">{course.description}</p>
         <div className="mb-4 text-gray-600">Instructor: <span className="font-semibold text-[#1a2c47]">{course.instructor}</span></div>
-        <button className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-2 text-white font-semibold shadow hover:opacity-90 transition">Enroll Now</button>
+        <button className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-2 text-white font-semibold shadow hover:opacity-90 transition">Enroll 000Now</button>
       </div>
     </section>
   );

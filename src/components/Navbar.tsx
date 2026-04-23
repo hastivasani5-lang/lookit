@@ -293,6 +293,7 @@ const Navbar = () => {
                               <button
                                 onClick={async (e) => {
                                   e.stopPropagation();
+                                  e.preventDefault();
                                   try {
                                     await fetch("/api/student/notifications", {
                                       method: "DELETE",
@@ -303,10 +304,10 @@ const Navbar = () => {
                                     setUnreadCount((c) => !n.read ? Math.max(0, c - 1) : c);
                                   } catch { /* ignore */ }
                                 }}
-                                className="ml-1 mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-gray-300 transition hover:bg-red-50 hover:text-red-400"
+                                className="ml-2 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition hover:bg-red-100 hover:text-red-500"
                                 aria-label="Dismiss notification"
                               >
-                                <X className="h-3 w-3" />
+                                <X className="h-3.5 w-3.5" />
                               </button>
                             </div>
                           ))

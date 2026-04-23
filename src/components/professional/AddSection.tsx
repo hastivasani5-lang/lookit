@@ -405,39 +405,17 @@ export default function AddSection({
                             </div>
                           </div>
 
-                          {/* Upload Course Images */}
+                          {/* Book Image URL */}
                           <div>
-                            <label className="block text-sm font-medium text-slate-900 mb-2">Upload Course Images</label>
-                            <label className="flex min-h-28 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-[#f7faf8] transition hover:border-[#1ec28e]">
-                              {bookImageFile ? (
-                                <img src={URL.createObjectURL(bookImageFile)} alt="preview" className="h-24 w-24 object-cover rounded" />
-                              ) : (
-                                <div className="flex flex-col items-center gap-2">
-                                  <svg className="h-8 w-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                  </svg>
-                                  <span className="text-sm text-slate-600">Drag or click to upload</span>
-                                </div>
-                              )}
-                              <input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={(event) => setBookImageFile(event.target.files?.[0] ?? null)}
-                              />
-                            </label>
-                          </div>
-
-                          {/* Upload Video URL */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-900 mb-2">Upload Video URL</label>
+                            <label className="block text-sm font-medium text-slate-900 mb-2">Book Image URL</label>
                             <input
                               type="url"
-                              value={bookLinkInput}
-                              onChange={(event) => setBookLinkInput(event.target.value)}
-                              placeholder="https://videos.com"
+                              value={bookImageLinkInput}
+                              onChange={(event) => setBookImageLinkInput(event.target.value)}
+                              placeholder="https://example.com/book-cover.jpg"
                               className="w-full h-10 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
                             />
+                            <p className="mt-1 text-xs text-slate-400">Paste a direct image URL for the book cover</p>
                           </div>
 
                           {/* Level and Price */}
@@ -525,20 +503,17 @@ export default function AddSection({
                             </div>
                           </div>
 
-                          {/* Course Files Upload */}
+                          {/* Course File URL */}
                           <div>
-                            <label className="block text-sm font-medium text-slate-900 mb-2">Upload Course Files</label>
-                            <label className="flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-lg border border-dashed border-slate-300 bg-[#f7faf8] px-4 text-sm text-slate-600 transition hover:border-[#1ec28e] hover:bg-[#f0f7f5]">
-                              <span>{pendingBookFiles.length > 0 ? `${pendingBookFiles.length} file(s) selected` : "Choose course files to upload"}</span>
-                              <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-medium text-[#1ec28e]">Browse</span>
-                              <input
-                                type="file"
-                                multiple
-                                accept=".pdf,.doc,.docx,.ppt,.pptx,.txt"
-                                className="hidden"
-                                onChange={(event) => setPendingBookFiles(Array.from(event.target.files ?? []))}
-                              />
-                            </label>
+                            <label className="block text-sm font-medium text-slate-900 mb-2">Book/Course File URL</label>
+                            <input
+                              type="url"
+                              value={bookLinkInput}
+                              onChange={(event) => setBookLinkInput(event.target.value)}
+                              placeholder="https://drive.google.com/... or Amazon link"
+                              className="w-full h-10 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                            />
+                            <p className="mt-1 text-xs text-slate-400">Paste a Google Drive, Dropbox, or Amazon link to your book/course file</p>
                           </div>
 
                           {bookFormError && (

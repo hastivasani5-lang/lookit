@@ -73,8 +73,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Please write a longer review." }, { status: 400 });
   }
 
-  if (!Number.isFinite(rating) || rating < 1 || rating > 5) {
-    return NextResponse.json({ message: "Please provide a rating between 1 and 5." }, { status: 400 });
+  if (!Number.isFinite(rating) || rating < 3 || rating > 5) {
+    return NextResponse.json({ message: "Only positive reviews (3 stars or above) are allowed." }, { status: 400 });
   }
 
   const professional = await getUserById(professionalId);

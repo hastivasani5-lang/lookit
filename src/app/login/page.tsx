@@ -20,6 +20,7 @@ export default function LoginPage() {
   const [loginError, setLoginError] = useState("");
   const [loginSuccess, setLoginSuccess] = useState("");
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [workHoursGoal, setWorkHoursGoal] = useState("8");
 
   // ── Register state ───────────────────────────────────────
   const [regRole, setRegRole] = useState<UserRole>("student");
@@ -61,6 +62,11 @@ export default function LoginPage() {
     const s = await fetch("/api/auth/session", { cache: "no-store" });
     const sp = await s.json().catch(() => null);
     const role = sp?.user?.role === "professional" ? "professional" : "student";
+    // Save work hours goal for student
+    if (role === "student" && sp?.user?.id) {
+      const goal = Math.max(1, Math.min(24, Number(workHoursGoal) || 8));
+      localStorage.setItem(`lookit-work-goal-${sp.user.id}`, String(goal));
+    }
     window.location.href = role === "professional" ? "/dashboard/teachers" : "/dashboard/students";
   };
 

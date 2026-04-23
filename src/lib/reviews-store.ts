@@ -47,14 +47,26 @@ async function readStore(): Promise<ReviewsStore> {
       [REVIEWS_DB_KEY],
     );
 
-    if (result.rows.length === 0) {
-      return defaultStore;
+    if (result.rows.length > 0) {
+      const parsed = result.rows[0].data as Partial<ReviewsStore>;
+      return {
+        reviews: Array.isArray(parsed?.reviews) ? (parsed.reviews as ReviewRecord[]) : [],
+      };
     }
 
-    const parsed = result.rows[0].data as Partial<ReviewsStore>;
-    return {
-      reviews: Array.isArray(parsed?.reviews) ? (parsed.reviews as ReviewRecord[]) : [],
-    };
+    // DB empty — seed from JSON file
+    try {
+      await ensureReviewsFile();
+      const raw = await fs.readFile(REVIEWS_FILE, "utf-8");
+      const parsed = JSON.parse(raw) as Partial<ReviewsStore>;
+      const store: ReviewsStore = {
+        reviews: Array.isArray(parsed?.reviews) ? (parsed.reviews as ReviewRecord[]) : [],
+      };
+      if (store.reviews.length > 0) await writeStore(store);
+      return store;
+    } catch {
+      return defaultStore;
+    }
   }
 
   await ensureReviewsFile();

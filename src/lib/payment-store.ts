@@ -54,14 +54,27 @@ async function readStore(): Promise<PaymentStore> {
       [PAYMENTS_DB_KEY],
     );
 
-    if (result.rows.length === 0) {
-      return defaultStore;
+    if (result.rows.length > 0) {
+      const parsed = result.rows[0].data as Partial<PaymentStore>;
+      return {
+        payments: Array.isArray(parsed?.payments) ? (parsed.payments as PaymentRecord[]) : [],
+      };
     }
 
-    const parsed = result.rows[0].data as Partial<PaymentStore>;
-    return {
-      payments: Array.isArray(parsed?.payments) ? (parsed.payments as PaymentRecord[]) : [],
-    };
+    // DB empty — seed from JSON file
+    try {
+      const raw = await fs.readFile(PAYMENTS_FILE, "utf-8");
+      const parsed = JSON.parse(raw) as Partial<PaymentStore>;
+      const store: PaymentStore = {
+        payments: Array.isArray(parsed?.payments) ? (parsed.payments as PaymentRecord[]) : [],
+      };
+      if (store.payments.length > 0) {
+        await writeStore(store);
+      }
+      return store;
+    } catch {
+      return defaultStore;
+    }
   }
 
   await ensurePaymentsFile();

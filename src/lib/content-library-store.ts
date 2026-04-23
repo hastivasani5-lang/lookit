@@ -118,25 +118,41 @@ async function readStore(): Promise<LibraryStore> {
       [LIBRARY_DB_KEY],
     );
 
-    if (result.rows.length === 0) {
-      return defaultStore;
+    if (result.rows.length > 0) {
+      const parsed = result.rows[0].data as Partial<LibraryStore>;
+      const professionals = Object.fromEntries(
+        Object.entries(parsed?.professionals ?? {}).map(([professionalId, library]) => [
+          professionalId,
+          normalizeProfessionalLibrary(library),
+        ]),
+      );
+      const students = Object.fromEntries(
+        Object.entries(parsed?.students ?? {}).map(([studentId, library]) => [studentId, normalizeStudentLibrary(library)]),
+      );
+      return { professionals, students };
     }
 
-    const parsed = result.rows[0].data as Partial<LibraryStore>;
-    const professionals = Object.fromEntries(
-      Object.entries(parsed?.professionals ?? {}).map(([professionalId, library]) => [
-        professionalId,
-        normalizeProfessionalLibrary(library),
-      ]),
-    );
-    const students = Object.fromEntries(
-      Object.entries(parsed?.students ?? {}).map(([studentId, library]) => [studentId, normalizeStudentLibrary(library)]),
-    );
-
-    return {
-      professionals,
-      students,
-    };
+    // DB empty — seed from JSON file
+    try {
+      await ensureLibraryFile();
+      const raw = await fs.readFile(LIBRARY_FILE, "utf-8");
+      const parsed = JSON.parse(raw) as Partial<LibraryStore>;
+      const professionals = Object.fromEntries(
+        Object.entries(parsed?.professionals ?? {}).map(([professionalId, library]) => [
+          professionalId,
+          normalizeProfessionalLibrary(library),
+        ]),
+      );
+      const students = Object.fromEntries(
+        Object.entries(parsed?.students ?? {}).map(([studentId, library]) => [studentId, normalizeStudentLibrary(library)]),
+      );
+      const store = { professionals, students };
+      const hasData = Object.keys(professionals).length > 0 || Object.keys(students).length > 0;
+      if (hasData) await writeStore(store);
+      return store;
+    } catch {
+      return defaultStore;
+    }
   }
 
   await ensureLibraryFile();
@@ -153,11 +169,7 @@ async function readStore(): Promise<LibraryStore> {
     const students = Object.fromEntries(
       Object.entries(parsed?.students ?? {}).map(([studentId, library]) => [studentId, normalizeStudentLibrary(library)]),
     );
-
-    return {
-      professionals,
-      students,
-    };
+    return { professionals, students };
   } catch {
     return defaultStore;
   }

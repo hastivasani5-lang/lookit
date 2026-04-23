@@ -315,28 +315,28 @@ const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="relative w-full max-w-2xl animate-slide-up">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/50 backdrop-blur-sm">
+      <div className="relative w-full max-w-xl animate-slide-up">
         {/* White Background */}
-        <div className="absolute inset-0 bg-white rounded-2xl shadow-2xl" />
+        <div className="absolute inset-0 bg-white rounded-xl shadow-xl" />
         
         {/* Content Container - White */}
-        <div className="relative bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh] flex flex-col">
+        <div className="relative bg-white rounded-xl shadow-lg overflow-hidden max-h-[85vh] flex flex-col">
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 z-10 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200 group"
+            className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200 group"
           >
-            <X className="w-5 h-5 text-gray-600 group-hover:rotate-90 transition-transform duration-200" />
+            <X className="w-4 h-4 text-gray-600 group-hover:rotate-90 transition-transform duration-200" />
           </button>
 
           {/* Header with Gradient Bar */}
-          <div className="relative pt-8 pb-4 px-8 flex-shrink-0">
+          <div className="relative pt-6 pb-3 px-6 flex-shrink-0">
             <div className="absolute top-0 left-0 right-0 h-1 bg-[#1ec28e]" />
             
             {/* Progress Bar */}
-            <div className="mb-6">
-              <div className="flex justify-between text-sm text-gray-600 mb-2">
+            <div className="mb-4">
+              <div className="flex justify-between text-sm text-gray-600 mb-1">
                 <span>Step {step + 1} of {steps.length}</span>
                 <span>{Math.round(progress)}% Complete</span>
               </div>
@@ -349,15 +349,15 @@ const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
             </div>
 
             {/* Icon and Title */}
-            <div className="flex items-center gap-4 mb-4">
-              <div className={`p-3 rounded-xl bg-gradient-to-r ${steps[step].color} shadow-lg`}>
-                <CurrentIcon className="w-6 h-6 text-white" />
+            <div className="flex items-center gap-3 mb-3">
+              <div className={`p-2.5 rounded-xl bg-gradient-to-r ${steps[step].color} shadow-lg`}>
+                <CurrentIcon className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-800">
+                <h2 className="text-xl font-bold text-gray-800">
                   {steps[step].title}
                 </h2>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 mt-0.5">
                   Tell us about yourself
                 </p>
               </div>
@@ -365,24 +365,24 @@ const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
           </div>
 
           {/* Question Section - Scrollable */}
-          <div className="px-8 pb-6 flex-1 overflow-y-auto">
-            <div className="mb-6">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">
+          <div className="px-6 pb-4 flex-1 overflow-y-auto">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">
                 {steps[step].question}
               </h3>
               
               {/* Search Bar for Country */}
               {steps[step].showFlags && (
-                <div className="mb-4">
+                <div className="mb-3">
                   <div className="relative">
                     <input
                       type="text"
                       placeholder=" Search country..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                      className="w-full px-3 py-1.5 pl-9 border border-gray-300 rounded-lg focus:outline-none focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
                     />
-                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                    <span className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400">
                       🔍
                     </span>
                   </div>
@@ -391,7 +391,7 @@ const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
 
               {/* Input Field for Profession */}
               {steps[step].showInput && (
-                <div className="mb-4">
+                <div className="mb-3">
                   <div className="relative">
                     <input
                       type="text"
@@ -410,13 +410,13 @@ const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
                           });
                         }
                       }}
-                      className="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:border-[#1ec28e] focus:ring-2 focus:ring-[#1ec28e] text-lg"
+                      className="w-full px-3 py-2 pl-9 border border-gray-300 rounded-lg focus:outline-none focus:border-[#1ec28e] focus:ring-2 focus:ring-[#1ec28e] text-base"
                     />
-                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                    <span className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400">
                       💼
                     </span>
                   </div>
-                  <p className="text-sm text-gray-500 mt-2">
+                  <p className="text-xs text-gray-500 mt-1.5">
                     Type your profession (e.g., Doctor, Engineer, Artist, Student, etc.) - Next button will activate when you enter at least 2 characters
                   </p>
                 </div>
@@ -424,7 +424,7 @@ const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
               
               {/* Options Grid - Don't show for profession input */}
               {!steps[step].showInput && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-100 overflow-y-auto pr-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-80 overflow-y-auto pr-1">
                   {(steps[step].showFlags
                     ? filteredCountries.map((c) => ({ name: c.name, flagUrl: c.flagUrl, icon: null }))
                     : steps[step].hasIcons
@@ -440,21 +440,21 @@ const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
                       <button
                         key={optionName}
                         onClick={() => handleOptionSelect(optionName)}
-                        className={`relative group overflow-hidden rounded-xl transition-all duration-300 ${isSelected ? "bg-[#1ec28e] text-white shadow-lg transform scale-105" : "bg-gray-50 text-gray-700 hover:bg-gray-100 border-2 border-gray-200 hover:border-[#1ec28e]"}`}
+                        className={`relative group overflow-hidden rounded-lg transition-all duration-300 ${isSelected ? "bg-[#1ec28e] text-white shadow-md transform scale-105" : "bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200 hover:border-[#1ec28e]"}`}
                       >
-                        <div className="px-4 py-3 text-left font-medium flex items-center justify-between">
-                          <div className="flex items-center gap-3">
+                        <div className="px-3 py-2 text-left font-medium flex items-center justify-between">
+                          <div className="flex items-center gap-2">
                             {flagUrl && (
-                              <img src={flagUrl} alt={`${optionName} flag`} className="w-6 h-6 object-cover rounded-sm shadow-sm" />
+                              <img src={flagUrl} alt={`${optionName} flag`} className="w-5 h-5 object-cover rounded-sm shadow-sm" />
                             )}
                             {OptionIcon && (
-                              <div className={`p-1.5 rounded-lg ${isSelected ? "bg-white/20" : "bg-gray-100"}`}>
-                                <OptionIcon className={`w-5 h-5 ${isSelected ? "text-white" : "text-[#1ec28e]"}`} />
+                              <div className={`p-1 rounded ${isSelected ? "bg-white/20" : "bg-gray-100"}`}>
+                                <OptionIcon className={`w-4 h-4 ${isSelected ? "text-white" : "text-[#1ec28e]"}`} />
                               </div>
                             )}
-                            <span>{optionName}</span>
+                            <span className="text-sm">{optionName}</span>
                           </div>
-                          {isSelected && <Check className="w-5 h-5 text-white" />}
+                          {isSelected && <Check className="w-4 h-4 text-white" />}
                         </div>
                         <div className={`absolute inset-0 bg-[#1ec28e] opacity-0 transition-opacity duration-300 pointer-events-none ${isSelected ? "opacity-0" : "group-hover:opacity-10"}`} />
                       </button>
@@ -471,32 +471,32 @@ const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
 
               {/* Show selected country with flag for non-country steps */}
               {!steps[step].showFlags && answers.country && (
-                <div className="mt-4 p-3 bg-gray-50 rounded-lg flex items-center gap-2">
-                  <span className="text-sm text-gray-600">Selected Country:</span>
+                <div className="mt-3 p-2 bg-gray-50 rounded-md flex items-center gap-2">
+                  <span className="text-xs text-gray-600">Selected Country:</span>
                   <img 
                     src={getCountryFlagUrl(answers.country)} 
                     alt={`${answers.country} flag`}
-                    className="w-6 h-6 object-cover rounded-sm shadow-sm"
+                    className="w-5 h-5 object-cover rounded-sm shadow-sm"
                   />
-                  <span className="font-medium text-gray-800">{answers.country}</span>
+                  <span className="font-medium text-gray-800 text-sm">{answers.country}</span>
                 </div>
               )}
             </div>
 
             {/* Navigation Buttons */}
-            <div className="flex justify-between gap-4 mt-8">
+            <div className="flex justify-between gap-3 mt-6">
               <button
                 onClick={handlePrev}
                 disabled={step === 0}
                 className={`
-                  flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium transition-all duration-300
+                  flex items-center gap-1.5 px-4 py-1.5 rounded-lg font-medium transition-all duration-300 text-sm
                   ${step === 0 
                     ? "bg-gray-100 text-gray-400 cursor-not-allowed" 
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:transform hover:-translate-x-1"
                   }
                 `}
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-3.5 h-3.5" />
                 Previous
               </button>
 
@@ -505,23 +505,23 @@ const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
                   onClick={handleNext}
                   disabled={!answers[steps[step].key]}
                   className={`
-                    flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium transition-all duration-300
+                    flex items-center gap-1.5 px-4 py-1.5 rounded-lg font-medium transition-all duration-300 text-sm
                     ${answers[steps[step].key]
-                      ? "bg-[#1ec28e] text-white shadow-lg hover:shadow-xl hover:transform hover:translate-x-1"
+                      ? "bg-[#1ec28e] text-white shadow-md hover:shadow-lg hover:transform hover:translate-x-1"
                       : "bg-gray-100 text-gray-400 cursor-not-allowed"
                     }
                   `}
                 >
-                  Next                  <ChevronRight className="w-4 h-4" />
+                  Next                  <ChevronRight className="w-3.5 h-3.5" />
                 </button>
               ) : (
                 <button
                   onClick={handleNext}
                   disabled={!answers[steps[step].key]}
                   className={`
-                    flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium transition-all duration-300
+                    flex items-center gap-1.5 px-4 py-1.5 rounded-lg font-medium transition-all duration-300 text-sm
                     ${answers[steps[step].key]
-                      ? "bg-[#1ec28e] text-white shadow-lg hover:shadow-xl hover:transform hover:scale-105"
+                      ? "bg-[#1ec28e] text-white shadow-md hover:shadow-xl hover:transform hover:scale-105"
                       : "bg-gray-100 text-gray-400 cursor-not-allowed"
                     }
                   `}
@@ -533,7 +533,7 @@ const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
             </div>
 
             {/* Progress Dots */}
-            <div className="flex justify-center gap-2 mt-6">
+            <div className="flex justify-center gap-1.5 mt-4">
               {steps.map((_, idx) => (
                 <button
                   key={idx}
@@ -541,10 +541,10 @@ const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
                   className={`
                     transition-all duration-300 rounded-full
                     ${idx === step
-                      ? "w-8 h-2 bg-[#1ec28e]"
+                      ? "w-6 h-1.5 bg-[#1ec28e]"
                       : idx < step
-                      ? "w-2 h-2 bg-[#1ec28e] opacity-60"
-                      : "w-2 h-2 bg-gray-300"
+                      ? "w-1.5 h-1.5 bg-[#1ec28e] opacity-60"
+                      : "w-1.5 h-1.5 bg-gray-300"
                     }
                   `}
                   disabled={idx > step}

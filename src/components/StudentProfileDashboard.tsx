@@ -436,7 +436,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
               )}
             </div>
             <h2 className="text-2xl font-bold text-[#1f2937]">{user.name}</h2>
-            <p className="mt-1 text-sm text-[#6b7280]">UI/UX Student</p>
+            <p className="mt-1 text-sm text-[#6b7280]">{profileAnswers?.profession || "UI/UX Student"}</p>
             <div className="mt-3 flex items-center justify-center gap-1 text-[#f59e0b]">
               <span>★</span><span>★</span><span>★</span><span>★</span><span className="text-[#d1d5db]">★</span>
               <span className="ml-2 text-xs font-semibold text-[#6b7280]">4.0</span>

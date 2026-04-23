@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import Navbar from "@/components/Navbar";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 // Hero skeleton shown while Hero loads
 const HeroSkeleton = () => (
@@ -61,6 +62,7 @@ const Footer = dynamic(() => import("@/components/Footer"));
 const AutoPopupModal = dynamic(() => import("@/components/AutoPopupModal"));
 
 export default function StudentsPage() {
+  const { data: session, status } = useSession();
   const [showModal, setShowModal] = useState(false);
   const [belowFoldReady, setBelowFoldReady] = useState(false);
 
@@ -78,15 +80,60 @@ export default function StudentsPage() {
     };
   }, []);
 
+  // Show modal 2 seconds after student login if they haven't filled profile yet
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    if (session?.user?.role !== "student") return;
+
+    const userId = session.user.id;
+    if (!userId) return;
+
+    // Check if already dismissed for this user
+    const dismissed = localStorage.getItem(`student_profile_modal_done_${userId}`);
+    if (dismissed) return;
+
+    // Check if profile already has location (country) filled — means already submitted
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch("/api/student/profile/check");
+        if (!res.ok) { setShowModal(true); return; }
+        const data = (await res.json()) as { filled: boolean };
+        if (!data.filled) setShowModal(true);
+      } catch {
+        setShowModal(true);
+      }
+    }, 2000); // 2 seconds delay
+
+    return () => clearTimeout(timer);
+  }, [status, session]);
+
   const handleCloseModal = () => {
+    const userId = session?.user?.id;
+    if (userId) {
+      localStorage.setItem(`student_profile_modal_done_${userId}`, "1");
+    }
     setShowModal(false);
   };
+
+  const userId = session?.user?.id ?? "guest";
+
+  // Show loading state while checking authentication
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#1ec28e] border-r-transparent"></div>
+          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
       <Navbar />
       <main className="overflow-x-hidden">
-        {showModal && <AutoPopupModal onClose={handleCloseModal} userId="guest" />}
+        {showModal && <AutoPopupModal onClose={handleCloseModal} userId={userId} />}
         <Hero />
         {belowFoldReady && (
           <>

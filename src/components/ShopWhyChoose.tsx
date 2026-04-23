@@ -1,100 +1,114 @@
 "use client";
 
 import Image from "next/image";
+import { motion } from "framer-motion";
+import { ShieldCheck, Zap, RefreshCw, Headphones } from "lucide-react";
+
+const features = [
+  { icon: ShieldCheck, text: "Secure Payment",  bg: "bg-emerald-50",  color: "text-emerald-600" },
+  { icon: Zap,         text: "Fast Delivery",   bg: "bg-orange-50",   color: "text-orange-500" },
+  { icon: RefreshCw,   text: "Easy Returns",    bg: "bg-purple-50",   color: "text-purple-500" },
+  { icon: Headphones,  text: "24/7 Support",    bg: "bg-blue-50",     color: "text-blue-500" },
+];
 
 const ShopWhyChoose = () => {
-  const features = [
-    { text: "Secure Payment", bg: "bg-[#dff3ec]", iconColor: "text-[#1ec28e]" },
-    { text: "Fast Delivery", bg: "bg-[#f3e7db]", iconColor: "text-orange-500" },
-    { text: "Easy Returns", bg: "bg-[#eae4f8]", iconColor: "text-purple-500" },
-    { text: "24/7 Support", bg: "bg-[#dff0f7]", iconColor: "text-blue-500" },
-  ];
-
   return (
-    <section className="relative overflow-hidden bg-[#f7f9fb] text-black px-6 md:px-16 ">
+    <section className="relative overflow-hidden bg-gradient-to-br from-[#f0faf6] via-white to-[#f0f7ff] px-6 md:px-16 py-14">
 
-      {/* BACKGROUND */}
-      <div className="absolute right-0 top-0 w-[500px] h-[500px] bg-gradient-to-tr from-[#1ec28e]/10 to-transparent blur-3xl opacity-60"></div>
+      {/* BG blobs */}
+      <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-[#1ec28e]/10 blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-blue-200/20 blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
 
-        {/* ================= LEFT ================= */}
-        <div className="max-w-2xl">
+        {/* LEFT */}
+        <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#effaf6] px-4 py-1.5 text-sm font-semibold text-[#1ec28e] mb-5">
+            🛍️ Premium Shop
+          </div>
 
-               {/* ✅ FIXED HEADING */}
-          <h2 className="mb-5 text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#1e2a55] leading-tight">
-            <span className="block lg:inline">
-              Discover quality products
-            </span>{" "}
-            <span className="block lg:inline">
-              at the best prices
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#1e2a55] leading-tight mb-4">
+            Discover Quality<br />
+            <span className="bg-gradient-to-r from-[#1ec28e] to-[#0d7a57] bg-clip-text text-transparent">
+              Books & Videos
             </span>
           </h2>
 
-    
-          {/* FEATURES */}
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {features.map((feature, idx) => (
-              <div
-                key={idx}
-                className={`flex items-center gap-2 rounded-lg ${feature.bg} px-4 py-3 text-sm font-medium`}
-              >
-                <span className={feature.iconColor}>✔</span>
-                {feature.text}
-              </div>
-            ))}
+          <p className="text-gray-500 text-base mb-8 max-w-md">
+            Explore premium learning content from top professionals. Get the best resources at unbeatable prices.
+          </p>
+
+          {/* Features */}
+          <div className="grid grid-cols-2 gap-3 mb-8">
+            {features.map((f, i) => {
+              const Icon = f.icon;
+              return (
+                <div key={i} className={`flex items-center gap-3 rounded-2xl ${f.bg} px-4 py-3`}>
+                  <div className={`w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-sm`}>
+                    <Icon className={`w-4 h-4 ${f.color}`} />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-700">{f.text}</span>
+                </div>
+              );
+            })}
           </div>
 
-          {/* CTA */}
-          <div className="mt-8 flex items-center gap-6">
-            <button className=" bg-gradient-to-r from-emerald-600 to-teal-600  text-white
-            px-6 py-3 rounded-full font-semibold shadow  transition">
+          {/* CTAs */}
+          <div className="flex flex-wrap gap-3">
+            <button className="flex items-center gap-2 rounded-full px-7 py-3 text-sm font-bold text-white shadow-lg transition hover:scale-105 hover:shadow-xl"
+              style={{ background: "linear-gradient(135deg, #0d7a57, #1ec28e)" }}>
               Shop Now →
             </button>
-
-            <button className="bg-white border-2 border-gradient-to-r from-emerald-600 to-teal-600 text-[#1ec28e] px-6 py-3 rounded-full font-semibold shadow transition">
+            <button className="flex items-center gap-2 rounded-full border-2 border-[#1ec28e] bg-white px-7 py-3 text-sm font-bold text-[#1ec28e] transition hover:bg-[#effaf6]">
               View Products
             </button>
           </div>
-        </div>
+        </motion.div>
 
-        {/* ================= RIGHT ================= */}
-        <div className="relative flex flex-col justify-end min-h-[400px] h-full">
-          {/* Animated Spinning Ring BG */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0">
-            <span className="block w-[480px] h-[480px] rounded-full border-8 border-dashed border-[#1ec28e]/30 animate-spin-slow"></span>
-          </div>
+        {/* RIGHT - image centered */}
+        <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.15 }}
+          className="relative flex items-center justify-center min-h-[380px]">
 
-          {/* Floating Animated Icons */}
-          <div className="absolute left-10 top-10 animate-bounce z-10">
-            <Image src="/start.png" alt="icon1" width={48} height={48}  />
-          </div>
-          <div className="absolute right-10 top-32 animate-pulse z-10">
-            <Image src="/hero-arrow.png" alt="icon2" width={40} height={40} />
-          </div>
-          <div className="absolute left-20 bottom-24 animate-bounce z-10">
-            <Image src="/wave.png" alt="icon3" width={45} height={45}  />
+          {/* Spinning ring */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <span className="block w-[380px] h-[380px] rounded-full border-8 border-dashed border-[#1ec28e]/20 animate-spin-slow" />
           </div>
 
-          {/* DISCOUNT BADGE */}
-          <div className="absolute top-6 right-24 bg-orange-500 text-white px-3 py-1 rounded-full text-xs shadow z-20">
+          {/* Floating icons */}
+          <motion.div animate={{ y: [0, -12, 0] }} transition={{ duration: 3, repeat: Infinity }}
+            className="absolute top-8 left-8 z-10">
+            <Image src="/start.png" alt="" width={44} height={44} />
+          </motion.div>
+          <motion.div animate={{ y: [0, 10, 0] }} transition={{ duration: 3.5, repeat: Infinity, delay: 0.5 }}
+            className="absolute top-16 right-8 z-10">
+            <Image src="/hero-arrow.png" alt="" width={36} height={36} />
+          </motion.div>
+          <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 4, repeat: Infinity, delay: 1 }}
+            className="absolute bottom-16 left-12 z-10">
+            <Image src="/wave.png" alt="" width={40} height={40} />
+          </motion.div>
+
+          {/* Discount badge */}
+          <div className="absolute top-4 right-16 z-20 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-extrabold px-3 py-1.5 rounded-full shadow-lg rotate-6">
             50% OFF
           </div>
 
- 
-
-          {/* MAIN IMAGE - moved to bottom, larger, no gap below */}
-          <div className="relative z-10 h-[420px] w-[420px] sm:h-[520px] sm:w-[520px] mt-auto">
-            <Image
-              src="/shopban.png"
-              alt="product"
-              fill
-              className="object-contain"
-              priority
-            />
+          {/* Main image - centered */}
+          <div className="relative z-10 w-[360px] h-[360px] sm:w-[420px] sm:h-[420px]">
+            <Image src="/shopban.png" alt="Shop" fill className="object-contain drop-shadow-2xl" priority />
           </div>
-        </div>
 
+          {/* Floating card */}
+          <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, delay: 0.3 }}
+            className="absolute bottom-4 right-0 z-20 bg-white rounded-2xl shadow-xl px-4 py-3 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#effaf6] flex items-center justify-center text-lg">📚</div>
+            <div>
+              <p className="text-xs font-bold text-gray-800">1,200+ Items</p>
+              <p className="text-[10px] text-gray-400">Books & Videos</p>
+            </div>
+          </motion.div>
+        </motion.div>
 
       </div>
     </section>

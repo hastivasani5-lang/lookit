@@ -61,12 +61,14 @@ export async function getStudentNotifications(studentId: string): Promise<Studen
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
+// Write queue to prevent concurrent read-modify-write races
+let writeQueue: Promise<void> = Promise.resolve();
+
 export async function appendStudentNotification(
   studentId: string,
   type: StudentNotification["type"],
   message: string,
 ): Promise<StudentNotification> {
-  const all = await readAll();
   const notification: StudentNotification = {
     id: randomUUID(),
     studentId,
@@ -75,8 +77,12 @@ export async function appendStudentNotification(
     read: false,
     createdAt: new Date().toISOString(),
   };
-  all.unshift(notification);
-  await writeAll(all);
+  writeQueue = writeQueue.then(async () => {
+    const all = await readAll();
+    all.unshift(notification);
+    await writeAll(all);
+  });
+  await writeQueue;
   return notification;
 }
 

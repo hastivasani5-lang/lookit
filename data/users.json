@@ -491,5 +491,32 @@
     "approvalStatus": "approved",
     "provider": "google",
     "createdAt": "2026-04-23T06:40:48.343Z"
+  },
+  {
+    "id": "68b7d8df-60d7-4843-8587-f837def5c84f",
+    "name": "hello",
+    "email": "hello@gmail.com",
+    "passwordHash": "$2a$10$NKEFtlSGlqLHlJVPsF4NPeGI/6Xz9A.sZ1E3EMHKRJAO01twKnPf.",
+    "role": "professional",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "pending",
+    "provider": "credentials",
+    "createdAt": "2026-04-23T08:50:01.231Z"
+  },
+  {
+    "id": "72a77924-caa4-4e0b-8dcb-ec1eb30253a1",
+    "name": "sk",
+    "email": "sk@gmail.com",
+    "passwordHash": "$2a$10$7zfV6Kb4TdpmhNzhRqWdKum67wgHZnGv.BNEANH6ijx/jk5JP9MnS",
+    "role": "student",
+    "specialization": "Friends | 1-2 hours",
+    "contactNumber": "web developer",
+    "location": "India",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-23T08:54:43.453Z"
   }
 ]

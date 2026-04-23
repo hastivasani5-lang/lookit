@@ -17,7 +17,7 @@ async function notifyFollowers(professionalId: string, type: "new_content" | "an
     const ids = await getFollowerIds(professionalId);
     await Promise.all(ids.map((sid) => appendStudentNotification(sid, type, message)));
   } catch (err) {
-    console.error("[notifyFollowers] fan-out error:", err);
+    console.error("[notifyFollowers] fan-out error for professional", professionalId, err);
   }
 }
 

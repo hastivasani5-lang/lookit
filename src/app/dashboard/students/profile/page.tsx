@@ -41,11 +41,19 @@ export default async function StudentProfileDashboardPage() {
               id: book.id,
               title: book.title,
               amount: book.amount,
+              contentId: book.contentId,
+              accessUrl: book.accessUrl,
+              source: book.source,
+              purchasedAt: book.purchasedAt,
             })),
             watchedVideos: library.watchedVideos.map((video) => ({
               id: video.id,
               title: video.title,
               amount: video.amount,
+              contentId: video.contentId,
+              accessUrl: video.accessUrl,
+              provider: video.provider,
+              watchedAt: video.watchedAt,
             })),
           }}
         />

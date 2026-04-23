@@ -63,15 +63,18 @@ export function addCartItem(item: CartItem) {
     : [item, ...currentItems];
 
   writeStorage(nextItems);
+  window.dispatchEvent(new Event("cart-updated"));
   return nextItems;
 }
 
 export function removeCartItem(itemId: string) {
   const nextItems = readStorage().filter((item) => item.id !== itemId);
   writeStorage(nextItems);
+  window.dispatchEvent(new Event("cart-updated"));
   return nextItems;
 }
 
 export function clearCartItems() {
   writeStorage([]);
+  window.dispatchEvent(new Event("cart-updated"));
 }

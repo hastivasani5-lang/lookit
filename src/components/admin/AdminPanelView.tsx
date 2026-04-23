@@ -1433,7 +1433,7 @@ export default function AdminPanelView() {
   return (
     <main className="min-h-screen bg-[#eef5f3] p-3 sm:p-4 md:p-6 font-sans">
       <section className="flex min-h-[calc(100vh-1.5rem)] w-full overflow-hidden rounded-[28px] neumorph-admin-main bg-[#eef5f3] font-sans">
-        <aside className="fixed left-0 top-0 z-30 h-full w-62.5 border-r border-slate-100 bg-[#eef5f3] px-4 py-5 flex flex-col neumorph-admin-sidebar">
+        <aside className="fixed left-0 top-0 z-30 h-full w-62.5 border-r border-slate-100 bg-[#eef5f3] px-4 py-5 hidden lg:flex flex-col neumorph-admin-sidebar">
           <div className="pb-6">
             <SiteLogo size="sidebar" priority />
           </div>
@@ -1494,7 +1494,7 @@ export default function AdminPanelView() {
           </div>
         </aside>
 
-        <div className={`neumorph-admin-content flex-1 p-3 sm:p-4 md:p-5 transition ml-62.5 h-screen overflow-y-auto hide-scrollbar ${selectedStudent || detailModal || adminProfileOpen || isCategoryFormOpen ? "blur-sm" : ""}`}>
+        <div className={`neumorph-admin-content flex-1 p-3 sm:p-4 md:p-5 transition lg:ml-62.5 h-screen overflow-y-auto hide-scrollbar ${selectedStudent || detailModal || adminProfileOpen || isCategoryFormOpen ? "blur-sm" : ""}`}>
                 <style>{`
                   .hide-scrollbar {
                     scrollbar-width: none; /* Firefox */

@@ -66,6 +66,7 @@ export default function StudentsViewing() {
       if (!res.ok) return;
       const data = (await res.json()) as { wishlisted: boolean };
       setWishlistIds((prev) => data.wishlisted ? [item.id, ...prev] : prev.filter((w) => w !== item.id));
+      window.dispatchEvent(new Event("wishlist-updated"));
     } catch { /* ignore */ }
   };
 

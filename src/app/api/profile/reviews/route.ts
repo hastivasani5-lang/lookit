@@ -9,6 +9,8 @@ export const runtime = "nodejs";
 
 type ReviewPayload = {
   professionalId?: string;
+  contentId?: string;
+  contentType?: string;
   rating?: number;
   review?: string;
 };
@@ -60,6 +62,8 @@ export async function POST(request: Request) {
   const professionalId = typeof body.professionalId === "string" ? body.professionalId.trim() : "";
   const review = typeof body.review === "string" ? body.review.trim() : "";
   const rating = typeof body.rating === "number" ? body.rating : Number.NaN;
+  const contentId = typeof body.contentId === "string" ? body.contentId.trim() : undefined;
+  const contentType = body.contentType === "book" || body.contentType === "video" ? body.contentType : undefined;
 
   if (!professionalId) {
     return NextResponse.json({ message: "Please select a professional." }, { status: 400 });
@@ -85,6 +89,8 @@ export async function POST(request: Request) {
     studentEmail: student.email,
     professionalId: professional.id,
     professionalName: professional.name,
+    contentId,
+    contentType,
     rating,
     review,
     createdAt: new Date().toISOString(),

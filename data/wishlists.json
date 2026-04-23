@@ -53,5 +53,26 @@
       "addedAt": "2026-04-23T03:49:21.680Z"
     }
   ],
-  "889bba56-bc14-4845-bae0-ce19ebb393eb": []
+  "8914df09-1ed4-430a-a5b6-b324b45f33a3": [
+    {
+      "id": "060fe115-29ac-4395-bdfe-c896a31d6b49:book:book-1776829461467-3k2x4p",
+      "title": "Frontend design",
+      "price": "₹70.00",
+      "imageUrl": "/uploads/books/060fe115-29ac-4395-bdfe-c896a31d6b49-1776829461465-8d3zo3.png",
+      "contentType": "book",
+      "professionalName": "jenil",
+      "slug": "frontend-design-book-1776829461467-3k2x4p",
+      "addedAt": "2026-04-23T07:05:32.257Z"
+    },
+    {
+      "id": "25fb7f81-cbf6-4e88-84b9-13ad35b8e2d7:video:video-1776856255333-lkazwa",
+      "title": "YouTube Video",
+      "price": "Free",
+      "imageUrl": "",
+      "contentType": "video",
+      "professionalName": "krish",
+      "slug": "youtube-video-video-1776856255333-lkazwa",
+      "addedAt": "2026-04-23T07:05:14.594Z"
+    }
+  ]
 }

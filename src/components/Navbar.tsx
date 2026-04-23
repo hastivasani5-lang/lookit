@@ -43,6 +43,7 @@ const Navbar = () => {
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState<Array<{ id: string; message: string; type: string; read: boolean; createdAt: string }>>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => { setHasMounted(true); }, []);
 
@@ -116,6 +117,25 @@ const Navbar = () => {
     void load();
     const interval = setInterval(() => { void load(); }, 30_000);
     return () => clearInterval(interval);
+  }, [isStudent]);
+
+  // Load cart count from localStorage
+  useEffect(() => {
+    if (!isStudent) { setCartCount(0); return; }
+    const updateCount = () => {
+      try {
+        const raw = window.localStorage.getItem("lookit-cart-items");
+        const items = raw ? JSON.parse(raw) : [];
+        setCartCount(Array.isArray(items) ? items.length : 0);
+      } catch { setCartCount(0); }
+    };
+    updateCount();
+    window.addEventListener("cart-updated", updateCount);
+    window.addEventListener("storage", updateCount);
+    return () => {
+      window.removeEventListener("cart-updated", updateCount);
+      window.removeEventListener("storage", updateCount);
+    };
   }, [isStudent]);
 
   const openNotifications = async () => {
@@ -204,7 +224,7 @@ const Navbar = () => {
               <Link href="/cart" className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-50/80 text-gray-600 transition-all duration-200 hover:bg-emerald-100 hover:text-emerald-600 hover:scale-105">
                 <ShoppingCart className="h-4.5 w-4.5" />
                 <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-linear-to-r from-emerald-500 to-teal-500 text-[10px] font-bold text-white shadow-sm transition-transform group-hover:scale-110">
-                  0
+                  {cartCount > 9 ? "9+" : cartCount}
                 </span>
               </Link>
             ) : (
@@ -266,10 +286,29 @@ const Navbar = () => {
                               <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-100">
                                 <Bell className="h-3.5 w-3.5 text-emerald-600" />
                               </div>
-                              <div className="min-w-0">
+                              <div className="min-w-0 flex-1">
                                 <p className="text-sm leading-snug text-gray-800">{n.message}</p>
                                 <p className="mt-1 text-xs text-gray-400">{new Date(n.createdAt).toLocaleString()}</p>
                               </div>
+                              <button
+                                onClick={async (e) => {
+                                  e.stopPropagation();
+                                  e.preventDefault();
+                                  try {
+                                    await fetch("/api/student/notifications", {
+                                      method: "DELETE",
+                                      headers: { "Content-Type": "application/json" },
+                                      body: JSON.stringify({ id: n.id }),
+                                    });
+                                    setNotifications((prev) => prev.filter((x) => x.id !== n.id));
+                                    setUnreadCount((c) => !n.read ? Math.max(0, c - 1) : c);
+                                  } catch { /* ignore */ }
+                                }}
+                                className="ml-2 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition hover:bg-red-100 hover:text-red-500"
+                                aria-label="Dismiss notification"
+                              >
+                                <X className="h-3.5 w-3.5" />
+                              </button>
                             </div>
                           ))
                         )}

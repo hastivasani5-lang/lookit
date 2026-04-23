@@ -163,6 +163,7 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps
       setWishlistIds((prev) =>
         data.wishlisted ? [item.id, ...prev] : prev.filter((id) => id !== item.id),
       );
+      window.dispatchEvent(new Event("wishlist-updated"));
     } catch { /* ignore */ }
   };
 

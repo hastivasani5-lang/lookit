@@ -2,7 +2,7 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { compare } from "bcryptjs";
-import { getUserByEmail, getUserById, recordProfessionalLoginAttempt } from "@/lib/user-store";
+import { getUserByEmail, getUserById, upsertGoogleUser, recordProfessionalLoginAttempt } from "@/lib/user-store";
 import { markProfessionalLoggedIn } from "@/lib/professional-login-store";
 
 const authSecret =
@@ -95,46 +95,46 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
 
-    // 🔥 FIXED Google Login
+    // ✅ Google Login — auto-create account if not exists
     async signIn({ user, account }: any) {
+      if (account?.provider !== "google") {
+        return true;
+      }
+
+      if (!user.email) {
+        return false;
+      }
+
       try {
-        if (account?.provider !== "google") {
-          return true;
+        let dbUser = await getUserByEmail(user.email);
+
+        // 🟢 New Google user — auto-register as student
+        if (!dbUser) {
+          dbUser = await upsertGoogleUser({
+            email: user.email,
+            name: user.name || user.email.split("@")[0],
+            image: user.image ?? null,
+          });
         }
 
-        if (!user.email) {
-          return false;
+        if (
+          dbUser.role === "professional" &&
+          dbUser.approvalStatus === "rejected"
+        ) {
+          await recordProfessionalLoginAttempt(dbUser, "rejected");
+          return "/login?error=approval-rejected";
         }
 
-        try {
-          let dbUser = await getUserByEmail(user.email);
+        user.id = dbUser.id;
+        user.role = dbUser.role;
 
-          // 🟢 If Google user not found
-          if (!dbUser) {
-            console.log("Google user not registered:", user.email);
-            // Redirect to signup instead of loop
-            return "/signup?email=" + user.email;
-          }
-
-          if (dbUser.role === "professional" && dbUser.approvalStatus === "rejected") {
-            await recordProfessionalLoginAttempt(dbUser, "rejected");
-            return "/login?error=approval-rejected";
-          }
-
-          user.id = dbUser.id;
-          user.role = dbUser.role;
-
-          if (dbUser.role === "professional") {
-            await markProfessionalLoggedIn(dbUser.id);
-          }
-
-          return true;
-        } catch (error) {
-          console.error("Google SignIn Error:", error);
-          return false;
+        if (dbUser.role === "professional") {
+          await markProfessionalLoggedIn(dbUser.id);
         }
+
+        return true;
       } catch (error) {
-        console.error("SignIn callback error:", error);
+        console.error("Google SignIn Error:", error);
         return false;
       }
     },

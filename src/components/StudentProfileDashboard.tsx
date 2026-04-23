@@ -50,8 +50,24 @@ type StudentProfileDashboardProps = {
     createdAt: string;
   };
   library: {
-    purchasedBooks: Array<{ id: string; title: string; amount: string }>;
-    watchedVideos: Array<{ id: string; title: string; amount: string }>;
+    purchasedBooks: Array<{
+      id: string;
+      title: string;
+      amount: string;
+      contentId?: string;
+      accessUrl?: string;
+      source?: string;
+      purchasedAt?: string;
+    }>;
+    watchedVideos: Array<{
+      id: string;
+      title: string;
+      amount: string;
+      contentId?: string;
+      accessUrl?: string;
+      provider?: string;
+      watchedAt?: string;
+    }>;
   };
 };
 
@@ -724,22 +740,35 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                     <Video className="h-5 w-5 text-[#b45309]" /> Purchased Videos
                   </h3>
                   {library.watchedVideos.length === 0 ? (
-                    <div className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-4">
+                    <div className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-6 text-center">
+                      <Video className="h-10 w-10 text-gray-300 mx-auto mb-2" />
                       <p className="text-[#4b5563] text-sm">No purchased videos yet.</p>
                     </div>
                   ) : (
                     <div className="grid gap-4 sm:grid-cols-2">
                       {library.watchedVideos.map((video) => (
-                        <div key={video.id} className="overflow-hidden rounded-2xl border border-[#dbe8e4] bg-white shadow-sm">
-                          <div className="flex h-28 items-center justify-center bg-[#f1e9e0]">
-                            <Video className="h-10 w-10 text-[#b45309]" />
+                        <button
+                          key={video.id}
+                          type="button"
+                          onClick={() => {
+                            sessionStorage.setItem("lookit-content-detail", JSON.stringify({ ...video, type: "video" }));
+                            window.location.href = `/dashboard/students/content/${video.id}`;
+                          }}
+                          className="group text-left overflow-hidden rounded-2xl border border-[#dbe8e4] bg-white shadow-sm hover:shadow-lg hover:border-orange-300 transition-all duration-200 hover:-translate-y-0.5"
+                        >
+                          <div className="flex h-32 items-center justify-center bg-gradient-to-br from-orange-100 to-amber-50 relative">
+                            <Video className="h-12 w-12 text-orange-400 group-hover:scale-110 transition-transform" />
+                            <span className="absolute top-3 left-3 rounded-full bg-orange-500 px-2.5 py-0.5 text-[11px] font-bold text-white">Video</span>
                           </div>
                           <div className="p-4">
-                            <span className="rounded bg-[#b45309] px-2 py-0.5 text-[11px] font-semibold text-white">Video</span>
-                            <h4 className="mt-2 text-base font-bold text-[#1f2937]">{video.title}</h4>
-                            <p className="mt-2 text-lg font-bold text-[#2c5a48]">{video.amount}</p>
+                            <h4 className="text-base font-bold text-[#1f2937] group-hover:text-orange-600 transition-colors line-clamp-1">{video.title}</h4>
+                            {video.provider && <p className="text-xs text-gray-400 mt-0.5">by {video.provider}</p>}
+                            <div className="flex items-center justify-between mt-3">
+                              <p className="text-lg font-bold text-emerald-700">{video.amount}</p>
+                              <span className="text-xs text-orange-500 font-semibold group-hover:underline">View Details →</span>
+                            </div>
                           </div>
-                        </div>
+                        </button>
                       ))}
                     </div>
                   )}
@@ -751,22 +780,35 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                     <BookOpen className="h-5 w-5 text-[#0891b2]" /> Purchased Books
                   </h3>
                   {library.purchasedBooks.length === 0 ? (
-                    <div className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-4">
+                    <div className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-6 text-center">
+                      <BookOpen className="h-10 w-10 text-gray-300 mx-auto mb-2" />
                       <p className="text-[#4b5563] text-sm">No purchased books yet.</p>
                     </div>
                   ) : (
                     <div className="grid gap-4 sm:grid-cols-2">
                       {library.purchasedBooks.map((book) => (
-                        <div key={book.id} className="overflow-hidden rounded-2xl border border-[#dbe8e4] bg-white shadow-sm">
-                          <div className="flex h-28 items-center justify-center bg-[#dff3fa]">
-                            <BookOpen className="h-10 w-10 text-[#0891b2]" />
+                        <button
+                          key={book.id}
+                          type="button"
+                          onClick={() => {
+                            sessionStorage.setItem("lookit-content-detail", JSON.stringify({ ...book, type: "book" }));
+                            window.location.href = `/dashboard/students/content/${book.id}`;
+                          }}
+                          className="group text-left overflow-hidden rounded-2xl border border-[#dbe8e4] bg-white shadow-sm hover:shadow-lg hover:border-cyan-300 transition-all duration-200 hover:-translate-y-0.5"
+                        >
+                          <div className="flex h-32 items-center justify-center bg-gradient-to-br from-cyan-100 to-teal-50 relative">
+                            <BookOpen className="h-12 w-12 text-cyan-500 group-hover:scale-110 transition-transform" />
+                            <span className="absolute top-3 left-3 rounded-full bg-cyan-600 px-2.5 py-0.5 text-[11px] font-bold text-white">Book</span>
                           </div>
                           <div className="p-4">
-                            <span className="rounded bg-[#0891b2] px-2 py-0.5 text-[11px] font-semibold text-white">Book</span>
-                            <h4 className="mt-2 text-base font-bold text-[#1f2937]">{book.title}</h4>
-                            <p className="mt-2 text-lg font-bold text-[#2c5a48]">{book.amount}</p>
+                            <h4 className="text-base font-bold text-[#1f2937] group-hover:text-cyan-600 transition-colors line-clamp-1">{book.title}</h4>
+                            {book.source && <p className="text-xs text-gray-400 mt-0.5">by {book.source}</p>}
+                            <div className="flex items-center justify-between mt-3">
+                              <p className="text-lg font-bold text-emerald-700">{book.amount}</p>
+                              <span className="text-xs text-cyan-500 font-semibold group-hover:underline">View Details →</span>
+                            </div>
                           </div>
-                        </div>
+                        </button>
                       ))}
                     </div>
                   )}

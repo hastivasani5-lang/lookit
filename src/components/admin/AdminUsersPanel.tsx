@@ -98,11 +98,13 @@ export default function AdminUsersPanel(props: AdminUsersPanelProps) {
             </tbody>
             </table>
           </div>
-          <div className="mt-3 flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-            <span>Page {studentsCurrentPage} / {studentsTotalPages}</span>
-            <div className="flex gap-2">
-              <button type="button" onClick={() => setStudentsCurrentPage((p) => Math.max(1, p - 1))} disabled={studentsCurrentPage === 1} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 disabled:opacity-50">Prev</button>
-              <button type="button" onClick={() => setStudentsCurrentPage((p) => Math.min(studentsTotalPages, p + 1))} disabled={studentsCurrentPage === studentsTotalPages} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 disabled:opacity-50">Next</button>
+          <div className="mt-3 flex justify-end">
+            <div className="flex items-center gap-1">
+              <button type="button" onClick={() => setStudentsCurrentPage((p) => Math.max(1, p - 1))} disabled={studentsCurrentPage === 1} className="inline-flex h-8 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50">Prev</button>
+              {Array.from({ length: studentsTotalPages }, (_, i) => i + 1).map((page) => (
+                <button key={page} type="button" onClick={() => setStudentsCurrentPage(page)} className={`inline-flex h-8 min-w-8 items-center justify-center rounded-lg border text-xs font-semibold transition ${page === studentsCurrentPage ? "border-[#178c43] bg-[#178c43] text-white" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}>{page}</button>
+              ))}
+              <button type="button" onClick={() => setStudentsCurrentPage((p) => Math.min(studentsTotalPages, p + 1))} disabled={studentsCurrentPage === studentsTotalPages} className="inline-flex h-8 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50">Next</button>
             </div>
           </div>
         </div>
@@ -130,11 +132,13 @@ export default function AdminUsersPanel(props: AdminUsersPanelProps) {
             </tbody>
             </table>
           </div>
-          <div className="mt-3 flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-            <span>Page {professionalsCurrentPage} / {professionalsTotalPages}</span>
-            <div className="flex gap-2">
-              <button type="button" onClick={() => setProfessionalsCurrentPage((p) => Math.max(1, p - 1))} disabled={professionalsCurrentPage === 1} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 disabled:opacity-50">Prev</button>
-              <button type="button" onClick={() => setProfessionalsCurrentPage((p) => Math.min(professionalsTotalPages, p + 1))} disabled={professionalsCurrentPage === professionalsTotalPages} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 disabled:opacity-50">Next</button>
+          <div className="mt-3 flex justify-end">
+            <div className="flex items-center gap-1">
+              <button type="button" onClick={() => setProfessionalsCurrentPage((p) => Math.max(1, p - 1))} disabled={professionalsCurrentPage === 1} className="inline-flex h-8 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50">Prev</button>
+              {Array.from({ length: professionalsTotalPages }, (_, i) => i + 1).map((page) => (
+                <button key={page} type="button" onClick={() => setProfessionalsCurrentPage(page)} className={`inline-flex h-8 min-w-8 items-center justify-center rounded-lg border text-xs font-semibold transition ${page === professionalsCurrentPage ? "border-[#178c43] bg-[#178c43] text-white" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}>{page}</button>
+              ))}
+              <button type="button" onClick={() => setProfessionalsCurrentPage((p) => Math.min(professionalsTotalPages, p + 1))} disabled={professionalsCurrentPage === professionalsTotalPages} className="inline-flex h-8 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50">Next</button>
             </div>
           </div>
         </div>

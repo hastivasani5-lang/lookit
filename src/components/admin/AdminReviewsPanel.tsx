@@ -159,53 +159,38 @@ export default function AdminReviewsPanel({
       </ul>
 
       {!reviewsLoading && reviewEntries.length > 0 ? (
-        <div className="mt-4 rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600">
-              <span>
-                Showing {Math.min(reviewsPageStart + 1, reviewEntries.length)} to {Math.min(reviewsPageStart + itemsPerPage, reviewEntries.length)} of {reviewEntries.length} entries
-              </span>
-              <span className="rounded-full border border-[#bfe9cb] bg-[#e8f9ee] px-2.5 py-0.5 text-xs font-semibold text-[#178c43]">
-                Page {reviewsCurrentPage} / {reviewsTotalPages}
-              </span>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
+        <div className="mt-4 flex justify-end">
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => onReviewsPageChange(Math.max(1, reviewsCurrentPage - 1))}
+              disabled={reviewsCurrentPage === 1}
+              className="inline-flex h-8 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+            >
+              Prev
+            </button>
+            {Array.from({ length: reviewsTotalPages }, (_, i) => i + 1).map((page) => (
               <button
+                key={page}
                 type="button"
-                onClick={() => onReviewsPageChange(Math.max(1, reviewsCurrentPage - 1))}
-                disabled={reviewsCurrentPage === 1}
-                className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                onClick={() => onReviewsPageChange(page)}
+                className={`inline-flex h-8 min-w-8 items-center justify-center rounded-lg border text-xs font-semibold transition ${
+                  page === reviewsCurrentPage
+                    ? "border-[#178c43] bg-[#178c43] text-white"
+                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                }`}
               >
-                Prev
+                {page}
               </button>
-
-              <div className="flex flex-wrap items-center gap-2">
-                {Array.from({ length: reviewsTotalPages }, (_, i) => i + 1).map((page) => (
-                  <button
-                    key={page}
-                    type="button"
-                    onClick={() => onReviewsPageChange(page)}
-                    className={`inline-flex h-9 min-w-9 items-center justify-center rounded-xl border text-xs font-semibold transition ${
-                      page === reviewsCurrentPage
-                        ? "border-[#178c43] bg-[#178c43] text-white shadow-[0_8px_18px_rgba(23,140,67,0.25)]"
-                        : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                    }`}
-                  >
-                    {page}
-                  </button>
-                ))}
-              </div>
-
-              <button
-                type="button"
-                onClick={() => onReviewsPageChange(Math.min(reviewsTotalPages, reviewsCurrentPage + 1))}
-                disabled={reviewsCurrentPage === reviewsTotalPages}
-                className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
-              >
-                Next
-              </button>
-            </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => onReviewsPageChange(Math.min(reviewsTotalPages, reviewsCurrentPage + 1))}
+              disabled={reviewsCurrentPage === reviewsTotalPages}
+              className="inline-flex h-8 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+            >
+              Next
+            </button>
           </div>
         </div>
       ) : null}

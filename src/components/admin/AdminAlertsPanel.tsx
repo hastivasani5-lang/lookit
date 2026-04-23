@@ -138,20 +138,13 @@ export default function AdminAlertsPanel({
           </div>
 
           {notifications.length > 0 ? (
-            <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
-              <p className="text-xs text-slate-600 sm:text-sm">
-                Showing {Math.min(alertsProfessionalsPageStart + 1, notifications.length)} to{" "}
-                {Math.min(alertsProfessionalsPageStart + itemsPerPage, notifications.length)} of {notifications.length} entries
-              </p>
-              <div className="flex items-center gap-2">
-                <span className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700">
-                  Page {alertsProfessionalsCurrentPage} / {alertsProfessionalsTotalPages}
-                </span>
+            <div className="mt-4 flex justify-end">
+              <div className="flex items-center gap-1">
                 <button
                   type="button"
                   onClick={() => onAlertsProfessionalsPageChange(Math.max(1, alertsProfessionalsCurrentPage - 1))}
                   disabled={alertsProfessionalsCurrentPage === 1}
-                  className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex h-8 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Prev
                 </button>
@@ -160,7 +153,7 @@ export default function AdminAlertsPanel({
                     key={page}
                     type="button"
                     onClick={() => onAlertsProfessionalsPageChange(page)}
-                    className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
+                    className={`inline-flex h-8 min-w-8 items-center justify-center rounded-lg border text-xs font-semibold transition ${
                       alertsProfessionalsCurrentPage === page
                         ? "border-[#178c43] bg-[#178c43] text-white"
                         : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
@@ -173,7 +166,7 @@ export default function AdminAlertsPanel({
                   type="button"
                   onClick={() => onAlertsProfessionalsPageChange(Math.min(alertsProfessionalsTotalPages, alertsProfessionalsCurrentPage + 1))}
                   disabled={alertsProfessionalsCurrentPage === alertsProfessionalsTotalPages}
-                  className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex h-8 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Next
                 </button>
@@ -228,20 +221,13 @@ export default function AdminAlertsPanel({
           </div>
 
           {contactMessages.length > 0 ? (
-            <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-[#f9fbfb] p-3 sm:p-4">
-              <p className="text-xs text-slate-600 sm:text-sm">
-                Showing {Math.min(alertsStudentsPageStart + 1, contactMessages.length)} to{" "}
-                {Math.min(alertsStudentsPageStart + itemsPerPage, contactMessages.length)} of {contactMessages.length} entries
-              </p>
-              <div className="flex items-center gap-2">
-                <span className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700">
-                  Page {alertsStudentsCurrentPage} / {alertsStudentsTotalPages}
-                </span>
+            <div className="mt-4 flex justify-end">
+              <div className="flex items-center gap-1">
                 <button
                   type="button"
                   onClick={() => onAlertsStudentsPageChange(Math.max(1, alertsStudentsCurrentPage - 1))}
                   disabled={alertsStudentsCurrentPage === 1}
-                  className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex h-8 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Prev
                 </button>
@@ -250,7 +236,7 @@ export default function AdminAlertsPanel({
                     key={page}
                     type="button"
                     onClick={() => onAlertsStudentsPageChange(page)}
-                    className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
+                    className={`inline-flex h-8 min-w-8 items-center justify-center rounded-lg border text-xs font-semibold transition ${
                       alertsStudentsCurrentPage === page
                         ? "border-[#178c43] bg-[#178c43] text-white"
                         : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
@@ -263,7 +249,7 @@ export default function AdminAlertsPanel({
                   type="button"
                   onClick={() => onAlertsStudentsPageChange(Math.min(alertsStudentsTotalPages, alertsStudentsCurrentPage + 1))}
                   disabled={alertsStudentsCurrentPage === alertsStudentsTotalPages}
-                  className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex h-8 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Next
                 </button>

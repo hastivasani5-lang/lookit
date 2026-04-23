@@ -157,16 +157,16 @@ export default function AdminWorkspace(props: AdminWorkspaceProps) {
       </aside>
 
       <div className={`neumorph-admin-content flex-1 p-3 sm:p-4 md:p-5 transition ml-62.5 h-screen overflow-y-auto hide-scrollbar ${selectedStudent || detailModal || adminProfileOpen || isCategoryFormOpen ? "blur-sm" : ""}`}>
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl neumorph-admin-card p-4 shadow-[8px_8px_24px_#d0dbd6,-8px_-8px_24px_#ffffff]">
+        <div className="mb-6 hidden md:flex flex-col gap-3 rounded-2xl neumorph-admin-card p-4 shadow-[8px_8px_24px_#d0dbd6,-8px_-8px_24px_#ffffff] md:flex-row md:items-center md:justify-between">
           <input
             type="text"
             placeholder="Search anything here..."
             value={globalSearchQuery}
             onChange={(event) => setGlobalSearchQuery(event.target.value)}
             onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); handleGlobalSearch(); } }}
-            className="h-11 w-full max-w-xs rounded-2xl border-none bg-[#f6fefb] px-4 text-sm text-slate-800 shadow-[inset_4px_4px_12px_#d0dbd6,inset_-4px_-4px_12px_#ffffff] outline-none focus:ring-2 focus:ring-[#1ec28e] transition"
+            className="h-11 w-full rounded-2xl border-none bg-[#f6fefb] px-4 text-sm text-slate-800 shadow-[inset_4px_4px_12px_#d0dbd6,inset_-4px_-4px_12px_#ffffff] outline-none focus:ring-2 focus:ring-[#1ec28e] transition sm:max-w-xs"
           />
-          <div className="flex items-center gap-4 text-sm">
+          <div className="hidden items-center gap-4 text-sm sm:flex">
             <span className="hidden text-slate-600 sm:inline">Open For Order</span>
             <span className="h-2.5 w-2.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600" />
             <Bell className="h-5 w-5 text-[#1ec28e]" />

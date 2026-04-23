@@ -614,16 +614,14 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     const trimmedBookImageLink = bookImageLinkInput.trim();
     let resolvedBookImageUrl = "";
 
-    if (bookImageFile) {
-      resolvedBookImageUrl = URL.createObjectURL(bookImageFile);
-    } else if (trimmedBookImageLink) {
+    if (trimmedBookImageLink) {
       if (!parseHttpUrl(trimmedBookImageLink)) {
         setBookFormError("Please provide a valid image link.");
         return;
       }
       resolvedBookImageUrl = trimmedBookImageLink;
     } else {
-      setBookFormError("Please upload a book image file or provide an image link.");
+      setBookFormError("Please provide a book image link (file upload is not supported on live).");
       return;
     }
 
@@ -661,12 +659,6 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
           formData.append("fileName", file.name);
           formData.append("sizeLabel", formatFileSize(file.size));
           formData.append("imageLink", trimmedBookImageLink);
-          // Attach the actual PDF/book file directly
-          formData.append("bookFile", file);
-
-          if (bookImageFile) {
-            formData.append("imageFile", bookImageFile);
-          }
 
           const response = await fetch("/api/profile/library", {
             method: "POST",

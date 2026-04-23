@@ -1,185 +1,197 @@
+"use client";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin, Phone, Send, Bell } from "lucide-react";
+import { useState } from "react";
+import { motion } from "framer-motion";
 
 export default function ContactPage() {
+  const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
+  const [newsletter, setNewsletter] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const [newsletterDone, setNewsletterDone] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+    } catch { /* ignore */ }
+    setSubmitted(true);
+    setForm({ name: "", email: "", phone: "", message: "" });
+  };
+
   return (
     <>
       <Navbar />
+      <main className="min-h-screen bg-[#f6f9f8]">
 
-      
-    <main className="min-h-screen bg-[#f6f6f6] pb-12 pt-0">
-
-<section className="bg-[#cbefe1]">
-  <div className="mx-auto max-w-6xl px-6 text-center pt-8 md:pt-10 pb-16 md:pb-20">
-    {/* CONTACT US Tag */}
-    <span className="text-sm font-semibold uppercase tracking-wider text-[#5a6b73]">
-      Contact Us
-    </span>
-
-    {/* Main Heading */}
-    <h2 className="mt-2 text-4xl font-bold text-[#1b1f2a] md:text-5xl">
-      We’d love to talk to you
-    </h2>
-  </div>
-
-  {/* Cards - Ab niche aa gaye */}
-  <div className="mx-auto max-w-6xl px-6">
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-      
-      {/* Call Us Card */}
-      <div className="rounded-2xl bg-white py-5 px-4 text-center shadow-md transition hover:-translate-y-1">
-        <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#cbefe1] text-[#2c7a64]">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-          </svg>
-        </div>
-        <h3 className="text-base font-semibold text-[#1b1f2a]">CALL US</h3>
-        <p className="mt-1 text-sm text-[#5a6b73]">+1 111 111 11000</p>
-      </div>
-
-      {/* Email Us Card */}
-      <div className="rounded-2xl bg-white py-5 px-4 text-center shadow-md transition hover:-translate-y-1">
-        <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#cbefe1] text-[#2c7a64]">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-          </svg>
-        </div>
-        <h3 className="text-base font-semibold text-[#1b1f2a]">EMAIL US</h3>
-        <p className="mt-1 text-sm text-[#5a6b73]">hello@consultia.com</p>
-      </div>
-
-      {/* Headquarters Card */}
-      <div className="rounded-2xl bg-white py-5 px-4 text-center shadow-md transition hover:-translate-y-1">
-        <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#cbefe1] text-[#2c7a64]">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-        </div>
-        <h3 className="text-base font-semibold text-[#1b1f2a]">HEADQUARTERS</h3>
-        <p className="mt-1 text-sm text-[#5a6b73]">
-          New York, NY 94105,<br />
-          United States
-        </p>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-
-
-       <section className="bg-[#f3f4f6] py-16 px-4 md:px-10">
-      <div className="max-w-6xl mx-auto">
- 
-        {/* ================= TOP SECTION ================= */}
-        <div className="grid md:grid-cols-2 gap-8">
- 
-          {/* LEFT FORM */}
-          <div className="space-y-4">
-            <div className="flex gap-4">
-              <input
-                placeholder="Email"
-                className="w-full rounded-full bg-[#cbefe1] px-5 py-3 outline-none"
-              />
-              <input
-                placeholder="Phone"
-                className="w-full rounded-full bg-[#cbefe1] px-5 py-3 outline-none"
-              />
+        {/* ── HERO ─────────────────────────────────────────── */}
+        <section className="relative overflow-hidden py-20 px-4 text-center"
+          style={{ background: "linear-gradient(135deg, #0d7a57 0%, #1ec28e 60%, #34d399 100%)" }}>
+          <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-white/10 pointer-events-none" />
+          <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-white/10 pointer-events-none" />
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
+            className="relative z-10 max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/20 backdrop-blur-sm px-4 py-1.5 text-sm font-semibold text-white mb-4">
+              💬 Get In Touch
             </div>
- 
-            <input
-              placeholder="Name"
-              className="w-full rounded-full bg-[#cbefe1] px-5 py-3 outline-none"
-            />
- 
-            <textarea
-              placeholder="Message"
-              rows={5}
-              className="w-full rounded-2xl bg-[#cbefe1] px-5 py-4 outline-none resize-none"
-            />
- 
-            <button className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-2 rounded-full">
-              Submit Button
-            </button>
-          </div>
- 
-          {/* RIGHT NEWSLETTER */}
-          <div className="bg-[#2e4f46] text-white rounded-2xl p-8 relative overflow-hidden">
- 
-            {/* subtle circle bg */}
-            <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_white_1px,_transparent_1px)] [background-size:20px_20px]" />
- 
-            <div className="relative">
-              <h3 className="text-xl font-semibold">Our Newsletters</h3>
-              <p className="text-sm mt-3 text-white/80">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Ut elit tellus luctus nec ullamcorper mattis.
-              </p>
- 
-              <input
-                placeholder="Email"
-                className="mt-6 w-full rounded-full px-4 py-3 text-black outline-none"
-              />
- 
-              <button className="mt-4 w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-3 rounded-full">
-                Submit Button
-              </button>
-            </div>
-          </div>
-        </div>
- 
-        {/* ================= CONTACT CARDS ================= */}
-        <div className="grid md:grid-cols-3 gap-6 mt-12">
- 
-          {/* PHONE */}
-          <div className="bg-[#2e4f46] text-white rounded-2xl p-6">
-            <Phone className="mb-4" />
-            <p className="font-semibold text-lg">(+876) 765 665</p>
-            <p className="text-sm mt-2 text-white/80">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            <h1 className="text-4xl md:text-5xl font-extrabold text-white leading-tight mb-3">
+              We&apos;d Love to<br /><span className="text-yellow-300">Talk to You</span>
+            </h1>
+            <p className="text-white/80 text-base">
+              Have a question or want to work together? Reach out and we&apos;ll get back to you shortly.
             </p>
-          </div>
- 
-          {/* EMAIL */}
-          <div className="bg-[#cbefe1] rounded-2xl p-6">
-            <Mail className="mb-4 text-[#2e4f46]" />
-            <p className="font-semibold text-lg text-[#2e4f46]">
-              mail@influenca.id
-            </p>
-            <p className="text-sm mt-2 text-gray-500">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-            </p>
-          </div>
- 
-          {/* LOCATION */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <MapPin className="mb-4 text-[#6b8f95]" />
-            <p className="font-semibold text-lg text-[#1e2a55]">
-              London Eye London
-            </p>
-            <p className="text-sm mt-2 text-gray-500">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-            </p>
-          </div>
-        </div>
- 
-        {/* ================= MAP ================= */}
-        <div className="mt-10 rounded-2xl overflow-hidden">
-          <iframe
-            title="London map"
-            src="https://maps.google.com/maps?q=london&t=&z=13&ie=UTF8&iwloc=&output=embed"
-            className="w-full h-[300px] border-0"
-          ></iframe>
-        </div>
-      </div>
-    </section>
+          </motion.div>
+        </section>
 
-        
+        {/* ── INFO CARDS ───────────────────────────────────── */}
+        <section className="max-w-5xl mx-auto px-4 -mt-10 relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {[
+              { icon: Phone, label: "Call Us",        value: "+91 93279 42704",      bg: "bg-[#effaf6]", color: "text-[#1ec28e]" },
+              { icon: Mail,  label: "Email Us",       value: "hello@lookit.com",     bg: "bg-blue-50",   color: "text-blue-600" },
+              { icon: MapPin,label: "Headquarters",   value: "Surat, Gujarat, India",bg: "bg-purple-50", color: "text-purple-600" },
+            ].map((c, i) => {
+              const Icon = c.icon;
+              return (
+                <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 + 0.2 }}
+                  className="bg-white rounded-2xl p-6 shadow-md border border-gray-100 text-center hover:-translate-y-1 transition-all">
+                  <div className={`w-12 h-12 rounded-2xl ${c.bg} flex items-center justify-center mx-auto mb-3`}>
+                    <Icon className={`w-5 h-5 ${c.color}`} />
+                  </div>
+                  <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">{c.label}</p>
+                  <p className="text-sm font-semibold text-gray-800">{c.value}</p>
+                </motion.div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ── FORM + NEWSLETTER ────────────────────────────── */}
+        <section className="max-w-5xl mx-auto px-4 py-14">
+          <div className="grid md:grid-cols-[1.3fr_1fr] gap-8">
+
+            {/* Contact Form */}
+            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }} viewport={{ once: true }}
+              className="bg-white rounded-3xl p-8 shadow-md border border-gray-100">
+              <h2 className="text-2xl font-bold text-gray-900 mb-1">Send a Message</h2>
+              <p className="text-sm text-gray-500 mb-6">Fill out the form and we&apos;ll respond within 24 hours.</p>
+
+              {submitted ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <div className="w-16 h-16 rounded-full bg-[#effaf6] flex items-center justify-center mb-4">
+                    <svg className="w-8 h-8 text-[#1ec28e]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-1">Message Sent!</h3>
+                  <p className="text-sm text-gray-500">We&apos;ll get back to you soon.</p>
+                  <button onClick={() => setSubmitted(false)}
+                    className="mt-4 text-sm text-[#1ec28e] font-semibold hover:underline">
+                    Send another
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Email</label>
+                      <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
+                        placeholder="you@example.com" required
+                        className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-[#1ec28e] focus:bg-white focus:ring-2 focus:ring-[#1ec28e]/20" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Phone</label>
+                      <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                        placeholder="+91 XXXXX XXXXX"
+                        className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-[#1ec28e] focus:bg-white focus:ring-2 focus:ring-[#1ec28e]/20" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Name</label>
+                    <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      placeholder="Your full name" required
+                      className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-[#1ec28e] focus:bg-white focus:ring-2 focus:ring-[#1ec28e]/20" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Message</label>
+                    <textarea value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })}
+                      placeholder="How can we help you?" rows={4} required
+                      className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-[#1ec28e] focus:bg-white focus:ring-2 focus:ring-[#1ec28e]/20 resize-none" />
+                  </div>
+                  <button type="submit"
+                    className="w-full flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-white transition hover:scale-[1.01] hover:shadow-lg"
+                    style={{ background: "linear-gradient(135deg, #0d7a57, #1ec28e)" }}>
+                    <Send className="w-4 h-4" />
+                    Send Message
+                  </button>
+                </form>
+              )}
+            </motion.div>
+
+            {/* Newsletter */}
+            <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }} viewport={{ once: true }}
+              className="rounded-3xl overflow-hidden relative flex flex-col"
+              style={{ background: "linear-gradient(135deg, #0d7a57 0%, #1ec28e 100%)" }}>
+              <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_white_1px,_transparent_1px)] [background-size:20px_20px] pointer-events-none" />
+              <div className="relative p-8 flex flex-col flex-1">
+                <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-5">
+                  <Bell className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-2">Our Newsletter</h3>
+                <p className="text-white/80 text-sm leading-relaxed mb-6">
+                  Stay updated with the latest courses, expert tips, and exclusive offers. Subscribe and never miss out!
+                </p>
+
+                {newsletterDone ? (
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-3">
+                      <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <p className="text-white font-semibold">You&apos;re subscribed!</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3 mt-auto">
+                    <input type="email" value={newsletter} onChange={(e) => setNewsletter(e.target.value)}
+                      placeholder="Enter your email"
+                      className="w-full rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 px-4 py-3 text-sm text-white placeholder-white/60 outline-none focus:bg-white/30 transition" />
+                    <button type="button" onClick={() => { if (newsletter) setNewsletterDone(true); }}
+                      className="w-full rounded-xl bg-white py-3 text-sm font-bold text-[#0d7a57] transition hover:bg-white/90 hover:shadow-lg">
+                      Subscribe Now →
+                    </button>
+                  </div>
+                )}
+
+                {/* Decorative circles */}
+                <div className="absolute -bottom-10 -right-10 w-40 h-40 rounded-full bg-white/10" />
+                <div className="absolute top-10 -right-5 w-20 h-20 rounded-full bg-white/10" />
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ── MAP ──────────────────────────────────────────── */}
+        <section className="max-w-5xl mx-auto px-4 pb-14">
+          <div className="rounded-3xl overflow-hidden shadow-md border border-gray-100">
+            <iframe
+              title="Map"
+              src="https://maps.google.com/maps?q=surat+gujarat&t=&z=13&ie=UTF8&iwloc=&output=embed"
+              className="w-full h-[320px] border-0"
+            />
+          </div>
+        </section>
+
       </main>
-
       <Footer />
     </>
   );

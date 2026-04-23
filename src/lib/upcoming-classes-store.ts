@@ -1,7 +1,9 @@
 import { promises as fs } from "fs";
-import path from "path";
+import { getDataFile } from "@/lib/storage-path";
+import { ensureDbSchema, getDbPool, isPostgresConfigured } from "@/lib/db";
 
-const FILE = path.join(process.cwd(), "data", "upcoming-classes.json");
+const FILE = getDataFile("upcoming-classes.json");
+const DB_KEY = "upcoming-classes";
 
 export type UpcomingClass = {
   id: string;
@@ -18,9 +20,21 @@ export type UpcomingClass = {
   createdAt: string;
 };
 
-type Store = Record<string, UpcomingClass[]>; // keyed by professionalId
+type Store = Record<string, UpcomingClass[]>;
 
 async function readStore(): Promise<Store> {
+  if (isPostgresConfigured()) {
+    await ensureDbSchema();
+    const db = getDbPool();
+    const result = await db.query<{ data: unknown }>(
+      `SELECT data FROM app_data WHERE key = $1 LIMIT 1`,
+      [DB_KEY],
+    );
+    if (result.rows.length === 0) return {};
+    const parsed = result.rows[0].data;
+    return typeof parsed === "object" && parsed !== null ? (parsed as Store) : {};
+  }
+
   try {
     const raw = await fs.readFile(FILE, "utf-8");
     const parsed = JSON.parse(raw);
@@ -30,7 +44,19 @@ async function readStore(): Promise<Store> {
   }
 }
 
-async function writeStore(store: Store) {
+async function writeStore(store: Store): Promise<void> {
+  if (isPostgresConfigured()) {
+    await ensureDbSchema();
+    const db = getDbPool();
+    await db.query(
+      `INSERT INTO app_data (key, data, updated_at)
+       VALUES ($1, $2::jsonb, NOW())
+       ON CONFLICT (key)
+       DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()`,
+      [DB_KEY, JSON.stringify(store)],
+    );
+    return;
+  }
   await fs.writeFile(FILE, JSON.stringify(store, null, 2), "utf-8");
 }
 

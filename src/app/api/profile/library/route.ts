@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { promises as fs } from "fs";
-import path from "path";
 
 import { authOptions } from "@/lib/auth";
 import { getUserById } from "@/lib/user-store";
@@ -91,6 +89,7 @@ export async function POST(request: Request) {
 
   const contentType = request.headers.get("content-type") || "";
 
+  // Handle multipart form (file upload removed — use URL-based input instead)
   if (contentType.includes("multipart/form-data")) {
     const formData = await request.formData();
     const kind = formData.get("kind");
@@ -99,62 +98,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Invalid payload." }, { status: 400 });
     }
 
-    const nameValue = formData.get("name");
-    const categoryValue = formData.get("category");
-    const mrpValue = formData.get("mrp");
-    const urlValue = formData.get("url");
-    const fileNameValue = formData.get("fileName");
-    const sizeLabelValue = formData.get("sizeLabel");
-    const imageLinkValue = formData.get("imageLink");
-
-    const name = typeof nameValue === "string" ? nameValue.trim() : "";
-    const category = typeof categoryValue === "string" ? categoryValue.trim() : "";
-    const mrp = typeof mrpValue === "string" ? mrpValue.trim() : "";
-    const url = typeof urlValue === "string" ? urlValue.trim() : "";
-    const source = formData.get("source") === "amazon" ? "amazon" : "file";
-    const fileName = typeof fileNameValue === "string" ? fileNameValue.trim() : "Uploaded file";
-    const sizeLabel = typeof sizeLabelValue === "string" ? sizeLabelValue.trim() : "-";
-    const imageLink = typeof imageLinkValue === "string" ? imageLinkValue.trim() : "";
-    const imageFile = formData.get("imageFile");
-    const bookFile = formData.get("bookFile");
+    const name = (formData.get("name") as string | null)?.trim() ?? "";
+    const category = (formData.get("category") as string | null)?.trim() ?? "";
+    const mrp = (formData.get("mrp") as string | null)?.trim() ?? "";
+    const url = (formData.get("url") as string | null)?.trim() ?? "";
+    const source = formData.get("source") === "amazon" ? "amazon" : ("file" as const);
+    const fileName = (formData.get("fileName") as string | null)?.trim() ?? "Uploaded file";
+    const sizeLabel = (formData.get("sizeLabel") as string | null)?.trim() ?? "-";
+    const imageUrl = (formData.get("imageLink") as string | null)?.trim() ?? "";
 
     if (!name || !category || !mrp) {
       return NextResponse.json({ message: "Missing book details." }, { status: 400 });
     }
 
-    let imageUrl = imageLink;
-
-    if (imageFile instanceof File && imageFile.size > 0) {
-      const uploadDir = path.join(process.cwd(), "public", "uploads", "books");
-      await fs.mkdir(uploadDir, { recursive: true });
-
-      const extension = imageFile.name.includes(".")
-        ? `.${imageFile.name.split(".").pop()}`
-        : ".png";
-      const fileNameOnDisk = `${professionalId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}${extension}`;
-      const absolutePath = path.join(uploadDir, fileNameOnDisk);
-      const buffer = Buffer.from(await imageFile.arrayBuffer());
-
-      await fs.writeFile(absolutePath, buffer);
-      imageUrl = `/uploads/books/${fileNameOnDisk}`;
-    }
-
     if (!imageUrl) {
-      return NextResponse.json({ message: "Book image is required." }, { status: 400 });
-    }
-
-    // Save the actual PDF/book file
-    let savedFileUrl = url;
-    if (bookFile instanceof File && bookFile.size > 0) {
-      const pdfUploadDir = path.join(process.cwd(), "public", "uploads", "book-files");
-      await fs.mkdir(pdfUploadDir, { recursive: true });
-
-      const ext = bookFile.name.includes(".") ? `.${bookFile.name.split(".").pop()}` : ".pdf";
-      const pdfFileName = `${professionalId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`;
-      const pdfPath = path.join(pdfUploadDir, pdfFileName);
-      const pdfBuffer = Buffer.from(await bookFile.arrayBuffer());
-      await fs.writeFile(pdfPath, pdfBuffer);
-      savedFileUrl = `/uploads/book-files/${pdfFileName}`;
+      return NextResponse.json({ message: "Book image URL is required." }, { status: 400 });
     }
 
     const book = await addProfessionalBook(professionalId, {
@@ -162,8 +120,8 @@ export async function POST(request: Request) {
       category,
       mrp,
       imageUrl,
-      url: savedFileUrl,
-      fileUrl: savedFileUrl,
+      url,
+      fileUrl: url,
       source,
       fileName,
       sizeLabel,
@@ -226,6 +184,7 @@ export async function POST(request: Request) {
 
   return NextResponse.json({ message: "Invalid payload." }, { status: 400 });
 }
+
 
 export async function DELETE(request: Request) {
   const professionalId = await getAuthorizedProfessionalId();

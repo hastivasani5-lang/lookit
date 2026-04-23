@@ -425,7 +425,7 @@ export default function CourseGridSection({
           const isFree = !course.price || course.price === 0;
 
           return (
-          <a key={i} href={courseHref} onClick={(e) => handleCourseClick(e, course, courseHref)} className="group block cursor-pointer" aria-label={`Open ${course.title}`}>
+          <a key={i} href={courseHref} onClick={(e) => handleCourseClick(e, course, courseHref)} className="group block cursor-pointer bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100" aria-label={`Open ${course.title}`}>
 
             {/* IMAGE */}
             <div className="relative h-56 w-full sm:h-64 rounded-2xl overflow-hidden shadow-lg">
@@ -461,36 +461,38 @@ export default function CourseGridSection({
             </div>
 
             {/* CONTENT */}
-            <div className="mt-5">
-
-              <h3 className="text-xl font-semibold text-gray-900">
+            <div className="mt-5 px-1 pb-4">
+              {/* Title */}
+              <h3 className="text-base font-bold text-gray-900 line-clamp-1 mb-1">
                 {course.title}
               </h3>
 
-              <p className="text-sm text-gray-500 mt-2">
-                ⭐ {course.rating.toFixed(1)} ({course.reviewCount})
-              </p>
+              {/* Rating row */}
+              <div className="flex items-center gap-1.5 mb-2">
+                <div className="flex">
+                  {Array(5).fill(0).map((_, si) => (
+                    <span key={si} className={`text-xs ${si < Math.round(course.rating) ? "text-amber-400" : "text-gray-200"}`}>★</span>
+                  ))}
+                </div>
+                <span className="text-xs font-semibold text-gray-700">{course.rating.toFixed(1)}</span>
+                <span className="text-xs text-gray-400">({course.reviewCount.toLocaleString()})</span>
+              </div>
 
-              <p className="text-sm text-gray-500">
-                📚 20 Lessons
-              </p>
+              {/* Meta row */}
+              <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
+                <span className="flex items-center gap-1">📚 20 Lessons</span>
+                <span className="flex items-center gap-1">👥 {course.reviewCount}+</span>
+              </div>
 
-              <p className="text-sm text-gray-600 mt-2 leading-relaxed">
-                Fill out the form and the algorithm will offer the right team of experts
-              </p>
-
-<div className="flex flex-wrap gap-2 mt-3">
-
-  <span className="text-xs font-medium px-3 py-1.5 rounded-full bg-[#eef5f3] text-[#1ec28e] border border-[#d1e7dd] transition hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white">
-    {course.category}
-  </span>
-
-  <span className="text-xs font-medium px-3 py-1.5 rounded-full bg-[#eef5f3] text-[#1ec28e] border border-[#d1e7dd] transition hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white">
-    UI/UX
-  </span>
-
-</div>
-
+              {/* Category tag */}
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-[#eef5f3] text-[#1ec28e] border border-[#d1e7dd]">
+                  {course.category}
+                </span>
+                <span className={`text-xs font-bold px-3 py-1 rounded-full ${!course.price || course.price === 0 ? "bg-emerald-50 text-emerald-600" : "bg-orange-50 text-orange-600"}`}>
+                  {!course.price || course.price === 0 ? "Free" : `₹${course.price}`}
+                </span>
+              </div>
             </div>
           </a>
         )})}

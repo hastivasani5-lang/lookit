@@ -93,3 +93,11 @@ export async function markAllStudentNotificationsRead(studentId: string): Promis
   );
   await writeAll(updated);
 }
+
+export async function deleteStudentNotification(studentId: string, notificationId: string): Promise<void> {
+  writeQueue = writeQueue.then(async () => {
+    const all = await readAll();
+    await writeAll(all.filter((n) => !(n.id === notificationId && n.studentId === studentId)));
+  });
+  await writeQueue;
+}

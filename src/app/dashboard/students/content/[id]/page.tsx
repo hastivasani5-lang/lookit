@@ -71,7 +71,13 @@ export default function ContentDetailPage() {
 
   const handleOpen = () => {
     if (!item?.accessUrl) return;
-    window.open(item.accessUrl, "_blank", "noopener,noreferrer");
+    // Convert YouTube embed URL to watch URL
+    let url = item.accessUrl;
+    if (url.includes("youtube.com/embed/")) {
+      const videoId = url.split("/embed/")[1]?.split("?")[0];
+      if (videoId) url = `https://www.youtube.com/watch?v=${videoId}`;
+    }
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const handleSubmitReview = async (e: React.FormEvent) => {
@@ -82,16 +88,19 @@ export default function ContentDetailPage() {
     setReviewLoading(true); setReviewError(""); setReviewSuccess("");
 
     try {
-      // Find professionalId via contentId
+      // Find professionalId via contentId first, then fallback to name
       const contentId = item?.contentId;
+      const profName = item?.source || item?.provider || "";
       let professionalId: string | null = null;
 
-      if (contentId) {
-        const profRes = await fetch(`/api/student/content-professional?contentId=${encodeURIComponent(contentId)}`, { cache: "no-store" });
-        if (profRes.ok) {
-          const profData = (await profRes.json()) as { professionalId?: string };
-          professionalId = profData.professionalId ?? null;
-        }
+      const params = new URLSearchParams();
+      if (contentId) params.set("contentId", contentId);
+      if (profName) params.set("name", profName);
+
+      const profRes = await fetch(`/api/student/content-professional?${params.toString()}`, { cache: "no-store" });
+      if (profRes.ok) {
+        const profData = (await profRes.json()) as { professionalId?: string };
+        professionalId = profData.professionalId ?? null;
       }
 
       if (!professionalId) {

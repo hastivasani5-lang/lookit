@@ -175,24 +175,6 @@ export default function LoginPage() {
               </button>
             </div>
 
-            {/* Work hours goal — student only */}
-            {loginRole === "student" && (
-              <div className="mb-4 rounded-xl bg-[#f0faf7] border border-[#c8ede0] px-4 py-3 flex items-center gap-3">
-                <span className="text-xl">🎯</span>
-                <div className="flex-1">
-                  <p className="text-xs font-bold text-[#0d7a57] mb-1.5">Today's Work Hours Goal</p>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="number" min="1" max="24" value={workHoursGoal}
-                      onChange={(e) => setWorkHoursGoal(e.target.value)}
-                      className="w-14 h-8 px-2 bg-white rounded-lg border border-[#c8ede0] outline-none text-sm text-center font-bold text-[#0d7a57] focus:ring-2 focus:ring-[#1ec28e]/30"
-                    />
-                    <span className="text-xs text-gray-400">hrs — auto logout after goal</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
             <button type="submit" disabled={loginLoading}
               className="w-full h-11 rounded-lg text-white font-semibold text-sm mb-4 disabled:opacity-60 flex items-center justify-center gap-2 transition hover:opacity-90"
               style={{ background: "linear-gradient(135deg, #0d7a57, #1ec28e)" }}>

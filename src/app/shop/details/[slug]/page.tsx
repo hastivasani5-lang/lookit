@@ -9,10 +9,20 @@ import type { ShopCatalogItem } from "@/lib/shop-catalog";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
+import { Star, Loader2 } from "lucide-react";
 
 type StudentLibrary = {
   purchasedBooks: { id: string; contentId?: string; title: string; accessUrl?: string }[];
   watchedVideos: { id: string; contentId?: string; title: string; accessUrl?: string }[];
+};
+
+type ReviewRecord = {
+  id: string;
+  studentId: string;
+  studentName: string;
+  rating: number;
+  review: string;
+  createdAt: string;
 };
 
 export default function DetailsPage() {
@@ -27,6 +37,10 @@ export default function DetailsPage() {
   const [isAdded, setIsAdded] = useState(false);
   const [activeTab, setActiveTab] = useState<"description" | "reviews">("description");
   const [showContent, setShowContent] = useState(false);
+
+  // Reviews
+  const [reviews, setReviews] = useState<ReviewRecord[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
 
   // Student purchased library
   const [studentLibrary, setStudentLibrary] = useState<StudentLibrary | null>(null);
@@ -76,6 +90,19 @@ export default function DetailsPage() {
       .catch(() => setStudentLibrary(null))
       .finally(() => setLibraryLoading(false));
   }, [session]);
+
+  // Load reviews for this content
+  useEffect(() => {
+    if (!item?.professionalId) return;
+    setReviewsLoading(true);
+    const params = new URLSearchParams({ professionalId: item.professionalId });
+    if (item.contentId) params.set("contentId", item.contentId);
+    fetch(`/api/student/professional-reviews?${params.toString()}`, { cache: "no-store" })
+      .then((r) => r.json())
+      .then((data: { reviews?: ReviewRecord[] }) => setReviews(Array.isArray(data.reviews) ? data.reviews : []))
+      .catch(() => setReviews([]))
+      .finally(() => setReviewsLoading(false));
+  }, [item]);
 
   // Cart state
   useEffect(() => {
@@ -268,8 +295,24 @@ export default function DetailsPage() {
                 <h2 className="text-[38px] font-semibold leading-tight text-[#13253f]">{item.title}</h2>
 
                 <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-                  <span className="text-[16px] tracking-[1px] text-[#ff9b1f]">★★★★★</span>
-                  <span className="text-[#8a928f]">(02 Reviews)</span>
+                  {reviews.length > 0 ? (
+                    <>
+                      <div className="flex gap-0.5">
+                        {[1,2,3,4,5].map((s) => {
+                          const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+                          return (
+                            <Star key={s} className="h-4 w-4"
+                              fill={avg >= s ? "#f59e0b" : "none"}
+                              stroke={avg >= s ? "#f59e0b" : "#d1d5db"}
+                            />
+                          );
+                        })}
+                      </div>
+                      <span className="text-[#8a928f]">({reviews.length} Review{reviews.length !== 1 ? "s" : ""})</span>
+                    </>
+                  ) : (
+                    <span className="text-[#8a928f] text-xs">No reviews yet</span>
+                  )}
                 </div>
 
                 {/* Price */}
@@ -459,7 +502,66 @@ export default function DetailsPage() {
                   special education and delivering impactful content to learners worldwide.
                 </p>
               ) : (
-                <p className="text-[13px] leading-7 text-[#6f7674]">No reviews available yet.</p>
+                <div>
+                  {reviewsLoading ? (
+                    <div className="flex justify-center py-10">
+                      <Loader2 className="h-6 w-6 animate-spin text-[#1ec28e]" />
+                    </div>
+                  ) : reviews.length === 0 ? (
+                    <div className="text-center py-10 text-[#6f7674] text-sm">
+                      No reviews yet for this {item.contentType}.
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {/* Summary */}
+                      <div className="flex items-center gap-3 mb-6 p-4 bg-amber-50 rounded-xl border border-amber-100">
+                        <span className="text-3xl font-bold text-amber-500">
+                          {(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)}
+                        </span>
+                        <div>
+                          <div className="flex gap-0.5">
+                            {[1,2,3,4,5].map((s) => {
+                              const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+                              return (
+                                <Star key={s} className="h-4 w-4"
+                                  fill={avg >= s ? "#f59e0b" : "none"}
+                                  stroke={avg >= s ? "#f59e0b" : "#d1d5db"}
+                                />
+                              );
+                            })}
+                          </div>
+                          <p className="text-xs text-gray-500 mt-0.5">{reviews.length} review{reviews.length !== 1 ? "s" : ""}</p>
+                        </div>
+                      </div>
+
+                      {/* Review list */}
+                      {reviews.map((r) => (
+                        <div key={r.id} className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                                {r.studentName.charAt(0).toUpperCase()}
+                              </div>
+                              <div>
+                                <p className="text-sm font-semibold text-gray-800">{r.studentName}</p>
+                                <p className="text-xs text-gray-400">{new Date(r.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</p>
+                              </div>
+                            </div>
+                            <div className="flex gap-0.5">
+                              {[1,2,3,4,5].map((s) => (
+                                <Star key={s} className="h-4 w-4"
+                                  fill={r.rating >= s ? "#f59e0b" : "none"}
+                                  stroke={r.rating >= s ? "#f59e0b" : "#d1d5db"}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-700 leading-relaxed pl-10">{r.review}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </section>

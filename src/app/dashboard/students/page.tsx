@@ -75,25 +75,9 @@ export default function StudentsPage() {
     }
   }, [status, router]);
 
-  // Show loading state while checking authentication
-  if (status === "loading") {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#1ec28e] border-r-transparent"></div>
-          <p className="mt-4 text-gray-600">Loading dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Show nothing if not authenticated (will redirect)
-  if (status === "unauthenticated") {
-    return null;
-  }
-
   // Load below-fold content after first paint
   useEffect(() => {
+    if (status === "loading" || status === "unauthenticated") return;
     let id: number | ReturnType<typeof setTimeout>;
     if (typeof requestIdleCallback !== "undefined") {
       id = requestIdleCallback(() => setBelowFoldReady(true));
@@ -104,7 +88,7 @@ export default function StudentsPage() {
       if (typeof requestIdleCallback !== "undefined") cancelIdleCallback(id as number);
       else clearTimeout(id as ReturnType<typeof setTimeout>);
     };
-  }, []);
+  }, [status]);
 
   // Show modal 3s after login if student hasn't filled profile yet
   useEffect(() => {
@@ -114,11 +98,9 @@ export default function StudentsPage() {
     const userId = session.user.id;
     if (!userId) return;
 
-    // Check if already dismissed for this user
     const dismissed = localStorage.getItem(`student_profile_modal_done_${userId}`);
     if (dismissed) return;
 
-    // Check if profile already has location (country) filled — means already submitted
     const timer = setTimeout(async () => {
       try {
         const res = await fetch("/api/student/profile/check");
@@ -142,6 +124,23 @@ export default function StudentsPage() {
   };
 
   const userId = session?.user?.id ?? "guest";
+
+  // Show loading state while checking authentication
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#1ec28e] border-r-transparent"></div>
+          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show nothing if not authenticated (will redirect)
+  if (status === "unauthenticated") {
+    return null;
+  }
 
   return (
     <>

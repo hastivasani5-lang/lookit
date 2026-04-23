@@ -109,7 +109,7 @@ type AdminPaymentRecord = {
 
 type UploadView = "professional-uploads" | "student-purchases";
 
-type AlertsView = "professionals" | "students";
+type AlertsView = "activity" | "professionals" | "students";
 
 type ProfessionalUploadSummary = {
   id: string;
@@ -373,7 +373,7 @@ export default function AdminPanelView() {
   const [payoutEntries, setPayoutEntries] = useState(initialPayoutEntries);
   const [payoutsLoading, setPayoutsLoading] = useState(false);
   const [uploadView, setUploadView] = useState<UploadView>("professional-uploads");
-  const [alertsView, setAlertsView] = useState<AlertsView>("professionals");
+  const [alertsView, setAlertsView] = useState<AlertsView>("activity");
   const [alertsProfessionalsCurrentPage, setAlertsProfessionalsCurrentPage] = useState(1);
   const [alertsStudentsCurrentPage, setAlertStudentsCurrentPage] = useState(1);
   const [detailModal, setDetailModal] = useState<DetailModalState | null>(null);
@@ -385,6 +385,7 @@ export default function AdminPanelView() {
   const [isCategoryFormOpen, setIsCategoryFormOpen] = useState(false);
   const [notifications, setNotifications] = useState<ProfessionalNotification[]>([]);
   const [notificationsLoading, setNotificationsLoading] = useState(false);
+  const [activityNotifCount, setActivityNotifCount] = useState(0);
   const [contactMessages, setContactMessages] = useState<ContactMessage[]>([]);
   const [contactMessagesLoading, setContactMessagesLoading] = useState(false);
   const [usersLoading, setUsersLoading] = useState(false);
@@ -1365,6 +1366,43 @@ export default function AdminPanelView() {
     };
   }, [activeSection]);
 
+  // Real-time notification count polling
+  useEffect(() => {
+    const SEEN_KEY = "admin_notif_seen";
+
+    const fetchCount = async () => {
+      try {
+        const res = await fetch("/api/admin/activity-notifications", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = (await res.json()) as { notifications?: { id: string; createdAt: string }[] };
+        const all = Array.isArray(data.notifications) ? data.notifications : [];
+
+        const lastSeen = localStorage.getItem(SEEN_KEY);
+        const lastSeenTime = lastSeen ? new Date(lastSeen).getTime() : 0;
+
+        const unread = all.filter((n) => {
+          const t = new Date(n.createdAt).getTime();
+          return !isNaN(t) && t > lastSeenTime;
+        }).length;
+
+        setActivityNotifCount(unread);
+      } catch {
+        // silent
+      }
+    };
+    void fetchCount();
+    const interval = setInterval(() => { void fetchCount(); }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Clear badge when Alerts section is opened
+  useEffect(() => {
+    if (activeSection === "Alerts") {
+      localStorage.setItem("admin_notif_seen", new Date().toISOString());
+      setActivityNotifCount(0);
+    }
+  }, [activeSection]);
+
   const onLogout = async () => {
     await fetch("/api/admin/logout", { method: "POST" });
     router.refresh();
@@ -1377,7 +1415,19 @@ export default function AdminPanelView() {
         <SiteLogo size="sidebar" priority />
         <div className="flex items-center gap-3">
           <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-          <Bell className="h-5 w-5 text-[#1ec28e]" />
+          <button
+            type="button"
+            onClick={() => { setActiveSection("Alerts"); setMobileMenuOpen(false); }}
+            className="relative flex items-center justify-center"
+            aria-label="Notifications"
+          >
+            <Bell className="h-5 w-5 text-[#1ec28e]" />
+            {activityNotifCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white leading-none">
+                {activityNotifCount > 99 ? "99+" : activityNotifCount}
+              </span>
+            )}
+          </button>
           <button
             type="button"
             onClick={() => setAdminProfileOpen(true)}
@@ -1545,7 +1595,19 @@ export default function AdminPanelView() {
             <div className="flex items-center gap-4 text-sm">
               <span className="hidden text-slate-600 sm:inline">Open For Order</span>
               <span className="h-2.5 w-2.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 shadow-[1px_1px_3px_#bfe9cb,-1px_-1px_3px_#ffffff]" />
-              <Bell className="h-5 w-5 text-[#1ec28e]" />
+              <button
+                type="button"
+                onClick={() => setActiveSection("Alerts")}
+                className="relative flex items-center justify-center"
+                aria-label="Notifications"
+              >
+                <Bell className="h-5 w-5 text-[#1ec28e]" />
+                {activityNotifCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white leading-none">
+                    {activityNotifCount > 99 ? "99+" : activityNotifCount}
+                  </span>
+                )}
+              </button>
               <button
                 type="button"
                 onClick={() => setAdminProfileOpen(true)}
@@ -1950,7 +2012,7 @@ export default function AdminPanelView() {
                               ? "Book Upload Center"
                               : activeSection === "Payouts"
                                 ? "Teacher Payments"
-                                : "Teacher Notifications"}
+                                : " Notifications"}
                   </h2>
                   <p className="mt-2 text-sm text-slate-500">
                     {activeSection === "Users" && "Manage account status, roles, and access permissions."}

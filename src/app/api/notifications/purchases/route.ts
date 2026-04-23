@@ -1,25 +1,40 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { getPayments } from "@/lib/payment-store";
 
-const DATA_PATH = "data/payments.json";
+export const runtime = "nodejs";
 
 export async function GET() {
-  // Read all purchases
-  let paymentsRaw = [];
   try {
-    const file = fs.readFileSync(DATA_PATH, "utf8");
-    if (file.trim().startsWith("{")) {
-      // If root is object, try to get .payments array
-      const obj = JSON.parse(file);
-      paymentsRaw = Array.isArray(obj.payments) ? obj.payments : [];
-    } else if (file.trim().startsWith("[")) {
-      paymentsRaw = JSON.parse(file);
-    } else {
-      paymentsRaw = [];
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id || session.user.role !== "professional") {
+      return NextResponse.json({ data: [] });
     }
-  } catch (e) { paymentsRaw = []; }
-  // Only return purchases from the last 24 hours
-  const now = Date.now();
-  const payments = paymentsRaw.filter((p: any) => p && p.timestamp && now - new Date(p.timestamp).getTime() < 24 * 60 * 60 * 1000);
-  return NextResponse.json({ data: payments });
+
+    const allPayments = await getPayments();
+
+    // Filter for this professional only
+    const myPayments = allPayments
+      .filter((p) => p.professionalId === session.user.id)
+      .sort((a, b) => new Date(b.paidAt).getTime() - new Date(a.paidAt).getTime());
+
+    const data = myPayments.map((p) => ({
+      id: p.id,
+      studentName: p.studentName,
+      studentEmail: p.studentEmail,
+      professionalId: p.professionalId,
+      plan: p.plan,
+      amount: p.amount,
+      paidAt: p.paidAt,
+      items: p.items?.map((item) => ({
+        title: item.title,
+        contentType: item.contentType,
+      })) ?? [],
+    }));
+
+    return NextResponse.json({ data });
+  } catch {
+    return NextResponse.json({ data: [] });
+  }
 }

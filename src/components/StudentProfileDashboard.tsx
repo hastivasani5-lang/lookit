@@ -655,7 +655,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
           <div className="px-3 sm:px-4 lg:px-5 pb-3 sm:pb-4 lg:pb-5">
             <button
               type="button"
-              onClick={() => window.dispatchEvent(new Event("lookit-logout-requested"))}
+              onClick={() => signOut({ callbackUrl: "/" })}
               className="w-full rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-3 py-1.5 sm:py-2 lg:py-2.5 text-xs sm:text-sm font-semibold"
             >
               Logout
@@ -835,7 +835,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                   </button>
                   <button
                     type="button"
-                    onClick={() => window.dispatchEvent(new Event("lookit-logout-requested"))}
+                    onClick={() => signOut({ callbackUrl: "/" })}
                     className="rounded-lg sm:rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-3 sm:px-4 lg:px-5 py-1 sm:py-1.5 lg:py-2.5 text-xs sm:text-sm font-semibold"
                   >
                     Logout

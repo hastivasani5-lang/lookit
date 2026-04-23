@@ -9,6 +9,7 @@ import type { UserRole } from "@/types/auth";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [hasMounted, setHasMounted] = useState(false);
   const [isActive, setIsActive] = useState(false); // false = login, true = register
 
   // ── Login state ──────────────────────────────────────────
@@ -20,7 +21,6 @@ export default function LoginPage() {
   const [loginError, setLoginError] = useState("");
   const [loginSuccess, setLoginSuccess] = useState("");
   const [googleLoading, setGoogleLoading] = useState(false);
-  const [workHoursGoal, setWorkHoursGoal] = useState("8");
 
   // ── Register state ───────────────────────────────────────
   const [regRole, setRegRole] = useState<UserRole>("student");
@@ -32,6 +32,7 @@ export default function LoginPage() {
   const [regError, setRegError] = useState("");
 
   useEffect(() => {
+    setHasMounted(true);
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     const queryEmail = params.get("email");
@@ -62,11 +63,6 @@ export default function LoginPage() {
     const s = await fetch("/api/auth/session", { cache: "no-store" });
     const sp = await s.json().catch(() => null);
     const role = sp?.user?.role === "professional" ? "professional" : "student";
-    // Save work hours goal for student
-    if (role === "student" && sp?.user?.id) {
-      const goal = Math.max(1, Math.min(24, Number(workHoursGoal) || 8));
-      localStorage.setItem(`lookit-work-goal-${sp.user.id}`, String(goal));
-    }
     window.location.href = role === "professional" ? "/dashboard/teachers" : "/dashboard/students";
   };
 
@@ -139,7 +135,7 @@ export default function LoginPage() {
             <p className="text-sm text-gray-500 mb-5">Welcome back! Sign in to continue.</p>
 
             {/* Role toggle */}
-            <div className="flex gap-2 mb-5 p-1 bg-gray-100 rounded-xl">
+            <div className="flex gap-2 mb-5 p-1 bg-gray-100 rounded-xl" suppressHydrationWarning>
               {(["student","professional"] as UserRole[]).map((r) => (
                 <button key={r} type="button" onClick={() => setLoginRole(r)}
                   className={`flex-1 py-2 rounded-lg text-xs font-semibold capitalize transition-all flex items-center justify-center gap-1.5 ${loginRole === r ? "bg-white text-[#0d7a57] shadow" : "text-gray-500"}`}>

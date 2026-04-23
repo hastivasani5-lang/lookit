@@ -22,10 +22,13 @@ const COUNTRIES = [
 ];
 
 function PhoneInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [mounted, setMounted] = useState(false);
   const [selected, setSelected] = useState(COUNTRIES[0]);
   const [open, setOpen] = useState(false);
   const [digits, setDigits] = useState("");
   const dropRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => { setMounted(true); }, []);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -44,11 +47,17 @@ function PhoneInput({ value, onChange }: { value: string; onChange: (v: string) 
   };
 
   const handleDigitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/\D/g, ""); // only digits
+    const raw = e.target.value.replace(/\D/g, "");
     const limited = raw.slice(0, selected.digits);
     setDigits(limited);
     onChange(`${selected.dial}${limited}`);
   };
+
+  if (!mounted) {
+    return (
+      <div className="flex rounded-xl border border-gray-200 bg-gray-50 h-[46px] animate-pulse" />
+    );
+  }
 
   return (
     <div className="flex rounded-xl border border-gray-200 bg-gray-50 focus-within:border-[#1ec28e] focus-within:ring-2 focus-within:ring-[#1ec28e]/20 transition">

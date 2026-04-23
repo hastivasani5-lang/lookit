@@ -25,12 +25,12 @@ export default function SiteLogo({ size = "nav", priority = false, className = "
 			} ${className}`.trim()}
 		>
 			<Image
-				src="/logo.png"
+				src="/logo.svg"
 				alt="Lookit logo"
-				width={869}
-				height={244}
+				width={260}
+				height={64}
 				priority={priority}
-				sizes="(max-width: 768px) 180px, 250px"
+				sizes="(max-width: 768px) 180px, 260px"
 				className="h-full w-auto object-contain"
 			/>
 		</div>

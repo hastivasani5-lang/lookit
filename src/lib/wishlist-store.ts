@@ -27,9 +27,19 @@ async function readStore(): Promise<WishlistStore> {
       `SELECT data FROM app_data WHERE key = $1 LIMIT 1`,
       [DB_KEY],
     );
-    if (result.rows.length === 0) return {};
-    const parsed = result.rows[0].data;
-    return typeof parsed === "object" && parsed !== null ? (parsed as WishlistStore) : {};
+    if (result.rows.length > 0) {
+      const parsed = result.rows[0].data;
+      return typeof parsed === "object" && parsed !== null ? (parsed as WishlistStore) : {};
+    }
+    // DB empty — seed from JSON
+    try {
+      await fs.mkdir(DATA_DIR, { recursive: true });
+      const raw = await fs.readFile(FILE, "utf-8");
+      const parsed = JSON.parse(raw);
+      const store = typeof parsed === "object" && parsed !== null ? (parsed as WishlistStore) : {};
+      if (Object.keys(store).length > 0) await writeStore(store);
+      return store;
+    } catch { return {}; }
   }
 
   await fs.mkdir(DATA_DIR, { recursive: true });

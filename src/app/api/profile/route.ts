@@ -1,10 +1,9 @@
-import { promises as fs } from "fs";
-import path from "path";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 
 import { authOptions } from "@/lib/auth";
 import { updateUserProfile } from "@/lib/user-store";
+import { uploadFile } from "@/lib/file-upload";
 
 export const runtime = "nodejs";
 
@@ -32,35 +31,12 @@ export async function POST(request: Request) {
     const certificatePaths: string[] = [];
 
     if (photo instanceof File && photo.size > 0) {
-      const uploadsDir = path.join(process.cwd(), "public", "uploads");
-      await fs.mkdir(uploadsDir, { recursive: true });
-
-      const fileExtension = photo.name.includes(".")
-        ? `.${photo.name.split(".").pop()}`
-        : ".png";
-      const fileName = `${session.user.id}-${Date.now()}${fileExtension}`;
-      const filePath = path.join(uploadsDir, fileName);
-
-      const buffer = Buffer.from(await photo.arrayBuffer());
-      await fs.writeFile(filePath, buffer);
-      imagePath = `/uploads/${fileName}`;
+      imagePath = await uploadFile(photo, "profiles");
     }
 
-    if (certificateFiles.length > 0) {
-      const certificatesDir = path.join(process.cwd(), "public", "uploads", "certificates");
-      await fs.mkdir(certificatesDir, { recursive: true });
-
-      for (const certificate of certificateFiles) {
-        const fileExtension = certificate.name.includes(".")
-          ? `.${certificate.name.split(".").pop()}`
-          : ".pdf";
-        const fileName = `${session.user.id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}${fileExtension}`;
-        const filePath = path.join(certificatesDir, fileName);
-
-        const buffer = Buffer.from(await certificate.arrayBuffer());
-        await fs.writeFile(filePath, buffer);
-        certificatePaths.push(`/uploads/certificates/${fileName}`);
-      }
+    for (const certificate of certificateFiles) {
+      const certUrl = await uploadFile(certificate, "certificates");
+      certificatePaths.push(certUrl);
     }
 
     if (name && name.length < 2) {

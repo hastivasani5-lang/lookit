@@ -1,29 +1,28 @@
 import { NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
 import { getAllLibraries } from "@/lib/content-library-store";
 
 export const runtime = "nodejs";
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ bookId: string }> }
 ) {
   const { bookId } = await params;
 
   const libraries = await getAllLibraries();
 
-  // Find the book across all professionals
   for (const [, library] of Object.entries(libraries.professionals)) {
     const book = library.books.find((b) => b.id === bookId);
     if (book) {
-      // If fileUrl is set, redirect to it
-      if (book.fileUrl && book.fileUrl.startsWith("/uploads/")) {
-        return NextResponse.redirect(new URL(book.fileUrl, process.env.NEXTAUTH_URL || "http://localhost:3000"));
-      }
-      // If url is set
-      if (book.url && book.url.startsWith("/uploads/")) {
-        return NextResponse.redirect(new URL(book.url, process.env.NEXTAUTH_URL || "http://localhost:3000"));
+      const fileUrl = book.fileUrl || book.url || "";
+      if (fileUrl) {
+        // If it's a relative path, make it absolute using NEXTAUTH_URL
+        if (fileUrl.startsWith("/")) {
+          const base = process.env.NEXTAUTH_URL || "https://lookit-gold.vercel.app";
+          return NextResponse.redirect(new URL(fileUrl, base));
+        }
+        // If it's already an absolute URL (Vercel Blob), redirect directly
+        return NextResponse.redirect(fileUrl);
       }
       return NextResponse.json({ message: "File not available", fileName: book.fileName }, { status: 404 });
     }

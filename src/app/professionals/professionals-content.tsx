@@ -169,7 +169,11 @@ export default function ProfessionalsContent() {
       const reviewsMatch = selectedReviews === "all" || item.reviews >= Number(selectedReviews);
       const languageMatch = selectedLanguage === "all" || item.language === selectedLanguage;
       const locationQuery = locationText.trim().toLowerCase();
-      const locationMatch = locationQuery.length === 0 || item.location.toLowerCase().includes(locationQuery);
+      // Match city name OR ZIP code
+      const locationMatch =
+        locationQuery.length === 0 ||
+        item.location.toLowerCase().includes(locationQuery) ||
+        (item.zipCode && item.zipCode.includes(locationQuery));
       const nameQuery = professionalQuery.trim().toLowerCase();
       const nameMatch =
         nameQuery.length === 0 ||
@@ -273,16 +277,16 @@ export default function ProfessionalsContent() {
                 </div>
               </label>
 
-              {/* Location */}
+              {/* Location / ZIP */}
               <label className="block">
-                <span className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-gray-400">Location</span>
+                <span className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-gray-400">Location / ZIP Code</span>
                 <div className="flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 transition focus-within:border-[#1ec28e] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#1ec28e]/20">
                   <MapPin className="h-4 w-4 shrink-0 text-[#1ec28e]" />
                   <input
                     type="text"
                     value={locationText}
                     onChange={(event) => setLocationText(event.target.value)}
-                    placeholder="City or area"
+                    placeholder="City, area or ZIP code"
                     className="w-full bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
                   />
                   {locationText && (

@@ -9,6 +9,7 @@ export type PublicProfessional = {
   category: (typeof fallbackProfessionals)[number]["category"];
   language: (typeof fallbackProfessionals)[number]["language"];
   location: string;
+  zipCode: string;
   rating: number;
   reviews: number;
   image: string;
@@ -24,6 +25,7 @@ export function buildSeedProfessional(professional: SeedProfessional): PublicPro
     category: professional.category,
     language: professional.language,
     location: professional.location,
+    zipCode: "",
     rating: professional.rating,
     reviews: professional.reviews,
     image: getOnlineProfessionalImage(professional.id),
@@ -62,6 +64,10 @@ export function buildPublicProfessional(user: AppUser, index = 0): PublicProfess
   const reviewsCount = Math.max(user.reviews?.length ?? 0, 0);
   const derivedRating = reviewsCount > 0 ? Math.min(5, 4 + Math.min(reviewsCount, 10) / 10) : 4.5;
 
+  // Extract ZIP code from location if present (e.g. "Mumbai 400001" or "400001")
+  const zipMatch = location.match(/\b\d{5,6}\b/);
+  const zipCode = zipMatch ? zipMatch[0] : "";
+
   return {
     id: user.id,
     name: user.name,
@@ -69,6 +75,7 @@ export function buildPublicProfessional(user: AppUser, index = 0): PublicProfess
     category: inferCategory(specialization, "special-ed"),
     language: "English",
     location,
+    zipCode,
     rating: Number(derivedRating.toFixed(1)),
     reviews: reviewsCount,
     image: user.image?.trim() || PROFILE_PLACEHOLDER_SVG,

@@ -1,7 +1,7 @@
 "use client";
-import React from "react";
+import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
-import { Save, Settings, Upload } from "lucide-react";
+import { Loader2, Save, Settings, Upload } from "lucide-react";
 
 type SettingsSectionProps = {
   avatarSrc: string;
@@ -70,6 +70,53 @@ export default function SettingsSection({
   profileMessage,
   handleProfileSave,
 }: SettingsSectionProps) {
+  const [zipLoading, setZipLoading] = useState(false);
+  const cityDebounceRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Auto-fetch ZIP code when city is typed
+  const handleCityChange = useCallback((value: string) => {
+    setProfileCity(value);
+    
+    // Clear previous timeout
+    if (cityDebounceRef.current) clearTimeout(cityDebounceRef.current);
+    
+    // Debounce API call
+    cityDebounceRef.current = setTimeout(async () => {
+      const city = value.trim();
+      if (!city || city.length < 3) return;
+      
+      setZipLoading(true);
+      try {
+        // Try India first (most common for this app)
+        const indiaRes = await fetch(`https://api.zippopotam.us/in/${encodeURIComponent(city)}`);
+        if (indiaRes.ok) {
+          const data = await indiaRes.json();
+          if (data.places && data.places[0]) {
+            setProfilePostalCode(data.places[0]["post code"]);
+            setProfileCountry("India");
+            setZipLoading(false);
+            return;
+          }
+        }
+        
+        // Try US
+        const usRes = await fetch(`https://api.zippopotam.us/us/${encodeURIComponent(city)}`);
+        if (usRes.ok) {
+          const data = await usRes.json();
+          if (data.places && data.places[0]) {
+            setProfilePostalCode(data.places[0]["post code"]);
+            setProfileCountry("United States");
+            setZipLoading(false);
+            return;
+          }
+        }
+      } catch {
+        // Silently fail — user can manually enter ZIP
+      }
+      setZipLoading(false);
+    }, 800);
+  }, [setProfileCity, setProfilePostalCode, setProfileCountry]);
+
   return (
     <div className="mt-6 grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
       {/* Left: Photo + Certificates */}
@@ -195,13 +242,22 @@ export default function SettingsSection({
         <div className="mt-4 grid gap-4 md:grid-cols-3">
           <label className="space-y-2 text-sm font-medium text-slate-700">
             City
-            <input type="text" value={profileCity} onChange={(e) => setProfileCity(e.target.value)} placeholder="Enter city"
+            <input type="text" value={profileCity}
+              onChange={(e) => handleCityChange(e.target.value)}
+              placeholder="Enter city (ZIP auto-fills)"
               className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]" />
           </label>
           <label className="space-y-2 text-sm font-medium text-slate-700">
-            Postal Code
-            <input type="text" value={profilePostalCode} onChange={(e) => setProfilePostalCode(e.target.value)} placeholder="Enter postal code"
-              className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]" />
+            Postal / ZIP Code
+            <div className="relative">
+              <input type="text" value={profilePostalCode}
+                onChange={(e) => setProfilePostalCode(e.target.value)}
+                placeholder="Auto-filled from city"
+                className="h-10 w-full rounded-lg border border-slate-200 px-3 pr-8 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]" />
+              {zipLoading && (
+                <Loader2 className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-emerald-500" />
+              )}
+            </div>
           </label>
           <label className="space-y-2 text-sm font-medium text-slate-700">
             Country
@@ -257,9 +313,10 @@ export default function SettingsSection({
               className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]" />
           </label>
           <label className="space-y-2 text-sm font-medium text-slate-700">
-            Location
-            <input type="text" value={profileLocation} onChange={(e) => setProfileLocation(e.target.value)} placeholder="Enter your city or address"
+            Location / ZIP Code
+            <input type="text" value={profileLocation} onChange={(e) => setProfileLocation(e.target.value)} placeholder="e.g. Mumbai 400001 or New York 10001"
               className="h-10 w-full rounded-lg border border-slate-200 px-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]" />
+            <span className="text-xs text-gray-400 font-normal">Include ZIP/PIN code so students can find you by location</span>
           </label>
         </div>
 

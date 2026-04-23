@@ -1,33 +1,29 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-
+import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { addReview, getReviews } from "@/lib/reviews-store";
-import { getUserById } from "@/lib/user-store";
+import { getReviews } from "@/lib/reviews-store";
 
 export const runtime = "nodejs";
 
-type ReviewPayload = {
-  professionalId?: string;
-  contentId?: string;
-  contentType?: string;
-  rating?: number;
-  review?: string;
-};
-
-function formatAverageRating(reviews: Array<{ rating: number }>) {
-  if (reviews.length === 0) {
-    return 0;
-  }
-
-  return Math.round((reviews.reduce((sum, entry) => sum + entry.rating, 0) / reviews.length) * 10) / 10;
-}
-
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
-    return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ reviews: [] });
+    }
+
+    const allReviews = await getReviews();
+
+    // Return reviews for this professional
+    const reviews = allReviews
+      .filter((r) => r.professionalId === session.user.id)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    return NextResponse.json({ reviews });
+  } catch {
+    return NextResponse.json({ reviews: [] });
   }
+<<<<<<< HEAD
 
   const user = await getUserById(session.user.id);
   if (!user || (user.role !== "professional" && user.role !== "student")) {
@@ -100,4 +96,6 @@ export async function POST(request: Request) {
     message: "Review submitted successfully.",
     review: record,
   });
+=======
+>>>>>>> 0e69d57 (fix: professional & admin notification badge with seen/unseen logic)
 }

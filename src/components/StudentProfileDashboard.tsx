@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { signOut } from "next-auth/react";
 import {
   BookOpen,
@@ -124,6 +124,9 @@ function CalendarWidget() {
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [timeline, setTimeline] = useState<Array<{ start: string; end: string; hours: number }>>([]);
   const intervalRef = useState<ReturnType<typeof setInterval> | null>(null);
+  const [sessionStart, setSessionStart] = useState<Date | null>(null);
+  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
+  const logoutTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   const dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
@@ -148,8 +151,15 @@ function CalendarWidget() {
 
   const handleStartStop = () => {
     if (!isTracking) {
-      setStartTime(new Date());
+      const now = new Date();
+      setStartTime(now);
+      setSessionStart(now);
       setIsTracking(true);
+      // Set 12hr auto-logout timer
+      if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+      logoutTimerRef.current = setTimeout(() => {
+        setShowLogoutPopup(true);
+      }, 12 * 60 * 60 * 1000); // 12 hours
     } else {
       const end = new Date();
       const diffHours = startTime ? (end.getTime() - startTime.getTime()) / 3600000 : 0;
@@ -161,7 +171,9 @@ function CalendarWidget() {
         hours: rounded,
       }]);
       setStartTime(null);
+      setSessionStart(null);
       setIsTracking(false);
+      if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
     }
   };
 
@@ -267,6 +279,62 @@ function CalendarWidget() {
           </button>
         )}
       </div>
+
+      {/* 12hr Session Logout Popup */}
+      {showLogoutPopup && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full mx-4 text-center">
+            <div className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Session Time Limit Reached</h3>
+            <p className="text-sm text-gray-500 mb-2">
+              You have been working for <span className="font-semibold text-emerald-600">12 hours</span>.
+            </p>
+            <p className="text-sm text-gray-500 mb-6">
+              For your wellbeing, please take a break. You will be logged out now.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowLogoutPopup(false);
+                  // Stop session
+                  const end = new Date();
+                  const diffHours = startTime ? (end.getTime() - startTime.getTime()) / 3600000 : 0;
+                  const rounded = Math.round(diffHours * 100) / 100;
+                  setWorkedHours(h => Math.round((h + rounded) * 100) / 100);
+                  setTimeline(prev => [...prev, {
+                    start: startTime ? startTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "",
+                    end: end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+                    hours: rounded,
+                  }]);
+                  setStartTime(null);
+                  setSessionStart(null);
+                  setIsTracking(false);
+                  signOut({ callbackUrl: "/" });
+                }}
+                className="flex-1 py-2.5 rounded-xl text-white font-bold text-sm transition hover:opacity-90"
+                style={{ background: "linear-gradient(135deg, #0d7a57, #1ec28e)" }}
+              >
+                Logout Now
+              </button>
+              <button
+                onClick={() => {
+                  setShowLogoutPopup(false);
+                  // Restart 12hr timer
+                  if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+                  logoutTimerRef.current = setTimeout(() => setShowLogoutPopup(true), 12 * 60 * 60 * 1000);
+                }}
+                className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-50 transition"
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

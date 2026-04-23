@@ -20,17 +20,8 @@ export async function GET(request: NextRequest) {
 
   const allReviews = await getReviews();
 
-  // Filter by professionalId AND contentId (if provided)
-  const reviews = allReviews.filter((r) => {
-    if (r.professionalId !== professionalId) return false;
-    // Only show reviews that have this exact contentId
-    // Legacy reviews without contentId are NOT shown
-    if (contentId) {
-      return r.contentId === contentId;
-    }
-    // If no contentId given, only show reviews that have a contentId (not legacy)
-    return !!r.contentId;
-  });
+  // Show all reviews for this professional (no content filtering)
+  const reviews = allReviews.filter((r) => r.professionalId === professionalId);
 
   return NextResponse.json({ reviews });
 }

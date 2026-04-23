@@ -450,9 +450,6 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                 {profileAnswers.country && (
                   <p className="flex items-center gap-2"><span className="font-semibold">Country:</span> {profileAnswers.country}</p>
                 )}
-                {profileAnswers.profession && (
-                  <p className="flex items-center gap-2"><span className="font-semibold">Profession:</span> {profileAnswers.profession}</p>
-                )}
                 {profileAnswers.source && (
                   <p className="flex items-center gap-2"><span className="font-semibold">Heard About Us:</span> {profileAnswers.source}</p>
                 )}

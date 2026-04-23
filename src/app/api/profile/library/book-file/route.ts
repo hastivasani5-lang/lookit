@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { promises as fs } from "fs";
-import path from "path";
 
 import { authOptions } from "@/lib/auth";
 import { getUserById } from "@/lib/user-store";
+import { uploadFile } from "@/lib/file-upload";
 
 export const runtime = "nodejs";
 
@@ -31,19 +30,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "No book file provided." }, { status: 400 });
   }
 
-  const uploadDir = path.join(process.cwd(), "public", "uploads", "book-files");
-  await fs.mkdir(uploadDir, { recursive: true });
-
-  const extension = bookFile.name.includes(".")
-    ? `.${bookFile.name.split(".").pop()}`
-    : ".pdf";
-  const fileNameOnDisk = `${user.id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}${extension}`;
-  const absolutePath = path.join(uploadDir, fileNameOnDisk);
-  const buffer = Buffer.from(await bookFile.arrayBuffer());
-  await fs.writeFile(absolutePath, buffer);
+  const fileUrl = await uploadFile(bookFile, "book-files");
 
   return NextResponse.json({
-    fileUrl: `/uploads/book-files/${fileNameOnDisk}`,
+    fileUrl,
     fileName: bookFile.name,
   });
 }

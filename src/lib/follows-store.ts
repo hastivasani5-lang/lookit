@@ -16,9 +16,18 @@ async function readFollows(): Promise<FollowRecord[]> {
       `SELECT data FROM app_data WHERE key = $1 LIMIT 1`,
       [FOLLOWS_DB_KEY],
     );
-    if (result.rows.length === 0) return [];
-    const parsed = result.rows[0].data;
-    return Array.isArray(parsed) ? (parsed as FollowRecord[]) : [];
+    if (result.rows.length > 0) {
+      const parsed = result.rows[0].data;
+      return Array.isArray(parsed) ? (parsed as FollowRecord[]) : [];
+    }
+    // DB empty — seed from JSON
+    try {
+      const raw = await fs.readFile(FILE, "utf-8");
+      const parsed = JSON.parse(raw);
+      const store = Array.isArray(parsed) ? (parsed as FollowRecord[]) : [];
+      if (store.length > 0) await writeFollows(store);
+      return store;
+    } catch { return []; }
   }
 
   try {

@@ -22,6 +22,8 @@ export type ReviewRecord = {
   studentEmail: string;
   professionalId: string;
   professionalName: string;
+  contentId?: string;
+  contentType?: "book" | "video";
   rating: number;
   review: string;
   createdAt: string;

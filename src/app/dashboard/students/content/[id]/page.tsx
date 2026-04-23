@@ -108,12 +108,15 @@ export default function ContentDetailPage() {
   useEffect(() => {
     if (!professionalId) return;
     setReviewsLoading(true);
-    fetch(`/api/student/professional-reviews?professionalId=${professionalId}`, { cache: "no-store" })
+    const contentId = item?.contentId || "";
+    const params = new URLSearchParams({ professionalId });
+    if (contentId) params.set("contentId", contentId);
+    fetch(`/api/student/professional-reviews?${params.toString()}`, { cache: "no-store" })
       .then((r) => r.json())
       .then((data: { reviews?: ReviewRecord[] }) => setReviews(Array.isArray(data.reviews) ? data.reviews : []))
       .catch(() => {})
       .finally(() => setReviewsLoading(false));
-  }, [professionalId]);
+  }, [professionalId, item]);
 
   const handleOpen = () => {
     let url = item?.accessUrl || "";
@@ -134,7 +137,13 @@ export default function ContentDetailPage() {
       const res = await fetch("/api/profile/reviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ professionalId, rating, review: reviewText.trim() }),
+        body: JSON.stringify({
+          professionalId,
+          contentId: item?.contentId,
+          contentType: item?.type,
+          rating,
+          review: reviewText.trim(),
+        }),
       });
       const data = (await res.json()) as { message?: string; review?: ReviewRecord };
       if (!res.ok) { setReviewError(data.message || "Failed to submit review."); }

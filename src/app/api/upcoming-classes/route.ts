@@ -27,7 +27,11 @@ export async function GET(request: Request) {
   }
 
   const classes = await getAllUpcomingClasses();
-  return NextResponse.json({ classes });
+  return NextResponse.json({ classes }, {
+    headers: {
+      "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+    },
+  });
 }
 
 // POST - create or update a class

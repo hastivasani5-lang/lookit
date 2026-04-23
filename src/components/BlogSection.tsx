@@ -29,31 +29,10 @@ const blogs = [
     title: "Learning is the Key soft skills and Professional",
     color: "orange",
   },
-  {
-    id: 1,
-    image: "/blog-thumb1.png",
-    date: "28 JAN",
-    author: "John D. Alexon",
-    title: "10 Proven Strategies to excel Online Learning",
-    color: "blue",
-  },
-  {
-    id: 2,
-    image: "/blog-thumb2.png",
-    date: "29 JAN",
-    author: "Anjelina Watson",
-    title: "Trends that are shaping the Learning experience",
-    color: "green",
-  },
-  {
-    id: 3,
-    image: "/blog-thumb3.png",
-    date: "30 JAN",
-    author: "David X. Barmer",
-    title: "Learning is the Key soft skills and Professional",
-    color: "orange",
-  },
 ];
+
+// Duplicate for seamless marquee loop
+const blogItems = [...blogs, ...blogs];
 
 export default function BlogSection() {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -117,7 +96,7 @@ export default function BlogSection() {
           onMouseLeave={() => setPaused(false)}
         >
           <div ref={trackRef} className="flex gap-6 w-max">
-            {blogs.map((blog, index) => (
+            {blogItems.map((blog, index) => (
               <div
                 key={index}
                 className={`rounded-[20px] p-6 text-left flex-shrink-0 w-[320px] ${
@@ -132,9 +111,10 @@ export default function BlogSection() {
                 <div className="relative rounded-[16px] overflow-hidden mb-5">
                   <Image
                     src={blog.image}
-                    alt=""
+                    alt={blog.title}
                     width={400}
                     height={220}
+                    loading="lazy"
                     className="w-full h-[200px] object-cover"
                   />
                   <span

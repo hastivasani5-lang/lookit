@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { appendPayment } from "@/lib/payment-store";
 import { appendStudentBookActivity, appendStudentVideoActivity } from "@/lib/content-library-store";
+import { appendStudentNotification } from "@/lib/student-notifications-store";
 
 type CheckoutItem = {
   id: string;
@@ -102,6 +103,14 @@ export async function POST(request: Request) {
         });
       }
     }),
+  );
+
+  // Notify student about purchase
+  const itemTitles = items.map((i) => `"${i.title}"`).join(", ");
+  await appendStudentNotification(
+    session.user.id,
+    "purchase_confirmation",
+    `Purchase successful! You bought ${itemTitles} for ${formatAmount(totalAmount)}. Transaction ID: ${transactionId}`,
   );
 
   return NextResponse.json({

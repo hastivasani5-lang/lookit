@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Navbar from "@/components/Navbar";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 // Hero skeleton shown while Hero loads
 const HeroSkeleton = () => (
@@ -63,8 +64,33 @@ const AutoPopupModal = dynamic(() => import("@/components/AutoPopupModal"));
 
 export default function StudentsPage() {
   const { data: session, status } = useSession();
+  const router = useRouter();
   const [showModal, setShowModal] = useState(false);
   const [belowFoldReady, setBelowFoldReady] = useState(false);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
+
+  // Show loading state while checking authentication
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#1ec28e] border-r-transparent"></div>
+          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show nothing if not authenticated (will redirect)
+  if (status === "unauthenticated") {
+    return null;
+  }
 
   // Load below-fold content after first paint
   useEffect(() => {

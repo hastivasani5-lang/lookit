@@ -7,7 +7,7 @@ import { markProfessionalLoggedIn } from "@/lib/professional-login-store";
 
 const authSecret =
   process.env.NEXTAUTH_SECRET ||
-  "lookit-fallback-secret-change-in-production";
+  "lookit-fallback-secret-change-in-production-1234567890";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -194,4 +194,5 @@ export const authOptions: NextAuthOptions = {
   },
 
   secret: authSecret,
+  debug: process.env.NODE_ENV === "development",
 };

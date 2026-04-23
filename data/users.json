@@ -533,5 +533,17 @@
     "approvalStatus": "approved",
     "provider": "credentials",
     "createdAt": "2026-04-23T09:42:42.048Z"
+  },
+  {
+    "id": "116f7221-48c9-4ebc-a44c-4d64b88abc77",
+    "name": "yas",
+    "email": "yas@gmail.com",
+    "passwordHash": "$2a$10$wHlHoDLJvJOuqa0eOaoNzekvW/EWyO.xI5MsuOLAXa1R1DQvD4.nq",
+    "role": "student",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-23T12:36:13.761Z"
   }
 ]

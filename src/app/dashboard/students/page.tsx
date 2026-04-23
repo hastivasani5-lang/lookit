@@ -68,29 +68,12 @@ export default function StudentsPage() {
   const [showModal, setShowModal] = useState(false);
   const [belowFoldReady, setBelowFoldReady] = useState(false);
 
-  // Redirect to login if not authenticated
+  // Handle authentication state
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
     }
   }, [status, router]);
-
-  // Show loading state while checking authentication
-  if (status === "loading") {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#1ec28e] border-r-transparent"></div>
-          <p className="mt-4 text-gray-600">Loading dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Show nothing if not authenticated (will redirect)
-  if (status === "unauthenticated") {
-    return null;
-  }
 
   // Load below-fold content after first paint
   useEffect(() => {
@@ -142,6 +125,23 @@ export default function StudentsPage() {
   };
 
   const userId = session?.user?.id ?? "guest";
+
+  // Show loading state while checking authentication
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#1ec28e] border-r-transparent"></div>
+          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render dashboard if not authenticated (redirect will happen)
+  if (status === "unauthenticated") {
+    return null;
+  }
 
   return (
     <>

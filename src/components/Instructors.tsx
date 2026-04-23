@@ -31,7 +31,7 @@ const Instructors = () => {
       .then((r) => r.json())
       .then((data: { professionals?: PublicProfessional[] }) => {
         const list = data.professionals ?? [];
-        // Only show professionals with active "top" upgrade - same as Top Rated Experts
+          // Only show professionals with active "top" upgrade - same as Top Rated Experts
         const now = new Date();
         const topRated = list.filter((p) => {
           if (p.profileUpgradeTier !== "top" || !p.profileBoostedUntil) return false;

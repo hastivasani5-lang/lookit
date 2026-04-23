@@ -89,13 +89,17 @@ const Instructors = () => {
                 1024: { slidesPerView: 4 },
               }}
             >
-              {professionals.map((item, i) => (
+              {professionals.map((item, i) => {
+                // Stable color based on id so Swiper loop duplicates get same color
+                const colorIdx = item.id.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0) % bgColors.length;
+                const roleColorIdx = item.id.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0) % roleColors.length;
+                return (
                 <SwiperSlide key={item.id}>
                   <motion.div
                     whileHover={{ y: -10 }}
                     data-aos="zoom-in-up"
                     data-aos-delay={i * 100}
-                    className={`${bgColors[i % bgColors.length]} group rounded-2xl p-6 text-center transition duration-300 shadow-sm hover:shadow-xl lg:text-left`}
+                    className={`${bgColors[colorIdx]} group rounded-2xl p-6 text-center transition duration-300 shadow-sm hover:shadow-xl lg:text-left`}
                   >
                     {/* IMAGE */}
                     <div className="relative mb-5 h-[220px] w-full overflow-hidden rounded-xl sm:h-[240px] lg:h-[220px]">
@@ -113,7 +117,7 @@ const Instructors = () => {
                     <h3 className="text-lg font-semibold text-gray-900 truncate">{item.name}</h3>
 
                     {/* ROLE */}
-                    <span className={`inline-block mt-2 px-3 py-1 text-xs rounded-full font-medium ${roleColors[i % roleColors.length]}`}>
+                    <span className={`inline-block mt-2 px-3 py-1 text-xs rounded-full font-medium ${roleColors[roleColorIdx]}`}>
                       {item.specialization}
                     </span>
 
@@ -126,7 +130,8 @@ const Instructors = () => {
                     </div>
                   </motion.div>
                 </SwiperSlide>
-              ))}
+                );
+              })}
             </Swiper>
 
             {/* LEFT ARROW */}

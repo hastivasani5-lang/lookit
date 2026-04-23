@@ -43,6 +43,7 @@ const Navbar = () => {
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState<Array<{ id: string; message: string; type: string; read: boolean; createdAt: string }>>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => { setHasMounted(true); }, []);
 
@@ -116,6 +117,25 @@ const Navbar = () => {
     void load();
     const interval = setInterval(() => { void load(); }, 30_000);
     return () => clearInterval(interval);
+  }, [isStudent]);
+
+  // Load cart count from localStorage
+  useEffect(() => {
+    if (!isStudent) { setCartCount(0); return; }
+    const updateCount = () => {
+      try {
+        const raw = window.localStorage.getItem("lookit-cart-items");
+        const items = raw ? JSON.parse(raw) : [];
+        setCartCount(Array.isArray(items) ? items.length : 0);
+      } catch { setCartCount(0); }
+    };
+    updateCount();
+    window.addEventListener("cart-updated", updateCount);
+    window.addEventListener("storage", updateCount);
+    return () => {
+      window.removeEventListener("cart-updated", updateCount);
+      window.removeEventListener("storage", updateCount);
+    };
   }, [isStudent]);
 
   const openNotifications = async () => {
@@ -204,7 +224,7 @@ const Navbar = () => {
               <Link href="/cart" className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-50/80 text-gray-600 transition-all duration-200 hover:bg-emerald-100 hover:text-emerald-600 hover:scale-105">
                 <ShoppingCart className="h-4.5 w-4.5" />
                 <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-linear-to-r from-emerald-500 to-teal-500 text-[10px] font-bold text-white shadow-sm transition-transform group-hover:scale-110">
-                  0
+                  {cartCount > 9 ? "9+" : cartCount}
                 </span>
               </Link>
             ) : (

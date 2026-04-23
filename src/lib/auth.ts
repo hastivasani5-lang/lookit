@@ -2,7 +2,7 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { compare } from "bcryptjs";
-import { getUserByEmail, getUserById, recordProfessionalLoginAttempt } from "@/lib/user-store";
+import { getUserByEmail, getUserById, upsertGoogleUser, recordProfessionalLoginAttempt } from "@/lib/user-store";
 import { markProfessionalLoggedIn } from "@/lib/professional-login-store";
 
 const authSecret =
@@ -90,7 +90,7 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
 
-    // 🔥 FIXED Google Login
+    // ✅ Google Login — auto-create account if not exists
     async signIn({ user, account }: any) {
 
       if (account?.provider !== "google") {
@@ -103,20 +103,15 @@ export const authOptions: NextAuthOptions = {
 
       try {
 
-        let dbUser =
-          await getUserByEmail(user.email);
+        let dbUser = await getUserByEmail(user.email);
 
-        // 🟢 If Google user not found
+        // 🟢 New Google user — auto-register as student
         if (!dbUser) {
-
-          console.log(
-            "Google user not registered:",
-            user.email
-          );
-
-          // Redirect to signup instead of loop
-          return "/signup?email=" + user.email;
-
+          dbUser = await upsertGoogleUser({
+            email: user.email,
+            name: user.name || user.email.split("@")[0],
+            image: user.image ?? null,
+          });
         }
 
         if (
@@ -127,7 +122,6 @@ export const authOptions: NextAuthOptions = {
             dbUser,
             "rejected"
           );
-
           return "/login?error=approval-rejected";
         }
 
@@ -135,20 +129,14 @@ export const authOptions: NextAuthOptions = {
         user.role = dbUser.role;
 
         if (dbUser.role === "professional") {
-          await markProfessionalLoggedIn(
-            dbUser.id
-          );
+          await markProfessionalLoggedIn(dbUser.id);
         }
 
         return true;
 
       } catch (error) {
 
-        console.error(
-          "Google SignIn Error:",
-          error
-        );
-
+        console.error("Google SignIn Error:", error);
         return false;
       }
     },

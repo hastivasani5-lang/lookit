@@ -66,7 +66,8 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     setGoogleLoading(true); setLoginError("");
-    await signIn("google", { callbackUrl: loginRole === "professional" ? "/dashboard/teachers" : "/dashboard/students" });
+    // callbackUrl -> /api/auth/google-callback which will redirect based on actual DB role
+    await signIn("google", { callbackUrl: "/api/auth/google-callback" });
   };
 
   const handleRegister = async (e: React.FormEvent) => {

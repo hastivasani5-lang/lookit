@@ -212,7 +212,6 @@ function CalendarWidget({ userId }: { userId: string }) {
     }
   };
 
-  const maxHours = 12;
   const progressPct = Math.min((workedHours / maxHours) * 100, 100);
 
   return (

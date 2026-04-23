@@ -141,7 +141,7 @@ export default function ClassDetailsPage() {
               {cls.description}
             </p>
             <button className="px-8 py-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold hover:opacity-90 transition mb-8">
-              Enroll Now
+             Buy New
             </button>
             {/* Instructor Videos Slider */}
             <div className="mt-2">

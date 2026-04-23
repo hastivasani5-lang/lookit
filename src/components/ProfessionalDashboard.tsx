@@ -34,7 +34,7 @@ import OverviewSection from "@/components/professional/OverviewSection";
 import SettingsSection from "@/components/professional/SettingsSection";
 import UpgradeProgressChart from "@/components/professional/UpgradeProgressChart";
 import UpgradeSection from "@/components/professional/UpgradeSection";
-import AutoPopupModal from "@/components/AutoPopupModal";
+// import AutoPopupModal from "@/components/AutoPopupModal"; // Removed - only for students
 
 // ── Types & static data ───────────────────────────────────────────────────────
 import {
@@ -159,16 +159,18 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     setIsMounted(true);
   }, []);
 
-  // Auto popup modal after 2 seconds
+  // Auto popup modal after 2 seconds - ONLY FOR STUDENTS, NOT FOR PROFESSIONALS
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const autoModalFlag = localStorage.getItem(`professional_auto_modal_shown_${user.id}`);
-      if (!autoModalFlag) {
-        const timer = setTimeout(() => {
-          setShowModal(true);
-        }, 2000); // 2 seconds after login
-        return () => clearTimeout(timer);
-      }
+      // Professionals should not see this modal - it's for students only
+      // Remove or comment out this useEffect for professionals
+      // const autoModalFlag = localStorage.getItem(`professional_auto_modal_shown_${user.id}`);
+      // if (!autoModalFlag) {
+      //   const timer = setTimeout(() => {
+      //     setShowModal(true);
+      //   }, 2000); // 2 seconds after login
+      //   return () => clearTimeout(timer);
+      // }
     }
   }, [user.id]);
 
@@ -447,12 +449,12 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     return `${mb.toFixed(1)} MB`;
   };
 
-  const handleCloseModal = () => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(`professional_auto_modal_shown_${user.id}`, "1");
-    }
-    setShowModal(false);
-  };
+  // const handleCloseModal = () => {
+  //   if (typeof window !== "undefined") {
+  //     localStorage.setItem(`professional_auto_modal_shown_${user.id}`, "1");
+  //   }
+  //   setShowModal(false);
+  // };
 
   const parseHttpUrl = (value: string) => {
     try {
@@ -1194,7 +1196,8 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
 
   return (
     <div className="min-h-screen w-full bg-[#f0f4f8]">
-      {showModal && <AutoPopupModal onClose={handleCloseModal} userId={user.id} />}
+      {/* AutoPopupModal removed for professionals - only for students */}
+      {/* {showModal && <AutoPopupModal onClose={handleCloseModal} userId={user.id} />} */}
 
       {/* ── MOBILE TOPBAR ── */}
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/20 px-4 py-3 lg:hidden"

@@ -1,5 +1,17 @@
 [
   {
+    "professionalId": "03921a07-4881-48c1-9d43-9fda331df22d",
+    "professionalName": "dixi",
+    "professionalEmail": "dixi@gmail.com",
+    "event": "registration",
+    "title": "New professional registered",
+    "message": "dixi has registered and is waiting for approval.",
+    "status": "pending",
+    "audience": "admin",
+    "id": "ad000710-24b9-440e-af5f-e9df11be0990",
+    "createdAt": "2026-04-23T08:25:06.853Z"
+  },
+  {
     "professionalId": "71f729c1-d92f-4b68-99f2-0f514f861ab1",
     "professionalName": "jentilal",
     "professionalEmail": "jentilal@gmail.com",

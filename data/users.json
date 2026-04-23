@@ -509,5 +509,17 @@
     "approvalStatus": "approved",
     "provider": "credentials",
     "createdAt": "2026-04-23T06:25:17.751Z"
+  },
+  {
+    "id": "03921a07-4881-48c1-9d43-9fda331df22d",
+    "name": "dixi",
+    "email": "dixi@gmail.com",
+    "passwordHash": "$2a$10$n2K8l3xSt7NgWE4T3re9HOo.pjGyogiHYem3jolJYwTTHCjLZBsVy",
+    "role": "professional",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "pending",
+    "provider": "credentials",
+    "createdAt": "2026-04-23T08:25:06.841Z"
   }
 ]

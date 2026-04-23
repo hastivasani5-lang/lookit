@@ -70,13 +70,20 @@ export default function ContentDetailPage() {
   }, [id, status, router]);
 
   const handleOpen = () => {
-    if (!item?.accessUrl) return;
+    let url = item?.accessUrl || "";
+
     // Convert YouTube embed URL to watch URL
-    let url = item.accessUrl;
     if (url.includes("youtube.com/embed/")) {
       const videoId = url.split("/embed/")[1]?.split("?")[0];
       if (videoId) url = `https://www.youtube.com/watch?v=${videoId}`;
     }
+
+    // For books with no URL, open W3Schools as default resource
+    if (!url && item?.type === "book") {
+      url = "https://www.w3schools.com";
+    }
+
+    if (!url) return;
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
@@ -209,7 +216,7 @@ export default function ContentDetailPage() {
               </div>
 
               {/* Open Button */}
-              {item.accessUrl ? (
+              {(item.accessUrl || item.type === "book") ? (
                 <button
                   onClick={handleOpen}
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-white font-bold text-base transition hover:opacity-90 hover:scale-[1.01] active:scale-[0.99]"

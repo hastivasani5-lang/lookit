@@ -130,6 +130,7 @@ function CalendarWidget({ userId }: { userId: string }) {
   const intervalRef = useState<ReturnType<typeof setInterval> | null>(null);
   const [sessionStart, setSessionStart] = useState<Date | null>(null);
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
+  const [showEarlyLogoutPopup, setShowEarlyLogoutPopup] = useState(false);
   const [maxHours, setMaxHours] = useState(12);
   const logoutTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -162,6 +163,21 @@ function CalendarWidget({ userId }: { userId: string }) {
       localStorage.setItem(storageKey, JSON.stringify({ workedHours, timeline }));
     } catch { /* ignore */ }
   }, [workedHours, timeline, storageKey, mounted]);
+
+  // Listen for logout request from logout buttons
+  useEffect(() => {
+    const handler = () => {
+      if (isTracking) {
+        // Session chalu che — early logout warning show karo
+        setShowEarlyLogoutPopup(true);
+      } else {
+        // Session nathi — direct logout
+        signOut({ callbackUrl: "/" });
+      }
+    };
+    window.addEventListener("lookit-logout-requested", handler);
+    return () => window.removeEventListener("lookit-logout-requested", handler);
+  }, [isTracking]);
 
   const firstDay = new Date(viewYear, viewMonth, 1).getDay();
   const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
@@ -367,6 +383,59 @@ function CalendarWidget({ userId }: { userId: string }) {
                 className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-50 transition"
               >
                 Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Early Logout Warning Popup — session still running */}
+      {showEarlyLogoutPopup && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full mx-4 text-center">
+            <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Tamaro Time Haji Baaki Che!</h3>
+            <p className="text-sm text-gray-500 mb-1">
+              Tamaro goal <span className="font-semibold text-emerald-600">{maxHours} hours</span> no che.
+            </p>
+            <p className="text-sm text-gray-500 mb-1">
+              Abhi sudhi <span className="font-semibold text-emerald-600">{workedHours.toFixed(2)} hours</span> kaam karyu che.
+            </p>
+            <p className="text-sm text-gray-500 mb-6">
+              Haji <span className="font-semibold text-amber-600">{Math.max(0, maxHours - workedHours).toFixed(2)} hours</span> baaki che. Shya tame logout karva maango cho?
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowEarlyLogoutPopup(false);
+                  // Stop session and logout
+                  const end = new Date();
+                  const diffHours = startTime ? (end.getTime() - startTime.getTime()) / 3600000 : 0;
+                  const rounded = Math.round(diffHours * 100) / 100;
+                  setWorkedHours(h => Math.round((h + rounded) * 100) / 100);
+                  setTimeline(prev => [...prev, {
+                    start: startTime ? startTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "",
+                    end: end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+                    hours: rounded,
+                  }]);
+                  setStartTime(null);
+                  setSessionStart(null);
+                  setIsTracking(false);
+                  if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+                  signOut({ callbackUrl: "/" });
+                }}
+                className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold text-sm transition"
+              >
+                Ha, Logout Karo
+              </button>
+              <button
+                onClick={() => setShowEarlyLogoutPopup(false)}
+                className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-50 transition"
+              >
+                Nahi, Continue
               </button>
             </div>
           </div>
@@ -586,9 +655,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
           <div className="px-3 sm:px-4 lg:px-5 pb-3 sm:pb-4 lg:pb-5">
             <button
               type="button"
-              onClick={async () => {
-                await signOut({ callbackUrl: "/" });
-              }}
+              onClick={() => window.dispatchEvent(new Event("lookit-logout-requested"))}
               className="w-full rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-3 py-1.5 sm:py-2 lg:py-2.5 text-xs sm:text-sm font-semibold"
             >
               Logout
@@ -768,9 +835,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                   </button>
                   <button
                     type="button"
-                    onClick={async () => {
-                      await signOut({ callbackUrl: "/" });
-                    }}
+                    onClick={() => window.dispatchEvent(new Event("lookit-logout-requested"))}
                     className="rounded-lg sm:rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-3 sm:px-4 lg:px-5 py-1 sm:py-1.5 lg:py-2.5 text-xs sm:text-sm font-semibold"
                   >
                     Logout

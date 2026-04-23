@@ -5,11 +5,13 @@
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const rotatingWords = ["Learning", "Teaching", "Growing", "Exploring", "Achieving"];
 
 const HeroSection = () => {
   const [wordIndex, setWordIndex] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -86,11 +88,17 @@ const HeroSection = () => {
             transition={{ delay: 0.3 }}
             className="mt-8 mb-10 flex flex-wrap items-center gap-4 sm:mb-16 sm:gap-6 md:justify-center lg:justify-start"
           >
-            <button className=" bg-linear-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-full font-medium transition flex items-center gap-2">
+            <button 
+              onClick={() => router.push("/login")}
+              className=" bg-linear-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-full font-medium transition flex items-center gap-2"
+            >
               GET STARTED →
             </button>
 
-            <button className="text-gray-700 font-medium border-b border-gray-400 hover:text-[#1ec28e] transition">
+            <button 
+              onClick={() => router.push("/directory")}
+              className="text-gray-700 font-medium border-b border-gray-400 hover:text-[#1ec28e] transition"
+            >
               FIND COURSE →
             </button>
           </motion.div>

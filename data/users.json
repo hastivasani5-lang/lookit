@@ -518,5 +518,20 @@
     "approvalStatus": "approved",
     "provider": "credentials",
     "createdAt": "2026-04-23T08:54:43.453Z"
+  },
+  {
+    "id": "4272a9ee-438c-4b5e-9397-8556c443ba7d",
+    "name": "subham",
+    "email": "subham@gmail.com",
+    "passwordHash": "$2a$10$R/8A4aGNWXz8ELgDVO1pUeeHSXasoPmVGH3bcEeCJcfEv71Uoex/q",
+    "role": "student",
+    "specialization": "Friends | 2-4 hours",
+    "contactNumber": "as",
+    "location": "India",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-23T09:42:42.048Z"
   }
 ]

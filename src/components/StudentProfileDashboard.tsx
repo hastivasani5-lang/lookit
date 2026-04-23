@@ -169,20 +169,20 @@ function CalendarWidget() {
   const progressPct = Math.min((workedHours / maxHours) * 100, 100);
 
   return (
-    <div className="flex flex-col lg:flex-row gap-5">
+    <div className="flex flex-col lg:flex-row gap-2 sm:gap-3 lg:gap-5">
       {/* Calendar */}
-      <div className="rounded-2xl border border-[#dbe8e4] bg-white p-5 shadow-sm w-full max-w-sm">
-        <div className="flex items-center justify-between mb-4">
-          <button onClick={prevMonth} className="w-8 h-8 rounded-full bg-[#f0faf7] hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white text-[#1ec28e] font-bold transition flex items-center justify-center">‹</button>
-          <span className="font-bold text-[#1f2937]">{monthNames[viewMonth]} {viewYear}</span>
-          <button onClick={nextMonth} className="w-8 h-8 rounded-full bg-[#f0faf7] hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white text-[#1ec28e] font-bold transition flex items-center justify-center">›</button>
+      <div className="rounded-lg sm:rounded-xl lg:rounded-2xl border border-[#dbe8e4] bg-white p-2 sm:p-3 lg:p-5 shadow-sm w-full max-w-sm">
+        <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
+          <button onClick={prevMonth} className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 rounded-full bg-[#f0faf7] hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white text-[#1ec28e] font-bold transition flex items-center justify-center text-xs sm:text-sm lg:text-base">‹</button>
+          <span className="font-bold text-[#1f2937] text-xs sm:text-sm lg:text-base">{monthNames[viewMonth]} {viewYear}</span>
+          <button onClick={nextMonth} className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 rounded-full bg-[#f0faf7] hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white text-[#1ec28e] font-bold transition flex items-center justify-center text-xs sm:text-sm lg:text-base">›</button>
         </div>
-        <div className="grid grid-cols-7 mb-2">
+        <div className="grid grid-cols-7 mb-0.5 sm:mb-1 lg:mb-2">
           {dayNames.map(d => (
-            <div key={d} className="text-center text-xs font-semibold text-[#9ca3af] py-1">{d}</div>
+            <div key={d} className="text-center text-[9px] sm:text-[10px] lg:text-xs font-semibold text-[#9ca3af] py-0.5 sm:py-1">{d}</div>
           ))}
         </div>
-        <div className="grid grid-cols-7 gap-y-1">
+        <div className="grid grid-cols-7 gap-y-0.5 sm:gap-y-1">
           {cells.map((day, i) => {
             if (!day) return <div key={`empty-${i}`} />;
             const dateStr = `${viewYear}-${viewMonth}-${day}`;
@@ -192,9 +192,9 @@ function CalendarWidget() {
               <button
                 key={dateStr}
                 onClick={() => setSelectedDate(isSelected ? null : dateStr)}
-                className={`mx-auto w-8 h-8 rounded-full text-sm font-medium transition flex items-center justify-center
+                className={`mx-auto w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 rounded-full text-xs sm:text-sm font-medium transition flex items-center justify-center
                   ${isSelected ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" :
-                    isToday ? "bg-[#e8f7f1] text-[#1ec28e] font-bold ring-2 ring-[#1ec28e]" :
+                    isToday ? "bg-[#e8f7f1] text-[#1ec28e] font-bold ring-1 sm:ring-2 ring-[#1ec28e]" :
                     "hover:bg-[#f0faf7] text-[#374151]"}`}
               >
                 {day}
@@ -203,28 +203,28 @@ function CalendarWidget() {
           })}
         </div>
         {selectedDate && (
-          <div className="mt-4 rounded-xl bg-[#f0faf7] px-4 py-3 text-sm text-[#1b8c65] font-medium">
+          <div className="mt-2 sm:mt-3 lg:mt-4 rounded-md sm:rounded-lg lg:rounded-xl bg-[#f0faf7] px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 lg:py-3 text-xs sm:text-sm text-[#1b8c65] font-medium">
             Selected: {monthNames[viewMonth]} {selectedDate.split("-")[2]}, {viewYear}
           </div>
         )}
-        <div className="mt-3 text-xs text-center text-[#9ca3af]">
+        <div className="mt-1.5 sm:mt-2 lg:mt-3 text-[9px] sm:text-[10px] lg:text-xs text-center text-[#9ca3af]">
           Today: {monthNames[today.getMonth()]} {today.getDate()}, {today.getFullYear()}
         </div>
       </div>
 
       {/* Work Timeline */}
-      <div className="rounded-2xl border border-[#dbe8e4] bg-white p-5 shadow-sm flex-1">
-        <h4 className="font-bold text-[#1f2937] mb-1">Today's Work Hours</h4>
-        <p className="text-xs text-[#9ca3af] mb-4">{today.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}</p>
+      <div className="rounded-lg sm:rounded-xl lg:rounded-2xl border border-[#dbe8e4] bg-white p-2 sm:p-3 lg:p-5 shadow-sm flex-1">
+        <h4 className="font-bold text-[#1f2937] text-xs sm:text-sm lg:text-base mb-0.5">Today's Work Hours</h4>
+        <p className="text-[9px] sm:text-[10px] lg:text-xs text-[#9ca3af] mb-2 sm:mb-3 lg:mb-4">{today.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}</p>
 
         {/* Progress bar */}
-        <div className="mb-2 flex items-center justify-between text-sm">
+        <div className="mb-0.5 sm:mb-1 lg:mb-2 flex items-center justify-between text-xs sm:text-sm">
           <span className="font-semibold text-[#1b8c65]">{workedHours} hrs worked</span>
           <span className="text-[#9ca3af]">Goal: {maxHours} hrs</span>
         </div>
-        <div className="h-3 w-full rounded-full bg-[#eceff5] overflow-hidden mb-4">
+        <div className="h-1.5 sm:h-2 lg:h-3 w-full rounded-full bg-[#eceff5] overflow-hidden mb-2 sm:mb-3 lg:mb-4">
           <div
-            className="h-3 rounded-full bg-linear-to-r from-emerald-500 to-teal-500 transition-all duration-500"
+            className="h-1.5 sm:h-2 lg:h-3 rounded-full bg-linear-to-r from-emerald-500 to-teal-500 transition-all duration-500"
             style={{ width: `${progressPct}%` }}
           />
         </div>
@@ -232,7 +232,7 @@ function CalendarWidget() {
         {/* Start/Stop button */}
         <button
           onClick={handleStartStop}
-          className={`w-full py-2.5 rounded-xl text-sm font-bold transition mb-5 ${
+          className={`w-full py-1 sm:py-1.5 lg:py-2.5 rounded-md sm:rounded-lg lg:rounded-xl text-xs sm:text-sm font-bold transition mb-2 sm:mb-3 lg:mb-5 ${
             isTracking
               ? "bg-red-500 hover:bg-red-600 text-white"
               : "bg-linear-to-r from-emerald-500 to-teal-500 text-white hover:opacity-90"
@@ -242,17 +242,17 @@ function CalendarWidget() {
         </button>
 
         {/* Timeline entries */}
-        <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+        <div className="space-y-1 sm:space-y-1.5 lg:space-y-2 max-h-24 sm:max-h-32 lg:max-h-48 overflow-y-auto pr-1">
           {timeline.length === 0 ? (
-            <p className="text-xs text-[#9ca3af] text-center py-4">No sessions logged yet. Press Start to begin.</p>
+            <p className="text-[9px] sm:text-[10px] lg:text-xs text-[#9ca3af] text-center py-2 sm:py-3 lg:py-4">No sessions logged yet. Press Start to begin.</p>
           ) : (
             [...timeline].reverse().map((entry, i) => (
-              <div key={i} className="flex items-center gap-3 rounded-xl bg-[#f8fbfa] border border-[#dbe8e4] px-3 py-2">
-                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 shrink-0" />
-                <div className="flex-1 text-xs text-[#374151]">
+              <div key={i} className="flex items-center gap-1.5 sm:gap-2 lg:gap-3 rounded-md sm:rounded-lg lg:rounded-xl bg-[#f8fbfa] border border-[#dbe8e4] px-1.5 sm:px-2 lg:px-3 py-1 sm:py-1.5 lg:py-2">
+                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 shrink-0" />
+                <div className="flex-1 text-[9px] sm:text-[10px] lg:text-xs text-[#374151]">
                   <span className="font-semibold">{entry.start}</span> → <span className="font-semibold">{entry.end}</span>
                 </div>
-                <span className="text-xs font-bold text-[#1ec28e]">{entry.hours}h</span>
+                <span className="text-[9px] sm:text-[10px] lg:text-xs font-bold text-[#1ec28e]">{entry.hours}h</span>
               </div>
             ))
           )}
@@ -261,7 +261,7 @@ function CalendarWidget() {
         {timeline.length > 0 && (
           <button
             onClick={() => { setTimeline([]); setWorkedHours(0); }}
-            className="mt-3 text-xs text-red-400 hover:text-red-600 transition"
+            className="mt-1.5 sm:mt-2 lg:mt-3 text-[9px] sm:text-[10px] lg:text-xs text-red-400 hover:text-red-600 transition"
           >
             Reset today's log
           </button>
@@ -439,11 +439,11 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
   };
 
   return (
-    <section className="h-full w-full p-3 md:p-4">
-      <div className="grid h-full gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
-        <aside className="rounded-2xl border border-[#dbe8e4] bg-white shadow-[0_20px_40px_rgba(15,23,42,0.08)]">
-          <div className="border-b border-[#e8eeec] px-6 py-6 text-center">
-            <div className="mx-auto mb-4 grid h-26 w-26 place-items-center overflow-hidden rounded-full border-4 border-[#e9f8f2] bg-[#eef6f3] text-3xl font-bold text-[#2c5a48]">
+    <section className="h-full w-full p-1.5 sm:p-2.5 md:p-4">
+      <div className="grid h-full gap-2 sm:gap-3 lg:gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
+        <aside className="rounded-lg sm:rounded-xl lg:rounded-2xl border border-[#dbe8e4] bg-white shadow-sm sm:shadow-[0_20px_40px_rgba(15,23,42,0.08)]">
+          <div className="border-b border-[#e8eeec] px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-6 text-center">
+            <div className="mx-auto mb-2 sm:mb-3 lg:mb-4 grid h-16 w-16 sm:h-20 sm:w-20 lg:h-26 lg:w-26 place-items-center overflow-hidden rounded-full border-3 sm:border-4 border-[#e9f8f2] bg-[#eef6f3] text-xl sm:text-2xl lg:text-3xl font-bold text-[#2c5a48]">
               {user.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={user.image} alt="Student avatar" className="h-full w-full object-cover" />
@@ -451,55 +451,55 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                 user.name.charAt(0).toUpperCase()
               )}
             </div>
-            <h2 className="text-2xl font-bold text-[#1f2937]">{user.name}</h2>
-            <p className="mt-1 text-sm text-[#6b7280]">{profileAnswers?.profession || "UI/UX Student"}</p>
-            <div className="mt-3 flex items-center justify-center gap-1 text-[#f59e0b]">
+            <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-[#1f2937]">{user.name}</h2>
+            <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-[#6b7280]">{profileAnswers?.profession || "UI/UX Student"}</p>
+            <div className="mt-1.5 sm:mt-2 lg:mt-3 flex items-center justify-center gap-0.5 sm:gap-1 text-[#f59e0b]">
               <span>★</span><span>★</span><span>★</span><span>★</span><span className="text-[#d1d5db]">★</span>
-              <span className="ml-2 text-xs font-semibold text-[#6b7280]">4.0</span>
+              <span className="ml-1 sm:ml-2 text-xs font-semibold text-[#6b7280]">4.0</span>
             </div>
           </div>
 
-          <div className="space-y-3 px-5 py-5 text-sm text-[#4b5563]">
-            <h3 className="text-base font-semibold text-[#1f2937]">Contact Info</h3>
+          <div className="space-y-1.5 sm:space-y-2 lg:space-y-3 px-3 sm:px-4 lg:px-5 py-3 sm:py-4 lg:py-5 text-xs sm:text-sm text-[#4b5563]">
+            <h3 className="text-sm sm:text-base font-semibold text-[#1f2937]">Contact Info</h3>
             {profileAnswers ? (
               <>
                 {profileAnswers.country && (
-                  <p className="flex items-center gap-2"><span className="font-semibold">Country:</span> {profileAnswers.country}</p>
+                  <p className="flex items-center gap-1 sm:gap-2"><span className="font-semibold">Country:</span> <span className="truncate">{profileAnswers.country}</span></p>
                 )}
                 {profileAnswers.source && (
-                  <p className="flex items-center gap-2"><span className="font-semibold">Heard About Us:</span> {profileAnswers.source}</p>
+                  <p className="flex items-center gap-1 sm:gap-2"><span className="font-semibold">Heard About Us:</span> <span className="truncate">{profileAnswers.source}</span></p>
                 )}
                 {profileAnswers.studyTime && (
-                  <p className="flex items-center gap-2"><span className="font-semibold">Daily Work Time:</span> {profileAnswers.studyTime}</p>
+                  <p className="flex items-center gap-1 sm:gap-2"><span className="font-semibold">Daily Work Time:</span> <span className="truncate">{profileAnswers.studyTime}</span></p>
                 )}
               </>
             ) : (
-              <p className="text-gray-400">No details provided yet.</p>
+              <p className="text-gray-400 text-xs sm:text-sm">No details provided yet.</p>
             )}
           </div>
 
-          <div className="px-5 pb-5">
+          <div className="px-3 sm:px-4 lg:px-5 pb-3 sm:pb-4 lg:pb-5">
             <button
               type="button"
               onClick={async () => {
                 await signOut({ callbackUrl: "/" });
               }}
-              className="w-full rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-3 py-2.5 text-xs font-semibold"
+              className="w-full rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-3 py-1.5 sm:py-2 lg:py-2.5 text-xs sm:text-sm font-semibold"
             >
               Logout
             </button>
           </div>
         </aside>
 
-        <div className="h-full overflow-y-auto space-y-6 pr-1">
-          <article className="rounded-2xl border border-[#dbe8e4] bg-white p-5 shadow-[0_20px_40px_rgba(15,23,42,0.08)] md:p-6">
+        <div className="h-full overflow-y-auto space-y-3 sm:space-y-4 lg:space-y-6 pr-1">
+          <article className="rounded-lg sm:rounded-xl lg:rounded-2xl border border-[#dbe8e4] bg-white p-2 sm:p-3 lg:p-5 shadow-sm sm:shadow-[0_20px_40px_rgba(15,23,42,0.08)] md:p-6">
             {/* Minimal tab system for Profile and Calendar */}
-            <div className="flex flex-wrap items-center gap-2 mb-4">
+            <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-2 sm:mb-3 lg:mb-4">
               
               <button
                 type="button"
                 onClick={() => setActiveTab("buy-courses")}
-                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "buy-courses" ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
+                className={`rounded-md px-2 sm:px-2.5 lg:px-3.5 py-1 sm:py-1.5 lg:py-2 text-xs sm:text-sm font-medium ${activeTab === "buy-courses" ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
               >
                 Buy           
               </button>
@@ -508,7 +508,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
               <button
                 type="button"
                 onClick={() => setActiveTab("calendar")}
-                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "calendar" ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
+                className={`rounded-md px-2 sm:px-2.5 lg:px-3.5 py-1 sm:py-1.5 lg:py-2 text-xs sm:text-sm font-medium ${activeTab === "calendar" ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
               >
                 Calendar
               </button>
@@ -516,7 +516,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
               <button
                 type="button"
                 onClick={() => setActiveTab("wishlist")}
-                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "wishlist" ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
+                className={`rounded-md px-2 sm:px-2.5 lg:px-3.5 py-1 sm:py-1.5 lg:py-2 text-xs sm:text-sm font-medium ${activeTab === "wishlist" ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
               >
                 Wishlist
               </button>
@@ -524,34 +524,34 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
               <button
                 type="button"
                 onClick={() => setActiveTab("following")}
-                className={`rounded-md px-3.5 py-2 text-sm font-medium ${activeTab === "following" ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
+                className={`rounded-md px-2 sm:px-2.5 lg:px-3.5 py-1 sm:py-1.5 lg:py-2 text-xs sm:text-sm font-medium ${activeTab === "following" ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" : "bg-[#eceff5] text-[#374151]"}`}
               >
                 Following
               </button> 
 
             </div>
             {activeTab === "wishlist" && (
-              <div className="my-6">
-                <h3 className="text-xl font-bold mb-4 text-[#1f2937]">Wishlist</h3>
+              <div className="my-3 sm:my-4 lg:my-6">
+                <h3 className="text-base sm:text-lg lg:text-xl font-bold mb-2 sm:mb-3 lg:mb-4 text-[#1f2937]">Wishlist</h3>
                 {wishlistLoading ? (
-                  <p className="text-sm text-gray-400">Loading...</p>
+                  <p className="text-xs sm:text-sm text-gray-400">Loading...</p>
                 ) : wishlistItems.length === 0 ? (
-                  <div className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-4">
-                    <p className="text-[#4b5563]">Your wishlist is empty. Heart items in the shop or categories to save them here.</p>
+                  <div className="rounded-lg sm:rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-2 sm:p-3 lg:p-4">
+                    <p className="text-xs sm:text-sm text-[#4b5563]">Your wishlist is empty. Heart items in the shop or categories to save them here.</p>
                   </div>
                 ) : (
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid gap-1.5 sm:gap-2 lg:gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                     {wishlistItems.map((item) => (
-                      <div key={item.id} className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-4 flex flex-col gap-2">
+                      <div key={item.id} className="rounded-lg sm:rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-2 sm:p-3 lg:p-4 flex flex-col gap-1 sm:gap-2">
                         {item.imageUrl && (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={item.imageUrl} alt={item.title} className="h-28 w-full object-cover rounded-lg" />
+                          <img src={item.imageUrl} alt={item.title} className="h-16 sm:h-20 lg:h-28 w-full object-cover rounded-md sm:rounded-lg" />
                         )}
-                        <p className="font-semibold text-[#1f2937] line-clamp-2">{item.title}</p>
+                        <p className="font-semibold text-[#1f2937] line-clamp-2 text-xs sm:text-sm lg:text-base">{item.title}</p>
                         {item.professionalName && <p className="text-xs text-gray-500">By {item.professionalName}</p>}
                         <div className="flex items-center justify-between mt-auto">
-                          <span className="text-sm font-bold text-[#1ec28e]">{item.price || "—"}</span>
-                          <span className="text-xs rounded-full bg-emerald-50 px-2 py-0.5 text-emerald-700 capitalize">{item.contentType}</span>
+                          <span className="text-xs sm:text-sm font-bold text-[#1ec28e]">{item.price || "—"}</span>
+                          <span className="text-xs rounded-full bg-emerald-50 px-1 sm:px-1.5 lg:px-2 py-0.5 text-emerald-700 capitalize">{item.contentType}</span>
                         </div>
                         {item.slug && (
                           <Link href={`/shop/details/${item.slug}`} className="mt-1 text-center text-xs font-semibold text-[#1ec28e] hover:underline">
@@ -566,23 +566,23 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
             )}
 
             {activeTab === "following" && (
-              <div className="my-6">
-                <h3 className="text-xl font-bold mb-4 text-[#1f2937]">Following</h3>
+              <div className="my-3 sm:my-4 lg:my-6">
+                <h3 className="text-base sm:text-lg lg:text-xl font-bold mb-2 sm:mb-3 lg:mb-4 text-[#1f2937]">Following</h3>
                 {followingLoading ? (
-                  <p className="text-sm text-gray-400">Loading...</p>
+                  <p className="text-xs sm:text-sm text-gray-400">Loading...</p>
                 ) : followingList.length === 0 ? (
-                  <div className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-4">
-                    <p className="text-[#4b5563]">You are not following anyone yet.</p>
+                  <div className="rounded-lg sm:rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-2 sm:p-3 lg:p-4">
+                    <p className="text-xs sm:text-sm text-[#4b5563]">You are not following anyone yet.</p>
                   </div>
                 ) : (
-                  <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="grid gap-1.5 sm:gap-2 lg:gap-3 grid-cols-1 sm:grid-cols-2">
                     {followingList.map((item) => (
                       <Link
                         key={item.professionalId}
                         href={`/professionals/${item.professionalId}`}
-                        className="flex items-center gap-3 rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] px-4 py-3 hover:border-[#1ec28e] hover:bg-[#effaf6] transition-all"
+                        className="flex items-center gap-1.5 sm:gap-2 lg:gap-3 rounded-lg sm:rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 lg:py-3 hover:border-[#1ec28e] hover:bg-[#effaf6] transition-all"
                       >
-                        <div className="h-10 w-10 rounded-full overflow-hidden bg-[#e8f7f1] flex items-center justify-center text-sm font-bold text-[#1b8c65] shrink-0">
+                        <div className="h-6 w-6 sm:h-8 sm:w-8 lg:h-10 lg:w-10 rounded-full overflow-hidden bg-[#e8f7f1] flex items-center justify-center text-xs sm:text-sm font-bold text-[#1b8c65] shrink-0">
                           {item.professionalImage ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={item.professionalImage} alt="" className="h-full w-full object-cover" />
@@ -591,7 +591,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-[#1f2937] truncate">{item.professionalName ?? "Professional"}</p>
+                          <p className="font-semibold text-[#1f2937] truncate text-xs sm:text-sm lg:text-base">{item.professionalName ?? "Professional"}</p>
                           <p className="text-xs text-[#6b7280]">Following since {new Date(item.followedAt).toLocaleDateString()}</p>
                         </div>
                         <span className="text-xs text-[#1ec28e] font-semibold">View →</span>
@@ -603,61 +603,61 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
             )}
 
             {activeTab === "calendar" && (
-              <div className="my-6">
-                <h3 className="text-xl font-bold mb-4 text-[#1f2937]">Calendar</h3>
+              <div className="my-4 sm:my-6">
+                <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-[#1f2937]">Calendar</h3>
                 <CalendarWidget />
               </div>
             )}
  
 
             {activeTab === "edit" ? (
-              <div className="mt-6 grid gap-4 md:grid-cols-2">
-                <label className="text-sm font-medium text-[#374151]">
+              <div className="mt-3 sm:mt-4 lg:mt-6 grid gap-2 sm:gap-3 lg:gap-4 md:grid-cols-2">
+                <label className="text-xs sm:text-sm font-medium text-[#374151]">
                   Full Name
                   <input
                     value={editName}
                     onChange={(event) => setEditName(event.target.value)}
-                    className="mt-1.5 h-11 w-full rounded-xl border border-[#dbe8e4] px-3 outline-none focus:border-primary"
+                    className="mt-1 h-8 sm:h-9 lg:h-11 w-full rounded-lg sm:rounded-xl border border-[#dbe8e4] px-2 sm:px-3 outline-none focus:border-primary"
                   />
                 </label>
-                <label className="text-sm font-medium text-[#374151]">
+                <label className="text-xs sm:text-sm font-medium text-[#374151]">
                   Email
                   <input
                     value={editEmail}
                     onChange={(event) => setEditEmail(event.target.value)}
-                    className="mt-1.5 h-11 w-full rounded-xl border border-[#dbe8e4] px-3 outline-none focus:border-primary"
+                    className="mt-1 h-8 sm:h-9 lg:h-11 w-full rounded-lg sm:rounded-xl border border-[#dbe8e4] px-2 sm:px-3 outline-none focus:border-primary"
                   />
                 </label>
-                <label className="text-sm font-medium text-[#374151]">
+                <label className="text-xs sm:text-sm font-medium text-[#374151]">
                   Phone
                   <input
                     value={editPhone}
                     onChange={(event) => setEditPhone(event.target.value)}
-                    className="mt-1.5 h-11 w-full rounded-xl border border-[#dbe8e4] px-3 outline-none focus:border-primary"
+                    className="mt-1 h-8 sm:h-9 lg:h-11 w-full rounded-lg sm:rounded-xl border border-[#dbe8e4] px-2 sm:px-3 outline-none focus:border-primary"
                   />
                 </label>
-                <label className="text-sm font-medium text-[#374151]">
+                <label className="text-xs sm:text-sm font-medium text-[#374151]">
                   Location
                   <input
                     value={editLocation}
                     onChange={(event) => setEditLocation(event.target.value)}
-                    className="mt-1.5 h-11 w-full rounded-xl border border-[#dbe8e4] px-3 outline-none focus:border-primary"
+                    className="mt-1 h-8 sm:h-9 lg:h-11 w-full rounded-lg sm:rounded-xl border border-[#dbe8e4] px-2 sm:px-3 outline-none focus:border-primary"
                   />
                 </label>
-                <label className="text-sm font-medium text-[#374151] md:col-span-2">
+                <label className="text-xs sm:text-sm font-medium text-[#374151] md:col-span-2">
                   Website
                   <input
                     value={editWebsite}
                     onChange={(event) => setEditWebsite(event.target.value)}
-                    className="mt-1.5 h-11 w-full rounded-xl border border-[#dbe8e4] px-3 outline-none focus:border-primary"
+                    className="mt-1 h-8 sm:h-9 lg:h-11 w-full rounded-lg sm:rounded-xl border border-[#dbe8e4] px-2 sm:px-3 outline-none focus:border-primary"
                   />
                 </label>
 
-                <div className="md:col-span-2 flex flex-wrap gap-3 pt-1">
+                <div className="md:col-span-2 flex flex-wrap gap-1.5 sm:gap-2 lg:gap-3 pt-1">
                   <button
                     type="button"
                     onClick={handleEditSave}
-                    className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-5 py-2.5 text-sm font-semibold"
+                    className="rounded-lg sm:rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-3 sm:px-4 lg:px-5 py-1 sm:py-1.5 lg:py-2.5 text-xs sm:text-sm font-semibold"
                   >
                     Save Changes
                   </button>
@@ -666,7 +666,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                     onClick={async () => {
                       await signOut({ callbackUrl: "/" });
                     }}
-                    className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-5 py-2.5 text-sm font-semibold"
+                    className="rounded-lg sm:rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-3 sm:px-4 lg:px-5 py-1 sm:py-1.5 lg:py-2.5 text-xs sm:text-sm font-semibold"
                   >
                     Logout
                   </button>
@@ -675,21 +675,21 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
             ) : null}
 
             {activeTab === "courses" ? (
-              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              <div className="mt-4 sm:mt-6 grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
                 {courseCards.slice(0, 4).map((course) => (
-                  <article key={course.id} className="overflow-hidden rounded-2xl border border-[#dbe8e4] bg-white shadow-sm">
-                    <div className={`flex h-34 items-center justify-center ${course.kind === "book" ? "bg-[#dff3fa]" : "bg-[#f1e9e0]"}`}>
-                      {course.kind === "book" ? <BookOpen className="h-12 w-12 text-[#0891b2]" /> : <Video className="h-12 w-12 text-[#b45309]" />}
+                  <article key={course.id} className="overflow-hidden rounded-xl sm:rounded-2xl border border-[#dbe8e4] bg-white shadow-sm">
+                    <div className={`flex h-24 sm:h-34 items-center justify-center ${course.kind === "book" ? "bg-[#dff3fa]" : "bg-[#f1e9e0]"}`}>
+                      {course.kind === "book" ? <BookOpen className="h-8 w-8 sm:h-12 sm:w-12 text-[#0891b2]" /> : <Video className="h-8 w-8 sm:h-12 sm:w-12 text-[#b45309]" />}
                     </div>
-                    <div className="p-4">
-                      <span className="rounded bg-gradient-to-r from-emerald-600 to-teal-600 px-2 py-0.5 text-[11px] font-semibold text-white">{course.badge}</span>
-                      <h4 className="mt-3 text-xl font-bold text-[#1f2937]">{course.title}</h4>
-                      <p className="mt-1 text-sm text-[#6b7280]">Structured student content with practical lessons.</p>
-                      <div className="mt-3 flex items-center justify-between text-sm">
+                    <div className="p-3 sm:p-4">
+                      <span className="rounded bg-gradient-to-r from-emerald-600 to-teal-600 px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-semibold text-white">{course.badge}</span>
+                      <h4 className="mt-2 sm:mt-3 text-base sm:text-xl font-bold text-[#1f2937]">{course.title}</h4>
+                      <p className="mt-1 text-xs sm:text-sm text-[#6b7280]">Structured student content with practical lessons.</p>
+                      <div className="mt-2 sm:mt-3 flex items-center justify-between text-xs sm:text-sm">
                         <p className="font-semibold text-[#374151]">{course.rating.toFixed(1)}</p>
                         <p className="text-[#9ca3af]">({course.enrollments.toLocaleString()})</p>
                       </div>
-                      <p className="mt-2 text-2xl font-bold text-[#2c5a48]">{course.amount}</p>
+                      <p className="mt-1 sm:mt-2 text-lg sm:text-2xl font-bold text-[#2c5a48]">{course.amount}</p>
                     </div>
                   </article>
                 ))}
@@ -697,19 +697,19 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
             ) : null}
 
             {activeTab === "followers" ? (
-              <div className="mt-6 space-y-3">
+              <div className="mt-4 sm:mt-6 space-y-2 sm:space-y-3">
                 {followersSeed.map((follower) => (
-                  <div key={follower.id} className="flex items-center justify-between rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <span className="grid h-10 w-10 place-items-center rounded-full bg-[#e8f7f1] text-sm font-bold text-[#1b8c65]">
+                  <div key={follower.id} className="flex items-center justify-between rounded-lg sm:rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] px-3 sm:px-4 py-2 sm:py-3">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <span className="grid h-8 w-8 sm:h-10 sm:w-10 place-items-center rounded-full bg-[#e8f7f1] text-xs sm:text-sm font-bold text-[#1b8c65]">
                         {follower.name.charAt(0)}
                       </span>
                       <div>
-                        <p className="font-semibold text-[#1f2937]">{follower.name}</p>
+                        <p className="font-semibold text-[#1f2937] text-sm sm:text-base">{follower.name}</p>
                         <p className="text-xs text-[#6b7280]">{follower.role}</p>
                       </div>
                     </div>
-                    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${follower.status === "Active" ? "bg-[#e8f7f1] text-[#1b8c65]" : "bg-[#fff7ed] text-[#c2410c]"}`}>
+                    <span className={`rounded-full px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold ${follower.status === "Active" ? "bg-[#e8f7f1] text-[#1b8c65]" : "bg-[#fff7ed] text-[#c2410c]"}`}>
                       {follower.status}
                     </span>
                   </div>
@@ -718,14 +718,14 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
             ) : null}
 
             {activeTab === "reviews" ? (
-              <div className="mt-6 rounded-2xl border border-[#dbe8e4] bg-[#f8fbfa] p-5">
-                <h4 className="text-xl font-bold text-[#1f2937]">Student Reviews Center</h4>
-                <p className="mt-2 text-sm text-[#4b5563]">Write and manage reviews for professionals directly from your student dashboard.</p>
-                <div className="mt-4 flex flex-wrap gap-3">
-                  <Link href="/dashboard/students/reviews" className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 text-sm font-semibold">
+              <div className="mt-4 sm:mt-6 rounded-xl sm:rounded-2xl border border-[#dbe8e4] bg-[#f8fbfa] p-3 sm:p-5">
+                <h4 className="text-lg sm:text-xl font-bold text-[#1f2937]">Student Reviews Center</h4>
+                <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-[#4b5563]">Write and manage reviews for professionals directly from your student dashboard.</p>
+                <div className="mt-3 sm:mt-4 flex flex-wrap gap-2 sm:gap-3">
+                  <Link href="/dashboard/students/reviews" className="rounded-lg sm:rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold">
                     Open Reviews Page
                   </Link>
-                  <Link href="/dashboard/students/library" className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 text-sm font-semibold">
+                  <Link href="/dashboard/students/library" className="rounded-lg sm:rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold">
                     Open Library
                   </Link>
                 </div>
@@ -733,19 +733,19 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
             ) : null}
 
             {activeTab === "buy-courses" && (
-              <div className="mt-6 space-y-8">
+              <div className="mt-3 sm:mt-4 lg:mt-6 space-y-4 sm:space-y-6 lg:space-y-8">
                 {/* Purchased Videos */}
                 <section>
-                  <h3 className="text-xl font-bold text-[#1f2937] mb-4 flex items-center gap-2">
-                    <Video className="h-5 w-5 text-[#b45309]" /> Purchased Videos
+                  <h3 className="text-base sm:text-lg lg:text-xl font-bold text-[#1f2937] mb-2 sm:mb-3 lg:mb-4 flex items-center gap-1.5 sm:gap-2">
+                    <Video className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-[#b45309]" /> Purchased Videos
                   </h3>
                   {library.watchedVideos.length === 0 ? (
-                    <div className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-6 text-center">
-                      <Video className="h-10 w-10 text-gray-300 mx-auto mb-2" />
-                      <p className="text-[#4b5563] text-sm">No purchased videos yet.</p>
+                    <div className="rounded-lg sm:rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-3 sm:p-4 lg:p-6 text-center">
+                      <Video className="h-6 w-6 sm:h-8 sm:w-8 lg:h-10 lg:w-10 text-gray-300 mx-auto mb-1 sm:mb-2" />
+                      <p className="text-xs sm:text-sm text-[#4b5563]">No purchased videos yet.</p>
                     </div>
                   ) : (
-                    <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="grid gap-2 sm:gap-3 lg:gap-4 grid-cols-1 sm:grid-cols-2">
                       {library.watchedVideos.map((video) => (
                         <button
                           key={video.id}
@@ -754,17 +754,17 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                             sessionStorage.setItem("lookit-content-detail", JSON.stringify({ ...video, type: "video" }));
                             window.location.href = `/dashboard/students/content/${video.id}`;
                           }}
-                          className="group text-left overflow-hidden rounded-2xl border border-[#dbe8e4] bg-white shadow-sm hover:shadow-lg hover:border-orange-300 transition-all duration-200 hover:-translate-y-0.5"
+                          className="group text-left overflow-hidden rounded-lg sm:rounded-xl lg:rounded-2xl border border-[#dbe8e4] bg-white shadow-sm hover:shadow-lg hover:border-orange-300 transition-all duration-200 hover:-translate-y-0.5"
                         >
-                          <div className="flex h-32 items-center justify-center bg-gradient-to-br from-orange-100 to-amber-50 relative">
-                            <Video className="h-12 w-12 text-orange-400 group-hover:scale-110 transition-transform" />
-                            <span className="absolute top-3 left-3 rounded-full bg-orange-500 px-2.5 py-0.5 text-[11px] font-bold text-white">Video</span>
+                          <div className="flex h-20 sm:h-24 lg:h-32 items-center justify-center bg-gradient-to-br from-orange-100 to-amber-50 relative">
+                            <Video className="h-6 w-6 sm:h-8 sm:w-8 lg:h-12 lg:w-12 text-orange-400 group-hover:scale-110 transition-transform" />
+                            <span className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 lg:top-3 lg:left-3 rounded-full bg-orange-500 px-1 sm:px-1.5 lg:px-2.5 py-0.5 text-[9px] sm:text-[10px] lg:text-[11px] font-bold text-white">Video</span>
                           </div>
-                          <div className="p-4">
-                            <h4 className="text-base font-bold text-[#1f2937] group-hover:text-orange-600 transition-colors line-clamp-1">{video.title}</h4>
+                          <div className="p-2 sm:p-3 lg:p-4">
+                            <h4 className="text-xs sm:text-sm lg:text-base font-bold text-[#1f2937] group-hover:text-orange-600 transition-colors line-clamp-1">{video.title}</h4>
                             {video.provider && <p className="text-xs text-gray-400 mt-0.5">by {video.provider}</p>}
-                            <div className="flex items-center justify-between mt-3">
-                              <p className="text-lg font-bold text-emerald-700">{video.amount}</p>
+                            <div className="flex items-center justify-between mt-1.5 sm:mt-2 lg:mt-3">
+                              <p className="text-sm sm:text-base lg:text-lg font-bold text-emerald-700">{video.amount}</p>
                               <span className="text-xs text-orange-500 font-semibold group-hover:underline">View Details →</span>
                             </div>
                           </div>
@@ -776,16 +776,16 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
 
                 {/* Purchased Books */}
                 <section>
-                  <h3 className="text-xl font-bold text-[#1f2937] mb-4 flex items-center gap-2">
-                    <BookOpen className="h-5 w-5 text-[#0891b2]" /> Purchased Books
+                  <h3 className="text-base sm:text-lg lg:text-xl font-bold text-[#1f2937] mb-2 sm:mb-3 lg:mb-4 flex items-center gap-1.5 sm:gap-2">
+                    <BookOpen className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-[#0891b2]" /> Purchased Books
                   </h3>
                   {library.purchasedBooks.length === 0 ? (
-                    <div className="rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-6 text-center">
-                      <BookOpen className="h-10 w-10 text-gray-300 mx-auto mb-2" />
-                      <p className="text-[#4b5563] text-sm">No purchased books yet.</p>
+                    <div className="rounded-lg sm:rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-3 sm:p-4 lg:p-6 text-center">
+                      <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 lg:h-10 lg:w-10 text-gray-300 mx-auto mb-1 sm:mb-2" />
+                      <p className="text-xs sm:text-sm text-[#4b5563]">No purchased books yet.</p>
                     </div>
                   ) : (
-                    <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="grid gap-2 sm:gap-3 lg:gap-4 grid-cols-1 sm:grid-cols-2">
                       {library.purchasedBooks.map((book) => (
                         <button
                           key={book.id}
@@ -794,17 +794,17 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                             sessionStorage.setItem("lookit-content-detail", JSON.stringify({ ...book, type: "book" }));
                             window.location.href = `/dashboard/students/content/${book.id}`;
                           }}
-                          className="group text-left overflow-hidden rounded-2xl border border-[#dbe8e4] bg-white shadow-sm hover:shadow-lg hover:border-cyan-300 transition-all duration-200 hover:-translate-y-0.5"
+                          className="group text-left overflow-hidden rounded-lg sm:rounded-xl lg:rounded-2xl border border-[#dbe8e4] bg-white shadow-sm hover:shadow-lg hover:border-cyan-300 transition-all duration-200 hover:-translate-y-0.5"
                         >
-                          <div className="flex h-32 items-center justify-center bg-gradient-to-br from-cyan-100 to-teal-50 relative">
-                            <BookOpen className="h-12 w-12 text-cyan-500 group-hover:scale-110 transition-transform" />
-                            <span className="absolute top-3 left-3 rounded-full bg-cyan-600 px-2.5 py-0.5 text-[11px] font-bold text-white">Book</span>
+                          <div className="flex h-20 sm:h-24 lg:h-32 items-center justify-center bg-gradient-to-br from-cyan-100 to-teal-50 relative">
+                            <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 lg:h-12 lg:w-12 text-cyan-500 group-hover:scale-110 transition-transform" />
+                            <span className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 lg:top-3 lg:left-3 rounded-full bg-cyan-600 px-1 sm:px-1.5 lg:px-2.5 py-0.5 text-[9px] sm:text-[10px] lg:text-[11px] font-bold text-white">Book</span>
                           </div>
-                          <div className="p-4">
-                            <h4 className="text-base font-bold text-[#1f2937] group-hover:text-cyan-600 transition-colors line-clamp-1">{book.title}</h4>
+                          <div className="p-2 sm:p-3 lg:p-4">
+                            <h4 className="text-xs sm:text-sm lg:text-base font-bold text-[#1f2937] group-hover:text-cyan-600 transition-colors line-clamp-1">{book.title}</h4>
                             {book.source && <p className="text-xs text-gray-400 mt-0.5">by {book.source}</p>}
-                            <div className="flex items-center justify-between mt-3">
-                              <p className="text-lg font-bold text-emerald-700">{book.amount}</p>
+                            <div className="flex items-center justify-between mt-1.5 sm:mt-2 lg:mt-3">
+                              <p className="text-sm sm:text-base lg:text-lg font-bold text-emerald-700">{book.amount}</p>
                               <span className="text-xs text-cyan-500 font-semibold group-hover:underline">View Details →</span>
                             </div>
                           </div>

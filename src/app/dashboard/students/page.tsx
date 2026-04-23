@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 import Navbar from "@/components/Navbar";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 // Hero skeleton shown while Hero loads
 const HeroSkeleton = () => (
@@ -64,20 +63,11 @@ const AutoPopupModal = dynamic(() => import("@/components/AutoPopupModal"));
 
 export default function StudentsPage() {
   const { data: session, status } = useSession();
-  const router = useRouter();
   const [showModal, setShowModal] = useState(false);
   const [belowFoldReady, setBelowFoldReady] = useState(false);
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    }
-  }, [status, router]);
-
   // Load below-fold content after first paint
   useEffect(() => {
-    if (status === "loading" || status === "unauthenticated") return;
     let id: number | ReturnType<typeof setTimeout>;
     if (typeof requestIdleCallback !== "undefined") {
       id = requestIdleCallback(() => setBelowFoldReady(true));
@@ -88,9 +78,9 @@ export default function StudentsPage() {
       if (typeof requestIdleCallback !== "undefined") cancelIdleCallback(id as number);
       else clearTimeout(id as ReturnType<typeof setTimeout>);
     };
-  }, [status]);
+  }, []);
 
-  // Show modal 3s after login if student hasn't filled profile yet
+  // Show modal 2 seconds after student login if they haven't filled profile yet
   useEffect(() => {
     if (status !== "authenticated") return;
     if (session?.user?.role !== "student") return;
@@ -107,6 +97,7 @@ export default function StudentsPage() {
       } catch { /* ignore */ }
     }
 
+    // Check if profile already has location (country) filled — means already submitted
     const timer = setTimeout(async () => {
       try {
         const res = await fetch("/api/student/profile/check");
@@ -116,7 +107,7 @@ export default function StudentsPage() {
       } catch {
         setShowModal(true);
       }
-    }, 3000);
+    }, 2000); // 2 seconds delay
 
     return () => clearTimeout(timer);
   }, [status, session]);
@@ -137,11 +128,6 @@ export default function StudentsPage() {
         </div>
       </div>
     );
-  }
-
-  // Show nothing if not authenticated (will redirect)
-  if (status === "unauthenticated") {
-    return null;
   }
 
   return (

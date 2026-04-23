@@ -1,18 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { Heart } from "lucide-react";
+import { Heart, Star } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 
 import { addCartItem, getCartItems } from "@/lib/cart-store";
 import type { ShopCatalogItem } from "@/lib/shop-catalog";
 
+import type { SidebarFilters } from "@/components/Sidebar";
+
 type ContentTab = "book" | "video";
 
 type ProductGridProps = {
   selectedMaxPrice?: number | null;
   onPriceBoundsChange?: (bounds: { min: number; max: number }) => void;
+  onCategoriesChange?: (cats: string[]) => void;
+  filters?: SidebarFilters;
 };
 
 const itemsPerPage = 6;
@@ -21,7 +25,7 @@ function placeholderImageFor(contentType: ContentTab) {
   return contentType === "book" ? "/instructor.avif" : "/instructor.avif";
 }
 
-const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps) => {
+const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange, onCategoriesChange, filters }: ProductGridProps) => {
   const { data: session } = useSession();
   const isStudent = session?.user?.role === "student";
   const [activeTab, setActiveTab] = useState<ContentTab | "all">(() => "all");
@@ -32,6 +36,7 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps
   const [catalogItems, setCatalogItems] = useState<ShopCatalogItem[]>([]);
   const [cartItemIds, setCartItemIds] = useState<string[]>([]);
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
+  const [itemRatings, setItemRatings] = useState<Record<string, number>>({});
   const lastSentBoundsRef = useRef<{ min: number; max: number } | null>(null);
 
   useEffect(() => {
@@ -56,6 +61,23 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps
         }
 
         setCatalogItems(Array.isArray(payload.items) ? payload.items : []);
+
+        // Expose unique categories to parent
+        if (onCategoriesChange && Array.isArray(payload.items)) {
+          const cats = Array.from(new Set(payload.items.map((i: ShopCatalogItem) => i.category).filter(Boolean))).sort() as string[];
+          onCategoriesChange(cats);
+        }
+
+        // Fetch ratings for all items
+        if (Array.isArray(payload.items) && payload.items.length > 0) {
+          try {
+            const ratingsRes = await fetch("/api/shop/ratings", { cache: "no-store" });
+            if (ratingsRes.ok) {
+              const ratingsData = (await ratingsRes.json()) as { ratings: Record<string, number> };
+              setItemRatings(ratingsData.ratings ?? {});
+            }
+          } catch { /* ignore */ }
+        }
       } catch {
         if (isActive) {
           setLoadError("Unable to load shop items right now.");
@@ -118,25 +140,28 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps
 
   const filteredItems = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
-    // If price bounds are 0-0, ignore price filter and show all items
     const ignorePrice = !selectedMaxPrice || selectedMaxPrice === 0;
     return catalogItems.filter((item) => {
-      if (activeTab !== "all" && item.contentType !== activeTab) {
-        return false;
+      if (activeTab !== "all" && item.contentType !== activeTab) return false;
+      if (!ignorePrice && item.amount > selectedMaxPrice) return false;
+      // Category filter
+      if (filters?.category && item.category !== filters.category) return false;
+      // Price type filter
+      if (filters?.priceType === "free" && item.amount !== 0) return false;
+      if (filters?.priceType === "paid" && item.amount === 0) return false;
+      // Rating filter
+      if (filters?.minRating && filters.minRating > 0) {
+        const avg = itemRatings[item.contentId] ?? 0;
+        if (avg < filters.minRating) return false;
       }
-      if (!ignorePrice && item.amount > selectedMaxPrice) {
-        return false;
-      }
-      if (!normalizedSearch) {
-        return true;
-      }
+      if (!normalizedSearch) return true;
       return (
         item.title.toLowerCase().includes(normalizedSearch) ||
         item.professionalName.toLowerCase().includes(normalizedSearch) ||
         item.category.toLowerCase().includes(normalizedSearch)
       );
     });
-  }, [activeTab, catalogItems, searchQuery, selectedMaxPrice]);
+  }, [activeTab, catalogItems, searchQuery, selectedMaxPrice, filters, itemRatings]);
 
   const totalPages = Math.max(1, Math.ceil(filteredItems.length / itemsPerPage));
   const currentPage = Math.min(page, totalPages);
@@ -262,7 +287,22 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange }: ProductGridProps
                   <h3 className="text-center font-semibold text-gray-800">{item.title}</h3>
                   <p className="mt-1 line-clamp-2 text-center text-xs text-gray-500">{item.subtitle}</p>
                   <p className="mt-1 text-center text-xs text-gray-500">By {item.professionalName}</p>
-                  <div className="mt-2 flex items-center justify-center gap-2">
+                  <div className="mt-2 flex items-center justify-center gap-1.5">
+                    {itemRatings[item.contentId] ? (
+                      <>
+                        <div className="flex gap-0.5">
+                          {[1,2,3,4,5].map((s) => (
+                            <Star key={s} className="h-3 w-3"
+                              fill={(itemRatings[item.contentId] ?? 0) >= s ? "#f59e0b" : "none"}
+                              stroke={(itemRatings[item.contentId] ?? 0) >= s ? "#f59e0b" : "#d1d5db"}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-xs text-amber-500 font-semibold">{itemRatings[item.contentId]}</span>
+                      </>
+                    ) : null}
+                  </div>
+                  <div className="mt-1 flex items-center justify-center gap-2">
                     <span className="font-semibold text-[#1ec28e]">{item.price}</span>
                   </div>
                 </div>

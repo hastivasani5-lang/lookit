@@ -83,9 +83,6 @@ function PhoneInput({ value, onChange }: { value: string; onChange: (v: string) 
         maxLength={selected.digits}
         className="flex-1 bg-transparent px-3 py-3 text-sm outline-none placeholder:text-gray-400 text-gray-800"
       />
-      <span className="flex items-center pr-3 text-xs text-gray-400 whitespace-nowrap">
-        {digits.length}/{selected.digits}
-      </span>
     </div>
   );
 }

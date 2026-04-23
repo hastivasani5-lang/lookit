@@ -258,9 +258,18 @@ const Navbar = () => {
                     >
                       <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
                         <p className="text-sm font-semibold text-gray-900">Notifications</p>
-                        {notifications.length > 0 && (
-                          <span className="text-xs text-gray-400">{notifications.length} total</span>
-                        )}
+                        <div className="flex items-center gap-2">
+                          {notifications.length > 0 && (
+                            <span className="text-xs text-gray-400">{notifications.length} total</span>
+                          )}
+                          <button
+                            onClick={() => setNotifOpen(false)}
+                            className="flex h-6 w-6 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+                            aria-label="Close notifications"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
                       </div>
                       <div className="max-h-72 overflow-y-auto">
                         {notifications.length === 0 ? (
@@ -277,10 +286,28 @@ const Navbar = () => {
                               <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-100">
                                 <Bell className="h-3.5 w-3.5 text-emerald-600" />
                               </div>
-                              <div className="min-w-0">
+                              <div className="min-w-0 flex-1">
                                 <p className="text-sm leading-snug text-gray-800">{n.message}</p>
                                 <p className="mt-1 text-xs text-gray-400">{new Date(n.createdAt).toLocaleString()}</p>
                               </div>
+                              <button
+                                onClick={async (e) => {
+                                  e.stopPropagation();
+                                  try {
+                                    await fetch("/api/student/notifications", {
+                                      method: "DELETE",
+                                      headers: { "Content-Type": "application/json" },
+                                      body: JSON.stringify({ id: n.id }),
+                                    });
+                                    setNotifications((prev) => prev.filter((x) => x.id !== n.id));
+                                    setUnreadCount((c) => !n.read ? Math.max(0, c - 1) : c);
+                                  } catch { /* ignore */ }
+                                }}
+                                className="ml-1 mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-gray-300 transition hover:bg-red-50 hover:text-red-400"
+                                aria-label="Dismiss notification"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
                             </div>
                           ))
                         )}

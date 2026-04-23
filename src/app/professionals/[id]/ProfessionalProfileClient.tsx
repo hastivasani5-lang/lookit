@@ -622,12 +622,14 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
                         {activeTab === "books" ? (
                           <div className="mb-3 overflow-hidden rounded-xl border border-gray-100 bg-white">
                             {item.imageUrl ? (
-                              <Image
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
                                 src={item.imageUrl}
                                 alt={item.title}
                                 width={640}
                                 height={360}
                                 className="h-36 w-full object-cover"
+                                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                               />
                             ) : (
                               <div className="flex h-36 w-full items-center justify-center bg-[#f6fbf9] text-xs text-gray-500">

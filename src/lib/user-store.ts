@@ -445,64 +445,96 @@ async function writeUsers(users: AppUser[]) {
 }
 
 export async function getUserByEmail(email: string) {
-  if (!isPostgresConfigured()) {
-    const users = await readUsers();
-    return users.find((user) => user.email.toLowerCase() === email.toLowerCase()) ?? null;
-  }
+  try {
+    if (!isPostgresConfigured()) {
+      const users = await readUsers();
+      return users.find((user) => user.email.toLowerCase() === email.toLowerCase()) ?? null;
+    }
 
-  await seedPostgresUsersFromJsonIfNeeded();
-  await ensureDbSchema();
-  const db = getDbPool();
+    try {
+      await seedPostgresUsersFromJsonIfNeeded();
+      await ensureDbSchema();
+      const db = getDbPool();
 
-  const result = await db.query<UserRow>(
-    `SELECT * FROM users WHERE email = $1 LIMIT 1`,
-    [email.toLowerCase().trim()],
-  );
+      const result = await db.query<UserRow>(
+        `SELECT * FROM users WHERE email = $1 LIMIT 1`,
+        [email.toLowerCase().trim()],
+      );
 
-  const deletedUserIds = new Set(await readDeletedUserIds());
+      const deletedUserIds = new Set(await readDeletedUserIds());
 
-  if (result.rows.length > 0 && !deletedUserIds.has(result.rows[0].id)) {
-    return mapRowToUser(result.rows[0]);
-  }
+      if (result.rows.length > 0 && !deletedUserIds.has(result.rows[0].id)) {
+        return mapRowToUser(result.rows[0]);
+      }
+    } catch (dbError) {
+      console.error("Database error in getUserByEmail, falling back to JSON:", dbError);
+      // Fall back to JSON file if database fails
+    }
 
-  const fallbackUsers = await readUsers();
-  const fallbackUser = fallbackUsers.find((user) => user.email.toLowerCase() === email.toLowerCase().trim());
+    const fallbackUsers = await readUsers();
+    const fallbackUser = fallbackUsers.find((user) => user.email.toLowerCase() === email.toLowerCase().trim());
 
-  if (!fallbackUser) {
+    if (!fallbackUser) {
+      return null;
+    }
+
+    // Try to upsert to PostgreSQL if possible, but don't fail if it doesn't work
+    try {
+      await upsertFallbackUserToPostgres(fallbackUser);
+    } catch (upsertError) {
+      console.error("Failed to upsert user to PostgreSQL:", upsertError);
+    }
+    
+    return fallbackUser;
+  } catch (error) {
+    console.error("Error in getUserByEmail:", error);
     return null;
   }
-
-  await upsertFallbackUserToPostgres(fallbackUser);
-  return fallbackUser;
 }
 
 export async function getUserById(id: string) {
-  if (!isPostgresConfigured()) {
-    const users = await readUsers();
-    return users.find((user) => user.id === id) ?? null;
-  }
+  try {
+    if (!isPostgresConfigured()) {
+      const users = await readUsers();
+      return users.find((user) => user.id === id) ?? null;
+    }
 
-  await seedPostgresUsersFromJsonIfNeeded();
-  await ensureDbSchema();
-  const db = getDbPool();
+    try {
+      await seedPostgresUsersFromJsonIfNeeded();
+      await ensureDbSchema();
+      const db = getDbPool();
 
-  const result = await db.query<UserRow>(`SELECT * FROM users WHERE id = $1 LIMIT 1`, [id]);
+      const result = await db.query<UserRow>(`SELECT * FROM users WHERE id = $1 LIMIT 1`, [id]);
 
-  const deletedUserIds = new Set(await readDeletedUserIds());
+      const deletedUserIds = new Set(await readDeletedUserIds());
 
-  if (result.rows.length > 0 && !deletedUserIds.has(result.rows[0].id)) {
-    return mapRowToUser(result.rows[0]);
-  }
+      if (result.rows.length > 0 && !deletedUserIds.has(result.rows[0].id)) {
+        return mapRowToUser(result.rows[0]);
+      }
+    } catch (dbError) {
+      console.error("Database error in getUserById, falling back to JSON:", dbError);
+      // Fall back to JSON file if database fails
+    }
 
-  const fallbackUsers = await readUsers();
-  const fallbackUser = fallbackUsers.find((user) => user.id === id);
+    const fallbackUsers = await readUsers();
+    const fallbackUser = fallbackUsers.find((user) => user.id === id);
 
-  if (!fallbackUser) {
+    if (!fallbackUser) {
+      return null;
+    }
+
+    // Try to upsert to PostgreSQL if possible, but don't fail if it doesn't work
+    try {
+      await upsertFallbackUserToPostgres(fallbackUser);
+    } catch (upsertError) {
+      console.error("Failed to upsert user to PostgreSQL:", upsertError);
+    }
+    
+    return fallbackUser;
+  } catch (error) {
+    console.error("Error in getUserById:", error);
     return null;
   }
-
-  await upsertFallbackUserToPostgres(fallbackUser);
-  return fallbackUser;
 }
 
 export async function getAllUsers() {
@@ -656,18 +688,23 @@ export async function deleteUserById(userId: string) {
 }
 
 export async function recordProfessionalLoginAttempt(user: AppUser, reason: "pending" | "rejected") {
-  await appendAdminApprovalNotification({
-    professionalId: user.id,
-    professionalName: user.name,
-    professionalEmail: user.email,
-    event: "login_attempt",
-    title: "Professional login blocked",
-    message:
-      reason === "pending"
-        ? `${user.name} attempted to log in before approval.`
-        : `${user.name} attempted to log in after being rejected.`,
-    status: user.approvalStatus === "rejected" ? "rejected" : "pending",
-  });
+  try {
+    await appendAdminApprovalNotification({
+      professionalId: user.id,
+      professionalName: user.name,
+      professionalEmail: user.email,
+      event: "login_attempt",
+      title: "Professional login blocked",
+      message:
+        reason === "pending"
+          ? `${user.name} attempted to log in before approval.`
+          : `${user.name} attempted to log in after being rejected.`,
+      status: user.approvalStatus === "rejected" ? "rejected" : "pending",
+    });
+  } catch (error) {
+    console.error("Error recording professional login attempt:", error);
+    // Don't throw - this is a non-critical operation
+  }
 }
 
 export async function notifyNewProfessionalRegistration(user: AppUser) {

@@ -51,7 +51,7 @@ function PhoneInput({ value, onChange }: { value: string; onChange: (v: string) 
   };
 
   return (
-    <div className="flex rounded-xl border border-gray-200 bg-gray-50 overflow-hidden focus-within:border-[#1ec28e] focus-within:ring-2 focus-within:ring-[#1ec28e]/20 transition">
+    <div className="flex rounded-xl border border-gray-200 bg-gray-50 focus-within:border-[#1ec28e] focus-within:ring-2 focus-within:ring-[#1ec28e]/20 transition">
       {/* Country selector */}
       <div className="relative" ref={dropRef}>
         <button type="button" onClick={() => setOpen((o) => !o)}
@@ -61,7 +61,7 @@ function PhoneInput({ value, onChange }: { value: string; onChange: (v: string) 
           <ChevronDown className="w-3 h-3 text-gray-400" />
         </button>
         {open && (
-          <div className="absolute left-0 top-full z-50 mt-1 w-52 rounded-xl border border-gray-100 bg-white shadow-xl max-h-60 overflow-y-auto">
+          <div className="absolute left-0 top-full z-[9999] mt-1 w-52 rounded-xl border border-gray-100 bg-white shadow-xl max-h-60 overflow-y-auto">
             {COUNTRIES.map((c) => (
               <button key={c.code} type="button" onClick={() => handleCountrySelect(c)}
                 className={`w-full flex items-center gap-2 px-3 py-2.5 text-sm text-left hover:bg-[#effaf6] transition ${selected.code === c.code ? "bg-[#effaf6] font-semibold text-[#1ec28e]" : "text-gray-700"}`}>

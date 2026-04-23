@@ -78,15 +78,20 @@ async function writeStore(store: ProfessionalLoginStore) {
 }
 
 export async function markProfessionalLoggedIn(professionalId: string) {
-	const id = professionalId.trim();
-	if (!id) {
-		return;
-	}
+	try {
+		const id = professionalId.trim();
+		if (!id) {
+			return;
+		}
 
-	const store = await readStore();
-	if (!store.professionalIds.includes(id)) {
-		store.professionalIds.unshift(id);
-		await writeStore(store);
+		const store = await readStore();
+		if (!store.professionalIds.includes(id)) {
+			store.professionalIds.unshift(id);
+			await writeStore(store);
+		}
+	} catch (error) {
+		console.error("Error marking professional as logged in:", error);
+		// Don't throw - this is a non-critical operation
 	}
 }
 

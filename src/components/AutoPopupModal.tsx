@@ -242,8 +242,8 @@ const steps = [
     hasIcons: true
   },
   {
-    title: "Study Time",
-    question: "4. How much time do you study daily?",
+    title: "Work Time",
+    question: "4. How much time do you work daily?",
     options: ["1-2 hours", "2-4 hours", "4+ hours", "Never"],
     key: "studyTime",
     icon: Clock,
@@ -259,9 +259,9 @@ const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
 
   const handleOptionSelect = (option: string) => {
     setAnswers(prev => ({ ...prev, [steps[step].key]: option }));
-    if (steps[step].showFlags) {
-      setSearchTerm("");
-    }
+    // if (steps[step].showFlags) {
+    //   setSearchTerm("");
+    // }
     if (steps[step].showInput) {
       setProfessionSearch(option);
     }
@@ -271,17 +271,23 @@ const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
     if (step < steps.length - 1) {
       setStep(s => s + 1);
     } else {
-      // Save to real API
+      // Save to localStorage so StudentProfileDashboard can read it
       try {
+        const profileData = {
+          country: answers.country,
+          profession: answers.profession,
+          source: answers.source,
+          studyTime: answers.studyTime,
+        };
+        
+        // Save to localStorage using the userId prop
+        window.localStorage.setItem(`student_profile_answers_${userId}`, JSON.stringify(profileData));
+        
+        // Also try to save to API if it exists
         await fetch("/api/student/profile", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            country: answers.country,
-            profession: answers.profession,
-            source: answers.source,
-            studyTime: answers.studyTime,
-          }),
+          body: JSON.stringify(profileData),
         });
       } catch {
         // silently ignore — modal still closes

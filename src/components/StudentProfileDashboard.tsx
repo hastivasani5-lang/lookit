@@ -299,8 +299,7 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
         }
       }
     
-      const userId = typeof window !== "undefined" ? window.localStorage.getItem("current_student_id") || "guest" : "guest";
-      const answersRaw = window.localStorage.getItem(`student_profile_answers_${userId}`);
+      const answersRaw = window.localStorage.getItem(`student_profile_answers_${user.id}`);
       if (answersRaw) {
         setProfileAnswers(JSON.parse(answersRaw));
       }
@@ -451,14 +450,14 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                 {profileAnswers.country && (
                   <p className="flex items-center gap-2"><span className="font-semibold">Country:</span> {profileAnswers.country}</p>
                 )}
-                {profileAnswers.language && (
-                  <p className="flex items-center gap-2"><span className="font-semibold">Preferred Language:</span> {profileAnswers.language}</p>
-                )}
                 {profileAnswers.profession && (
                   <p className="flex items-center gap-2"><span className="font-semibold">Profession:</span> {profileAnswers.profession}</p>
                 )}
                 {profileAnswers.source && (
                   <p className="flex items-center gap-2"><span className="font-semibold">Heard About Us:</span> {profileAnswers.source}</p>
+                )}
+                {profileAnswers.studyTime && (
+                  <p className="flex items-center gap-2"><span className="font-semibold">Daily Work Time:</span> {profileAnswers.studyTime}</p>
                 )}
               </>
             ) : (

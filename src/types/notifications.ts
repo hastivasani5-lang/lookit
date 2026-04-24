@@ -1,10 +1,12 @@
 export interface StudentNotification {
   id: string;
   studentId: string;
-  type: "purchase_confirmation" | "new_content" | "announcement";
+  type: "purchase_confirmation" | "new_content" | "announcement" | "certificate";
   message: string;
   read: boolean;
   createdAt: string;
+  certificateId?: string;
+  professionalName?: string;
 }
 
 export interface ProfessionalNotification {

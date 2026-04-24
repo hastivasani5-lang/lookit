@@ -1,6 +1,5 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { NextRequest, NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
 import {
   addBooking,
   getBookingsForProfessional,
@@ -11,12 +10,12 @@ import { appendProfessionalNotification } from "@/lib/notifications-store";
 export const runtime = "nodejs";
 
 // GET - professional sees their bookings
-export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id || session.user.role !== "professional") {
+export async function GET(req: NextRequest) {
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  if (!token?.id || token.role !== "professional") {
     return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
   }
-  const bookings = await getBookingsForProfessional(session.user.id);
+  const bookings = await getBookingsForProfessional(token.id as string);
   return NextResponse.json({ bookings });
 }
 
@@ -69,13 +68,13 @@ export async function POST(request: Request) {
 }
 
 // PATCH - update status
-export async function PATCH(request: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id || session.user.role !== "professional") {
+export async function PATCH(req: NextRequest) {
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  if (!token?.id || token.role !== "professional") {
     return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
   }
 
-  const body = (await request.json().catch(() => ({}))) as {
+  const body = (await req.json().catch(() => ({}))) as {
     id?: string;
     status?: "pending" | "confirmed" | "cancelled";
   };

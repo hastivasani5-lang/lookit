@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUp, Bell, LogOut, Menu, X, Search, ShoppingCart, UserCircle2, Compass, Briefcase, Layers, Store, Info, Mail, Home } from "lucide-react";
+import { ArrowUp, Bell, Download, LogOut, Menu, X, Search, ShoppingCart, UserCircle2, Compass, Briefcase, Layers, Store, Info, Mail, Home } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -41,7 +41,7 @@ const Navbar = () => {
   const searchMenuRef = useRef<HTMLDivElement | null>(null);
   const notifRef = useRef<HTMLDivElement | null>(null);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Array<{ id: string; message: string; type: string; read: boolean; createdAt: string }>>([]);
+  const [notifications, setNotifications] = useState<Array<{ id: string; message: string; type: string; read: boolean; createdAt: string; certificateId?: string }>>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [cartCount, setCartCount] = useState(0);
 
@@ -107,7 +107,7 @@ const Navbar = () => {
         const res = await fetch("/api/student/notifications", { cache: "no-store" });
         if (!res.ok) return;
         const data = (await res.json()) as {
-          notifications: Array<{ id: string; message: string; type: string; read: boolean; createdAt: string }>;
+          notifications: Array<{ id: string; message: string; type: string; read: boolean; createdAt: string; certificateId?: string }>;
           unreadCount: number;
         };
         setNotifications(data.notifications);
@@ -151,6 +151,94 @@ const Navbar = () => {
         setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
       } catch { /* ignore */ }
     }
+  };
+
+  const downloadCertificate = async (certId: string, notifMessage: string) => {
+    try {
+      // Try to get cert data from notification itself first, then fall back to API
+      const generatePdf = async (cert: { id: string; studentName: string; professionalName: string; issuedAt: string; message: string; imageDataUrl?: string }) => {
+        const { jsPDF } = await import("jspdf");
+        const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+
+        doc.setFillColor(240, 255, 248);
+        doc.rect(0, 0, 297, 210, "F");
+        doc.setDrawColor(30, 194, 142);
+        doc.setLineWidth(3);
+        doc.rect(10, 10, 277, 190);
+        doc.setLineWidth(1);
+        doc.rect(13, 13, 271, 184);
+
+        if (cert.imageDataUrl) {
+          try { doc.addImage(cert.imageDataUrl, "JPEG", 230, 20, 50, 35); } catch { /* ignore */ }
+        }
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(32);
+        doc.setTextColor(30, 194, 142);
+        doc.text("Certificate of Completion", 148.5, 55, { align: "center" });
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(14);
+        doc.setTextColor(100, 100, 100);
+        doc.text("This is to certify that", 148.5, 75, { align: "center" });
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(26);
+        doc.setTextColor(30, 50, 80);
+        doc.text(cert.studentName, 148.5, 95, { align: "center" });
+
+        doc.setDrawColor(30, 194, 142);
+        doc.setLineWidth(0.5);
+        doc.line(80, 100, 217, 100);
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(13);
+        doc.setTextColor(80, 80, 80);
+        doc.text("has successfully completed the course issued by", 148.5, 115, { align: "center" });
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(18);
+        doc.setTextColor(30, 194, 142);
+        doc.text(cert.professionalName, 148.5, 130, { align: "center" });
+
+        if (cert.message) {
+          doc.setFont("helvetica", "italic");
+          doc.setFontSize(11);
+          doc.setTextColor(120, 120, 120);
+          doc.text(`"${cert.message}"`, 148.5, 145, { align: "center" });
+        }
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
+        doc.setTextColor(130, 130, 130);
+        doc.text(`Issued on: ${new Date(cert.issuedAt).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}`, 148.5, 165, { align: "center" });
+
+        doc.setFontSize(8);
+        doc.setTextColor(180, 180, 180);
+        doc.text(`Certificate ID: ${cert.id}`, 148.5, 192, { align: "center" });
+
+        doc.save(`certificate-${cert.studentName.replace(/\s+/g, "-")}.pdf`);
+      };
+
+      // Try API first
+      const res = await fetch(`/api/student/certificates/${certId}`, { cache: "no-store" });
+      if (res.ok) {
+        const data = (await res.json()) as { certificate: { id: string; studentName: string; professionalName: string; issuedAt: string; message: string; imageDataUrl?: string } };
+        await generatePdf(data.certificate);
+        return;
+      }
+
+      // Fallback: use notification message to extract name and generate basic cert
+      const studentName = session?.user?.name ?? "Student";
+      const professionalName = notifMessage.match(/from (.+?)!/)?.[1] ?? "Your Instructor";
+      await generatePdf({
+        id: certId,
+        studentName,
+        professionalName,
+        issuedAt: new Date().toISOString(),
+        message: "",
+      });
+    } catch { /* ignore */ }
   };
 
   const searchResults = useMemo(() => {
@@ -284,11 +372,25 @@ const Navbar = () => {
                               className={`flex gap-3 border-b border-gray-50 px-4 py-3 last:border-0 transition-colors ${!n.read ? "bg-emerald-50/60" : "bg-white"}`}
                             >
                               <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-100">
-                                <Bell className="h-3.5 w-3.5 text-emerald-600" />
+                                {n.type === "certificate" ? (
+                                  <Download className="h-3.5 w-3.5 text-emerald-600" />
+                                ) : (
+                                  <Bell className="h-3.5 w-3.5 text-emerald-600" />
+                                )}
                               </div>
                               <div className="min-w-0 flex-1">
                                 <p className="text-sm leading-snug text-gray-800">{n.message}</p>
                                 <p className="mt-1 text-xs text-gray-400">{new Date(n.createdAt).toLocaleString()}</p>
+                                {n.type === "certificate" && n.certificateId && (
+                                  <button
+                                    type="button"
+                                    onClick={() => void downloadCertificate(n.certificateId!, n.message)}
+                                    className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-700"
+                                  >
+                                    <Download className="h-3 w-3" />
+                                    Download Certificate
+                                  </button>
+                                )}
                               </div>
                               <button
                                 onClick={async (e) => {

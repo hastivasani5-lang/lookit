@@ -1,11 +1,13 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";
-import { Bell, BookOpen, Calendar, CheckCircle, Clock3, RefreshCcw, Users, Video, XCircle } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { Award, Bell, BookOpen, Calendar, CheckCircle, Clock3, RefreshCcw, Users, Video, X, XCircle } from "lucide-react";
+import { useSession, signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 import DashboardSidebar from "@/components/DashboardSidebar";
 import type { AdvanceBooking } from "@/lib/advance-bookings-store";
+import { groupPurchases, type StudentGroup } from "@/lib/group-purchases";
 
 type PurchaseRow = {
   id: string;
@@ -34,10 +36,12 @@ function formatDate(value: string) {
 }
 
 export default function TeacherPurchasesPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const ITEMS_PER_PAGE = 10;
 
   const [activeTab, setActiveTab] = useState<"purchases" | "bookings">("purchases");
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
 
   // ── Purchases state ──────────────────────────────────────────────────────
   const [purchases, setPurchases] = useState<PurchaseRow[]>([]);
@@ -51,6 +55,15 @@ export default function TeacherPurchasesPage() {
   const [error, setError] = useState("");
   const [refreshing, setRefreshing] = useState(false);
 
+  // ── Certificate state ────────────────────────────────────────────────────
+  const [certSent, setCertSent] = useState<boolean | null>(null);
+  const [certSending, setCertSending] = useState(false);
+  const [certError, setCertError] = useState("");
+  const [certSuccess, setCertSuccess] = useState(false);
+  const [certModalOpen, setCertModalOpen] = useState(false);
+  const [certMessage, setCertMessage] = useState("");
+  const [certImageDataUrl, setCertImageDataUrl] = useState<string | null>(null);
+
   // ── Bookings state ───────────────────────────────────────────────────────
   const [bookings, setBookings] = useState<AdvanceBooking[]>([]);
   const [bookingsPage, setBookingsPage] = useState(1);
@@ -59,18 +72,25 @@ export default function TeacherPurchasesPage() {
 
   const loadPurchases = async (isRefresh = false) => {
     isRefresh ? setRefreshing(true) : setLoading(true);
-    setError("");
+    if (!isRefresh) setError("");
     try {
       const res = await fetch("/api/profile/purchases", { cache: "no-store" });
       const payload = (await res.json().catch(() => ({}))) as PurchasePayload;
-      if (!res.ok) { setError(payload.message || "Unable to load."); return; }
+      if (res.status === 401) {
+        if (!isRefresh) router.push("/login");
+        return;
+      }
+      if (!res.ok) {
+        if (!isRefresh) setError(payload.message || "Unable to load.");
+        return;
+      }
       setPurchases(Array.isArray(payload.purchases) ? payload.purchases : []);
       setUniqueStudentsCount(payload.uniqueStudentsCount ?? 0);
       setTotalPurchases(payload.totalPurchases ?? 0);
       setBooksCount(payload.booksCount ?? 0);
       setVideosCount(payload.videosCount ?? 0);
       setLastUpdated(payload.lastUpdated ?? null);
-    } catch { setError("Unable to load purchase data."); }
+    } catch { if (!isRefresh) setError("Unable to load purchase data."); }
     finally { setLoading(false); setRefreshing(false); }
   };
 
@@ -78,6 +98,7 @@ export default function TeacherPurchasesPage() {
     setBookingsLoading(true);
     try {
       const res = await fetch("/api/advance-bookings", { cache: "no-store" });
+      if (!res.ok) { setBookingsLoading(false); return; } // silently ignore auth errors
       const payload = (await res.json().catch(() => ({}))) as { bookings?: AdvanceBooking[] };
       setBookings(Array.isArray(payload.bookings) ? payload.bookings : []);
     } catch { /* ignore */ }
@@ -85,12 +106,18 @@ export default function TeacherPurchasesPage() {
   };
 
   useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
+
+  useEffect(() => {
     void loadPurchases();
     void loadBookings();
     const interval = setInterval(() => {
       void loadPurchases(true);
       void loadBookings();
-    }, 5000);
+    }, 30000); // reduced from 5s to 30s to avoid hammering session
     return () => clearInterval(interval);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -98,8 +125,62 @@ export default function TeacherPurchasesPage() {
   useEffect(() => { setCurrentPage(1); }, [purchases]);
   useEffect(() => { setBookingsPage(1); }, [bookings]);
 
-  const totalPages = Math.max(1, Math.ceil(purchases.length / ITEMS_PER_PAGE));
-  const paginated = purchases.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+  useEffect(() => {
+    if (!selectedStudentId) {
+      setCertSent(null);
+      setCertSending(false);
+      setCertError("");
+      setCertSuccess(false);
+      setCertModalOpen(false);
+      setCertMessage("");
+      setCertImageDataUrl(null);
+      return;
+    }
+    setCertSent(null); // show spinner while loading
+    void (async () => {
+      try {
+        const res = await fetch(`/api/profile/certificates?studentId=${selectedStudentId}`, { cache: "no-store" });
+        if (!res.ok) { setCertSent(false); return; }
+        const data = (await res.json().catch(() => ({ certificates: [] }))) as { certificates: unknown[] };
+        setCertSent(Array.isArray(data.certificates) && data.certificates.length > 0);
+      } catch {
+        setCertSent(false);
+      }
+    })();
+  }, [selectedStudentId]);
+
+  const handleSendCertificate = async () => {
+    if (!selectedStudentId) return;
+    const studentName = purchases.find((p) => p.studentId === selectedStudentId)?.studentName ?? "";
+    setCertSending(true);
+    setCertError("");
+    try {
+      const res = await fetch("/api/profile/certificates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentId: selectedStudentId,
+          studentName,
+          message: certMessage,
+          imageDataUrl: certImageDataUrl ?? undefined,
+        }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { message?: string };
+      if (!res.ok) {
+        setCertError(data.message ?? "Failed to send certificate. Please try again.");
+      } else {
+        setCertSent(true);
+        setCertSuccess(true);
+        setCertModalOpen(false);
+        setCertMessage("");
+        setCertImageDataUrl(null);
+      }
+    } catch {
+      setCertError("Failed to send certificate. Please try again.");
+    } finally {
+      setCertSending(false);
+    }
+  };
 
   const bookingsTotalPages = Math.max(1, Math.ceil(bookings.length / ITEMS_PER_PAGE));
   const paginatedBookings = bookings.slice((bookingsPage - 1) * ITEMS_PER_PAGE, bookingsPage * ITEMS_PER_PAGE);
@@ -110,6 +191,11 @@ export default function TeacherPurchasesPage() {
     { label: "Books",     value: booksCount,           icon: BookOpen,   bg: "bg-amber-50",  color: "text-amber-600" },
     { label: "Videos",    value: videosCount,          icon: Video,      bg: "bg-purple-50", color: "text-purple-600" },
   ], [uniqueStudentsCount, totalPurchases, booksCount, videosCount]);
+
+  const studentGroups = useMemo(() => groupPurchases(purchases), [purchases]);
+
+  const totalPages = Math.max(1, Math.ceil(studentGroups.length / ITEMS_PER_PAGE));
+  const paginated = studentGroups.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   const handleStatusUpdate = async (id: string, status: AdvanceBooking["status"]) => {
     setUpdatingId(id);
@@ -246,31 +332,35 @@ export default function TeacherPurchasesPage() {
                     <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                       <tr>
                         <th className="px-5 py-3">Student</th>
-                        <th className="px-5 py-3">Purchased Item</th>
-                        <th className="px-5 py-3">Type</th>
-                        <th className="px-5 py-3">Purchase Time</th>
-                        <th className="px-5 py-3">Transaction ID</th>
+                        <th className="px-5 py-3">Purchases</th>
+                        <th className="px-5 py-3">Last Purchase Time</th>
+                        <th className="px-5 py-3">Action</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {paginated.map((p) => (
-                        <tr key={p.id} className="border-t border-slate-100 hover:bg-slate-50 transition">
-                          <td className="px-5 py-3 font-medium text-slate-900">{p.studentName}</td>
-                          <td className="px-5 py-3 text-slate-700">{p.itemTitle}</td>
-                          <td className="px-5 py-3">
-                            <span className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${
-                              p.contentType === "book" ? "bg-[#effaf6] text-[#1ec28e]" : "bg-purple-50 text-purple-600"
-                            }`}>
-                              {p.contentType}
+                      {paginated.map((g) => (
+                        <tr key={g.studentId} className="border-t border-slate-100 hover:bg-slate-50 transition">
+                          <td className="px-5 py-3 font-medium text-slate-900">{g.studentName}</td>
+                          <td className="px-5 py-3 text-slate-700">
+                            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
+                              {g.purchaseCount} {g.purchaseCount === 1 ? "purchase" : "purchases"}
                             </span>
                           </td>
                           <td className="px-5 py-3">
                             <div className="flex items-center gap-2 text-slate-600">
                               <Clock3 className="h-4 w-4 text-[#1ec28e]" />
-                              {formatDate(p.purchaseTime)}
+                              {formatDate(g.latestPurchaseTime)}
                             </div>
                           </td>
-                          <td className="px-5 py-3 font-mono text-xs text-slate-500">{p.transactionId}</td>
+                          <td className="px-5 py-3">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedStudentId(g.studentId)}
+                              className="rounded-lg bg-[#effaf6] px-3 py-1 text-xs font-semibold text-[#1ec28e] hover:bg-[#d4f5ea] transition"
+                            >
+                              View All
+                            </button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -278,10 +368,10 @@ export default function TeacherPurchasesPage() {
                 </div>
               )}
 
-              {!loading && purchases.length > ITEMS_PER_PAGE && (
+              {!loading && studentGroups.length > ITEMS_PER_PAGE && (
                 <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 px-5 py-4">
                   <p className="text-xs text-slate-500">
-                    Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, purchases.length)} of {purchases.length}
+                    Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, studentGroups.length)} of {studentGroups.length}
                   </p>
                   <div className="flex items-center gap-2">
                     <button type="button" disabled={currentPage === 1}
@@ -424,6 +514,161 @@ export default function TeacherPurchasesPage() {
 
         </div>
       </section>
+
+      {/* ── STUDENT PURCHASES DRAWER ─────────────────────────────────── */}
+      {selectedStudentId && (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
+            onClick={() => setSelectedStudentId(null)}
+          />
+          <div className="fixed right-0 top-0 z-50 h-full w-full max-w-md bg-white shadow-2xl flex flex-col">
+            <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+              <div>
+                <h2 className="text-base font-bold text-slate-900">{purchases.find((p) => p.studentId === selectedStudentId)?.studentName ?? ""}</h2>
+                <p className="text-xs text-slate-500">
+                  {purchases.filter((p) => p.studentId === selectedStudentId).length} purchases
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedStudentId(null)}
+                className="grid h-8 w-8 place-items-center rounded-xl border border-slate-200 text-slate-500 hover:text-slate-900 transition"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
+              {purchases
+                .filter((p) => p.studentId === selectedStudentId)
+                .map((p) => (
+                  <div key={p.id} className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="font-semibold text-slate-900 text-sm">{p.itemTitle}</p>
+                      <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
+                        p.contentType === "book" ? "bg-[#effaf6] text-[#1ec28e]" : "bg-purple-50 text-purple-600"
+                      }`}>
+                        {p.contentType}
+                      </span>
+                    </div>
+                    <div className="mt-2 flex items-center gap-1.5 text-xs text-slate-500">
+                      <Clock3 className="h-3.5 w-3.5 text-[#1ec28e]" />
+                      {formatDate(p.purchaseTime)}
+                    </div>
+                    <p className="mt-1 font-mono text-xs text-slate-400">{p.transactionId}</p>
+                  </div>
+                ))}
+            </div>
+            {/* Certificate footer */}
+            <div className="border-t border-slate-100 px-5 py-4">
+              {certSuccess && (
+                <div className="mb-3 flex items-center gap-2 rounded-xl bg-[#effaf6] px-4 py-2.5 text-sm font-semibold text-[#1ec28e]">
+                  <Award className="h-4 w-4" />
+                  Certificate sent successfully
+                </div>
+              )}
+              {certError && (
+                <p className="mb-3 text-xs text-red-500">{certError}</p>
+              )}
+              {certSent === null ? (
+                <div className="flex items-center justify-center py-2">
+                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#1ec28e] border-t-transparent" />
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setCertModalOpen(true)}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#1ec28e] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#17a87a]"
+                >
+                  <Award className="h-4 w-4" />
+                  {certSent ? "Send Another Certificate" : "Send Certificate"}
+                </button>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+      {/* ── CERTIFICATE MODAL ────────────────────────────────────── */}
+      {certModalOpen && (
+        <>
+          <div className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-sm" onClick={() => setCertModalOpen(false)} />
+          <div className="fixed left-1/2 top-1/2 z-[70] w-full max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white shadow-2xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-bold text-slate-900">Send Certificate</h3>
+              <button
+                type="button"
+                onClick={() => setCertModalOpen(false)}
+                className="grid h-7 w-7 place-items-center rounded-xl border border-slate-200 text-slate-400 hover:text-slate-700 transition"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Image upload */}
+            <div className="mb-4">
+              <label className="mb-1.5 block text-xs font-semibold text-slate-600">Certificate Image (optional)</label>
+              {certImageDataUrl ? (
+                <div className="relative">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={certImageDataUrl} alt="Certificate preview" className="h-32 w-full rounded-xl object-cover border border-slate-200" />
+                  <button
+                    type="button"
+                    onClick={() => setCertImageDataUrl(null)}
+                    className="absolute right-2 top-2 grid h-6 w-6 place-items-center rounded-full bg-white/90 text-slate-500 shadow hover:text-red-500 transition"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex h-24 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 text-slate-400 hover:border-[#1ec28e] hover:text-[#1ec28e] transition">
+                  <Award className="h-6 w-6" />
+                  <span className="text-xs font-medium">Click to upload image</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = (ev) => setCertImageDataUrl(ev.target?.result as string);
+                      reader.readAsDataURL(file);
+                    }}
+                  />
+                </label>
+              )}
+            </div>
+
+            {/* Message */}
+            <div className="mb-5">
+              <label className="mb-1.5 block text-xs font-semibold text-slate-600">Message (optional)</label>
+              <textarea
+                value={certMessage}
+                onChange={(e) => setCertMessage(e.target.value)}
+                placeholder="e.g. Congratulations on completing the course!"
+                rows={3}
+                className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e] transition"
+              />
+            </div>
+
+            {certError && <p className="mb-3 text-xs text-red-500">{certError}</p>}
+
+            <button
+              type="button"
+              disabled={certSending}
+              onClick={() => void handleSendCertificate()}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#1ec28e] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#17a87a] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {certSending ? (
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              ) : (
+                <Award className="h-4 w-4" />
+              )}
+              {certSending ? "Sending..." : "Send Certificate"}
+            </button>
+          </div>
+        </>
+      )}
     </main>
   );
 }

@@ -1,9 +1,7 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-import { authOptions } from "@/lib/auth";
 import { getPayments } from "@/lib/payment-store";
-import { getUserById } from "@/lib/user-store";
 
 export const runtime = "nodejs";
 
@@ -18,26 +16,14 @@ type PurchaseRow = {
   amount: string;
 };
 
-async function getAuthorizedProfessionalId() {
-  const session = await getServerSession(authOptions);
+export async function GET(req: NextRequest) {
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-  if (!session?.user?.id) {
-    return null;
-  }
-
-  const user = await getUserById(session.user.id);
-  if (!user || user.role !== "professional") {
-    return null;
-  }
-
-  return user.id;
-}
-
-export async function GET() {
-  const professionalId = await getAuthorizedProfessionalId();
-  if (!professionalId) {
+  if (!token?.id || token.role !== "professional") {
     return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
   }
+
+  const professionalId = token.id as string;
 
   const payments = await getPayments();
 

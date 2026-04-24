@@ -68,6 +68,7 @@ export async function appendStudentNotification(
   studentId: string,
   type: StudentNotification["type"],
   message: string,
+  extra?: { certificateId?: string; professionalName?: string },
 ): Promise<StudentNotification> {
   const notification: StudentNotification = {
     id: randomUUID(),
@@ -76,6 +77,7 @@ export async function appendStudentNotification(
     message,
     read: false,
     createdAt: new Date().toISOString(),
+    ...(extra ?? {}),
   };
   writeQueue = writeQueue.then(async () => {
     const all = await readAll();

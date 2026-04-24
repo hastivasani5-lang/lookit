@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, X, Check, Globe, Briefcase, Users, Clock, Us
 interface AutoPopupModalProps {
   onClose: () => void;
   userId: string;
+  onComplete?: () => void;
 }
 
 // Country list with flag image URLs
@@ -252,7 +253,7 @@ const steps = [
   },
 ];
 
-const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
+const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId, onComplete }) => {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<{ [key: string]: string }>({});
   const [searchTerm, setSearchTerm] = useState("");
@@ -294,7 +295,8 @@ const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
       } catch {
         // silently ignore — modal still closes
       }
-      onClose();
+      if (onComplete) onComplete();
+      else onClose();
     }
   };
 
@@ -324,13 +326,15 @@ const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
         
         {/* Content Container - White */}
         <div className="relative bg-white rounded-xl shadow-lg overflow-hidden max-h-[85vh] flex flex-col">
-          {/* Close Button */}
+          {/* Close Button — hidden in blocking mode (onComplete present) */}
+          {!onComplete && (
           <button
             onClick={onClose}
             className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200 group"
           >
             <X className="w-4 h-4 text-gray-600 group-hover:rotate-90 transition-transform duration-200" />
           </button>
+          )}
 
           {/* Header with Gradient Bar */}
           <div className="relative pt-6 pb-3 px-6 flex-shrink-0">

@@ -391,6 +391,19 @@ export default function AdminPanelView() {
   const [notifications, setNotifications] = useState<ProfessionalNotification[]>([]);
   const [notificationsLoading, setNotificationsLoading] = useState(false);
   const [activityNotifCount, setActivityNotifCount] = useState(0);
+  const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
+  const [latestActivityNotifs, setLatestActivityNotifs] = useState<{ id: string; title: string; message: string; createdAt: string }[]>([]);
+
+  // Close notification dropdown on outside click
+  useEffect(() => {
+    if (!notifDropdownOpen) return;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest("[data-notif-dropdown]")) setNotifDropdownOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [notifDropdownOpen]);
   const [contactMessages, setContactMessages] = useState<ContactMessage[]>([]);
   const [contactMessagesLoading, setContactMessagesLoading] = useState(false);
   const [usersLoading, setUsersLoading] = useState(false);
@@ -1385,7 +1398,7 @@ export default function AdminPanelView() {
       try {
         const res = await fetch("/api/admin/activity-notifications", { cache: "no-store" });
         if (!res.ok) return;
-        const data = (await res.json()) as { notifications?: { id: string; createdAt: string }[] };
+        const data = (await res.json()) as { notifications?: { id: string; title: string; message: string; createdAt: string }[] };
         const all = Array.isArray(data.notifications) ? data.notifications : [];
 
         const lastSeen = localStorage.getItem(SEEN_KEY);
@@ -1397,6 +1410,7 @@ export default function AdminPanelView() {
         }).length;
 
         setActivityNotifCount(unread);
+        setLatestActivityNotifs(all.slice(0, 8));
       } catch {
         // silent
       }
@@ -1498,19 +1512,53 @@ export default function AdminPanelView() {
         <SiteLogo size="sidebar" priority />
         <div className="flex items-center gap-3">
           <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-          <button
-            type="button"
-            onClick={() => { setActiveSection("Alerts"); setMobileMenuOpen(false); }}
-            className="relative flex items-center justify-center"
-            aria-label="Notifications"
-          >
-            <Bell className="h-5 w-5 text-[#1ec28e]" />
-            {activityNotifCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white leading-none">
-                {activityNotifCount > 99 ? "99+" : activityNotifCount}
-              </span>
+          <div className="relative" data-notif-dropdown>
+            <button
+              type="button"
+              onClick={() => setNotifDropdownOpen((o) => !o)}
+              className="relative flex items-center justify-center"
+              aria-label="Notifications"
+            >
+              <Bell className="h-5 w-5 text-[#1ec28e]" />
+              {activityNotifCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white leading-none">
+                  {activityNotifCount > 99 ? "99+" : activityNotifCount}
+                </span>
+              )}
+            </button>
+            {notifDropdownOpen && (
+              <div className="absolute right-0 top-8 z-[200] w-72 rounded-2xl bg-white shadow-[0_8px_32px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-[#f6fefb]">
+                  <span className="text-sm font-bold text-slate-800">Notifications</span>
+                  {activityNotifCount > 0 && (
+                    <span className="rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">{activityNotifCount} new</span>
+                  )}
+                </div>
+                <div className="max-h-64 overflow-y-auto divide-y divide-slate-50">
+                  {latestActivityNotifs.length === 0 ? (
+                    <p className="px-4 py-6 text-center text-xs text-slate-400">No recent activity</p>
+                  ) : (
+                    latestActivityNotifs.map((n) => (
+                      <div key={n.id} className="px-4 py-3 hover:bg-[#f6fefb] transition cursor-default">
+                        <p className="text-xs font-semibold text-slate-800 truncate">{n.title}</p>
+                        <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{n.message}</p>
+                        <p className="text-[10px] text-slate-400 mt-1">{new Date(n.createdAt).toLocaleString()}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
+                <div className="border-t border-slate-100 px-4 py-2.5 bg-[#f6fefb]">
+                  <button
+                    type="button"
+                    onClick={() => { setActiveSection("Alerts"); setNotifDropdownOpen(false); setMobileMenuOpen(false); }}
+                    className="w-full text-center text-xs font-semibold text-[#1ec28e] hover:underline"
+                  >
+                    View all activity →
+                  </button>
+                </div>
+              </div>
             )}
-          </button>
+          </div>
           <button
             type="button"
             onClick={() => setAdminProfileOpen(true)}
@@ -1678,19 +1726,53 @@ export default function AdminPanelView() {
             <div className="flex items-center gap-4 text-sm">
               <span className="hidden text-slate-600 sm:inline">Open For Order</span>
               <span className="h-2.5 w-2.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 shadow-[1px_1px_3px_#bfe9cb,-1px_-1px_3px_#ffffff]" />
-              <button
-                type="button"
-                onClick={() => setActiveSection("Alerts")}
-                className="relative flex items-center justify-center"
-                aria-label="Notifications"
-              >
-                <Bell className="h-5 w-5 text-[#1ec28e]" />
-                {activityNotifCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white leading-none">
-                    {activityNotifCount > 99 ? "99+" : activityNotifCount}
-                  </span>
+              <div className="relative" data-notif-dropdown>
+                <button
+                  type="button"
+                  onClick={() => setNotifDropdownOpen((o) => !o)}
+                  className="relative flex items-center justify-center"
+                  aria-label="Notifications"
+                >
+                  <Bell className="h-5 w-5 text-[#1ec28e]" />
+                  {activityNotifCount > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white leading-none">
+                      {activityNotifCount > 99 ? "99+" : activityNotifCount}
+                    </span>
+                  )}
+                </button>
+                {notifDropdownOpen && (
+                  <div className="absolute right-0 top-8 z-[200] w-80 rounded-2xl bg-white shadow-[0_8px_32px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-[#f6fefb]">
+                      <span className="text-sm font-bold text-slate-800">Notifications</span>
+                      {activityNotifCount > 0 && (
+                        <span className="rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">{activityNotifCount} new</span>
+                      )}
+                    </div>
+                    <div className="max-h-72 overflow-y-auto divide-y divide-slate-50">
+                      {latestActivityNotifs.length === 0 ? (
+                        <p className="px-4 py-6 text-center text-xs text-slate-400">No recent activity</p>
+                      ) : (
+                        latestActivityNotifs.map((n) => (
+                          <div key={n.id} className="px-4 py-3 hover:bg-[#f6fefb] transition cursor-default">
+                            <p className="text-xs font-semibold text-slate-800 truncate">{n.title}</p>
+                            <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{n.message}</p>
+                            <p className="text-[10px] text-slate-400 mt-1">{new Date(n.createdAt).toLocaleString()}</p>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                    <div className="border-t border-slate-100 px-4 py-2.5 bg-[#f6fefb]">
+                      <button
+                        type="button"
+                        onClick={() => { setActiveSection("Alerts"); setNotifDropdownOpen(false); }}
+                        className="w-full text-center text-xs font-semibold text-[#1ec28e] hover:underline"
+                      >
+                        View all activity →
+                      </button>
+                    </div>
+                  </div>
                 )}
-              </button>
+              </div>
               <button
                 type="button"
                 onClick={() => setAdminProfileOpen(true)}

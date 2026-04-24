@@ -58,56 +58,85 @@ export default function UpgradeSection({
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {upgradePlans.map((plan) => {
           const isSelected = upgradePlan === plan.key;
-          const isPro = plan.key === "pro";
-          const features: Record<string, string[]> = {
-            starter: ["1 week boost", "Higher ranking", "Boost badge", "Priority visibility"],
-            pro: ["1 month boost", "Higher ranking", "Boost badge", "Priority visibility", "Featured listing"],
-            premium: ["2 months boost", "Higher ranking", "Boost badge", "Priority visibility", "Featured listing", "Top search results"],
-            elite: ["3 months boost", "Higher ranking", "Boost badge", "Priority visibility", "Featured listing", "Top search results", "Dedicated support"],
+          const isFeatured = plan.featured;
+          const features: Record<string, Array<{ label: string; bold?: string }>> = {
+            starter: [
+              { bold: "2", label: " Course posting" },
+              { bold: "2", label: " Featured Classes" },
+              { bold: "100%", label: " Secure" },
+              { bold: "Customer", label: " Reviews" },
+              { bold: "24/7", label: " Support" },
+            ],
+            pro: [
+              { bold: "4", label: " Course posting" },
+              { bold: "4", label: " Featured Classes" },
+              { bold: "100%", label: " Secure" },
+              { bold: "Customer", label: " Reviews" },
+              { bold: "24/7", label: " Support" },
+            ],
+            premium: [
+              { bold: "10", label: " Course posting" },
+              { bold: "10", label: " Featured Classes" },
+              { bold: "100%", label: " Secure" },
+              { bold: "Customer", label: " Reviews" },
+              { bold: "24/7", label: " Support" },
+            ],
+            elite: [
+              { bold: "5", label: " Course posting" },
+              { bold: "5", label: " Featured Classes" },
+              { bold: "100%", label: " Secure" },
+              { bold: "Customer", label: " Reviews" },
+              { bold: "24/7", label: " Support" },
+            ],
           };
           return (
             <div
               key={plan.key}
               onClick={() => { setUpgradePlan(plan.key); setHasOpenedRazorpay(false); }}
-              className={`relative cursor-pointer rounded-2xl border-2 p-6 transition-all ${
-                isSelected
-                  ? "border-[#1ec28e] bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-xl scale-[1.02]"
-                  : "border-slate-200 bg-white hover:border-[#1ec28e]/50 hover:shadow-md"
+              style={isFeatured ? { background: "linear-gradient(160deg, #0d7a57 0%, #15a374 40%, #1ec28e 100%)" } : {}}
+              className={`relative cursor-pointer rounded-2xl border p-6 transition-all ${
+                isFeatured
+                  ? "border-[#1ec28e] text-white shadow-xl scale-[1.02]"
+                  : "border-slate-200 bg-white hover:border-[#1ec28e]/40 hover:shadow-md"
               }`}
             >
-              {isPro && !isSelected && (
-                <div className="absolute -right-0 -top-0 overflow-hidden rounded-tr-2xl" style={{ width: 56, height: 56 }}>
-                  <div className="absolute right-[-14px] top-[10px] w-[72px] rotate-45 bg-gradient-to-r from-emerald-600 to-teal-600 py-1 text-center text-[10px] font-bold text-white">New</div>
-                </div>
-              )}
-              <p className={`text-xs font-bold uppercase tracking-widest ${isSelected ? "text-white/80" : "text-[#1ec28e]"}`}>
+              {/* Plan name */}
+              <p className={`text-xs font-semibold uppercase tracking-widest ${isFeatured ? "text-white/80" : "text-[#1ec28e]"}`}>
                 {plan.name}
               </p>
-              <div className="mt-3 flex items-end gap-1">
-                <span className={`text-4xl font-extrabold ${isSelected ? "text-white" : "text-slate-900"}`}>{plan.price}</span>
-                <span className={`mb-1 text-sm ${isSelected ? "text-white/70" : "text-slate-400"}`}>/ boost</span>
+
+              {/* Price */}
+              <div className="mt-2 flex items-end gap-1">
+                <span className={`text-3xl font-extrabold ${isFeatured ? "text-white" : "text-slate-900"}`}>{plan.price}</span>
+                <span className={`mb-1 text-sm font-medium ${isFeatured ? "text-white/70" : "text-slate-400"}`}>{plan.duration}</span>
               </div>
-              <p className={`mt-1 text-xs ${isSelected ? "text-white/70" : "text-slate-400"}`}>{plan.duration}</p>
-              <ul className="mt-5 space-y-2">
-                {features[plan.key].map((f) => (
-                  <li key={f} className={`flex items-center gap-2 text-xs ${isSelected ? "text-white/90" : "text-slate-600"}`}>
-                    <svg className={`h-4 w-4 shrink-0 ${isSelected ? "text-white" : "text-[#1ec28e]"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+
+              {/* Divider */}
+              <div className={`mt-4 border-t ${isFeatured ? "border-white/20" : "border-slate-100"}`} />
+
+              {/* Features */}
+              <ul className="mt-4 space-y-3">
+                {features[plan.key].map((f, i) => (
+                  <li key={i} className={`flex items-center gap-2 text-sm ${isFeatured ? "text-white/90" : "text-slate-600"}`}>
+                    <svg className={`h-4 w-4 shrink-0 ${isFeatured ? "text-white/80" : "text-[#1ec28e]"}`} viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
                     </svg>
-                    {f}
+                    <span><strong>{f.bold}</strong>{f.label}</span>
                   </li>
                 ))}
               </ul>
+
+              {/* Button */}
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); setUpgradePlan(plan.key); setHasOpenedRazorpay(false); handleOpenRazorpay(); }}
-                className={`mt-6 w-full rounded-xl py-2.5 text-sm font-bold transition ${
-                  isSelected
-                    ? "bg-white text-[#1ec28e] hover:bg-white/90"
-                    : "border border-[#1ec28e] bg-white text-[#1ec28e] hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white"
+                className={`mt-6 w-full rounded-xl py-2.5 text-sm font-semibold transition ${
+                  isFeatured
+                    ? "bg-white text-[#0d7a57] hover:bg-white/90"
+                    : "border border-slate-200 bg-white text-slate-500 hover:border-[#1ec28e] hover:text-[#1ec28e]"
                 }`}
               >
-                {isSelected ? "Pay Now" : "Buy Now"}
+                Buy Now
               </button>
             </div>
           );

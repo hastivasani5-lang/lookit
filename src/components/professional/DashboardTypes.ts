@@ -58,11 +58,12 @@ export const upgradePlans: Array<{
   name: string;
   price: string;
   duration: string;
+  featured?: boolean;
 }> = [
-  { key: "starter", name: "Starter", price: "$9", duration: "1 week boost" },
-  { key: "pro", name: "Pro", price: "$19", duration: "1 month boost" },
-  { key: "premium", name: "Premium", price: "$39", duration: "2 months boost" },
-  { key: "elite", name: "Elite", price: "$59", duration: "3 months boost" },
+  { key: "starter", name: "Basic", price: "$15", duration: "/ month" },
+  { key: "pro", name: "Premium", price: "$25", duration: "/ month" },
+  { key: "premium", name: "Gold", price: "$50", duration: "/ month", featured: true },
+  { key: "elite", name: "Silver", price: "$29", duration: "/ month" },
 ];
 
 export const RAZORPAY_PAYMENT_LINK = "https://razorpay.me/@jenildineshbhaigadhiya";

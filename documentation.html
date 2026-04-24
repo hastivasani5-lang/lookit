@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Lookit Project Documentation</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6fb; color: #222; font-size: 15px; }
+  .cover { background: linear-gradient(135deg, #1a237e 0%, #3949ab 60%, #5c6bc0 100%); color: #fff; padding: 80px 60px 60px; text-align: center; page-break-after: always; }
+  .cover h1 { font-size: 48px; font-weight: 800; letter-spacing: 2px; margin-bottom: 16px; }
+  .cover .subtitle { font-size: 20px; opacity: 0.85; margin-bottom: 10px; }
+  .cover .badge { display: inline-block; background: rgba(255,255,255,0.18); border-radius: 20px; padding: 6px 22px; font-size: 14px; margin-top: 18px; }
+  .toc { background: #fff; margin: 40px 60px; border-radius: 12px; padding: 36px 40px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); page-break-after: always; }
+  .toc h2 { font-size: 24px; color: #1a237e; margin-bottom: 20px; border-bottom: 2px solid #e8eaf6; padding-bottom: 10px; }
+  .toc ol { padding-left: 22px; }
+  .toc li { padding: 6px 0; font-size: 15px; color: #3949ab; }
+  .section { background: #fff; margin: 30px 60px; border-radius: 12px; padding: 36px 40px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); page-break-inside: avoid; }
+  .section h2 { font-size: 22px; color: #1a237e; margin-bottom: 18px; border-left: 5px solid #3949ab; padding-left: 14px; }
+  .section h3 { font-size: 17px; color: #3949ab; margin: 18px 0 10px; }
+  p { line-height: 1.7; margin-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+  th { background: #3949ab; color: #fff; padding: 10px 14px; text-align: left; }
+  td { padding: 9px 14px; border-bottom: 1px solid #e8eaf6; }
+  tr:nth-child(even) td { background: #f0f2ff; }
+  .badge-role { display: inline-block; border-radius: 12px; padding: 3px 12px; font-size: 12px; font-weight: 600; margin: 2px; }
+  .student { background: #e3f2fd; color: #1565c0; }
+  .professional { background: #e8f5e9; color: #2e7d32; }
+  .admin { background: #fce4ec; color: #c62828; }
+  pre { background: #1e1e2e; color: #cdd6f4; border-radius: 8px; padding: 18px 20px; font-size: 13px; overflow-x: auto; margin: 12px 0; line-height: 1.6; }
+  .flow-box { background: #e8eaf6; border-left: 4px solid #3949ab; border-radius: 6px; padding: 14px 18px; margin: 10px 0; font-size: 14px; line-height: 1.8; }
+  .tier-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 14px 0; }
+  .tier-card { border-radius: 10px; padding: 18px 14px; text-align: center; }
+  .tier-starter { background: #e3f2fd; border: 2px solid #90caf9; }
+  .tier-pro { background: #e8f5e9; border: 2px solid #a5d6a7; }
+  .tier-premium { background: #fff8e1; border: 2px solid #ffe082; }
+  .tier-elite { background: #fce4ec; border: 2px solid #f48fb1; }
+  .tier-card .price { font-size: 26px; font-weight: 800; margin: 6px 0; }
+  .tier-card .name { font-size: 15px; font-weight: 700; }
+  .tier-card .dur { font-size: 12px; color: #666; }
+  .folder { font-family: monospace; background: #1e1e2e; color: #cdd6f4; border-radius: 8px; padding: 18px 20px; font-size: 13px; line-height: 1.9; margin: 12px 0; }
+  .folder .dir { color: #89b4fa; }
+  .folder .file { color: #a6e3a1; }
+  .folder .comment { color: #6c7086; }
+  .env-box { background: #1e1e2e; color: #a6e3a1; border-radius: 8px; padding: 16px 20px; font-family: monospace; font-size: 13px; line-height: 1.8; margin: 12px 0; }
+  @media print {
+    body { background: #fff; }
+    .section, .toc { box-shadow: none; margin: 20px 30px; }
+    .cover { padding: 60px 40px; }
+    pre, .folder, .env-box { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <div style="font-size:60px;margin-bottom:20px;">📚</div>
+  <h1>LOOKIT</h1>
+  <div class="subtitle">Educational Marketplace Platform</div>
+  <div class="subtitle">Complete Project Documentation</div>
+  <div class="badge">Next.js 16 &nbsp;|&nbsp; PostgreSQL &nbsp;|&nbsp; TypeScript &nbsp;|&nbsp; Tailwind CSS</div>
+  <div style="margin-top:40px;opacity:0.7;font-size:13px;">Generated: April 2026</div>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>📋 Table of Contents</h2>
+  <ol>
+    <li>Project Overview</li>
+    <li>Tech Stack</li>
+    <li>User Roles</li>
+    <li>Pages &amp; Routes</li>
+    <li>API Routes</li>
+    <li>Database Schema</li>
+    <li>Key Features &amp; How They Work</li>
+    <li>Components List</li>
+    <li>Folder Structure</li>
+    <li>Profile Upgrade Tiers</li>
+    <li>Environment Variables</li>
+    <li>Security</li>
+  </ol>
+</div>
+
+<!-- SECTION 1: PROJECT OVERVIEW -->
+<div class="section">
+  <h2>1. Project Overview</h2>
+  <p><strong>Lookit</strong> ek full-stack <strong>Educational Marketplace Platform</strong> che jo students ane professional instructors/tutors ne connect kare che.</p>
+  <p>Aa ek two-sided marketplace che jya:</p>
+  <ul style="padding-left:22px;line-height:2;">
+    <li>Professionals apnu educational content (books, videos, courses) create ane sell kari shake che</li>
+    <li>Students professionals ne discover kari, content purchase kari, ane sikhi shake che</li>
+    <li>Admin platform moderate kare che — approvals, payments, reviews badhu manage kare</li>
+  </ul>
+  <p style="margin-top:12px;"><strong>Core Purpose:</strong> Professionals ne apni expertise monetize karva enable karvanu, students ne quality education provide karvanu, ane admin ne platform manage karva devano.</p>
+</div>
+
+<!-- SECTION 2: TECH STACK -->
+<div class="section">
+  <h2>2. Tech Stack (Vaperayeli Technologies)</h2>
+  <table>
+    <tr><th>Category</th><th>Technology</th><th>Upyog (Purpose)</th></tr>
+    <tr><td>Frontend Framework</td><td>Next.js 16.2.2</td><td>Full-stack framework — pages + API routes</td></tr>
+    <tr><td>UI Library</td><td>React 19.2.4</td><td>Component-based UI</td></tr>
+    <tr><td>Language</td><td>TypeScript 5</td><td>Type-safe code</td></tr>
+    <tr><td>Styling</td><td>Tailwind CSS 4</td><td>Utility-first CSS framework</td></tr>
+    <tr><td>Database</td><td>PostgreSQL</td><td>Primary relational database</td></tr>
+    <tr><td>ORM</td><td>Prisma 7.7.0</td><td>Database schema &amp; queries</td></tr>
+    <tr><td>Auth</td><td>NextAuth.js 4.24.13</td><td>Login, sessions, JWT tokens</td></tr>
+    <tr><td>Password</td><td>bcryptjs</td><td>Password hashing (secure)</td></tr>
+    <tr><td>File Storage</td><td>Vercel Blob</td><td>Images, PDFs, certificates upload</td></tr>
+    <tr><td>Animations</td><td>Framer Motion 12</td><td>Smooth UI animations</td></tr>
+    <tr><td>Maps</td><td>Leaflet + React Leaflet</td><td>Professionals location map</td></tr>
+    <tr><td>Payments</td><td>Razorpay</td><td>Payment gateway integration</td></tr>
+    <tr><td>Icons</td><td>Lucide React + React Icons</td><td>UI icons</td></tr>
+    <tr><td>Carousel</td><td>Swiper 12</td><td>Sliders &amp; carousels</td></tr>
+    <tr><td>Calendar</td><td>React Calendar 6</td><td>Class scheduling</td></tr>
+    <tr><td>Scroll Animations</td><td>AOS 2.3.4</td><td>Animate on scroll</td></tr>
+    <tr><td>Optional</td><td>Firebase 12</td><td>Optional integration</td></tr>
+    <tr><td>Hosting</td><td>Vercel / AWS / Azure</td><td>Deployment platforms</td></tr>
+  </table>
+</div>
+
+<!-- SECTION 3: USER ROLES -->
+<div class="section">
+  <h2>3. User Roles (Kaun kaun use kare che)</h2>
+
+  <h3>🎓 Student <span class="badge-role student">student</span></h3>
+  <ul style="padding-left:22px;line-height:2;">
+    <li>Professionals browse kare ane content purchase kare</li>
+    <li>Books, videos, classes access kare</li>
+    <li>Professionals ne reviews aape</li>
+    <li>Professionals ne follow kare</li>
+    <li>Wishlist manage kare</li>
+    <li>Google ya email/password thi login kari shake</li>
+  </ul>
+
+  <h3>👨‍🏫 Professional (Teacher/Instructor) <span class="badge-role professional">professional</span></h3>
+  <ul style="padding-left:22px;line-height:2;">
+    <li>Register kare → Admin approve kare pachhi j login thay</li>
+    <li>Books, videos, classes add kare ane sell kare</li>
+    <li>Profile upgrade kare (paid tiers — Starter/Pro/Premium/Elite)</li>
+    <li>Purchases, followers, reviews jue</li>
+    <li>Advance bookings manage kare</li>
+    <li>Dashboard thi badhu manage kare</li>
+  </ul>
+
+  <h3>🛡️ Admin <span class="badge-role admin">admin</span></h3>
+  <ul style="padding-left:22px;line-height:2;">
+    <li>Professionals ne approve ya reject kare</li>
+    <li>Badha users manage kare (view, delete)</li>
+    <li>Payments track kare ane payouts manage kare</li>
+    <li>Reviews moderate kare (flag/delete)</li>
+    <li>Categories manage kare</li>
+    <li>Uploads monitor kare</li>
+    <li>Statistics ane trends jue</li>
+    <li>Contact messages handle kare</li>
+  </ul>
+</div>
+
+<!-- SECTION 4: PAGES & ROUTES -->
+<div class="section">
+  <h2>4. Pages &amp; Routes (Badha pages)</h2>
+
+  <h3>🌐 Public Pages (Koi pan jue — login jaruri nathi)</h3>
+  <table>
+    <tr><th>Route</th><th>Page Name</th><th>Shu che</th></tr>
+    <tr><td>/</td><td>Home</td><td>Hero section, features, courses, testimonials, stats</td></tr>
+    <tr><td>/about</td><td>About</td><td>Platform vishe information</td></tr>
+    <tr><td>/contact</td><td>Contact</td><td>Contact form — message moko</td></tr>
+    <tr><td>/blog</td><td>Blog</td><td>Blog posts listing</td></tr>
+    <tr><td>/blog/[id]</td><td>Blog Detail</td><td>Ek blog post detail</td></tr>
+    <tr><td>/professionals</td><td>Professionals</td><td>Badha professionals ni directory</td></tr>
+    <tr><td>/professionals/[id]</td><td>Professional Profile</td><td>Ek professional ni full profile</td></tr>
+    <tr><td>/categories</td><td>Categories</td><td>Course categories listing</td></tr>
+    <tr><td>/categories/[slug]</td><td>Category Detail</td><td>Category wise courses</td></tr>
+    <tr><td>/courses</td><td>Courses</td><td>Badha courses listing</td></tr>
+    <tr><td>/courses/[slug]</td><td>Course Detail</td><td>Ek course ni detail</td></tr>
+    <tr><td>/classes</td><td>Classes</td><td>Upcoming classes</td></tr>
+    <tr><td>/classes/details</td><td>Class Details</td><td>Class ni detail</td></tr>
+    <tr><td>/classes/watch</td><td>Watch Class</td><td>Class video watch karo</td></tr>
+    <tr><td>/shop</td><td>Shop</td><td>Products shop</td></tr>
+    <tr><td>/shop/details/[slug]</td><td>Product Detail</td><td>Ek product ni detail</td></tr>
+    <tr><td>/cart</td><td>Cart</td><td>Shopping cart</td></tr>
+    <tr><td>/directory</td><td>Directory</td><td>Professional directory</td></tr>
+    <tr><td>/enroll-now</td><td>Enroll</td><td>Enrollment page</td></tr>
+    <tr><td>/get-started</td><td>Get Started</td><td>Getting started guide</td></tr>
+  </table>
+
+  <h3>🔐 Authentication Pages</h3>
+  <table>
+    <tr><th>Route</th><th>Shu che</th></tr>
+    <tr><td>/login</td><td>Login page — email/password + Google OAuth</td></tr>
+    <tr><td>/signup</td><td>Register — student ya professional role choose karo</td></tr>
+  </table>
+
+  <h3>📊 Dashboard Pages (Login jaruri)</h3>
+  <table>
+    <tr><th>Route</th><th>Shu che</th></tr>
+    <tr><td>/dashboard/students</td><td>Student dashboard — profile, purchases, wishlist</td></tr>
+    <tr><td>/dashboard/teachers</td><td>Professional dashboard — overview, add content, upgrade, settings</td></tr>
+    <tr><td>/dashboard/teachers/purchases</td><td>Professional purchases list</td></tr>
+    <tr><td>/dashboard/teachers/followers</td><td>Followers list</td></tr>
+    <tr><td>/dashboard/teachers/reviews</td><td>Reviews received</td></tr>
+    <tr><td>/dashboard/teachers/advance-bookings</td><td>Advance bookings manage karo</td></tr>
+  </table>
+
+  <h3>🛡️ Admin Pages</h3>
+  <table>
+    <tr><th>Route</th><th>Shu che</th></tr>
+    <tr><td>/admin</td><td>Admin dashboard — stats, users, approvals, payments</td></tr>
+    <tr><td>/admin/profile</td><td>Admin profile</td></tr>
+    <tr><td>/admin/uploads/professionals/[id]</td><td>Professional uploads management</td></tr>
+    <tr><td>/admin/uploads/students/[id]</td><td>Student uploads management</td></tr>
+  </table>
+</div>
+
+<!-- SECTION 5: API ROUTES -->
+<div class="section">
+  <h2>5. API Routes (Backend Endpoints)</h2>
+
+  <h3>🔐 Authentication</h3>
+  <table>
+    <tr><th>Method</th><th>Route</th><th>Shu kare</th></tr>
+    <tr><td>POST</td><td>/api/auth/register</td><td>New user register karo</td></tr>
+    <tr><td>GET/POST</td><td>/api/auth/[...nextauth]</td><td>NextAuth login/logout/session</td></tr>
+    <tr><td>POST</td><td>/api/auth/google-callback</td><td>Google OAuth callback</td></tr>
+    <tr><td>POST</td><td>/api/auth/request-login-otp</td><td>OTP based login</td></tr>
+  </table>
+
+  <h3>👤 Profile</h3>
+  <table>
+    <tr><th>Method</th><th>Route</th><th>Shu kare</th></tr>
+    <tr><td>GET</td><td>/api/profile</td><td>Profile data fetch karo</td></tr>
+    <tr><td>POST</td><td>/api/profile</td><td>Profile update karo (photo, certificates)</td></tr>
+    <tr><td>POST</td><td>/api/profile/upgrade</td><td>Profile tier upgrade karo</td></tr>
+    <tr><td>GET</td><td>/api/profile/purchases</td><td>Purchase history</td></tr>
+    <tr><td>GET</td><td>/api/profile/reviews</td><td>Reviews list</td></tr>
+    <tr><td>GET/POST</td><td>/api/profile/library</td><td>Content library manage karo</td></tr>
+    <tr><td>GET/POST</td><td>/api/profile/library/books</td><td>Books manage karo</td></tr>
+    <tr><td>GET/POST</td><td>/api/profile/library/videos</td><td>Videos manage karo</td></tr>
+  </table>
+
+  <h3>👨‍🏫 Professionals</h3>
+  <table>
+    <tr><th>Method</th><th>Route</th><th>Shu kare</th></tr>
+    <tr><td>GET</td><td>/api/professionals</td><td>Badha approved professionals list</td></tr>
+    <tr><td>GET</td><td>/api/professionals/[id]</td><td>Ek professional ni detail</td></tr>
+    <tr><td>GET</td><td>/api/professionals/[id]/library</td><td>Professional nu content</td></tr>
+    <tr><td>GET</td><td>/api/professionals/[id]/reviews</td><td>Professional na reviews</td></tr>
+  </table>
+
+  <h3>💳 Payments</h3>
+  <table>
+    <tr><th>Method</th><th>Route</th><th>Shu kare</th></tr>
+    <tr><td>POST</td><td>/api/payments/checkout</td><td>Checkout process — payment complete karo</td></tr>
+    <tr><td>GET</td><td>/api/student/profile/purchases</td><td>Student purchases history</td></tr>
+  </table>
+
+  <h3>🔔 Notifications</h3>
+  <table>
+    <tr><th>Method</th><th>Route</th><th>Shu kare</th></tr>
+    <tr><td>GET</td><td>/api/student/notifications</td><td>Student notifications</td></tr>
+    <tr><td>GET</td><td>/api/notifications/followers</td><td>Follower notifications</td></tr>
+    <tr><td>GET</td><td>/api/notifications/purchases</td><td>Purchase notifications</td></tr>
+    <tr><td>GET</td><td>/api/notifications/books</td><td>Book notifications</td></tr>
+  </table>
+
+  <h3>🤝 Social Features</h3>
+  <table>
+    <tr><th>Method</th><th>Route</th><th>Shu kare</th></tr>
+    <tr><td>GET/POST</td><td>/api/follows</td><td>Follow / unfollow professional</td></tr>
+    <tr><td>GET</td><td>/api/student/wishlist</td><td>Wishlist manage karo</td></tr>
+    <tr><td>POST</td><td>/api/advance-bookings</td><td>Advance session book karo</td></tr>
+  </table>
+
+  <h3>🛡️ Admin</h3>
+  <table>
+    <tr><th>Method</th><th>Route</th><th>Shu kare</th></tr>
+    <tr><td>POST</td><td>/api/admin/login</td><td>Admin login</td></tr>
+    <tr><td>GET</td><td>/api/admin/stats</td><td>Dashboard statistics</td></tr>
+    <tr><td>GET</td><td>/api/admin/users</td><td>Users list</td></tr>
+    <tr><td>GET</td><td>/api/admin/professionals</td><td>Professionals list</td></tr>
+    <tr><td>POST</td><td>/api/admin/professionals</td><td>Approve / reject professional</td></tr>
+    <tr><td>GET</td><td>/api/admin/payments</td><td>Payment records</td></tr>
+    <tr><td>GET/DELETE</td><td>/api/admin/reviews</td><td>Reviews management</td></tr>
+    <tr><td>GET</td><td>/api/admin/notifications</td><td>Admin notifications</td></tr>
+    <tr><td>GET</td><td>/api/admin/contact-messages</td><td>Contact messages</td></tr>
+    <tr><td>GET/POST</td><td>/api/admin/uploads</td><td>Upload management</td></tr>
+    <tr><td>GET</td><td>/api/admin/categories</td><td>Categories management</td></tr>
+  </table>
+
+  <h3>🔧 Utilities</h3>
+  <table>
+    <tr><th>Method</th><th>Route</th><th>Shu kare</th></tr>
+    <tr><td>POST</td><td>/api/contact</td><td>Contact form submit</td></tr>
+    <tr><td>GET</td><td>/api/categories</td><td>Categories list</td></tr>
+    <tr><td>GET</td><td>/api/theme/get</td><td>Theme settings fetch</td></tr>
+    <tr><td>POST</td><td>/api/theme/save</td><td>Theme settings save</td></tr>
+    <tr><td>GET</td><td>/api/footer</td><td>Footer data</td></tr>
+    <tr><td>GET</td><td>/api/classes</td><td>Classes list</td></tr>
+    <tr><td>GET</td><td>/api/upcoming-classes</td><td>Upcoming classes</td></tr>
+    <tr><td>GET</td><td>/api/instructors</td><td>Instructors list</td></tr>
+    <tr><td>GET</td><td>/api/shop/items</td><td>Shop items</td></tr>
+    <tr><td>POST</td><td>/api/shop/ratings</td><td>Item rating</td></tr>
+  </table>
+</div>
+
+<!-- SECTION 6: DATABASE SCHEMA -->
+<div class="section">
+  <h2>6. Database Schema</h2>
+
+  <h3>📋 users table (Main user table)</h3>
+  <table>
+    <tr><th>Column</th><th>Type</th><th>Description</th></tr>
+    <tr><td>id</td><td>UUID</td><td>Unique user ID (primary key)</td></tr>
+    <tr><td>name</td><td>TEXT</td><td>User nu naam</td></tr>
+    <tr><td>email</td><td>TEXT UNIQUE</td><td>Email address (unique)</td></tr>
+    <tr><td>password_hash</td><td>TEXT</td><td>bcryptjs thi hashed password</td></tr>
+    <tr><td>role</td><td>TEXT</td><td>'student' ya 'professional'</td></tr>
+    <tr><td>image</td><td>TEXT</td><td>Profile photo URL</td></tr>
+    <tr><td>specialization</td><td>TEXT</td><td>Professional ni field (e.g. Math, Science)</td></tr>
+    <tr><td>contact_number</td><td>TEXT</td><td>Phone number</td></tr>
+    <tr><td>location</td><td>TEXT</td><td>City / location</td></tr>
+    <tr><td>certificates</td><td>TEXT[]</td><td>Certificate file URLs (array)</td></tr>
+    <tr><td>reviews</td><td>TEXT[]</td><td>Reviews (array)</td></tr>
+    <tr><td>profile_boosted_until</td><td>TIMESTAMPTZ</td><td>Profile boost expiry date</td></tr>
+    <tr><td>profile_upgrade_tier</td><td>TEXT</td><td>'starter' / 'pro' / 'premium' / 'top'</td></tr>
+    <tr><td>approval_status</td><td>TEXT</td><td>'pending' / 'approved' / 'rejected'</td></tr>
+    <tr><td>approval_reviewed_by</td><td>TEXT</td><td>Admin ID jo approve/reject karyo</td></tr>
+    <tr><td>approval_reviewed_at</td><td>TIMESTAMPTZ</td><td>Approval date/time</td></tr>
+    <tr><td>approval_note</td><td>TEXT</td><td>Admin note (rejection reason etc.)</td></tr>
+    <tr><td>provider</td><td>TEXT</td><td>'credentials' ya 'google'</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMPTZ</td><td>Registration date</td></tr>
+  </table>
+
+  <h3>📋 app_data table (System data store)</h3>
+  <table>
+    <tr><th>Column</th><th>Type</th><th>Description</th></tr>
+    <tr><td>key</td><td>TEXT</td><td>Data key (primary key)</td></tr>
+    <tr><td>data</td><td>JSONB</td><td>JSON data (flexible storage)</td></tr>
+    <tr><td>updated_at</td><td>TIMESTAMPTZ</td><td>Last update time</td></tr>
+  </table>
+
+  <h3>📋 Prisma Models (Schema)</h3>
+  <table>
+    <tr><th>Model</th><th>Fields</th><th>Purpose</th></tr>
+    <tr><td>User</td><td>id, name, email, role, isActive, createdAt</td><td>Users (student/professional/admin)</td></tr>
+    <tr><td>Course</td><td>id, title, description, categoryId, createdById</td><td>Courses</td></tr>
+    <tr><td>Category</td><td>id, name</td><td>Course categories</td></tr>
+    <tr><td>Task</td><td>id, title, dueDate, completed, userId</td><td>Tasks (admin dashboard)</td></tr>
+  </table>
+
+  <h3>📁 JSON Fallback Stores (Data files)</h3>
+  <table>
+    <tr><th>File</th><th>Shu store thay</th></tr>
+    <tr><td>users.json</td><td>User data</td></tr>
+    <tr><td>payments.json</td><td>Payment records</td></tr>
+    <tr><td>notifications.json</td><td>Professional notifications</td></tr>
+    <tr><td>student-notifications.json</td><td>Student notifications</td></tr>
+    <tr><td>approval-notifications.json</td><td>Approval workflow notifications</td></tr>
+    <tr><td>reviews.json</td><td>Reviews</td></tr>
+    <tr><td>follows.json</td><td>Follow relationships</td></tr>
+    <tr><td>wishlists.json</td><td>Student wishlists</td></tr>
+    <tr><td>content-library.json</td><td>Professional content (books, videos)</td></tr>
+    <tr><td>upcoming-classes.json</td><td>Scheduled classes</td></tr>
+    <tr><td>advance-bookings.json</td><td>Advance session bookings</td></tr>
+    <tr><td>contact-messages.json</td><td>Contact form messages</td></tr>
+    <tr><td>professional-logins.json</td><td>Professional login tracking</td></tr>
+    <tr><td>themes.json</td><td>Theme settings</td></tr>
+  </table>
+</div>
+
+<!-- SECTION 7: KEY FEATURES -->
+<div class="section">
+  <h2>7. Key Features — Kevi rite kaam kare che</h2>
+
+  <h3>🔐 Authentication Flow</h3>
+  <div class="flow-box">
+    1. User signup form fill kare (name, email, password, role)<br/>
+    2. Password bcryptjs thi hash thay (10 rounds)<br/>
+    3. User PostgreSQL ma store thay<br/>
+    4. Professional hoy to → Admin ne approval notification jaay<br/>
+    5. Login → NextAuth JWT token generate thay (30 days valid)<br/>
+    6. Google login → Auto student account create thay
+  </div>
+
+  <h3>✅ Professional Approval Flow</h3>
+  <div class="flow-box">
+    1. Professional register kare → status: "pending"<br/>
+    2. Admin dashboard ma pending list ma dikhe<br/>
+    3. Admin approve ya reject kare (note saathe)<br/>
+    4. Professional ne notification aave<br/>
+    5. Approved hoy to j login thay ane dashboard access male<br/>
+    6. Rejected hoy to login block thay
+  </div>
+
+  <h3>📦 Content Upload Flow</h3>
+  <div class="flow-box">
+    1. Professional → Dashboard → Add section open kare<br/>
+    2. Book / Video / Class add kare<br/>
+    3. File Vercel Blob ma upload thay (ya YouTube URL)<br/>
+    4. Content library ma save thay<br/>
+    5. Followers ne notification jaay<br/>
+    6. Students ne shop / courses ma dikhe
+  </div>
+
+  <h3>💳 Purchase Flow</h3>
+  <div class="flow-box">
+    1. Student content browse kare<br/>
+    2. Cart ma add kare<br/>
+    3. Checkout → Payment details enter kare (card info)<br/>
+    4. Transaction ID generate thay (TXN-timestamp-random)<br/>
+    5. Payment record store thay<br/>
+    6. Student ne content access male<br/>
+    7. Student + Professional dono ne notification jaay
+  </div>
+
+  <h3>🔔 Notification System</h3>
+  <div class="flow-box">
+    1. Events trigger thay: purchase, follow, approval, new content<br/>
+    2. Respective store ma save thay (student/professional/admin)<br/>
+    3. Dashboard open karo to API thi fetch thay<br/>
+    4. Notification drawer ma dikhe<br/>
+    5. Read karo to "read: true" mark thay
+  </div>
+
+  <h3>🗺️ Map Feature</h3>
+  <div class="flow-box">
+    1. Professionals apnu location set kare (profile ma)<br/>
+    2. /professionals page par map view available che<br/>
+    3. Leaflet + React Leaflet thi interactive map render thay<br/>
+    4. Students nearby professionals find kari shake
+  </div>
+
+  <h3>⭐ Profile Boost System</h3>
+  <div class="flow-box">
+    1. Professional upgrade plan purchase kare (Razorpay thi)<br/>
+    2. profile_boosted_until date set thay<br/>
+    3. Boost active hoy tyare professional search results ma upar dikhe<br/>
+    4. Boost expire thay to normal position par aave
+  </div>
+</div>
+
+<!-- SECTION 8: COMPONENTS -->
+<div class="section">
+  <h2>8. Components List</h2>
+
+  <h3>🏗️ Layout Components</h3>
+  <table>
+    <tr><th>Component</th><th>Shu kare</th></tr>
+    <tr><td>Navbar</td><td>Top navigation bar — links, login button</td></tr>
+    <tr><td>Footer</td><td>Footer — links, social media</td></tr>
+    <tr><td>Sidebar / DashboardSidebar</td><td>Dashboard navigation sidebar</td></tr>
+    <tr><td>SiteLogo</td><td>Logo component</td></tr>
+    <tr><td>ThemeProvider</td><td>Theme context — dark/light mode</td></tr>
+    <tr><td>SessionProviderClient</td><td>NextAuth session wrapper</td></tr>
+  </table>
+
+  <h3>🏠 Landing Page Components</h3>
+  <table>
+    <tr><th>Component</th><th>Shu kare</th></tr>
+    <tr><td>Hero</td><td>Main hero section with CTA</td></tr>
+    <tr><td>Features</td><td>Platform features showcase</td></tr>
+    <tr><td>Testimonials / Testimonials1</td><td>Student testimonials</td></tr>
+    <tr><td>BlogSection</td><td>Blog preview on home page</td></tr>
+    <tr><td>StatsSection / StatsGrid</td><td>Platform statistics (users, courses, etc.)</td></tr>
+    <tr><td>WhyChoose / WhyUpskill</td><td>Why choose Lookit sections</td></tr>
+    <tr><td>Marquee</td><td>Scrolling ticker/marquee</td></tr>
+  </table>
+
+  <h3>📚 Course &amp; Content Components</h3>
+  <table>
+    <tr><th>Component</th><th>Shu kare</th></tr>
+    <tr><td>CourseCard</td><td>Individual course card</td></tr>
+    <tr><td>CourseList</td><td>Course listing</td></tr>
+    <tr><td>CourseGridSection</td><td>Grid layout for courses</td></tr>
+    <tr><td>CourseFilterSection</td><td>Filter courses by category/level/price</td></tr>
+    <tr><td>FeaturedCourse</td><td>Featured course showcase</td></tr>
+    <tr><td>PopularClasses</td><td>Popular classes section</td></tr>
+    <tr><td>ComingUpClasses</td><td>Upcoming classes display</td></tr>
+    <tr><td>CategoryBanner / CategorySlider</td><td>Category display components</td></tr>
+    <tr><td>TopCategories</td><td>Top categories grid</td></tr>
+    <tr><td>VideoSlider</td><td>Video carousel</td></tr>
+  </table>
+
+  <h3>👨‍🏫 Professional Components</h3>
+  <table>
+    <tr><th>Component</th><th>Shu kare</th></tr>
+    <tr><td>Instructors</td><td>Instructors listing page</td></tr>
+    <tr><td>TopRatedProfessionalsSection</td><td>Top rated professionals showcase</td></tr>
+    <tr><td>ProfessionalsMap</td><td>Map view of professionals by location</td></tr>
+    <tr><td>ProfessionalDashboard</td><td>Main professional dashboard container</td></tr>
+    <tr><td>ProfessionalSidebar</td><td>Professional dashboard sidebar</td></tr>
+    <tr><td>OverviewSection</td><td>Dashboard overview — stats, cards</td></tr>
+    <tr><td>AddSection</td><td>Add books/videos/classes form</td></tr>
+    <tr><td>SettingsSection</td><td>Profile settings form</td></tr>
+    <tr><td>UpgradeSection</td><td>Profile upgrade plans</td></tr>
+    <tr><td>MiniCalendar</td><td>Calendar widget in dashboard</td></tr>
+    <tr><td>NotificationDrawer</td><td>Notifications slide-out panel</td></tr>
+    <tr><td>ProfessionalFollowsTable</td><td>Followers table</td></tr>
+    <tr><td>ProfessionalReviewsClient</td><td>Reviews display</td></tr>
+    <tr><td>UpgradeProgressChart</td><td>Upgrade progress visualization</td></tr>
+  </table>
+
+  <h3>🛒 Shop Components</h3>
+  <table>
+    <tr><th>Component</th><th>Shu kare</th></tr>
+    <tr><td>ShopHero</td><td>Shop page hero section</td></tr>
+    <tr><td>ProductCard / ShopProductCard</td><td>Individual product card</td></tr>
+    <tr><td>ProductGrid / ShopProductGrid</td><td>Products grid layout</td></tr>
+    <tr><td>CartDrawer</td><td>Shopping cart slide-out drawer</td></tr>
+    <tr><td>FilterBar / ShopSidebar</td><td>Product filtering</td></tr>
+    <tr><td>NewsletterSection</td><td>Newsletter signup</td></tr>
+    <tr><td>CTASection</td><td>Call-to-action section</td></tr>
+  </table>
+
+  <h3>🛡️ Admin Components</h3>
+  <table>
+    <tr><th>Component</th><th>Shu kare</th></tr>
+    <tr><td>AdminPanelView</td><td>Main admin dashboard</td></tr>
+    <tr><td>AdminUsersPanel</td><td>User management panel</td></tr>
+    <tr><td>AdminApprovalsPanel</td><td>Professional approvals panel</td></tr>
+    <tr><td>AdminReviewsPanel</td><td>Review moderation panel</td></tr>
+    <tr><td>AdminPayoutsPanel</td><td>Payment/payout management</td></tr>
+    <tr><td>AdminCategoriesPanel</td><td>Category management</td></tr>
+    <tr><td>AdminUploadsPanel</td><td>Upload monitoring</td></tr>
+    <tr><td>AdminAlertsPanel</td><td>Alerts and notifications</td></tr>
+    <tr><td>AdminLoginView</td><td>Admin login page</td></tr>
+    <tr><td>AdminProfileView</td><td>Admin profile</td></tr>
+  </table>
+
+  <h3>🎓 Student Components</h3>
+  <table>
+    <tr><th>Component</th><th>Shu kare</th></tr>
+    <tr><td>StudentProfileDashboard</td><td>Student profile dashboard</td></tr>
+    <tr><td>StudentReviewsClient</td><td>Student reviews display</td></tr>
+    <tr><td>GuestLoginPrompt</td><td>Guest users ne login prompt</td></tr>
+    <tr><td>StudentsViewing</td><td>Live students viewing count</td></tr>
+  </table>
+</div>
+
+<!-- SECTION 9: FOLDER STRUCTURE -->
+<div class="section">
+  <h2>9. Folder Structure</h2>
+  <div class="folder">
+<span class="dir">lookit/</span><br/>
+├── <span class="dir">src/</span><br/>
+│   ├── <span class="dir">app/</span>                    <span class="comment"># Next.js App Router — pages + API</span><br/>
+│   │   ├── <span class="dir">api/</span>                <span class="comment"># All backend API routes</span><br/>
+│   │   │   ├── <span class="dir">auth/</span>           <span class="comment"># register, login, google</span><br/>
+│   │   │   ├── <span class="dir">profile/</span>        <span class="comment"># profile CRUD, upgrade, library</span><br/>
+│   │   │   ├── <span class="dir">professionals/</span>  <span class="comment"># professionals list + detail</span><br/>
+│   │   │   ├── <span class="dir">payments/</span>       <span class="comment"># checkout</span><br/>
+│   │   │   ├── <span class="dir">admin/</span>          <span class="comment"># admin endpoints</span><br/>
+│   │   │   ├── <span class="dir">student/</span>        <span class="comment"># student specific APIs</span><br/>
+│   │   │   ├── <span class="dir">shop/</span>           <span class="comment"># shop items + ratings</span><br/>
+│   │   │   ├── <span class="dir">notifications/</span>  <span class="comment"># notification APIs</span><br/>
+│   │   │   └── <span class="dir">theme/</span>          <span class="comment"># theme get/save</span><br/>
+│   │   ├── <span class="dir">dashboard/</span>          <span class="comment"># Student + Teacher dashboards</span><br/>
+│   │   │   ├── <span class="dir">students/</span>       <span class="comment"># Student dashboard page</span><br/>
+│   │   │   └── <span class="dir">teachers/</span>       <span class="comment"># Professional dashboard pages</span><br/>
+│   │   ├── <span class="dir">admin/</span>              <span class="comment"># Admin panel pages</span><br/>
+│   │   ├── <span class="dir">login/</span>              <span class="comment"># Login page</span><br/>
+│   │   ├── <span class="dir">signup/</span>             <span class="comment"># Signup page</span><br/>
+│   │   ├── <span class="dir">professionals/</span>      <span class="comment"># Professionals directory + profile</span><br/>
+│   │   ├── <span class="dir">courses/</span>            <span class="comment"># Courses pages</span><br/>
+│   │   ├── <span class="dir">classes/</span>            <span class="comment"># Classes pages</span><br/>
+│   │   ├── <span class="dir">shop/</span>               <span class="comment"># Shop pages</span><br/>
+│   │   ├── <span class="dir">categories/</span>         <span class="comment"># Categories pages</span><br/>
+│   │   ├── <span class="dir">blog/</span>               <span class="comment"># Blog pages</span><br/>
+│   │   └── <span class="file">page.tsx</span>            <span class="comment"># Home page</span><br/>
+│   ├── <span class="dir">components/</span>             <span class="comment"># Reusable UI components</span><br/>
+│   │   ├── <span class="dir">professional/</span>       <span class="comment"># Professional dashboard components</span><br/>
+│   │   ├── <span class="dir">admin/</span>              <span class="comment"># Admin panel components</span><br/>
+│   │   ├── <span class="dir">shop/</span>               <span class="comment"># Shop components</span><br/>
+│   │   └── <span class="comment">...                 # Shared components</span><br/>
+│   ├── <span class="dir">lib/</span>                    <span class="comment"># Backend utilities &amp; data stores</span><br/>
+│   │   ├── <span class="file">auth.ts</span>             <span class="comment"># NextAuth configuration</span><br/>
+│   │   ├── <span class="file">db.ts</span>               <span class="comment"># PostgreSQL connection pool</span><br/>
+│   │   ├── <span class="file">user-store.ts</span>       <span class="comment"># User CRUD operations</span><br/>
+│   │   ├── <span class="file">payment-store.ts</span>    <span class="comment"># Payment records</span><br/>
+│   │   ├── <span class="file">content-library-store.ts</span> <span class="comment"># Content management</span><br/>
+│   │   ├── <span class="file">notifications-store.ts</span>   <span class="comment"># Professional notifications</span><br/>
+│   │   ├── <span class="file">student-notifications-store.ts</span> <span class="comment"># Student notifications</span><br/>
+│   │   ├── <span class="file">reviews-store.ts</span>    <span class="comment"># Reviews</span><br/>
+│   │   ├── <span class="file">follows-store.ts</span>    <span class="comment"># Follow relationships</span><br/>
+│   │   ├── <span class="file">file-upload.ts</span>      <span class="comment"># Vercel Blob file upload</span><br/>
+│   │   └── <span class="file">professional-display.ts</span> <span class="comment"># Profile formatting</span><br/>
+│   └── <span class="dir">types/</span>                  <span class="comment"># TypeScript type definitions</span><br/>
+│       ├── <span class="file">auth.ts</span>             <span class="comment"># AppUser, UserRole types</span><br/>
+│       └── <span class="file">notifications.ts</span>    <span class="comment"># Notification types</span><br/>
+├── <span class="dir">prisma/</span><br/>
+│   └── <span class="file">schema.prisma</span>           <span class="comment"># Database schema</span><br/>
+├── <span class="dir">public/</span>                     <span class="comment"># Static assets (images, icons)</span><br/>
+├── <span class="dir">data/</span>                       <span class="comment"># JSON fallback storage files</span><br/>
+├── <span class="file">next.config.ts</span>              <span class="comment"># Next.js configuration</span><br/>
+├── <span class="file">package.json</span>                <span class="comment"># Dependencies</span><br/>
+└── <span class="file">tsconfig.json</span>               <span class="comment"># TypeScript configuration</span>
+  </div>
+</div>
+
+<!-- SECTION 10: UPGRADE TIERS -->
+<div class="section">
+  <h2>10. Profile Upgrade Tiers (Professionals mate)</h2>
+  <p>Professionals apni profile boost karva paid plans purchase kari shake che. Boost active hoy tyare professional search results ma upar dikhe.</p>
+  <div class="tier-grid">
+    <div class="tier-card tier-starter">
+      <div class="name">🥉 Starter</div>
+      <div class="price">$9</div>
+      <div class="dur">1 Week Boost</div>
+    </div>
+    <div class="tier-card tier-pro">
+      <div class="name">🥈 Pro</div>
+      <div class="price">$19</div>
+      <div class="dur">1 Month Boost</div>
+    </div>
+    <div class="tier-card tier-premium">
+      <div class="name">🥇 Premium</div>
+      <div class="price">$39</div>
+      <div class="dur">2 Months Boost</div>
+    </div>
+    <div class="tier-card tier-elite">
+      <div class="name">💎 Elite</div>
+      <div class="price">$59</div>
+      <div class="dur">3 Months Boost</div>
+    </div>
+  </div>
+  <p style="margin-top:14px;">Payment Razorpay thi process thay. Transaction record database ma store thay.</p>
+</div>
+
+<!-- SECTION 11: ENVIRONMENT VARIABLES -->
+<div class="section">
+  <h2>11. Environment Variables (Setup mate)</h2>
+  <p>Project run karva mate <code>.env.local</code> file create karo ane aa variables set karo:</p>
+  <div class="env-box">
+# Database<br/>
+DATABASE_URL=postgresql://user:password@localhost:5432/lookit<br/>
+<br/>
+# NextAuth<br/>
+NEXTAUTH_SECRET=your-secret-key-here<br/>
+NEXTAUTH_URL=http://localhost:3000<br/>
+<br/>
+# Google OAuth<br/>
+GOOGLE_CLIENT_ID=your-google-client-id<br/>
+GOOGLE_CLIENT_SECRET=your-google-client-secret<br/>
+<br/>
+# File Storage (Vercel Blob)<br/>
+BLOB_READ_WRITE_TOKEN=your-vercel-blob-token<br/>
+<br/>
+# Optional<br/>
+DATABASE_SSL=false<br/>
+NODE_ENV=development
+  </div>
+</div>
+
+<!-- SECTION 12: SECURITY -->
+<div class="section">
+  <h2>12. Security Features</h2>
+  <table>
+    <tr><th>Feature</th><th>Implementation</th><th>Detail</th></tr>
+    <tr><td>Password Hashing</td><td>bcryptjs</td><td>10 rounds — secure one-way hash</td></tr>
+    <tr><td>Session Management</td><td>NextAuth JWT</td><td>30-day expiry tokens</td></tr>
+    <tr><td>Admin Sessions</td><td>Cookie-based</td><td>8-hour expiry</td></tr>
+    <tr><td>Role-Based Access</td><td>Middleware checks</td><td>student / professional / admin</td></tr>
+    <tr><td>Professional Approval</td><td>Admin workflow</td><td>Unauthorized sellers block thay</td></tr>
+    <tr><td>File Upload Validation</td><td>Server-side</td><td>File type + size check</td></tr>
+    <tr><td>Email Validation</td><td>Regex check</td><td>Registration time validate thay</td></tr>
+    <tr><td>Google OAuth</td><td>NextAuth provider</td><td>Secure Google login</td></tr>
+    <tr><td>SQL Injection</td><td>Parameterized queries</td><td>pg library thi safe queries</td></tr>
+  </table>
+</div>
+
+<!-- FOOTER -->
+<div style="text-align:center;padding:40px;color:#888;font-size:13px;margin-top:20px;">
+  <div style="font-size:28px;margin-bottom:8px;">📚</div>
+  <strong>Lookit Project Documentation</strong><br/>
+  Generated April 2026 &nbsp;|&nbsp; Next.js 16 + PostgreSQL + TypeScript
+</div>
+
+</body>
+</html>

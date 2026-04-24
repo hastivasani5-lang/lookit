@@ -103,4 +103,5 @@ declare module 'lucide-react' {
   export const ClipboardList: LucideIcon;
   export const FolderTree: LucideIcon;
   export const UploadCloud: LucideIcon;
+  export const Download: LucideIcon;
 }

@@ -611,5 +611,35 @@
     "approvalStatus": "pending",
     "provider": "credentials",
     "createdAt": "2026-04-24T08:41:11.157Z"
+  },
+  {
+    "id": "9f6b7450-7883-4227-8eb9-1901be43ef75",
+    "name": "rk",
+    "email": "rk@gmail.com",
+    "passwordHash": "$2a$10$MWPeBJx71QSYDgeN9ZyY4OO4.o7OMlUd/GW0p20Djlaic.wzmGICy",
+    "role": "student",
+    "specialization": "Friends | 2 hours",
+    "contactNumber": "web design",
+    "location": "Afghanistan",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-24T09:16:45.594Z"
+  },
+  {
+    "id": "cfe55018-2e5d-4b54-9545-793ab17cd09c",
+    "name": "vans",
+    "email": "vans@gmail.com",
+    "passwordHash": "$2a$10$uaA4TvhJ0.pIKM4W9ZwVjOBvwnSwY5K.rPpLNt9uQByzHt2TaCRG6",
+    "role": "student",
+    "specialization": "Friends | 2 hours",
+    "contactNumber": "wev design",
+    "location": "India",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-24T10:38:16.288Z"
   }
 ]

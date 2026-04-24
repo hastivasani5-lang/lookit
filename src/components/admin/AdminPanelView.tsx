@@ -1568,6 +1568,16 @@ export default function AdminPanelView() {
     }
   };
 
+  const handleDeleteBanner = async (id: string) => {
+    try {
+      const response = await fetch(`/api/admin/banners/${id}`, { method: "DELETE" });
+      if (!response.ok) return;
+      setBanners((current) => current.filter((b) => b.id !== id));
+    } catch {
+      return;
+    }
+  };
+
   const onLogout = async () => {
     await fetch("/api/admin/logout", { method: "POST" });
     router.refresh();
@@ -2302,6 +2312,7 @@ export default function AdminPanelView() {
                   loading={bannersLoading}
                   onApprove={handleApproveBanner}
                   onReject={handleRejectBanner}
+                  onDelete={handleDeleteBanner}
                   currentPage={bannersCurrentPage}
                   totalPages={bannersTotalPages}
                   onPageChange={setBannersCurrentPage}

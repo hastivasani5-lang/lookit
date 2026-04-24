@@ -187,3 +187,12 @@ export async function updateBannerStatus(
   await writeStore(store);
   return store.banners[index];
 }
+
+export async function deleteBanner(id: string): Promise<boolean> {
+  const store = await readStore();
+  const index = store.banners.findIndex((b) => b.id === id);
+  if (index === -1) return false;
+  store.banners.splice(index, 1);
+  await writeStore(store);
+  return true;
+}

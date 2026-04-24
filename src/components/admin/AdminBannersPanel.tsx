@@ -8,6 +8,7 @@ type AdminBannersPanelProps = {
   loading: boolean;
   onApprove: (id: string) => Promise<void>;
   onReject: (id: string) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
@@ -36,6 +37,7 @@ export default function AdminBannersPanel({
   loading,
   onApprove,
   onReject,
+  onDelete,
   currentPage,
   totalPages,
   onPageChange,
@@ -191,6 +193,17 @@ export default function AdminBannersPanel({
                         </button>
                       </>
                     ) : null}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (confirm("Are you sure you want to delete this banner?")) {
+                          void onDelete(banner.id);
+                        }
+                      }}
+                      className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
               </li>

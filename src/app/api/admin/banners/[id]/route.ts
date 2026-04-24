@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { updateBannerStatus } from "@/lib/banners-store";
+import { deleteBanner, updateBannerStatus } from "@/lib/banners-store";
 import { appendProfessionalNotification } from "@/lib/notifications-store";
 
 export const runtime = "nodejs";
@@ -43,4 +43,24 @@ export async function PATCH(
   }
 
   return NextResponse.json({ banner: updated });
+}
+
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const cookieStore = await cookies();
+
+  if (cookieStore.get("admin_session")?.value !== "authorized") {
+    return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
+  }
+
+  const { id } = await params;
+  const deleted = await deleteBanner(id);
+
+  if (!deleted) {
+    return NextResponse.json({ message: "Banner not found." }, { status: 404 });
+  }
+
+  return NextResponse.json({ success: true });
 }

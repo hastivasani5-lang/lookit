@@ -165,7 +165,7 @@ function CalendarWidget({ userId }: { userId: string }) {
         }
       }
 
-      // Load today's session data
+      // Load today's session data (completed sessions)
       const raw = localStorage.getItem(storageKey);
       if (raw) {
         const data = JSON.parse(raw) as { workedHours: number; timeline: Array<{ start: string; end: string; hours: number }> };
@@ -178,18 +178,23 @@ function CalendarWidget({ userId }: { userId: string }) {
       if (activeRaw) {
         const active = JSON.parse(activeRaw) as { startTime: string; date: string };
         // Only restore if it's from today
-        if (active.date === `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`) {
+        const todayDateKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+        if (active.date === todayDateKey) {
           const restored = new Date(active.startTime);
+          // Calculate already-elapsed seconds for live display
+          const elapsedSec = Math.floor((Date.now() - restored.getTime()) / 1000);
           setStartTime(restored);
           setSessionStart(restored);
           setIsTracking(true);
+          setLiveSeconds(elapsedSec);
         } else {
           // Stale session from another day — clear it
           localStorage.removeItem(activeSessionKey);
         }
       }
     } catch { /* ignore */ }
-  }, [storageKey, goalKey, userId, activeSessionKey]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Save to localStorage whenever data changes
   useEffect(() => {
@@ -202,6 +207,8 @@ function CalendarWidget({ userId }: { userId: string }) {
   // Live seconds ticker while tracking
   useEffect(() => {
     if (isTracking && startTime) {
+      // Start from already-elapsed time (important for session restore after navigation)
+      setLiveSeconds(Math.floor((Date.now() - startTime.getTime()) / 1000));
       liveIntervalRef.current = setInterval(() => {
         setLiveSeconds(Math.floor((Date.now() - startTime.getTime()) / 1000));
       }, 1000);
@@ -310,7 +317,12 @@ function CalendarWidget({ userId }: { userId: string }) {
     }
   };
 
-  const progressPct = Math.min((workedHours / maxHours) * 100, 100);
+  // Total hours including current live session
+  const currentSessionHours = isTracking && startTime
+    ? (Date.now() - startTime.getTime()) / 3600000
+    : 0;
+  const totalHours = Math.round((workedHours + currentSessionHours) * 100) / 100;
+  const progressPct = maxHours > 0 ? Math.min((totalHours / maxHours) * 100, 100) : 0;
 
   return (
     <div className="flex flex-col lg:flex-row gap-2 sm:gap-3 lg:gap-5">
@@ -388,8 +400,8 @@ function CalendarWidget({ userId }: { userId: string }) {
 
         {/* Progress bar */}
         <div className="mb-0.5 sm:mb-1 lg:mb-2 flex items-center justify-between text-xs sm:text-sm">
-          <span className="font-semibold text-[#1b8c65]">{workedHours} hrs worked</span>
-          <span className="text-[#9ca3af]">Goal: {maxHours} hrs</span>
+          <span className="font-semibold text-[#1b8c65]">{totalHours} hrs worked</span>
+          <span className="text-[#9ca3af]">Goal: {maxHours > 0 ? `${maxHours} hrs` : "Not set"}</span>
         </div>
         <div className="h-1.5 sm:h-2 lg:h-3 w-full rounded-full bg-[#eceff5] overflow-hidden mb-2 sm:mb-3 lg:mb-4">
           <div

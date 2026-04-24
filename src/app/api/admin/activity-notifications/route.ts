@@ -9,7 +9,16 @@ export const runtime = "nodejs";
 
 export type AdminActivityNotification = {
   id: string;
-  type: "new_student" | "new_professional" | "new_payment" | "profile_update" | "new_content" | "new_booking" | "new_class" | "banner_upload" | "contact_message";
+  type:
+    | "new_student"
+    | "new_professional"
+    | "new_payment"
+    | "profile_update"
+    | "new_content"
+    | "new_booking"
+    | "new_class"
+    | "banner_upload"
+    | "contact_message";
   title: string;
   message: string;
   createdAt: string;
@@ -30,13 +39,11 @@ export async function GET() {
   ]);
 
   const notifications: AdminActivityNotification[] = [];
-
-  // New student registrations (last 7 days)
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-  for (const user of users) {
-    const createdAt = new Date(user.createdAt);
-    if (createdAt < sevenDaysAgo) continue;
 
+  // New registrations (last 7 days)
+  for (const user of users) {
+    if (new Date(user.createdAt) < sevenDaysAgo) continue;
     if (user.role === "student") {
       notifications.push({
         id: `user-${user.id}`,
@@ -60,8 +67,7 @@ export async function GET() {
 
   // New payments (last 7 days)
   for (const payment of payments) {
-    const paidAt = new Date(payment.paidAt);
-    if (paidAt < sevenDaysAgo) continue;
+    if (new Date(payment.paidAt) < sevenDaysAgo) continue;
     notifications.push({
       id: `payment-${payment.id}`,
       type: "new_payment",
@@ -74,8 +80,7 @@ export async function GET() {
 
   // Contact form submissions (last 7 days)
   for (const msg of contactMessages) {
-    const createdAt = new Date(msg.createdAt);
-    if (createdAt < sevenDaysAgo) continue;
+    if (new Date(msg.createdAt) < sevenDaysAgo) continue;
     notifications.push({
       id: `contact-${msg.id}`,
       type: "contact_message",
@@ -86,11 +91,9 @@ export async function GET() {
     });
   }
 
-  // Profile updates / content uploads from professionals
+  // Professional activity (last 7 days)
   for (const n of profileNotifications) {
-    const createdAt = new Date(n.createdAt);
-    if (createdAt < sevenDaysAgo) continue;
-
+    if (new Date(n.createdAt) < sevenDaysAgo) continue;
     const fields = n.changedFields ?? [];
 
     if (fields.includes("advance_booking")) {
@@ -126,7 +129,6 @@ export async function GET() {
         n.summary?.toLowerCase().includes("video") ||
         n.details?.toLowerCase().includes("book") ||
         n.details?.toLowerCase().includes("video");
-
       notifications.push({
         id: `profile-${n.id}`,
         type: isContent ? "new_content" : "profile_update",
@@ -138,7 +140,6 @@ export async function GET() {
     }
   }
 
-  // Sort newest first
   notifications.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   return NextResponse.json({ notifications: notifications.slice(0, 50) });

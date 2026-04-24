@@ -3,12 +3,13 @@ import { NextResponse } from "next/server";
 import { getAllUsers } from "@/lib/user-store";
 import { getPayments } from "@/lib/payment-store";
 import { getProfessionalNotifications } from "@/lib/notifications-store";
+import { getContactMessages } from "@/lib/contact-messages-store";
 
 export const runtime = "nodejs";
 
 export type AdminActivityNotification = {
   id: string;
-  type: "new_student" | "new_professional" | "new_payment" | "profile_update" | "new_content" | "new_booking" | "new_class" | "banner_upload";
+  type: "new_student" | "new_professional" | "new_payment" | "profile_update" | "new_content" | "new_booking" | "new_class" | "banner_upload" | "contact_message";
   title: string;
   message: string;
   createdAt: string;
@@ -21,10 +22,11 @@ export async function GET() {
     return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
   }
 
-  const [users, payments, profileNotifications] = await Promise.all([
+  const [users, payments, profileNotifications, contactMessages] = await Promise.all([
     getAllUsers(),
     getPayments(),
     getProfessionalNotifications(),
+    getContactMessages(),
   ]);
 
   const notifications: AdminActivityNotification[] = [];
@@ -66,6 +68,20 @@ export async function GET() {
       title: "New Plan Purchase",
       message: `${payment.studentName} purchased "${payment.plan}" from ${payment.professionalName} — ${payment.amount}.`,
       createdAt: payment.paidAt,
+      read: false,
+    });
+  }
+
+  // Contact form submissions (last 7 days)
+  for (const msg of contactMessages) {
+    const createdAt = new Date(msg.createdAt);
+    if (createdAt < sevenDaysAgo) continue;
+    notifications.push({
+      id: `contact-${msg.id}`,
+      type: "contact_message",
+      title: "New Contact Message",
+      message: `${msg.name} (${msg.email}): "${msg.subject}"`,
+      createdAt: msg.createdAt,
       read: false,
     });
   }

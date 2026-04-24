@@ -1392,7 +1392,7 @@ export default function AdminPanelView() {
 
   // Real-time notification count polling
   useEffect(() => {
-    const SEEN_KEY = "admin_notif_seen";
+    const SEEN_KEY = "admin_notif_seen_id";
 
     const fetchCount = async () => {
       try {
@@ -1401,16 +1401,17 @@ export default function AdminPanelView() {
         const data = (await res.json()) as { notifications?: { id: string; title: string; message: string; createdAt: string }[] };
         const all = Array.isArray(data.notifications) ? data.notifications : [];
 
-        const lastSeen = localStorage.getItem(SEEN_KEY);
-        // If never seen before, all notifications are unread
-        const lastSeenTime = lastSeen ? new Date(lastSeen).getTime() : 0;
-
-        const unread = lastSeen
-          ? all.filter((n) => {
-              const t = new Date(n.createdAt).getTime();
-              return !isNaN(t) && t > lastSeenTime;
-            }).length
-          : all.length;
+        // Use newest notification ID as seen marker
+        const lastSeenId = localStorage.getItem(SEEN_KEY);
+        let unread = 0;
+        if (!lastSeenId) {
+          unread = all.length;
+        } else {
+          for (const n of all) {
+            if (n.id === lastSeenId) break;
+            unread++;
+          }
+        }
 
         setActivityNotifCount(unread);
         setLatestActivityNotifs(all.slice(0, 8));
@@ -1426,21 +1427,24 @@ export default function AdminPanelView() {
   // Clear badge when Alerts section is opened OR dropdown is opened
   useEffect(() => {
     if (activeSection === "Alerts") {
-      localStorage.setItem("admin_notif_seen", new Date().toISOString());
+      if (latestActivityNotifs.length > 0) {
+        localStorage.setItem("admin_notif_seen_id", latestActivityNotifs[0].id);
+      }
       setActivityNotifCount(0);
     }
-  }, [activeSection]);
+  }, [activeSection, latestActivityNotifs]);
 
   useEffect(() => {
     if (notifDropdownOpen) {
-      // Mark as seen after a short delay (user has seen the dropdown)
       const t = setTimeout(() => {
-        localStorage.setItem("admin_notif_seen", new Date().toISOString());
+        if (latestActivityNotifs.length > 0) {
+          localStorage.setItem("admin_notif_seen_id", latestActivityNotifs[0].id);
+        }
         setActivityNotifCount(0);
       }, 2000);
       return () => clearTimeout(t);
     }
-  }, [notifDropdownOpen]);
+  }, [notifDropdownOpen, latestActivityNotifs]);
 
   useEffect(() => {
     if (activeSection !== "Banners") {

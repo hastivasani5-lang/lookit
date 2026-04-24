@@ -1,6 +1,6 @@
 "use client";
 
-import { BellRing, BookOpen, Calendar, CreditCard, Upload, UserCheck, UserPlus, Video } from "lucide-react";
+import { BellRing, BookOpen, Calendar, CreditCard, Mail, Upload, UserCheck, UserPlus, Video } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { ProfessionalNotification } from "@/types/notifications";
 import type { AdminActivityNotification } from "@/app/api/admin/activity-notifications/route";
@@ -55,6 +55,7 @@ const typeConfig: Record<AdminActivityNotification["type"], { icon: React.Elemen
   new_booking:      { icon: Video,      color: "text-teal-700",    bg: "bg-teal-50",    label: "Advance Booking" },
   new_class:        { icon: Calendar,   color: "text-indigo-700",  bg: "bg-indigo-50",  label: "Class Scheduled" },
   banner_upload:    { icon: Upload,      color: "text-orange-700",  bg: "bg-orange-50",  label: "Banner Uploaded" },
+  contact_message:  { icon: Mail,        color: "text-sky-700",     bg: "bg-sky-50",     label: "Contact Message" },
 };
 
 function ActivityTab() {

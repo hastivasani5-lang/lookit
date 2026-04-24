@@ -119,6 +119,7 @@ function CalendarWidget({ userId }: { userId: string }) {
   const todayKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
   const storageKey = `lookit-work-session-${userId}-${todayKey}`;
   const goalKey = `lookit-work-goal-${userId}`;
+  const activeSessionKey = `lookit-active-session-${userId}`;
 
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
@@ -134,20 +135,22 @@ function CalendarWidget({ userId }: { userId: string }) {
   const [maxHours, setMaxHours] = useState(0);
   const logoutTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [mounted, setMounted] = useState(false);
+  // Live elapsed time for display while tracking
+  const [liveSeconds, setLiveSeconds] = useState(0);
+  const liveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   const dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
-  // Load from localStorage on mount
+  // Load from localStorage on mount — including active session restore
   useEffect(() => {
     setMounted(true);
     try {
-      // Load goal — try numeric key first, then parse from studyTime string
+      // Load goal
       const savedGoal = localStorage.getItem(goalKey);
       if (savedGoal) {
         setMaxHours(Number(savedGoal) || 0);
       } else {
-        // Try to parse from profile answers studyTime string
         const answersRaw = localStorage.getItem(`student_profile_answers_${userId}`);
         if (answersRaw) {
           const answers = JSON.parse(answersRaw) as { studyTime?: string };
@@ -169,8 +172,24 @@ function CalendarWidget({ userId }: { userId: string }) {
         if (typeof data.workedHours === "number") setWorkedHours(data.workedHours);
         if (Array.isArray(data.timeline)) setTimeline(data.timeline);
       }
+
+      // Restore active session if it was running before navigation
+      const activeRaw = localStorage.getItem(activeSessionKey);
+      if (activeRaw) {
+        const active = JSON.parse(activeRaw) as { startTime: string; date: string };
+        // Only restore if it's from today
+        if (active.date === `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`) {
+          const restored = new Date(active.startTime);
+          setStartTime(restored);
+          setSessionStart(restored);
+          setIsTracking(true);
+        } else {
+          // Stale session from another day — clear it
+          localStorage.removeItem(activeSessionKey);
+        }
+      }
     } catch { /* ignore */ }
-  }, [storageKey, goalKey, userId]);
+  }, [storageKey, goalKey, userId, activeSessionKey]);
 
   // Save to localStorage whenever data changes
   useEffect(() => {
@@ -179,6 +198,21 @@ function CalendarWidget({ userId }: { userId: string }) {
       localStorage.setItem(storageKey, JSON.stringify({ workedHours, timeline }));
     } catch { /* ignore */ }
   }, [workedHours, timeline, storageKey, mounted]);
+
+  // Live seconds ticker while tracking
+  useEffect(() => {
+    if (isTracking && startTime) {
+      liveIntervalRef.current = setInterval(() => {
+        setLiveSeconds(Math.floor((Date.now() - startTime.getTime()) / 1000));
+      }, 1000);
+    } else {
+      setLiveSeconds(0);
+      if (liveIntervalRef.current) clearInterval(liveIntervalRef.current);
+    }
+    return () => {
+      if (liveIntervalRef.current) clearInterval(liveIntervalRef.current);
+    };
+  }, [isTracking, startTime]);
 
   // Check previous day missed goal and send notification
   useEffect(() => {
@@ -242,6 +276,13 @@ function CalendarWidget({ userId }: { userId: string }) {
       setStartTime(now);
       setSessionStart(now);
       setIsTracking(true);
+      // Persist active session to localStorage so page navigation doesn't lose it
+      try {
+        localStorage.setItem(activeSessionKey, JSON.stringify({
+          startTime: now.toISOString(),
+          date: `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
+        }));
+      } catch { /* ignore */ }
       // Set goal-based auto-logout timer
       if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
       const remainingMs = Math.max(0, (maxHours * 3600000) - (workedHours * 3600000));
@@ -264,6 +305,8 @@ function CalendarWidget({ userId }: { userId: string }) {
       setSessionStart(null);
       setIsTracking(false);
       if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+      // Clear active session from localStorage
+      try { localStorage.removeItem(activeSessionKey); } catch { /* ignore */ }
     }
   };
 
@@ -364,7 +407,9 @@ function CalendarWidget({ userId }: { userId: string }) {
               : "bg-linear-to-r from-emerald-500 to-teal-500 text-white hover:opacity-90"
           }`}
         >
-          {isTracking ? `⏹ Stop (started ${startTime?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })})` : "▶ Start Work Session"}
+          {isTracking
+            ? `⏹ Stop — ${Math.floor(liveSeconds / 3600)}h ${Math.floor((liveSeconds % 3600) / 60)}m ${liveSeconds % 60}s (started ${startTime?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })})`
+            : "▶ Start Work Session"}
         </button>
 
         {/* Timeline entries */}

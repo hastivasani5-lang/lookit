@@ -21,7 +21,10 @@ import SiteLogo from "@/components/SiteLogo";
 import AdminAlertsPanel from "@/components/admin/AdminAlertsPanel";
 import AdminApprovalsPanel from "@/components/admin/AdminApprovalsPanel";
 import AdminBannersPanel from "@/components/admin/AdminBannersPanel";
+import AdminCalendarWidget from "@/components/admin/AdminCalendarWidget";
 import AdminCategoriesPanel from "@/components/admin/AdminCategoriesPanel";
+import AdminDashboardPanel from "@/components/admin/AdminDashboardPanel";
+import AdminNotifDropdown from "@/components/admin/AdminNotifDropdown";
 import AdminPayoutsPanel from "@/components/admin/AdminPayoutsPanel";
 import AdminPanelModals from "@/components/admin/AdminPanelModals";
 import AdminReviewsPanel from "@/components/admin/AdminReviewsPanel";
@@ -364,55 +367,6 @@ const approvalStatusStyles: Record<
   },
 };
 
-function CalendarWidget() {
-  const today = new Date();
-  const [viewDate, setViewDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
-
-  const year = viewDate.getFullYear();
-  const month = viewDate.getMonth();
-  const monthName = viewDate.toLocaleString("default", { month: "long" }).toUpperCase();
-
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const daysInPrevMonth = new Date(year, month, 0).getDate();
-
-  const cells: { day: number; muted?: boolean; today?: boolean }[] = [];
-  for (let i = firstDay - 1; i >= 0; i--) cells.push({ day: daysInPrevMonth - i, muted: true });
-  for (let d = 1; d <= daysInMonth; d++) {
-    const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-    cells.push({ day: d, today: isToday });
-  }
-  const remaining = 42 - cells.length;
-  for (let d = 1; d <= remaining; d++) cells.push({ day: d, muted: true });
-
-  return (
-    <div>
-      <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-        <span className="text-sm font-semibold text-slate-500">{year}</span>
-        <div className="flex items-center gap-3 text-slate-700">
-          <button type="button" onClick={() => setViewDate(new Date(year, month - 1, 1))} className="text-lg leading-none text-slate-400 hover:text-slate-700 transition">&lt;</button>
-          <p className="text-sm font-semibold tracking-wide">{monthName}</p>
-          <button type="button" onClick={() => setViewDate(new Date(year, month + 1, 1))} className="text-lg leading-none text-slate-400 hover:text-slate-700 transition">&gt;</button>
-        </div>
-      </div>
-      <div className="mt-2 grid grid-cols-7 border border-slate-100 bg-slate-50">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-          <div key={d} className="border-r border-slate-100 px-2 py-1.5 text-[11px] font-medium text-slate-500 last:border-r-0">{d}</div>
-        ))}
-      </div>
-      <div className="grid grid-cols-7 border-x border-b border-slate-100 bg-white text-[11px]">
-        {cells.map((cell, i) => (
-          <div
-            key={i}
-            className={`min-h-8 border-r border-t border-slate-100 px-1 py-0.5 ${cell.today ? "bg-[#eef9ff]" : "bg-white"} ${i % 7 === 6 ? "border-r-0" : ""}`}
-          >
-            <p className={`text-[10px] font-medium ${cell.muted ? "text-slate-300" : cell.today ? "text-emerald-600" : "text-slate-500"}`}>{cell.day}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 export default function AdminPanelView() {
   const router = useRouter();
@@ -1604,38 +1558,13 @@ export default function AdminPanelView() {
                 </span>
               )}
             </button>
-            {notifDropdownOpen && (
-              <div className="absolute right-0 top-8 z-[200] w-72 rounded-2xl bg-white shadow-[0_8px_32px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-[#f6fefb]">
-                  <span className="text-sm font-bold text-slate-800">Notifications</span>
-                  {activityNotifCount > 0 && (
-                    <span className="rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">{activityNotifCount} new</span>
-                  )}
-                </div>
-                <div className="max-h-64 overflow-y-auto divide-y divide-slate-50">
-                  {latestActivityNotifs.length === 0 ? (
-                    <p className="px-4 py-6 text-center text-xs text-slate-400">No recent activity</p>
-                  ) : (
-                    latestActivityNotifs.map((n) => (
-                      <div key={n.id} className="px-4 py-3 hover:bg-[#f6fefb] transition cursor-default">
-                        <p className="text-xs font-semibold text-slate-800 truncate">{n.title}</p>
-                        <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{n.message}</p>
-                        <p className="text-[10px] text-slate-400 mt-1">{new Date(n.createdAt).toLocaleString()}</p>
-                      </div>
-                    ))
-                  )}
-                </div>
-                <div className="border-t border-slate-100 px-4 py-2.5 bg-[#f6fefb]">
-                  <button
-                    type="button"
-                    onClick={() => { setActiveSection("Alerts"); setNotifDropdownOpen(false); setMobileMenuOpen(false); }}
-                    className="w-full text-center text-xs font-semibold text-[#1ec28e] hover:underline"
-                  >
-                    View all activity →
-                  </button>
-                </div>
-              </div>
-            )}
+            <AdminNotifDropdown
+              open={notifDropdownOpen}
+              count={activityNotifCount}
+              notifications={latestActivityNotifs}
+              size="sm"
+              onViewAll={() => { setActiveSection("Alerts"); setNotifDropdownOpen(false); setMobileMenuOpen(false); }}
+            />
           </div>
           <button
             type="button"
@@ -1818,38 +1747,12 @@ export default function AdminPanelView() {
                     </span>
                   )}
                 </button>
-                {notifDropdownOpen && (
-                  <div className="absolute right-0 top-8 z-[200] w-80 rounded-2xl bg-white shadow-[0_8px_32px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden">
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-[#f6fefb]">
-                      <span className="text-sm font-bold text-slate-800">Notifications</span>
-                      {activityNotifCount > 0 && (
-                        <span className="rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">{activityNotifCount} new</span>
-                      )}
-                    </div>
-                    <div className="max-h-72 overflow-y-auto divide-y divide-slate-50">
-                      {latestActivityNotifs.length === 0 ? (
-                        <p className="px-4 py-6 text-center text-xs text-slate-400">No recent activity</p>
-                      ) : (
-                        latestActivityNotifs.map((n) => (
-                          <div key={n.id} className="px-4 py-3 hover:bg-[#f6fefb] transition cursor-default">
-                            <p className="text-xs font-semibold text-slate-800 truncate">{n.title}</p>
-                            <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{n.message}</p>
-                            <p className="text-[10px] text-slate-400 mt-1">{new Date(n.createdAt).toLocaleString()}</p>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                    <div className="border-t border-slate-100 px-4 py-2.5 bg-[#f6fefb]">
-                      <button
-                        type="button"
-                        onClick={() => { setActiveSection("Alerts"); setNotifDropdownOpen(false); }}
-                        className="w-full text-center text-xs font-semibold text-[#1ec28e] hover:underline"
-                      >
-                        View all activity →
-                      </button>
-                    </div>
-                  </div>
-                )}
+                <AdminNotifDropdown
+                  open={notifDropdownOpen}
+                  count={activityNotifCount}
+                  notifications={latestActivityNotifs}
+                  onViewAll={() => { setActiveSection("Alerts"); setNotifDropdownOpen(false); }}
+                />
               </div>
               <button
                 type="button"
@@ -1887,272 +1790,18 @@ export default function AdminPanelView() {
       `}</style>
 
           {activeSection === "Dashboard" ? (
-            <div className="rounded-2xl neumorph-admin-card p-4 sm:p-5">
-              <h2 className="text-3xl font-semibold text-slate-800">Welcome.</h2>
-              <p className="mb-4 text-sm text-slate-500">Navigate the future of education with Schooli.</p>
-
-              <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-2xl neumorph-admin-stat p-4">
-                  <p className="text-xs text-[#2c5a48]">Students</p>
-                  <p className="text-3xl font-bold text-[#0f2c21]">{dashboardStats.studentCount}</p>
-                </div>
-                <div className="rounded-2xl neumorph-admin-stat p-4">
-                  <p className="text-xs text-[#2c5a48]">Teachers</p>
-                  <p className="text-3xl font-bold text-[#0f2c21]">{dashboardStats.professionalCount}</p>
-                </div>
-                <div className="rounded-2xl neumorph-admin-stat p-4">
-                  <p className="text-xs text-[#2c5a48]">Awards</p>
-                  <p className="text-3xl font-bold text-[#0f2c21]">{dashboardStats.transactionCount}</p>
-                </div>
-              </div>
-
-              <div className="mt-4 grid gap-4 xl:grid-cols-2">
-                <div className="space-y-4">
-                  <div className="h-90 rounded-2xl neumorph-admin-card border border-transparent p-4 bg-white!">
-                    <div className="mb-3 flex items-center justify-between">
-                      <div>
-                        <h3 className="font-semibold text-slate-800">User & Teacher Registrations</h3>
-                        <p className="text-xs text-slate-500">New students and teachers joined over the last 7 days.</p>
-                      </div>
-                      <div className="flex items-center gap-3 text-xs text-slate-500">
-                        {adminTrendSeries.map((series) => (
-                          <span key={series.label} className="inline-flex items-center gap-2">
-                            <svg viewBox="0 0 10 10" aria-hidden="true" className="h-2.5 w-2.5">
-                              <circle cx="5" cy="5" r="5" fill={series.color} />
-                            </svg>
-                            {series.label}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    <svg viewBox={`0 0 ${adminTrendWidth} ${adminTrendHeight}`} className="h-61.25 w-full">
-                      {[0, 20, 40, 60, 80, 100].map((tick) => {
-                        const y = adminTrendPadding.top + adminTrendChartHeight - (tick / 100) * adminTrendChartHeight;
-                        return (
-                          <g key={tick}>
-                            <line x1={adminTrendPadding.left} y1={y} x2={adminTrendWidth - adminTrendPadding.right} y2={y} stroke="#e5e7eb" strokeWidth="1" />
-                            <text x={10} y={y + 4} fill="#94a3b8" fontSize="10">
-                              {tick}
-                            </text>
-                          </g>
-                        );
-                      })}
-
-                      {adminTrendLabels.map((label, index) => {
-                        const x = adminTrendPadding.left + (adminTrendChartWidth / (adminTrendLabels.length - 1)) * index;
-                        return (
-                          <text key={label} x={x} y={adminTrendHeight - 10} textAnchor="middle" fill="#64748b" fontSize="10" fontWeight="500">
-                            {label}
-                          </text>
-                        );
-                      })}
-
-                      {adminTrendPath.map((path, seriesIndex) => (
-                        <path
-                          key={adminTrendSeries[seriesIndex].label}
-                          d={path}
-                          fill="none"
-                          stroke={adminTrendSeries[seriesIndex].color}
-                          strokeWidth="3"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      ))}
-
-                      {adminTrendPoints.map((points, seriesIndex) =>
-                        points.map((point, pointIndex) => (
-                          <g key={`${adminTrendSeries[seriesIndex].label}-${pointIndex}`}>
-                            <circle cx={point.x} cy={point.y} r="4" fill={adminTrendSeries[seriesIndex].color} />
-                            <circle cx={point.x} cy={point.y} r="8" fill="transparent" />
-                          </g>
-                        )),
-                      )}
-                    </svg>
-
-                    <p className="mt-1 text-center text-xs text-slate-500">Month</p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="h-90 rounded-2xl neumorph-admin-card border border-transparent p-4">
-                          <style>{`
-                            .neumorph-admin-main {
-                              background: #eef5f3;
-                              box-shadow: 20px 20px 40px #d0dbd6, -20px -20px 40px #ffffff;
-                            }
-                            .neumorph-admin-content {
-                              background: #eef5f3;
-                            }
-                            .neumorph-admin-card {
-                              background: #eef5f3;
-                              box-shadow: 12px 12px 24px #d0dbd6, -12px -12px 24px #ffffff;
-                              transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
-                            }
-                            .neumorph-admin-stat {
-                              background: #eef5f3;
-                              box-shadow: 8px 8px 16px #d0dbd6, -8px -8px 16px #ffffff;
-                              transition: all 0.2s;
-                            }
-                            .neumorph-admin-stat:active {
-                              box-shadow: 1px 1px 2px #d0dbd6, -1px -1px 2px #ffffff;
-                            }
-                          `}</style>
-                    <div className="h-full rounded-xl border border-slate-200 bg-white p-3">
-                      <CalendarWidget />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-4 rounded-2xl neumorph-admin-card border border-transparent p-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <h3 className="text-base font-semibold text-slate-800">Today</h3>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setTodayTableActiveTab("Student")}
-                      className={`rounded-full border px-5 py-2 text-sm font-semibold transition ${
-                        todayTableActiveTab === "Student"
-                          ? "border-[#bfe9cb] bg-[#e8f9ee] text-[#178c43]"
-                          : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                      }`}
-                    >
-                      Student
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setTodayTableActiveTab("Teacher")}
-                      className={`rounded-full border px-5 py-2 text-sm font-semibold transition ${
-                        todayTableActiveTab === "Teacher"
-                          ? "border-[#bfe9cb] bg-[#e8f9ee] text-[#178c43]"
-                          : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                      }`}
-                    >
-                      Teacher
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setTodayTableActiveTab("Notification")}
-                      className={`rounded-full border px-5 py-2 text-sm font-semibold transition ${
-                        todayTableActiveTab === "Notification"
-                          ? "border-[#bfe9cb] bg-[#e8f9ee] text-[#178c43]"
-                          : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                      }`}
-                    >
-                      Notification
-                    </button>
-                  </div>
-                </div>
-
-                <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
-                  <table className="w-full text-sm">
-                    <thead className="bg-slate-50 text-left text-slate-500">
-                      <tr>
-                        <th className="px-4 py-3">Name</th>
-                        <th className="px-4 py-3">Email</th>
-                        <th className="px-4 py-3">
-                          {todayTableActiveTab === "Student" && "Grade"}
-                          {todayTableActiveTab === "Teacher" && "Specialization"}
-                          {todayTableActiveTab === "Notification" && "Type"}
-                        </th>
-                        <th className="px-4 py-3">Status</th>
-                        <th className="px-4 py-3">Updated</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {todayTableActiveTab === "Student" && paginatedDashboardTodayRows.map((request) => (
-                        <tr key={request.id} className="border-t border-slate-100 text-slate-700">
-                          <td className="px-4 py-3 font-medium text-slate-800">{request.name}</td>
-                          <td className="px-4 py-3">{request.email}</td>
-                          <td className="px-4 py-3">{request.meta}</td>
-                          <td className="px-4 py-3">
-                            <span className="inline-flex rounded-full bg-[#e8f9ee] px-2.5 py-1 text-xs font-semibold text-[#178c43]">
-                              {request.status}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-xs text-slate-500">{request.updated}</td>
-                        </tr>
-                      ))}
-
-                      {todayTableActiveTab === "Teacher" && paginatedDashboardTodayRows.map((request) => (
-                        <tr key={request.id} className="border-t border-slate-100 text-slate-700">
-                          <td className="px-4 py-3 font-medium text-slate-800">{request.name}</td>
-                          <td className="px-4 py-3">{request.email}</td>
-                          <td className="px-4 py-3">{request.meta}</td>
-                          <td className="px-4 py-3">
-                            <span
-                              className="inline-flex rounded-full bg-[#e8f9ee] px-2.5 py-1 text-xs font-semibold text-[#178c43]"
-                            >
-                              {request.status}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-xs text-slate-500">{request.updated}</td>
-                        </tr>
-                      ))}
-
-                      {todayTableActiveTab === "Notification" && paginatedDashboardTodayRows.map((request) => (
-                        <tr key={request.id} className="border-t border-slate-100 text-slate-700">
-                          <td className="px-4 py-3 font-medium text-slate-800">{request.name}</td>
-                          <td className="px-4 py-3">{request.email}</td>
-                          <td className="px-4 py-3">{request.meta}</td>
-                          <td className="px-4 py-3">
-                            <span className="inline-flex rounded-full bg-[#e7f4ff] px-2.5 py-1 text-xs font-semibold text-[#2c6fb8]">
-                              Sent
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-xs text-slate-500">{request.updated}</td>
-                        </tr>
-                      ))}
-
-                      {dashboardTodayRows.length === 0 ? (
-                        <tr>
-                          <td colSpan={5} className="px-4 py-4 text-center text-sm text-slate-500">
-                            No records available.
-                          </td>
-                        </tr>
-                      ) : null}
-                    </tbody>
-                  </table>
-                </div>
-
-                {dashboardTodayRows.length > 0 ? (
-                  <div className="mt-3 flex justify-end">
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => setDashboardTodayCurrentPage((page) => Math.max(1, page - 1))}
-                        disabled={dashboardTodayCurrentPage === 1}
-                        className="inline-flex h-8 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
-                      >
-                        Prev
-                      </button>
-                      {Array.from({ length: dashboardTodayTotalPages }, (_, i) => i + 1).map((page) => (
-                        <button
-                          key={page}
-                          type="button"
-                          onClick={() => setDashboardTodayCurrentPage(page)}
-                          className={`inline-flex h-8 min-w-8 items-center justify-center rounded-lg border text-xs font-semibold transition ${
-                            page === dashboardTodayCurrentPage
-                              ? "border-[#178c43] bg-[#178c43] text-white"
-                              : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                          }`}
-                        >
-                          {page}
-                        </button>
-                      ))}
-                      <button
-                        type="button"
-                        onClick={() => setDashboardTodayCurrentPage((page) => Math.min(dashboardTodayTotalPages, page + 1))}
-                        disabled={dashboardTodayCurrentPage === dashboardTodayTotalPages}
-                        className="inline-flex h-8 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
-                      >
-                        Next
-                      </button>
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-            </div>
+            <AdminDashboardPanel
+              stats={dashboardStats}
+              trendLabels={adminTrendLabels}
+              trendSeries={adminTrendSeries}
+              todayTableActiveTab={todayTableActiveTab}
+              onTabChange={(tab) => { setTodayTableActiveTab(tab); setDashboardTodayCurrentPage(1); }}
+              paginatedRows={paginatedDashboardTodayRows}
+              totalRows={dashboardTodayRows.length}
+              currentPage={dashboardTodayCurrentPage}
+              totalPages={dashboardTodayTotalPages}
+              onPageChange={setDashboardTodayCurrentPage}
+            />
           ) : (
             <div className="rounded-2xl bg-white p-6">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">

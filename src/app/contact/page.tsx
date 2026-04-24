@@ -97,22 +97,32 @@ function PhoneInput({ value, onChange }: { value: string; onChange: (v: string) 
 }
 
 export default function ContactPage() {
-  const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "", agreedToTerms: false });
   const [newsletter, setNewsletter] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [newsletterDone, setNewsletterDone] = useState(false);
+  const [formError, setFormError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError("");
     try {
-      await fetch("/api/contact", {
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-    } catch { /* ignore */ }
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setFormError((data as { message?: string }).message ?? "Failed to send message. Please try again.");
+        return;
+      }
+    } catch {
+      setFormError("Network error. Please check your connection and try again.");
+      return;
+    }
     setSubmitted(true);
-    setForm({ name: "", email: "", phone: "", message: "" });
+    setForm({ name: "", email: "", phone: "", subject: "", message: "", agreedToTerms: false });
   };
 
   return (
@@ -183,7 +193,7 @@ export default function ContactPage() {
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 mb-1">Message Sent!</h3>
                   <p className="text-sm text-gray-500">We&apos;ll get back to you soon.</p>
-                  <button onClick={() => setSubmitted(false)}
+                  <button onClick={() => { setSubmitted(false); setFormError(""); }}
                     className="mt-4 text-sm text-[#1ec28e] font-semibold hover:underline">
                     Send another
                   </button>
@@ -212,11 +222,28 @@ export default function ContactPage() {
                       className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-[#1ec28e] focus:bg-white focus:ring-2 focus:ring-[#1ec28e]/20" />
                   </div>
                   <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Subject</label>
+                    <input type="text" value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                      placeholder="What is this about?" required
+                      className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-[#1ec28e] focus:bg-white focus:ring-2 focus:ring-[#1ec28e]/20" />
+                  </div>
+                  <div>
                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Message</label>
                     <textarea value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })}
                       placeholder="How can we help you?" rows={4} required
                       className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-[#1ec28e] focus:bg-white focus:ring-2 focus:ring-[#1ec28e]/20 resize-none" />
                   </div>
+                  <div className="flex items-start gap-2">
+                    <input id="agreedToTerms" type="checkbox" checked={form.agreedToTerms}
+                      onChange={(e) => setForm({ ...form, agreedToTerms: e.target.checked })} required
+                      className="mt-0.5 h-4 w-4 rounded border-gray-300 text-[#1ec28e] focus:ring-[#1ec28e]" />
+                    <label htmlFor="agreedToTerms" className="text-xs text-gray-500">
+                      I agree to the <span className="text-[#1ec28e] font-semibold">Terms and Conditions</span>
+                    </label>
+                  </div>
+                  {formError && (
+                    <p className="text-sm text-red-600 font-medium">{formError}</p>
+                  )}
                   <button type="submit"
                     className="w-full flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-white transition hover:scale-[1.01] hover:shadow-lg"
                     style={{ background: "linear-gradient(135deg, #0d7a57, #1ec28e)" }}>

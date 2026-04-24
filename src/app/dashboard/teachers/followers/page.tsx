@@ -3,7 +3,6 @@
 import { Suspense, useEffect, useState } from "react";
 import { Bell, RefreshCcw, Users } from "lucide-react";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 import Image from "next/image";
 
 import DashboardSidebar from "@/components/DashboardSidebar";
@@ -219,12 +218,6 @@ export default function FollowersPage() {
             )}
           </div>
 
-          <div className="mt-5">
-            <Link href="/dashboard/teachers"
-              className="inline-flex h-9 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50">
-              ← Back to Dashboard
-            </Link>
-          </div>
         </div>
       </section>
     </main>

@@ -3,7 +3,6 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { Bell, Calendar, Clock3, RefreshCcw, Users, CheckCircle, XCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 
 import DashboardSidebar from "@/components/DashboardSidebar";
 import type { AdvanceBooking } from "@/lib/advance-bookings-store";
@@ -253,12 +252,6 @@ export default function AdvanceBookingsPage() {
             )}
           </div>
 
-          <div className="mt-5">
-            <Link href="/dashboard/teachers"
-              className="inline-flex h-9 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50">
-              ← Back to Dashboard
-            </Link>
-          </div>
         </div>
       </section>
     </main>

@@ -888,7 +888,27 @@ export default function AddSection({
 
                           {/* Upload Video Files */}
                           <div>
-                            <label className="block text-sm font-medium text-slate-900 mb-2">Upload Video Files</label>
+                            <div className="flex items-center justify-between mb-2">
+                              <label className="block text-sm font-medium text-slate-900">Upload Video Files</label>
+                              {/* Plus button to add more files */}
+                              <label className="flex items-center gap-1 cursor-pointer rounded-full bg-[#effaf6] px-3 py-1 text-xs font-medium text-[#1ec28e] hover:bg-[#d6f5eb] transition">
+                                <span className="text-base leading-none">+</span>
+                                <span>Add More</span>
+                                <input
+                                  type="file"
+                                  multiple
+                                  accept="video/*"
+                                  className="hidden"
+                                  onChange={(event) => {
+                                    const newFiles = Array.from(event.target.files ?? []);
+                                    setPendingVideoFiles([...pendingVideoFiles, ...newFiles]);
+                                    event.target.value = "";
+                                  }}
+                                />
+                              </label>
+                            </div>
+
+                            {/* Drop zone / initial picker */}
                             <label className="flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-lg border border-dashed border-slate-300 bg-[#f7faf8] px-4 text-sm text-slate-600 transition hover:border-[#1ec28e] hover:bg-[#f0f7f5]">
                               <span>{pendingVideoFiles.length > 0 ? `${pendingVideoFiles.length} file(s) selected` : "Choose video files to upload"}</span>
                               <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-medium text-[#1ec28e]">Browse</span>
@@ -900,6 +920,25 @@ export default function AddSection({
                                 onChange={(event) => setPendingVideoFiles(Array.from(event.target.files ?? []))}
                               />
                             </label>
+
+                            {/* Selected files list */}
+                            {pendingVideoFiles.length > 0 && (
+                              <ul className="mt-2 space-y-1">
+                                {pendingVideoFiles.map((file, idx) => (
+                                  <li key={`${file.name}-${idx}`} className="flex items-center justify-between rounded-lg bg-[#f0f7f5] border border-[#d6f5eb] px-3 py-1.5 text-xs text-slate-700">
+                                    <span className="truncate max-w-[80%]">🎬 {file.name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setPendingVideoFiles(pendingVideoFiles.filter((_, i) => i !== idx))}
+                                      className="ml-2 text-red-400 hover:text-red-600 font-bold text-sm leading-none"
+                                      aria-label="Remove file"
+                                    >
+                                      ×
+                                    </button>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
                           </div>
 
                           {youtubeLinkError && (

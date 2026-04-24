@@ -43,14 +43,15 @@ function toPriceLabel(value: string) {
   return amount > 0 ? `₹${amount.toFixed(2)}` : "Free";
 }
 
-function toBookDescription(category: string, sourceType: "file" | "amazon") {
-  const sourceLabel = sourceType === "amazon" ? "Amazon link" : "Uploaded file";
-  return `Category: ${category || "General"}. Source: ${sourceLabel}.`;
+function toBookDescription(name: string, category: string, sourceType: "file" | "amazon") {
+  const sourceLabel = sourceType === "amazon" ? "Available on Amazon" : "Downloadable PDF";
+  return `${name} is a ${category || "General"} book. ${sourceLabel}. Expand your knowledge with this curated resource from a verified professional.`;
 }
 
-function toVideoDescription(sourceType: "file" | "youtube", sizeLabel: string) {
-  const sourceLabel = sourceType === "youtube" ? "YouTube" : "Uploaded video";
-  return `Video source: ${sourceLabel}. Size/Duration: ${sizeLabel || "-"}.`;
+function toVideoDescription(name: string, sourceType: "file" | "youtube", sizeLabel: string) {
+  const sourceLabel = sourceType === "youtube" ? "Available on YouTube" : "Uploaded video";
+  const duration = sizeLabel && sizeLabel !== "-" ? ` Duration/Size: ${sizeLabel}.` : "";
+  return `${name} is a video lesson.${duration} ${sourceLabel}. Learn at your own pace with this expert-created content.`;
 }
 
 export async function buildShopCatalog(): Promise<ShopCatalogItem[]> {
@@ -79,7 +80,7 @@ export async function buildShopCatalog(): Promise<ShopCatalogItem[]> {
         contentType: "book",
         title: book.name,
         subtitle: `${book.category} • ${book.source === "amazon" ? "Amazon" : "Uploaded book"}`,
-        description: toBookDescription(book.category, book.source),
+        description: toBookDescription(book.name, book.category, book.source),
         price: toPriceLabel(book.mrp),
         amount: parseAmount(book.mrp),
         imageUrl: book.imageUrl || null,
@@ -103,7 +104,7 @@ export async function buildShopCatalog(): Promise<ShopCatalogItem[]> {
         contentType: "video",
         title: video.name,
         subtitle: `${video.source === "youtube" ? "YouTube" : "Uploaded video"} • ${video.sizeLabel}`,
-        description: toVideoDescription(video.source, video.sizeLabel),
+        description: toVideoDescription(video.name, video.source, video.sizeLabel),
         price: toPriceLabel(video.mrp),
         amount: parseAmount(video.mrp),
         imageUrl: null,

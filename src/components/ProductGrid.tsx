@@ -286,6 +286,7 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange, onCategoriesChange
                 <div className="mt-4 min-h-[125px]">
                   <h3 className="text-center font-semibold text-gray-800">{item.title}</h3>
                   <p className="mt-1 line-clamp-2 text-center text-xs text-gray-500">{item.subtitle}</p>
+                  <p className="mt-1 line-clamp-2 text-center text-xs text-gray-400">{item.description}</p>
                   <p className="mt-1 text-center text-xs text-gray-500">By {item.professionalName}</p>
                   <div className="mt-2 flex items-center justify-center gap-1.5">
                     {itemRatings[item.contentId] ? (

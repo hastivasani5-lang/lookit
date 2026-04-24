@@ -80,6 +80,10 @@ export default function UpcomingClasses() {
       setBookingError("Name and email are required.");
       return;
     }
+    if (!studentPhone.trim() || studentPhone.replace(/\D/g, "").length !== 10) {
+      setBookingError("Please enter a valid 10-digit phone number.");
+      return;
+    }
     setBookingError("");
     setSubmitting(true);
     try {
@@ -289,12 +293,16 @@ export default function UpcomingClasses() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number <span className="text-red-500">*</span></label>
                   <input
                     type="tel"
                     value={studentPhone}
-                    onChange={(e) => setStudentPhone(e.target.value)}
-                    placeholder="+91 XXXXX XXXXX"
+                    onChange={(e) => {
+                      const digits = e.target.value.replace(/\D/g, "").slice(0, 10);
+                      setStudentPhone(digits);
+                    }}
+                    placeholder="10-digit phone number"
+                    maxLength={10}
                     className="w-full h-10 rounded-lg border border-slate-200 px-3 text-sm outline-none transition focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
                   />
                 </div>

@@ -143,6 +143,9 @@ export default function AddSection({
   const [bannerImageFile, setBannerImageFile] = useState<File | null>(null);
   const [bannerTitle, setBannerTitle] = useState("");
   const [bannerDescription, setBannerDescription] = useState("");
+
+  // ── Extra video links state ────────────────────────────────────────
+  const [extraVideoLinks, setExtraVideoLinks] = useState<string[]>([]);
   const [bannerLink, setBannerLink] = useState("");
   const [bannerError, setBannerError] = useState("");
   const [bannerSuccess, setBannerSuccess] = useState("");
@@ -835,17 +838,6 @@ export default function AddSection({
                           </div>
 
                           {/* Video URL */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-900 mb-2">Upload Video URL</label>
-                            <input
-                              type="url"
-                              value={youtubeLinkInput}
-                              onChange={(event) => setYoutubeLinkInput(event.target.value)}
-                              placeholder="https://videos.com"
-                              className="w-full h-10 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
-                            />
-                          </div>
-
                           {/* Level and Price */}
                           <div className="grid gap-4 md:grid-cols-2">
                             <div>
@@ -931,59 +923,53 @@ export default function AddSection({
                             </div>
                           </div>
 
-                          {/* Upload Video Files */}
+                          {/* Add Video Links */}
                           <div>
                             <div className="flex items-center justify-between mb-2">
-                              <label className="block text-sm font-medium text-slate-900">Upload Video Files</label>
-                              {/* Plus button to add more files */}
-                              <label className="flex items-center gap-1 cursor-pointer rounded-full bg-[#effaf6] px-3 py-1 text-xs font-medium text-[#1ec28e] hover:bg-[#d6f5eb] transition">
+                              <label className="block text-sm font-medium text-slate-900">Add Video Links</label>
+                              <button
+                                type="button"
+                                onClick={() => setExtraVideoLinks([...extraVideoLinks, ""])}
+                                className="flex items-center gap-1 rounded-full bg-[#effaf6] px-3 py-1 text-xs font-medium text-[#1ec28e] hover:bg-[#d6f5eb] transition"
+                              >
                                 <span className="text-base leading-none">+</span>
-                                <span>Add More</span>
-                                <input
-                                  type="file"
-                                  multiple
-                                  accept="video/*"
-                                  className="hidden"
-                                  onChange={(event) => {
-                                    const newFiles = Array.from(event.target.files ?? []);
-                                    setPendingVideoFiles([...pendingVideoFiles, ...newFiles]);
-                                    event.target.value = "";
-                                  }}
-                                />
-                              </label>
+                                <span>Add Link</span>
+                              </button>
                             </div>
 
-                            {/* Drop zone / initial picker */}
-                            <label className="flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-lg border border-dashed border-slate-300 bg-[#f7faf8] px-4 text-sm text-slate-600 transition hover:border-[#1ec28e] hover:bg-[#f0f7f5]">
-                              <span>{pendingVideoFiles.length > 0 ? `${pendingVideoFiles.length} file(s) selected` : "Choose video files to upload"}</span>
-                              <span className="rounded-full bg-[#effaf6] px-3 py-1 text-xs font-medium text-[#1ec28e]">Browse</span>
-                              <input
-                                type="file"
-                                multiple
-                                accept="video/*"
-                                className="hidden"
-                                onChange={(event) => setPendingVideoFiles(Array.from(event.target.files ?? []))}
-                              />
-                            </label>
+                            {/* Main YouTube/video URL (existing field) */}
+                            <input
+                              type="url"
+                              value={youtubeLinkInput}
+                              onChange={(event) => setYoutubeLinkInput(event.target.value)}
+                              placeholder="https://videos.com"
+                              className="w-full h-10 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                            />
 
-                            {/* Selected files list */}
-                            {pendingVideoFiles.length > 0 && (
-                              <ul className="mt-2 space-y-1">
-                                {pendingVideoFiles.map((file, idx) => (
-                                  <li key={`${file.name}-${idx}`} className="flex items-center justify-between rounded-lg bg-[#f0f7f5] border border-[#d6f5eb] px-3 py-1.5 text-xs text-slate-700">
-                                    <span className="truncate max-w-[80%]">🎬 {file.name}</span>
-                                    <button
-                                      type="button"
-                                      onClick={() => setPendingVideoFiles(pendingVideoFiles.filter((_, i) => i !== idx))}
-                                      className="ml-2 text-red-400 hover:text-red-600 font-bold text-sm leading-none"
-                                      aria-label="Remove file"
-                                    >
-                                      ×
-                                    </button>
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
+                            {/* Extra links */}
+                            {extraVideoLinks.map((link, idx) => (
+                              <div key={idx} className="flex items-center gap-2 mt-2">
+                                <input
+                                  type="url"
+                                  value={link}
+                                  onChange={(e) => {
+                                    const updated = [...extraVideoLinks];
+                                    updated[idx] = e.target.value;
+                                    setExtraVideoLinks(updated);
+                                  }}
+                                  placeholder={`https://videos.com/link-${idx + 2}`}
+                                  className="flex-1 h-10 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => setExtraVideoLinks(extraVideoLinks.filter((_, i) => i !== idx))}
+                                  className="text-red-400 hover:text-red-600 font-bold text-lg leading-none px-1"
+                                  aria-label="Remove link"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
                           </div>
 
                           {youtubeLinkError && (

@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, X, Check, Globe, Briefcase, Users, Clock, Us
 interface AutoPopupModalProps {
   onClose: () => void;
   userId: string;
+  onComplete?: () => void;
 }
 
 // Country list with flag image URLs
@@ -244,18 +245,20 @@ const steps = [
   {
     title: "Work Time",
     question: "4. How much time do you work daily?",
-    options: ["1-2 hours", "2-4 hours", "4+ hours", "Never"],
+    options: ["1 hour", "2 hours", "4 hours", "6 hours", "8 hours", "Never"],
     key: "studyTime",
     icon: Clock,
-    color: "from-indigo-500 to-blue-500"
+    color: "from-indigo-500 to-blue-500",
+    showTimeInput: true,
   },
 ];
 
-const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
+const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId, onComplete }) => {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<{ [key: string]: string }>({});
   const [searchTerm, setSearchTerm] = useState("");
   const [professionSearch, setProfessionSearch] = useState("");
+  const [workTimeInput, setWorkTimeInput] = useState("");
 
   const handleOptionSelect = (option: string) => {
     setAnswers(prev => ({ ...prev, [steps[step].key]: option }));
@@ -292,7 +295,8 @@ const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
       } catch {
         // silently ignore — modal still closes
       }
-      onClose();
+      if (onComplete) onComplete();
+      else onClose();
     }
   };
 
@@ -322,13 +326,15 @@ const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
         
         {/* Content Container - White */}
         <div className="relative bg-white rounded-xl shadow-lg overflow-hidden max-h-[85vh] flex flex-col">
-          {/* Close Button */}
+          {/* Close Button — hidden in blocking mode (onComplete present) */}
+          {!onComplete && (
           <button
             onClick={onClose}
             className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200 group"
           >
             <X className="w-4 h-4 text-gray-600 group-hover:rotate-90 transition-transform duration-200" />
           </button>
+          )}
 
           {/* Header with Gradient Bar */}
           <div className="relative pt-6 pb-3 px-6 flex-shrink-0">
@@ -422,8 +428,62 @@ const AutoPopupModal: React.FC<AutoPopupModalProps> = ({ onClose, userId }) => {
                 </div>
               )}
               
-              {/* Options Grid - Don't show for profession input */}
-              {!steps[step].showInput && (
+              {/* Work Time — custom input + preset chips */}
+              {(steps[step] as { showTimeInput?: boolean }).showTimeInput && (
+                <div className="mb-3 space-y-3">
+                  {/* Custom input */}
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="e.g. 3 hours, 90 minutes, 1.5 hours..."
+                      value={workTimeInput}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setWorkTimeInput(val);
+                        const trimmed = val.trim();
+                        if (trimmed.length >= 1) {
+                          setAnswers(prev => ({ ...prev, [steps[step].key]: trimmed }));
+                        } else {
+                          setAnswers(prev => {
+                            const n = { ...prev };
+                            delete n[steps[step].key];
+                            return n;
+                          });
+                        }
+                      }}
+                      className="w-full px-3 py-2 pl-9 border border-gray-300 rounded-lg focus:outline-none focus:border-[#1ec28e] focus:ring-2 focus:ring-[#1ec28e] text-sm"
+                    />
+                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400">⏱</span>
+                  </div>
+                  {/* Preset chips */}
+                  <div className="flex flex-wrap gap-2">
+                    {(steps[step].options as string[]).map((opt) => {
+                      const isSelected = answers[steps[step].key] === opt;
+                      return (
+                        <button
+                          key={opt}
+                          type="button"
+                          onClick={() => {
+                            setWorkTimeInput(opt);
+                            setAnswers(prev => ({ ...prev, [steps[step].key]: opt }));
+                          }}
+                          className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all duration-200 ${
+                            isSelected
+                              ? "bg-[#1ec28e] text-white border-[#1ec28e] shadow-sm"
+                              : "bg-gray-50 text-gray-700 border-gray-200 hover:border-[#1ec28e] hover:text-[#1ec28e]"
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <p className="text-xs text-gray-400">Select a preset or type your own time above</p>
+                </div>
+              )}
+
+              {/* Options Grid - Don't show for profession input or time input */}
+              {!steps[step].showInput && !(steps[step] as { showTimeInput?: boolean }).showTimeInput && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-80 overflow-y-auto pr-1">
                   {(steps[step].showFlags
                     ? filteredCountries.map((c) => ({ name: c.name, flagUrl: c.flagUrl, icon: null }))

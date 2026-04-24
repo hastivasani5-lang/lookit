@@ -64,6 +64,7 @@ const AutoPopupModal = dynamic(() => import("@/components/AutoPopupModal"));
 export default function StudentsPage() {
   const { data: session, status } = useSession();
   const [showModal, setShowModal] = useState(false);
+  const [profileChecked, setProfileChecked] = useState(false);
   const [belowFoldReady, setBelowFoldReady] = useState(false);
 
   // Load below-fold content after first paint
@@ -80,45 +81,58 @@ export default function StudentsPage() {
     };
   }, []);
 
-  // Show modal 2 seconds after student login if they haven't filled profile yet
+  // Check profile fill status on mount
   useEffect(() => {
     if (status !== "authenticated") return;
-    if (session?.user?.role !== "student") return;
+    if (session?.user?.role !== "student") { setProfileChecked(true); return; }
 
     const userId = session.user.id;
     if (!userId) return;
 
-    // Check if already dismissed for this user
-    const dismissed = localStorage.getItem(`student_profile_modal_done_${userId}`);
-    if (dismissed) return;
+    // Check localStorage first (fast path)
+    try {
+      const answersRaw = localStorage.getItem(`student_profile_answers_${userId}`);
+      if (answersRaw) {
+        const answers = JSON.parse(answersRaw) as { studyTime?: string };
+        if (answers.studyTime) {
+          setProfileChecked(true);
+          return;
+        }
+      }
+    } catch { /* ignore */ }
 
-    // Check if profile already has location (country) filled — means already submitted
-    const timer = setTimeout(async () => {
+    // Fallback: check API
+    const check = async () => {
       try {
         const res = await fetch("/api/student/profile/check");
-        if (!res.ok) { setShowModal(true); return; }
-        const data = (await res.json()) as { filled: boolean };
-        if (!data.filled) setShowModal(true);
-      } catch {
-        setShowModal(true);
-      }
-    }, 2000); // 2 seconds delay
-
-    return () => clearTimeout(timer);
+        if (res.ok) {
+          const data = (await res.json()) as { filled: boolean };
+          if (data.filled) {
+            setProfileChecked(true);
+            return;
+          }
+        }
+      } catch { /* ignore */ }
+      // Profile not filled — show blocking modal
+      setShowModal(true);
+    };
+    void check();
   }, [status, session]);
 
   const handleCloseModal = () => {
-    const userId = session?.user?.id;
-    if (userId) {
-      localStorage.setItem(`student_profile_modal_done_${userId}`, "1");
-    }
+    // X button — do not allow closing without completing
+    // (no-op: modal stays open until form is submitted)
+  };
+
+  const handleModalComplete = () => {
     setShowModal(false);
+    setProfileChecked(true);
   };
 
   const userId = session?.user?.id ?? "guest";
 
-  // Show loading state while checking authentication
-  if (status === "loading") {
+  // Show loading state while checking authentication or profile
+  if (status === "loading" || (status === "authenticated" && session?.user?.role === "student" && !profileChecked && !showModal)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -129,11 +143,20 @@ export default function StudentsPage() {
     );
   }
 
+  // Block dashboard until profile is filled
+  if (showModal) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#e9f7ef] via-[#e6f4f1] to-[#eef5ff]">
+        <Navbar />
+        <AutoPopupModal onClose={handleCloseModal} userId={userId} onComplete={handleModalComplete} />
+      </div>
+    );
+  }
+
   return (
     <>
       <Navbar />
       <main className="overflow-x-hidden">
-        {showModal && <AutoPopupModal onClose={handleCloseModal} userId={userId} />}
         <Hero />
         {belowFoldReady && (
           <>

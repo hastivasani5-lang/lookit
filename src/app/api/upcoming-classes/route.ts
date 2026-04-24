@@ -11,6 +11,7 @@ import {
 } from "@/lib/upcoming-classes-store";
 import { getFollowerIds } from "@/lib/follows-store";
 import { appendStudentNotification } from "@/lib/student-notifications-store";
+import { appendProfessionalNotification } from "@/lib/notifications-store";
 
 export const runtime = "nodejs";
 
@@ -77,6 +78,17 @@ export async function POST(request: Request) {
       ),
     );
   } catch { /* fan-out must never break the main response */ }
+
+  try {
+    await appendProfessionalNotification({
+      professionalId: user.id,
+      professionalName: user.name,
+      professionalEmail: user.email ?? "",
+      summary: `Scheduled new class: "${cls.title}"`,
+      details: `Date: ${cls.date} at ${cls.time} | Platform: ${cls.platform}`,
+      changedFields: ["upcoming_class"],
+    });
+  } catch { /* notification must never break the main response */ }
 
   return NextResponse.json({ class: saved });
 }

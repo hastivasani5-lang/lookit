@@ -6,6 +6,7 @@ import {
   getBookingsForProfessional,
   updateBookingStatus,
 } from "@/lib/advance-bookings-store";
+import { appendProfessionalNotification } from "@/lib/notifications-store";
 
 export const runtime = "nodejs";
 
@@ -52,6 +53,17 @@ export async function POST(request: Request) {
     studentPhone: body.studentPhone?.trim() || "",
     message: body.message?.trim() || "",
   });
+
+  try {
+    await appendProfessionalNotification({
+      professionalId: body.professionalId || "",
+      professionalName: body.professionalName || "",
+      professionalEmail: "",
+      summary: `New advance booking for "${body.classTitle || "class"}"`,
+      details: `Student: ${body.studentName.trim()} (${body.studentEmail.trim()}) | Date: ${body.classDate} at ${body.classTime}`,
+      changedFields: ["advance_booking"],
+    });
+  } catch { /* notification must never break the main response */ }
 
   return NextResponse.json({ booking, message: "Booking confirmed!" });
 }

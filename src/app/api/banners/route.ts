@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth";
 import { createBanner, getBannersByProfessional } from "@/lib/banners-store";
 import { getUserById } from "@/lib/user-store";
+import { appendProfessionalNotification } from "@/lib/notifications-store";
 
 export const runtime = "nodejs";
 
@@ -44,6 +45,18 @@ export async function POST(request: Request) {
       link: imageUrl,
       imageUrl,
     });
+
+    try {
+      await appendProfessionalNotification({
+        professionalId: user.id,
+        professionalName: user.name,
+        professionalEmail: user.email ?? "",
+        summary: "Uploaded a new banner for approval",
+        details: `Banner image submitted and pending admin review.`,
+        changedFields: ["banner_upload"],
+      });
+    } catch { /* notification must never break the main response */ }
+
     return NextResponse.json({ banner }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to create banner.";

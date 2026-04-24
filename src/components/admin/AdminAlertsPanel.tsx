@@ -1,6 +1,6 @@
 "use client";
 
-import { BellRing, BookOpen, CreditCard, UserCheck, UserPlus, Video } from "lucide-react";
+import { BellRing, BookOpen, Calendar, CreditCard, Upload, UserCheck, UserPlus, Video } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { ProfessionalNotification } from "@/types/notifications";
 import type { AdminActivityNotification } from "@/app/api/admin/activity-notifications/route";
@@ -47,11 +47,14 @@ const getInitials = (value: string) =>
     .join("") || "NA";
 
 const typeConfig: Record<AdminActivityNotification["type"], { icon: React.ElementType; color: string; bg: string; label: string }> = {
-  new_student:    { icon: UserPlus,   color: "text-blue-700",    bg: "bg-blue-50",    label: "New Student" },
-  new_professional: { icon: UserCheck, color: "text-purple-700", bg: "bg-purple-50",  label: "New Professional" },
-  new_payment:    { icon: CreditCard, color: "text-emerald-700", bg: "bg-emerald-50", label: "Plan Purchased" },
-  profile_update: { icon: BellRing,   color: "text-amber-700",   bg: "bg-amber-50",   label: "Profile Update" },
-  new_content:    { icon: BookOpen,   color: "text-rose-700",    bg: "bg-rose-50",    label: "New Content" },
+  new_student:      { icon: UserPlus,   color: "text-blue-700",    bg: "bg-blue-50",    label: "New Student" },
+  new_professional: { icon: UserCheck,  color: "text-purple-700",  bg: "bg-purple-50",  label: "New Professional" },
+  new_payment:      { icon: CreditCard, color: "text-emerald-700", bg: "bg-emerald-50", label: "Plan Purchased" },
+  profile_update:   { icon: BellRing,   color: "text-amber-700",   bg: "bg-amber-50",   label: "Profile Update" },
+  new_content:      { icon: BookOpen,   color: "text-rose-700",    bg: "bg-rose-50",    label: "New Content" },
+  new_booking:      { icon: Video,      color: "text-teal-700",    bg: "bg-teal-50",    label: "Advance Booking" },
+  new_class:        { icon: Calendar,   color: "text-indigo-700",  bg: "bg-indigo-50",  label: "Class Scheduled" },
+  banner_upload:    { icon: Upload,      color: "text-orange-700",  bg: "bg-orange-50",  label: "Banner Uploaded" },
 };
 
 function ActivityTab() {

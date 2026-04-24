@@ -364,6 +364,56 @@ const approvalStatusStyles: Record<
   },
 };
 
+function CalendarWidget() {
+  const today = new Date();
+  const [viewDate, setViewDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
+
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth();
+  const monthName = viewDate.toLocaleString("default", { month: "long" }).toUpperCase();
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+  const cells: { day: number; muted?: boolean; today?: boolean }[] = [];
+  for (let i = firstDay - 1; i >= 0; i--) cells.push({ day: daysInPrevMonth - i, muted: true });
+  for (let d = 1; d <= daysInMonth; d++) {
+    const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+    cells.push({ day: d, today: isToday });
+  }
+  const remaining = 42 - cells.length;
+  for (let d = 1; d <= remaining; d++) cells.push({ day: d, muted: true });
+
+  return (
+    <div>
+      <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+        <span className="text-sm font-semibold text-slate-500">{year}</span>
+        <div className="flex items-center gap-3 text-slate-700">
+          <button type="button" onClick={() => setViewDate(new Date(year, month - 1, 1))} className="text-lg leading-none text-slate-400 hover:text-slate-700 transition">&lt;</button>
+          <p className="text-sm font-semibold tracking-wide">{monthName}</p>
+          <button type="button" onClick={() => setViewDate(new Date(year, month + 1, 1))} className="text-lg leading-none text-slate-400 hover:text-slate-700 transition">&gt;</button>
+        </div>
+      </div>
+      <div className="mt-2 grid grid-cols-7 border border-slate-100 bg-slate-50">
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
+          <div key={d} className="border-r border-slate-100 px-2 py-1.5 text-[11px] font-medium text-slate-500 last:border-r-0">{d}</div>
+        ))}
+      </div>
+      <div className="grid grid-cols-7 border-x border-b border-slate-100 bg-white text-[11px]">
+        {cells.map((cell, i) => (
+          <div
+            key={i}
+            className={`min-h-8 border-r border-t border-slate-100 px-1 py-0.5 ${cell.today ? "bg-[#eef9ff]" : "bg-white"} ${i % 7 === 6 ? "border-r-0" : ""}`}
+          >
+            <p className={`text-[10px] font-medium ${cell.muted ? "text-slate-300" : cell.today ? "text-emerald-600" : "text-slate-500"}`}>{cell.day}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function AdminPanelView() {
   const router = useRouter();
   const [activeSection, setActiveSection] = useState<AdminSection>("Dashboard");
@@ -1938,92 +1988,7 @@ export default function AdminPanelView() {
                             }
                           `}</style>
                     <div className="h-full rounded-xl border border-slate-200 bg-white p-3">
-                      <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                        <button type="button" className="text-sm font-semibold text-slate-500">2015</button>
-                        <div className="flex items-center gap-3 text-slate-700">
-                          <button type="button" className="text-lg leading-none text-slate-400">&lt;</button>
-                          <p className="text-sm font-semibold tracking-wide">APRIL</p>
-                          <button type="button" className="text-lg leading-none text-slate-400">&gt;</button>
-                        </div>
-                      </div>
-
-                      <div className="mt-2 grid grid-cols-7 border border-slate-100 bg-slate-50">
-                        {[
-                          "Sunday",
-                          "Monday",
-                          "Tuesday",
-                          "Wednesday",
-                          "Thursday",
-                          "Friday",
-                          "Saturday",
-                        ].map((day) => (
-                          <div key={day} className="border-r border-slate-100 px-2 py-1.5 text-[11px] font-medium text-slate-500 last:border-r-0">
-                            {day}
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="grid grid-cols-7 border-x border-b border-slate-100 bg-white text-[11px]">
-                        {[
-                          { day: 29, muted: true },
-                          { day: 30, muted: true },
-                          { day: 31, muted: true },
-                          { day: 1, event: "NYU Engine..", tone: "bg-emerald-400" },
-                          { day: 2 },
-                          { day: 3 },
-                          { day: 4 },
-                          { day: 5, event: "John Hopk..", tone: "bg-cyan-400", active: true },
-                          { day: 6 },
-                          { day: 7 },
-                          { day: 8 },
-                          { day: 9 },
-                          { day: 10 },
-                          { day: 11 },
-                          { day: 12 },
-                          { day: 13, event: "Spring Dem..", tone: "bg-emerald-400" },
-                          { day: 14 },
-                          { day: 15 },
-                          { day: 16 },
-                          { day: 17, event: "Lehigh Co..", tone: "bg-orange-500" },
-                          { day: 18 },
-                          { day: 19 },
-                          { day: 20 },
-                          { day: 21 },
-                          { day: 22 },
-                          { day: 23, event: "UBC Job Fai..", tone: "bg-emerald-400" },
-                          { day: 24, event: "Spring De..", tone: "bg-emerald-400" },
-                          { day: 25 },
-                          { day: 26 },
-                          { day: 27 },
-                          { day: 28 },
-                          { day: 29 },
-                          { day: 30, event: "NYU Engine..", tone: "bg-emerald-400" },
-                          { day: 1, muted: true },
-                          { day: 2, muted: true },
-                          { day: 3, muted: true },
-                          { day: 4, muted: true },
-                          { day: 5, muted: true },
-                          { day: 6, muted: true },
-                          { day: 7, muted: true },
-                          { day: 8, muted: true },
-                          { day: 9, muted: true },
-                        ].map((cell, index) => (
-                          <div
-                            key={`${cell.day}-${index}`}
-                            className={`min-h-8 border-r border-t border-slate-100 px-1 py-0.5 align-top text-slate-700 ${
-                              cell.active ? "bg-[#eef9ff]" : "bg-white"
-                            } ${index % 7 === 6 ? "border-r-0" : ""}`}
-                          >
-                            <p className={`text-[10px] ${cell.muted ? "text-slate-300" : "text-slate-500"}`}>{cell.day}</p>
-                            {cell.event ? (
-                              <p className="mt-1 inline-flex items-center gap-1 truncate text-[10px] text-slate-500">
-                                <span className={`h-1.5 w-1.5 rounded-full ${cell.tone}`} />
-                                {cell.event}
-                              </p>
-                            ) : null}
-                          </div>
-                        ))}
-                      </div>
+                      <CalendarWidget />
                     </div>
                   </div>
                 </div>

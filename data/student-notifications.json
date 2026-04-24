@@ -1,5 +1,13 @@
 [
   {
+    "id": "0426a3cf-22bb-48e4-92f2-0c5d4386f091",
+    "studentId": "6ef3d354-6ea1-44fe-8877-8ac9eb2adc46",
+    "type": "announcement",
+    "message": "You missed your work goal on 2026-04-23 — you worked 0 hrs but your goal was 8 hrs.",
+    "read": false,
+    "createdAt": "2026-04-24T11:19:26.657Z"
+  },
+  {
     "id": "0197040a-7219-4380-983b-c689affaaf35",
     "studentId": "14abcdae-2b38-48bd-acf8-f0abc779977d",
     "type": "new_content",

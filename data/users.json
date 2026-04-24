@@ -641,5 +641,32 @@
     "approvalStatus": "approved",
     "provider": "credentials",
     "createdAt": "2026-04-24T10:38:16.288Z"
+  },
+  {
+    "id": "6ef3d354-6ea1-44fe-8877-8ac9eb2adc46",
+    "name": "vishi",
+    "email": "vishi@gmail.com",
+    "passwordHash": "$2a$10$G7BTaJnvir61SCwf995/bu06eqfMne462kc21gR3TPt4causa6BIa",
+    "role": "student",
+    "specialization": "Friends | 8 hours",
+    "contactNumber": "sfcd",
+    "location": "India",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-24T11:08:45.327Z"
+  },
+  {
+    "id": "e1b7f5d4-ada6-46e5-9e93-d7f7d1be977f",
+    "name": "neky",
+    "email": "neky@gmail.com",
+    "passwordHash": "$2a$10$UjUELwU6uxwe36VTaTLoK.Skaxe1QaCXi2J2to60nQTJ8HKePYQo6",
+    "role": "professional",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "pending",
+    "provider": "credentials",
+    "createdAt": "2026-04-24T11:29:43.811Z"
   }
 ]

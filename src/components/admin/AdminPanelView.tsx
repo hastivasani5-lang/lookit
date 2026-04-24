@@ -1402,12 +1402,15 @@ export default function AdminPanelView() {
         const all = Array.isArray(data.notifications) ? data.notifications : [];
 
         const lastSeen = localStorage.getItem(SEEN_KEY);
+        // If never seen before, all notifications are unread
         const lastSeenTime = lastSeen ? new Date(lastSeen).getTime() : 0;
 
-        const unread = all.filter((n) => {
-          const t = new Date(n.createdAt).getTime();
-          return !isNaN(t) && t > lastSeenTime;
-        }).length;
+        const unread = lastSeen
+          ? all.filter((n) => {
+              const t = new Date(n.createdAt).getTime();
+              return !isNaN(t) && t > lastSeenTime;
+            }).length
+          : all.length;
 
         setActivityNotifCount(unread);
         setLatestActivityNotifs(all.slice(0, 8));
@@ -1420,13 +1423,24 @@ export default function AdminPanelView() {
     return () => clearInterval(interval);
   }, []);
 
-  // Clear badge when Alerts section is opened
+  // Clear badge when Alerts section is opened OR dropdown is opened
   useEffect(() => {
     if (activeSection === "Alerts") {
       localStorage.setItem("admin_notif_seen", new Date().toISOString());
       setActivityNotifCount(0);
     }
   }, [activeSection]);
+
+  useEffect(() => {
+    if (notifDropdownOpen) {
+      // Mark as seen after a short delay (user has seen the dropdown)
+      const t = setTimeout(() => {
+        localStorage.setItem("admin_notif_seen", new Date().toISOString());
+        setActivityNotifCount(0);
+      }, 2000);
+      return () => clearTimeout(t);
+    }
+  }, [notifDropdownOpen]);
 
   useEffect(() => {
     if (activeSection !== "Banners") {

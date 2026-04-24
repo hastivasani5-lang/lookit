@@ -552,10 +552,25 @@
     "email": "viky@gmail.com",
     "passwordHash": "$2a$10$AWFTCMVkbmeJZfnhAZO18.UQoINOyGqYE1XvjLUXvsT8/cD/ON2Zq",
     "role": "student",
+    "specialization": "Friends | 1-2 hours",
+    "contactNumber": "sada",
+    "location": "India",
     "certificates": [],
     "reviews": [],
     "approvalStatus": "approved",
     "provider": "credentials",
     "createdAt": "2026-04-23T12:52:51.678Z"
+  },
+  {
+    "id": "91149d90-dadb-4942-ae0f-e9e4ec66a91b",
+    "name": "yuge",
+    "email": "yuge@gmail.com",
+    "passwordHash": "$2a$10$7nQtmQX/SgA9EAOCGw4qt.ctYz/uFbU.5qkDS7W6imcLarHZwnwa6",
+    "role": "student",
+    "certificates": [],
+    "reviews": [],
+    "approvalStatus": "approved",
+    "provider": "credentials",
+    "createdAt": "2026-04-24T03:39:44.132Z"
   }
 ]

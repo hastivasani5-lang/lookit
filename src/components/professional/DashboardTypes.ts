@@ -13,7 +13,7 @@ export type ProfessionalUser = {
 };
 
 export type DashboardSection = "overview" | "add" | "upgrade" | "settings";
-export type AddContentTab = "books" | "videos" | "classes";
+export type AddContentTab = "books" | "videos" | "classes" | "banner";
 
 export type SearchResultItem = {
   id: string;

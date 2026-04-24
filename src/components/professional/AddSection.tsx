@@ -139,6 +139,15 @@ export default function AddSection({
   const [classFormError, setClassFormError] = useState("");
   const [editingClassId, setEditingClassId] = useState<string | null>(null);
 
+  // ── Banner form state ─────────────────────────────────────────────
+  const [bannerImageFile, setBannerImageFile] = useState<File | null>(null);
+  const [bannerTitle, setBannerTitle] = useState("");
+  const [bannerDescription, setBannerDescription] = useState("");
+  const [bannerLink, setBannerLink] = useState("");
+  const [bannerError, setBannerError] = useState("");
+  const [bannerSuccess, setBannerSuccess] = useState("");
+  const [bannerSubmitting, setBannerSubmitting] = useState(false);
+
   // Load classes from API on mount
   React.useEffect(() => {
     setClassesLoading(true);
@@ -207,6 +216,31 @@ export default function AddSection({
     }).catch(() => {});
   };
 
+  const handleBannerSubmit = async () => {
+    setBannerError("");
+    setBannerSuccess("");
+    if (!bannerLink.trim()) { setBannerError("Please enter a banner image URL."); return; }
+    setBannerSubmitting(true);
+    try {
+      const res = await fetch("/api/banners", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl: bannerLink }),
+      });
+      if (res.status === 201) {
+        setBannerSuccess("Banner submitted for review!");
+        setBannerLink("");
+      } else {
+        const data = await res.json().catch(() => ({})) as { message?: string };
+        setBannerError(data.message ?? "Submission failed. Please try again.");
+      }
+    } catch {
+      setBannerError("Submission failed. Please try again.");
+    } finally {
+      setBannerSubmitting(false);
+    }
+  };
+
   return (
             <div className="mt-6 space-y-6">
               {/* Tab switcher */}
@@ -239,10 +273,19 @@ export default function AddSection({
                   >
                     Upcoming Class
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => setAddContentTab("banner")}
+                    className={`flex-1 rounded-xl px-4 py-2 text-sm font-medium transition whitespace-nowrap ${
+                      addContentTab === "banner" ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" : "text-slate-600 hover:bg-white"
+                    }`}
+                  >
+                    Add Banner
+                  </button>
                 </div>
               </div>
 
-              {addContentTab === "books" ? (
+              {addContentTab === "books" && (
                 <>
                   <div className="rounded-[24px] bg-white p-6 shadow-sm">
                     <div className="flex items-center justify-between gap-3">
@@ -626,7 +669,9 @@ export default function AddSection({
                     )}
                   </div>
                 </>
-              ) : (
+              )}
+
+              {addContentTab === "videos" && (
                 <>
                   <div className="rounded-[24px] bg-white p-6 shadow-sm">
                     <div className="flex items-center justify-between gap-3">
@@ -1283,6 +1328,47 @@ export default function AddSection({
                     )}
                   </div>
                 </>
+              )}
+
+              {/* ── BANNER TAB ─────────────────────────────────────────── */}
+              {addContentTab === "banner" && (
+                <div className="rounded-[24px] bg-white p-6 shadow-sm">
+                  <h3 className="text-lg font-semibold text-slate-900 mb-1">Add Banner</h3>
+                  <p className="text-sm text-slate-500 mb-6">Banner image URL paste karo. Admin approve kare pachi slider ma show thase.</p>
+
+                  <div className="space-y-5">
+                    {/* Banner Image URL */}
+                    <div>
+                      <label className="block text-sm font-medium text-slate-800 mb-2">Banner Image URL <span className="text-red-500">*</span></label>
+                      <input
+                        type="url"
+                        value={bannerLink}
+                        onChange={(e) => setBannerLink(e.target.value)}
+                        placeholder="https://example.com/banner.jpg"
+                        className="w-full h-10 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
+                      />
+                      {bannerLink && (
+                        <img src={bannerLink} alt="Preview" className="mt-3 h-32 w-full rounded-lg object-cover border border-slate-200" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                      )}
+                    </div>
+
+                    {bannerError && (
+                      <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-700">{bannerError}</div>
+                    )}
+                    {bannerSuccess && (
+                      <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700">{bannerSuccess}</div>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={handleBannerSubmit}
+                      disabled={bannerSubmitting}
+                      className="inline-flex h-11 items-center justify-center rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-8 text-sm font-medium text-white transition hover:opacity-90 disabled:opacity-60"
+                    >
+                      {bannerSubmitting ? "Submitting…" : "Buy Now"}
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
   );

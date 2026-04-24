@@ -7,6 +7,7 @@ import {
   DollarSign,
   FolderTree,
   Home,
+  Megaphone,
   ShieldCheck,
   UploadCloud,
   Users,
@@ -19,6 +20,7 @@ import { useEffect, useState } from "react";
 import SiteLogo from "@/components/SiteLogo";
 import AdminAlertsPanel from "@/components/admin/AdminAlertsPanel";
 import AdminApprovalsPanel from "@/components/admin/AdminApprovalsPanel";
+import AdminBannersPanel from "@/components/admin/AdminBannersPanel";
 import AdminCategoriesPanel from "@/components/admin/AdminCategoriesPanel";
 import AdminPayoutsPanel from "@/components/admin/AdminPayoutsPanel";
 import AdminPanelModals from "@/components/admin/AdminPanelModals";
@@ -26,6 +28,7 @@ import AdminReviewsPanel from "@/components/admin/AdminReviewsPanel";
 import AdminUploadsPanel from "@/components/admin/AdminUploadsPanel";
 import AdminUsersPanel from "@/components/admin/AdminUsersPanel";
 import AdminWorkspace from "@/components/admin/AdminWorkspace";
+import type { BannerRecord } from "@/lib/banners-store";
 
 import type { ProfessionalNotification } from "@/types/notifications";
 const ADMIN_PROFILE = {
@@ -42,7 +45,8 @@ type AdminSection =
   | "Categories"
   | "Uploads"
   | "Payouts"
-  | "Alerts";
+  | "Alerts"
+  | "Banners";
 
 type ApprovalStatus = "pending" | "approved" | "rejected";
 
@@ -210,6 +214,7 @@ const menuItems: Array<{ label: AdminSection; icon: typeof Home }> = [
   { label: "Uploads", icon: UploadCloud },
   { label: "Payouts", icon: DollarSign },
   { label: "Alerts", icon: BellRing },
+  { label: "Banners", icon: Megaphone },
 ];
 
 const initialApprovalRequests: ApprovalRequest[] = [
@@ -398,6 +403,9 @@ export default function AdminPanelView() {
   const [uploadsLoading, setUploadsLoading] = useState(false);
   const [adminProfileOpen, setAdminProfileOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [banners, setBanners] = useState<BannerRecord[]>([]);
+  const [bannersLoading, setBannersLoading] = useState(false);
+  const [bannersCurrentPage, setBannersCurrentPage] = useState(1);
   const [globalSearchQuery, setGlobalSearchQuery] = useState("");
   const [studentsCurrentPage, setStudentsCurrentPage] = useState(1);
   const [professionalsCurrentPage, setProfessionalsCurrentPage] = useState(1);
@@ -443,6 +451,9 @@ export default function AdminPanelView() {
   const payoutsTotalPages = Math.max(1, Math.ceil(payoutEntries.length / ITEMS_PER_PAGE));
   const payoutsPageStart = (payoutsCurrentPage - 1) * ITEMS_PER_PAGE;
   const paginatedPayoutEntries = payoutEntries.slice(payoutsPageStart, payoutsPageStart + ITEMS_PER_PAGE);
+  const bannersTotalPages = Math.max(1, Math.ceil(banners.length / ITEMS_PER_PAGE));
+  const bannersPageStart = (bannersCurrentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedBanners = banners.slice(bannersPageStart, bannersPageStart + ITEMS_PER_PAGE);
   const alertsProfessionalsTotalPages = Math.max(1, Math.ceil(notifications.length / ITEMS_PER_PAGE));
   const alertsProfessionalsPageStart = (alertsProfessionalsCurrentPage - 1) * ITEMS_PER_PAGE;
   const paginatedNotifications = notifications.slice(
@@ -1403,6 +1414,78 @@ export default function AdminPanelView() {
     }
   }, [activeSection]);
 
+  useEffect(() => {
+    if (activeSection !== "Banners") {
+      return;
+    }
+
+    setBannersCurrentPage(1);
+
+    const loadBanners = async () => {
+      setBannersLoading(true);
+
+      try {
+        const response = await fetch("/api/admin/banners", { cache: "no-store" });
+        const payload = (await response.json().catch(() => ({}))) as {
+          banners?: BannerRecord[];
+        };
+
+        if (!response.ok) {
+          setBanners([]);
+          return;
+        }
+
+        setBanners(Array.isArray(payload.banners) ? payload.banners : []);
+      } catch {
+        setBanners([]);
+      } finally {
+        setBannersLoading(false);
+      }
+    };
+
+    void loadBanners();
+  }, [activeSection]);
+
+  const handleApproveBanner = async (id: string) => {
+    try {
+      const response = await fetch(`/api/admin/banners/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "approved" }),
+      });
+
+      if (!response.ok) return;
+
+      setBanners((current) =>
+        current.map((b) =>
+          b.id === id ? { ...b, status: "approved", reviewedAt: new Date().toISOString() } : b,
+        ),
+      );
+    } catch {
+      return;
+    }
+  };
+
+  const handleRejectBanner = async (id: string) => {
+    try {
+      const response = await fetch(`/api/admin/banners/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "rejected" }),
+      });
+
+      if (!response.ok) return;
+
+      setBanners((current) =>
+        current.map((b) =>
+          b.id === id ? { ...b, status: "rejected", reviewedAt: new Date().toISOString() } : b,
+        ),
+      );
+    } catch {
+      return;
+    }
+  };
+
   const onLogout = async () => {
     await fetch("/api/admin/logout", { method: "POST" });
     router.refresh();
@@ -2012,7 +2095,9 @@ export default function AdminPanelView() {
                               ? "Book Upload Center"
                               : activeSection === "Payouts"
                                 ? "Teacher Payments"
-                                : " Notifications"}
+                                : activeSection === "Banners"
+                                  ? "Banner Requests"
+                                  : " Notifications"}
                   </h2>
                   <p className="mt-2 text-sm text-slate-500">
                     {activeSection === "Users" && "Manage account status, roles, and access permissions."}
@@ -2022,6 +2107,7 @@ export default function AdminPanelView() {
                     {activeSection === "Uploads" && "Upload books and assign metadata for publishing."}
                     {activeSection === "Payouts" && "Track payouts and settle teacher earnings securely."}
                     {activeSection === "Alerts" && "Professional updates and contact form submissions appear here automatically."}
+                    {activeSection === "Banners" && "Review and approve or reject banner ad submissions from professionals."}
                   </p>
                 </div>
 
@@ -2144,6 +2230,16 @@ export default function AdminPanelView() {
                   professionalsCurrentPage={professionalsCurrentPage}
                   setProfessionalsCurrentPage={setProfessionalsCurrentPage}
                   itemsPerPage={ITEMS_PER_PAGE}
+                />
+              ) : activeSection === "Banners" ? (
+                <AdminBannersPanel
+                  banners={paginatedBanners}
+                  loading={bannersLoading}
+                  onApprove={handleApproveBanner}
+                  onReject={handleRejectBanner}
+                  currentPage={bannersCurrentPage}
+                  totalPages={bannersTotalPages}
+                  onPageChange={setBannersCurrentPage}
                 />
               ) : (
                 <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

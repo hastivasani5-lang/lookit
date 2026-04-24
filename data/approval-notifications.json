@@ -1,5 +1,17 @@
 [
   {
+    "professionalId": "e9c8d94d-e2bf-4337-9df4-be953db32f94",
+    "professionalName": "demo",
+    "professionalEmail": "demo@gmail.com",
+    "event": "registration",
+    "title": "New professional registered",
+    "message": "demo has registered and is waiting for approval.",
+    "status": "pending",
+    "audience": "admin",
+    "id": "f9c2dfd2-5ef3-424c-967d-8c008dbccdc8",
+    "createdAt": "2026-04-24T08:41:11.184Z"
+  },
+  {
     "professionalId": "68b7d8df-60d7-4843-8587-f837def5c84f",
     "professionalName": "hello",
     "professionalEmail": "hello@gmail.com",

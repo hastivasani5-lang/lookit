@@ -60,10 +60,10 @@ export const upgradePlans: Array<{
   duration: string;
   featured?: boolean;
 }> = [
-  { key: "starter", name: "Basic", price: "$15", duration: "/ month" },
-  { key: "pro", name: "Premium", price: "$25", duration: "/ month" },
-  { key: "premium", name: "Gold", price: "$50", duration: "/ month", featured: true },
-  { key: "elite", name: "Silver", price: "$29", duration: "/ month" },
+  { key: "starter", name: "Basic", price: "₹15", duration: "/ month" },
+  { key: "pro", name: "Premium", price: "₹25", duration: "/ month" },
+  { key: "premium", name: "Gold", price: "₹50", duration: "/ month", featured: true },
+  { key: "elite", name: "Silver", price: "₹29", duration: "/ month" },
 ];
 
 export const RAZORPAY_PAYMENT_LINK = "https://razorpay.me/@jenildineshbhaigadhiya";

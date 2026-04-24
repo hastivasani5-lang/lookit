@@ -483,7 +483,7 @@ export default function AddSection({
                             <div>
                               <label className="block text-sm font-medium text-slate-900 mb-2">Price</label>
                               <div className="relative h-10 rounded-lg border border-slate-200 focus-within:border-[#1ec28e]">
-                                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-500">$</span>
+                                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-500">₹</span>
                                 <input
                                   type="number"
                                   min="0"
@@ -522,7 +522,7 @@ export default function AddSection({
                                   onChange={(event) => setBookCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
                                   className="w-4 h-4 accent-[#1ec28e]"
                                 />
-                                <span className="text-sm text-slate-700">60 days / $20</span>
+                                <span className="text-sm text-slate-700">60 days / ₹20</span>
                               </label>
                               <label className="flex items-center gap-2 cursor-pointer">
                                 <input
@@ -533,7 +533,7 @@ export default function AddSection({
                                   onChange={(event) => setBookCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
                                   className="w-4 h-4 accent-[#1ec28e]"
                                 />
-                                <span className="text-sm text-slate-700">6 months / $50</span>
+                                <span className="text-sm text-slate-700">6 months / ₹50</span>
                               </label>
                               <label className="flex items-center gap-2 cursor-pointer">
                                 <input
@@ -544,7 +544,7 @@ export default function AddSection({
                                   onChange={(event) => setBookCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
                                   className="w-4 h-4 accent-[#1ec28e]"
                                 />
-                                <span className="text-sm text-slate-700">1 year / $80</span>
+                                <span className="text-sm text-slate-700">1 year / ₹80</span>
                               </label>
                             </div>
                           </div>
@@ -857,7 +857,7 @@ export default function AddSection({
                             <div>
                               <label className="block text-sm font-medium text-slate-900 mb-2">Price</label>
                               <div className="relative h-10 rounded-lg border border-slate-200 focus-within:border-[#1ec28e]">
-                                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-500">$</span>
+                                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-500">₹</span>
                                 <input
                                   type="number"
                                   min="0"
@@ -896,7 +896,7 @@ export default function AddSection({
                                   onChange={(event) => setVideoCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
                                   className="w-4 h-4 accent-[#1ec28e]"
                                 />
-                                <span className="text-sm text-slate-700">60 days / $20</span>
+                                <span className="text-sm text-slate-700">60 days / ₹20</span>
                               </label>
                               <label className="flex items-center gap-2 cursor-pointer">
                                 <input
@@ -907,7 +907,7 @@ export default function AddSection({
                                   onChange={(event) => setVideoCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
                                   className="w-4 h-4 accent-[#1ec28e]"
                                 />
-                                <span className="text-sm text-slate-700">6 months / $50</span>
+                                <span className="text-sm text-slate-700">6 months / ₹50</span>
                               </label>
                               <label className="flex items-center gap-2 cursor-pointer">
                                 <input
@@ -918,7 +918,7 @@ export default function AddSection({
                                   onChange={(event) => setVideoCoursePackageInput(event.target.value as "30days" | "60days" | "6months" | "1year")}
                                   className="w-4 h-4 accent-[#1ec28e]"
                                 />
-                                <span className="text-sm text-slate-700">1 year / $80</span>
+                                <span className="text-sm text-slate-700">1 year / ₹80</span>
                               </label>
                             </div>
                           </div>

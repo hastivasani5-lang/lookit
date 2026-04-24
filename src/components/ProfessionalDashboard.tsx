@@ -254,10 +254,10 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
 
   const featuredContent = useMemo(() => {
     const allCourses = featuredPage === 2
-      ? coursePageTwo.map((c) => ({ title: c.title, tag: c.tag, academy: c.academy, lessons: "Video", price: "$39.00", rating: "4.7" }))
+      ? coursePageTwo.map((c) => ({ title: c.title, tag: c.tag, academy: c.academy, lessons: "Video", price: "₹39.00", rating: "4.7" }))
       : featuredPage === 3
-        ? coursePageThree.map((c) => ({ title: c.title, tag: c.tag, academy: c.academy, lessons: c.lessons, price: "$59.00", rating: "4.8" }))
-        : coursePageOne.map((c) => ({ title: c.title, tag: c.tag, academy: c.academy, lessons: c.lessons, price: "$49.00", rating: "4.5" }));
+        ? coursePageThree.map((c) => ({ title: c.title, tag: c.tag, academy: c.academy, lessons: c.lessons, price: "₹59.00", rating: "4.8" }))
+        : coursePageOne.map((c) => ({ title: c.title, tag: c.tag, academy: c.academy, lessons: c.lessons, price: "₹49.00", rating: "4.5" }));
 
     return (
       <div className="divide-y divide-slate-100 rounded-2xl border border-slate-100 bg-white overflow-hidden">

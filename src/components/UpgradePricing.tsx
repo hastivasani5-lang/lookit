@@ -23,7 +23,7 @@ export default function UpgradePricing() {
               <div className="font-bold text-xl text-[#1a2b3c] mb-1">{plan.name}</div>
               <div className="text-[#7b8794] text-base">{plan.duration}</div>
             </div>
-            <div className="font-bold text-2xl text-[#1ec28e]">${plan.price}</div>
+            <div className="font-bold text-2xl text-[#1ec28e]">₹{plan.price}</div>
           </div>
         ))}
       </div>

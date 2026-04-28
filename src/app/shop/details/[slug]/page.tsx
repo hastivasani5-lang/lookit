@@ -166,12 +166,6 @@ export default function DetailsPage() {
     setIsAdded(true);
   };
 
-  // Open PDF or video - toggle inline viewer
-  const handleOpenContent = () => {
-    if (!item) return;
-    setShowContent((prev) => !prev);
-  };
-
   const contentUrl = item ? (item.fileUrl || item.sourceUrl || "") : "";
 
   // PDF Viewer component - REMOVED (no longer needed)
@@ -288,26 +282,50 @@ export default function DetailsPage() {
                     <div className="h-[44px] w-32 rounded-full bg-gray-200 animate-pulse" />
                   ) : isFree ? (
                     /* FREE content → direct access, no cart */
-                    <button
-                      type="button"
-                      onClick={handleOpenContent}
-                      className="inline-flex h-[44px] items-center rounded-full bg-[#17c28a] px-7 text-[14px] font-semibold text-white transition hover:bg-[#11ab78]"
-                    >
-                      {item.contentType === "video"
-                        ? (showContent ? "▼ Hide Video" : "▶ Watch Now")
-                        : (showContent ? "▼ Hide Resources" : "🌐 View Resources")}
-                    </button>
+                    <>
+                      {item.contentType === "video" && (
+                        <button
+                          type="button"
+                          onClick={() => setShowContent((prev) => !prev)}
+                          className="inline-flex h-[44px] items-center rounded-full bg-[#17c28a] px-7 text-[14px] font-semibold text-white transition hover:bg-[#11ab78]"
+                        >
+                          {showContent ? "▼ Hide Video" : "▶ Watch Now"}
+                        </button>
+                      )}
+                      {item.contentType === "book" && (
+                        <a
+                          href={`https://www.google.com/search?q=${encodeURIComponent(item.title)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex h-[44px] items-center rounded-full bg-[#17c28a] px-7 text-[14px] font-semibold text-white transition hover:bg-[#11ab78]"
+                        >
+                          🔗 Search Google
+                        </a>
+                      )}
+                    </>
                   ) : hasPurchased ? (
                     /* PAID + this student already purchased → direct access */
-                    <button
-                      type="button"
-                      onClick={handleOpenContent}
-                      className="inline-flex h-[44px] items-center rounded-full bg-[#17c28a] px-7 text-[14px] font-semibold text-white transition hover:bg-[#11ab78]"
-                    >
-                      {item.contentType === "video"
-                        ? (showContent ? "▼ Hide Video" : "▶ Watch Now")
-                        : (showContent ? "▼ Hide Resources" : "🌐 View Resources")}
-                    </button>
+                    <>
+                      {item.contentType === "video" && (
+                        <button
+                          type="button"
+                          onClick={() => setShowContent((prev) => !prev)}
+                          className="inline-flex h-[44px] items-center rounded-full bg-[#17c28a] px-7 text-[14px] font-semibold text-white transition hover:bg-[#11ab78]"
+                        >
+                          {showContent ? "▼ Hide Video" : "▶ Watch Now"}
+                        </button>
+                      )}
+                      {item.contentType === "book" && (
+                        <a
+                          href={`https://www.google.com/search?q=${encodeURIComponent(item.title)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex h-[44px] items-center rounded-full bg-[#17c28a] px-7 text-[14px] font-semibold text-white transition hover:bg-[#11ab78]"
+                        >
+                          🔗 Search Google
+                        </a>
+                      )}
+                    </>
                   ) : session?.user?.role === "student" ? (
                     /* PAID + student not yet purchased → Add to Cart */
                     <>
@@ -375,13 +393,11 @@ export default function DetailsPage() {
             </div>
           </section>
 
-          {/* Inline Content Viewer - REMOVED PDF VIEWER */}
-          {showContent && canAccess && (
+          {/* Inline Content Viewer - Only for videos */}
+          {showContent && canAccess && item.contentType === "video" && (
             <section className="mt-8 rounded-[10px] bg-white px-5 py-6 shadow-[0_14px_48px_rgba(10,26,37,0.06)] md:px-10">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-[#13253f]">
-                  {item.contentType === "video" ? "▶ Video Player" : "📚 Related Resources"}
-                </h3>
+                <h3 className="text-lg font-bold text-[#13253f]">▶ Video Player</h3>
                 <button
                   type="button"
                   onClick={() => setShowContent(false)}
@@ -391,41 +407,21 @@ export default function DetailsPage() {
                 </button>
               </div>
 
-              {item.contentType === "video" ? (
-                /* Video */
-                contentUrl ? (
-                  <div className="w-full aspect-video rounded-lg overflow-hidden bg-black">
-                    <iframe
-                      src={contentUrl}
-                      title={item.title}
-                      className="w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-16 text-center text-gray-500 bg-[#f8f8f8] rounded-lg">
-                    <span className="text-4xl mb-3">🎬</span>
-                    <p className="font-semibold text-gray-700">Video not available</p>
-                    <p className="text-sm mt-1">The professional has not uploaded a video link yet.</p>
-                  </div>
-                )
+              {contentUrl ? (
+                <div className="w-full aspect-video rounded-lg overflow-hidden bg-black">
+                  <iframe
+                    src={contentUrl}
+                    title={item.title}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
               ) : (
-                /* Book - Show related website link instead of PDF */
-                <div className="flex flex-col items-center justify-center py-16 text-center bg-[#f8f8f8] rounded-lg">
-                  <span className="text-5xl mb-4">🌐</span>
-                  <p className="font-semibold text-gray-700 text-lg">Related Resources</p>
-                  <p className="text-sm mt-2 max-w-md text-gray-500">
-                    Search for related content and resources for this book on Google.
-                  </p>
-                  <a
-                    href={`https://www.google.com/search?q=${encodeURIComponent(item.title)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-6 inline-flex h-[44px] items-center rounded-full bg-[#17c28a] px-7 text-[14px] font-semibold text-white transition hover:bg-[#11ab78]"
-                  >
-                    🔗 Search on Google
-                  </a>
+                <div className="flex flex-col items-center justify-center py-16 text-center text-gray-500 bg-[#f8f8f8] rounded-lg">
+                  <span className="text-4xl mb-3">🎬</span>
+                  <p className="font-semibold text-gray-700">Video not available</p>
+                  <p className="text-sm mt-1">The professional has not uploaded a video link yet.</p>
                 </div>
               )}
             </section>

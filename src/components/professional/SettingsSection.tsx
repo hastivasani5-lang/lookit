@@ -1,7 +1,7 @@
 "use client";
 import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
-import { Loader2, Save, Settings, Upload } from "lucide-react";
+import { Bell, Globe, Lock, Loader2, Save, Settings, Upload, User, X } from "lucide-react";
 
 type SettingsSectionProps = {
   avatarSrc: string;
@@ -71,6 +71,9 @@ export default function SettingsSection({
   handleProfileSave,
 }: SettingsSectionProps) {
   const [zipLoading, setZipLoading] = useState(false);
+  const [settingsDrawerOpen, setSettingsDrawerOpen] = useState(false);
+  const [notifToggles, setNotifToggles] = useState({ email: true, student: true, review: false });
+  const [privacyToggles, setPrivacyToggles] = useState({ publicProfile: true, showContact: false });
   const cityDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
   // Auto-fetch ZIP code when city is typed
@@ -119,6 +122,174 @@ export default function SettingsSection({
 
   return (
     <div className="mt-6 grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
+
+      {/* Settings Side Drawer */}
+      {settingsDrawerOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end">
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setSettingsDrawerOpen(false)} />
+          {/* Drawer */}
+          <div className="relative z-10 flex h-full w-80 flex-col bg-white shadow-2xl">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+              <div className="flex items-center gap-2">
+                <Settings className="h-5 w-5 text-[#1ec28e]" />
+                <h3 className="text-base font-bold text-slate-900">Quick Settings</h3>
+              </div>
+              <button onClick={() => setSettingsDrawerOpen(false)}
+                className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
+
+              {/* Profile avatar + name */}
+              <div className="flex items-center gap-3 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 p-4 border border-emerald-100">
+                <Image
+                  src={avatarSrc}
+                  alt="Profile"
+                  width={52}
+                  height={52}
+                  className="h-13 w-13 rounded-2xl object-cover border-2 border-white shadow"
+                />
+                <div className="min-w-0">
+                  <p className="font-bold text-slate-900 truncate">{profileFirstName} {profileLastName}</p>
+                  <p className="text-xs text-slate-500 truncate">{profileEmail || "—"}</p>
+                  <span className="mt-1 inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+                    {profileSpecialization || "Professional"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Profile section */}
+              <div className="rounded-2xl bg-[#f7faf8] p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <User className="h-4 w-4 text-[#1ec28e]" />
+                  <p className="text-sm font-semibold text-slate-800">Profile Details</p>
+                </div>
+                <div className="space-y-2 text-xs text-slate-600">
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Phone</span>
+                    <span className="font-medium">{profileContactNumber || "—"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Address</span>
+                    <span className="font-medium truncate max-w-[140px]">{profileAddress || "—"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">City</span>
+                    <span className="font-medium">{profileCity || "—"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Postal Code</span>
+                    <span className="font-medium">{profilePostalCode || "—"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Country</span>
+                    <span className="font-medium">{profileCountry || "—"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Location</span>
+                    <span className="font-medium">{profileLocation || "—"}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Notifications */}
+              <div className="rounded-2xl bg-[#f7faf8] p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <Bell className="h-4 w-4 text-[#1ec28e]" />
+                  <p className="text-sm font-semibold text-slate-800">Notifications</p>
+                </div>
+                <div className="space-y-3">
+                  {([
+                    { label: "Email notifications", key: "email" as const },
+                    { label: "New student alerts", key: "student" as const },
+                    { label: "Review notifications", key: "review" as const },
+                  ] as const).map((item) => (
+                    <div key={item.label} className="flex items-center justify-between">
+                      <span className="text-xs text-slate-600">{item.label}</span>
+                      <button
+                        type="button"
+                        onClick={() => setNotifToggles((prev) => ({ ...prev, [item.key]: !prev[item.key] }))}
+                        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${notifToggles[item.key] ? "bg-[#1ec28e]" : "bg-slate-200"}`}
+                      >
+                        <span className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform duration-200 ${notifToggles[item.key] ? "translate-x-5" : "translate-x-0"}`} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Social Links */}
+              <div className="rounded-2xl bg-[#f7faf8] p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <Globe className="h-4 w-4 text-[#1ec28e]" />
+                  <p className="text-sm font-semibold text-slate-800">Social Links</p>
+                </div>
+                <div className="space-y-2 text-xs text-slate-600">
+                  {[
+                    { label: "Facebook", value: profileFacebook },
+                    { label: "Twitter", value: profileTwitter },
+                    { label: "Google", value: profileGoogle },
+                    { label: "Pinterest", value: profilePinterest },
+                  ].map((s) => (
+                    <div key={s.label} className="flex items-start justify-between gap-2">
+                      <span className="text-slate-400 shrink-0">{s.label}</span>
+                      {s.value ? (
+                        <a href={s.value} target="_blank" rel="noopener noreferrer"
+                          className="font-medium text-[#1ec28e] truncate max-w-[150px] hover:underline">
+                          {s.value.replace(/^https?:\/\/(www\.)?/, "").split("/")[0]}
+                        </a>
+                      ) : (
+                        <span className="text-slate-400 italic">Not set</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Privacy */}
+              <div className="rounded-2xl bg-[#f7faf8] p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <Lock className="h-4 w-4 text-[#1ec28e]" />
+                  <p className="text-sm font-semibold text-slate-800">Privacy</p>
+                </div>
+                <div className="space-y-3">
+                  {([
+                    { label: "Public profile", key: "publicProfile" as const },
+                    { label: "Show contact info", key: "showContact" as const },
+                  ] as const).map((item) => (
+                    <div key={item.label} className="flex items-center justify-between">
+                      <span className="text-xs text-slate-600">{item.label}</span>
+                      <button
+                        type="button"
+                        onClick={() => setPrivacyToggles((prev) => ({ ...prev, [item.key]: !prev[item.key] }))}
+                        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${privacyToggles[item.key] ? "bg-[#1ec28e]" : "bg-slate-200"}`}
+                      >
+                        <span className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform duration-200 ${privacyToggles[item.key] ? "translate-x-5" : "translate-x-0"}`} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="border-t border-slate-100 px-5 py-4">
+              <button
+                type="button"
+                onClick={() => setSettingsDrawerOpen(false)}
+                className="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+              >
+                Close Settings
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Left: Photo + Certificates */}
       <div className="rounded-[24px] bg-white p-6 shadow-sm">
         <div className="flex items-center gap-4">
@@ -198,7 +369,10 @@ export default function SettingsSection({
             <h3 className="text-lg font-semibold text-slate-900">Edit Profile</h3>
             <p className="text-sm text-slate-500">Update your profile information and details.</p>
           </div>
-          <Settings className="h-5 w-5 text-[#1ec28e]" />
+          <button type="button" onClick={() => setSettingsDrawerOpen(true)} title="Open Settings"
+            className="grid h-9 w-9 place-items-center rounded-xl border border-emerald-100 bg-emerald-50 text-[#1ec28e] transition hover:bg-emerald-100 hover:scale-110">
+            <Settings className="h-5 w-5" />
+          </button>
         </div>
 
         {/* First Name + Last Name */}

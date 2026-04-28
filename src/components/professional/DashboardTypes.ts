@@ -7,6 +7,7 @@ export type ProfessionalUser = {
   specialization?: string | null;
   contactNumber?: string | null;
   location?: string | null;
+  locations?: string[];
   certificates?: string[];
   reviews?: string[];
   profileBoostedUntil?: string | null;

@@ -58,6 +58,7 @@ export function ensureDbSchema() {
           specialization TEXT,
           contact_number TEXT,
           location TEXT,
+          locations TEXT[] NOT NULL DEFAULT '{}',
           certificates TEXT[] NOT NULL DEFAULT '{}',
           reviews TEXT[] NOT NULL DEFAULT '{}',
           profile_boosted_until TIMESTAMPTZ,

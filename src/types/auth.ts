@@ -12,6 +12,7 @@ export interface AppUser {
   specialization?: string;
   contactNumber?: string;
   location?: string;
+  locations?: string[];
   certificates?: string[];
   reviews?: string[];
   profileBoostedUntil?: string;

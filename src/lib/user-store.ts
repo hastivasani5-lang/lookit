@@ -34,6 +34,7 @@ type UserRow = {
   specialization: string | null;
   contact_number: string | null;
   location: string | null;
+  locations: string[] | null;
   certificates: string[] | null;
   reviews: string[] | null;
   profile_boosted_until: Date | null;

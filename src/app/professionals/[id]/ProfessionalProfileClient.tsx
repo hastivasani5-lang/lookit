@@ -408,9 +408,38 @@ export default function ProfessionalProfileClient({ professional, canAddToCart, 
               </div>
 
               <div className="grid gap-3 rounded-3xl border border-[#dbe8e4] bg-[#f8fbfa] p-4 text-sm text-gray-700">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-primary" />
-                  <span>{professional.location}</span>
+                <div className="flex flex-col gap-2">
+                  {professional.locations && professional.locations.length > 0 ? (
+                    <>
+                      {professional.locations.map((loc, idx) => (
+                        <a
+                          key={idx}
+                          href={`https://www.google.com/maps/search/${encodeURIComponent(loc)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 text-primary hover:underline transition"
+                        >
+                          <MapPin className="h-4 w-4 flex-shrink-0" />
+                          <span>{loc}</span>
+                        </a>
+                      ))}
+                    </>
+                  ) : professional.location ? (
+                    <a
+                      href={`https://www.google.com/maps/search/${encodeURIComponent(professional.location)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-primary hover:underline transition"
+                    >
+                      <MapPin className="h-4 w-4" />
+                      <span>{professional.location}</span>
+                    </a>
+                  ) : (
+                    <div className="flex items-center gap-2 text-gray-400">
+                      <MapPin className="h-4 w-4" />
+                      <span>Location not set</span>
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   <Star className="h-4 w-4 fill-primary text-primary" />

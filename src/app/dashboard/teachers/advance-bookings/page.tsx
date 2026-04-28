@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { Bell, Calendar, Clock3, RefreshCcw, Users, CheckCircle, XCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 import DashboardSidebar from "@/components/DashboardSidebar";
 import type { AdvanceBooking } from "@/lib/advance-bookings-store";
@@ -13,7 +14,8 @@ function formatDate(value: string) {
 }
 
 export default function AdvanceBookingsPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const ITEMS_PER_PAGE = 10;
 
   const [bookings, setBookings] = useState<AdvanceBooking[]>([]);
@@ -23,12 +25,22 @@ export default function AdvanceBookingsPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
+
   const loadBookings = async (isRefresh = false) => {
     isRefresh ? setRefreshing(true) : setLoading(true);
     setError("");
     try {
       const res = await fetch("/api/advance-bookings", { cache: "no-store" });
       const payload = (await res.json().catch(() => ({}))) as { bookings?: AdvanceBooking[]; message?: string };
+      if (res.status === 401) {
+        router.push("/login");
+        return;
+      }
       if (!res.ok) { setError(payload.message || "Unable to load."); return; }
       setBookings(Array.isArray(payload.bookings) ? payload.bookings : []);
     } catch {

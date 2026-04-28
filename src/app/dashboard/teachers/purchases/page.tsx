@@ -70,6 +70,12 @@ export default function TeacherPurchasesPage() {
   const [bookingsLoading, setBookingsLoading] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
+
   const loadPurchases = async (isRefresh = false) => {
     isRefresh ? setRefreshing(true) : setLoading(true);
     if (!isRefresh) setError("");
@@ -77,7 +83,7 @@ export default function TeacherPurchasesPage() {
       const res = await fetch("/api/profile/purchases", { cache: "no-store" });
       const payload = (await res.json().catch(() => ({}))) as PurchasePayload;
       if (res.status === 401) {
-        if (!isRefresh) router.push("/login");
+        router.push("/login");
         return;
       }
       if (!res.ok) {

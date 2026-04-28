@@ -42,7 +42,7 @@ const AboutHero = () => {
           </div>
 
           {/* BUTTON */}
-          <Link href="/about" className="inline-block bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-lg font-medium transition hover:scale-105 hover:shadow-md">
+          <Link href="/about/passion-language-school" className="inline-block bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-lg font-medium transition hover:scale-105 hover:shadow-md">
             Read More
           </Link>
         </div>

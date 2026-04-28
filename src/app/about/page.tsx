@@ -4,6 +4,7 @@ import About from "@/components/Aboutbannar";
 import AboutHero from "@/components/AboutHero";
  import PreciousFeaturesSection from "@/components/PreciousFeaturesSection";
 import Testimonials1 from "@/components/Testimonials1";
+import FeaturedCourse from "@/components/FeaturedCourse"
 import Footer from "@/components/Footer";
 export default function AboutPage() {
   return (
@@ -12,6 +13,8 @@ export default function AboutPage() {
       <main>
         <About />
         <AboutHero />
+                 <FeaturedCourse />
+
          <PreciousFeaturesSection />
         <Testimonials1 />
         <Footer />

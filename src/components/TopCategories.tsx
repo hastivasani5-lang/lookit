@@ -2,6 +2,7 @@
 
 import { Brush, Code, Heart, Lightbulb, Briefcase, DollarSign, Megaphone, Camera, Database, Dumbbell, Music, GraduationCap } from "lucide-react";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
 const categories = [
   { title: "Art & Design",         slug: "art-design",           icon: Brush,         color: "bg-pink-50   text-pink-500",    border: "hover:border-pink-300" },
@@ -19,8 +20,27 @@ const categories = [
 ];
 
 export default function TopCategories() {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      setSearchQuery((e as CustomEvent<string>).detail.toLowerCase());
+    };
+    window.addEventListener("categories-search", handler);
+
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get("search");
+    if (q) setSearchQuery(q.toLowerCase());
+
+    return () => window.removeEventListener("categories-search", handler);
+  }, []);
+
+  const filtered = searchQuery
+    ? categories.filter((c) => c.title.toLowerCase().includes(searchQuery))
+    : categories;
+
   return (
-    <section className="bg-[#f8fafb] px-6 md:px-16 py-16">
+    <section id="top-categories" className="bg-[#f8fafb] px-6 md:px-16 py-16">
       <div className="max-w-7xl mx-auto">
 
         {/* Title */}
@@ -37,37 +57,40 @@ export default function TopCategories() {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {categories.map((cat, index) => {
-            const Icon = cat.icon;
-            return (
-              <Link
-                href={`/categories/${cat.slug}`}
-                key={index}
-                prefetch={false}
-                className={`group flex flex-col items-start gap-3 bg-white px-5 py-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 no-underline ${cat.border}`}
-              >
-                {/* Icon box */}
-                <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${cat.color} transition-transform duration-200 group-hover:scale-110`}>
-                  <Icon size={20} />
-                </div>
-
-                {/* Title */}
-                <div>
-                  <span className="text-sm font-semibold text-gray-800 group-hover:text-[#1ec28e] transition-colors">
-                    {cat.title}
-                  </span>
-                  <div className="mt-1 flex items-center gap-1 text-xs text-gray-400">
-                    <span>Explore</span>
-                    <svg className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                    </svg>
+        {filtered.length === 0 ? (
+          <div className="text-center py-12 text-gray-400 text-base">
+            No categories found for &quot;{searchQuery}&quot;
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {filtered.map((cat, index) => {
+              const Icon = cat.icon;
+              return (
+                <Link
+                  href={`/categories/${cat.slug}`}
+                  key={index}
+                  prefetch={false}
+                  className={`group flex flex-col items-start gap-3 bg-white px-5 py-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 no-underline ${cat.border}`}
+                >
+                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${cat.color} transition-transform duration-200 group-hover:scale-110`}>
+                    <Icon size={20} />
                   </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+                  <div>
+                    <span className="text-sm font-semibold text-gray-800 group-hover:text-[#1ec28e] transition-colors">
+                      {cat.title}
+                    </span>
+                    <div className="mt-1 flex items-center gap-1 text-xs text-gray-400">
+                      <span>Explore</span>
+                      <svg className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
 
       </div>
     </section>

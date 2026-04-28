@@ -24,7 +24,18 @@ export default function HeroCourses() {
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const query = searchText.trim();
-    router.push(query ? `/directory?search=${encodeURIComponent(query)}` : "/directory");
+    if (query) {
+      // scroll to categories section and filter
+      const el = document.getElementById("top-categories");
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+      // update URL param for filtering
+      const url = new URL(window.location.href);
+      url.searchParams.set("search", query);
+      window.history.pushState({}, "", url.toString());
+      window.dispatchEvent(new CustomEvent("categories-search", { detail: query }));
+    } else {
+      window.dispatchEvent(new CustomEvent("categories-search", { detail: "" }));
+    }
   };
 
   return (

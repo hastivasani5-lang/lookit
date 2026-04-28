@@ -1534,7 +1534,7 @@ export default function AdminPanelView() {
 
   const onLogout = async () => {
     await fetch("/api/admin/logout", { method: "POST" });
-    router.refresh();
+    router.push("/dashboard/teachers");
   };
 
   return (

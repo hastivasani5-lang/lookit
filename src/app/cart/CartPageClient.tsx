@@ -7,7 +7,7 @@ import { useSession } from "next-auth/react";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { getCartItems, removeCartItem, clearCartItems, type CartItem } from "@/lib/cart-store";
+import { getCartItems, removeCartItem, updateCartItemQuantity, clearCartItems, type CartItem } from "@/lib/cart-store";
 
 const RAZORPAY_PAYMENT_LINK = "https://razorpay.me/@jenildineshbhaigadhiya";
 
@@ -30,6 +30,7 @@ export default function CartPageClient() {
   const [paymentSuccessMessage, setPaymentSuccessMessage] = useState("Successful");
   const [paymentError, setPaymentError] = useState("");
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null);
 
   useEffect(() => {
     setCartItems(getCartItems());
@@ -40,10 +41,24 @@ export default function CartPageClient() {
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
-  const totalAmount = useMemo(() => cartItems.reduce((sum, item) => sum + parsePrice(item.price), 0), [cartItems]);
+  const totalAmount = useMemo(
+    () => cartItems.reduce((sum, item) => sum + parsePrice(item.price) * (item.quantity ?? 1), 0),
+    [cartItems],
+  );
 
   const handleRemove = (itemId: string) => {
-    setCartItems(removeCartItem(itemId));
+    setConfirmRemoveId(itemId);
+  };
+
+  const handleConfirmRemove = () => {
+    if (confirmRemoveId) {
+      setCartItems(removeCartItem(confirmRemoveId));
+      setConfirmRemoveId(null);
+    }
+  };
+
+  const handleQuantityChange = (itemId: string, newQty: number) => {
+    setCartItems(updateCartItemQuantity(itemId, newQty));
   };
 
   const handlePayment = async (event: FormEvent<HTMLFormElement>) => {
@@ -172,13 +187,41 @@ export default function CartPageClient() {
                           <p className="mt-3 text-sm text-gray-500">Professional: <span className="font-semibold text-emerald-700">{item.professionalName}</span></p>
                           <p className="mt-2 text-base font-bold text-emerald-700">{item.price}</p>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => handleRemove(item.id)}
-                          className="inline-flex w-fit rounded-full bg-gradient-to-r from-red-100 to-rose-100 px-5 py-2 text-sm font-semibold text-red-700 shadow transition hover:bg-red-200 hover:scale-105"
-                        >
-                          Remove
-                        </button>
+                        <div className="flex flex-col items-end gap-3">
+                          {/* Quantity controls */}
+                          <div className="flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 shadow-sm">
+                            <button
+                              type="button"
+                              onClick={() => handleQuantityChange(item.id, (item.quantity ?? 1) - 1)}
+                              className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-lg font-bold text-emerald-700 shadow transition hover:bg-emerald-100 hover:scale-110 disabled:opacity-40"
+                              disabled={(item.quantity ?? 1) <= 1}
+                              aria-label="Decrease quantity"
+                            >
+                              −
+                            </button>
+                            <span className="min-w-[2rem] text-center text-base font-semibold text-gray-800">
+                              {item.quantity ?? 1}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleQuantityChange(item.id, (item.quantity ?? 1) + 1)}
+                              className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-lg font-bold text-emerald-700 shadow transition hover:bg-emerald-100 hover:scale-110"
+                              aria-label="Increase quantity"
+                            >
+                              +
+                            </button>
+                          </div>
+                          <p className="text-sm font-semibold text-gray-700">
+                            Subtotal: <span className="text-emerald-700">₹{(parsePrice(item.price) * (item.quantity ?? 1)).toFixed(2)}</span>
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => handleRemove(item.id)}
+                            className="inline-flex w-fit rounded-full bg-gradient-to-r from-red-100 to-rose-100 px-5 py-2 text-sm font-semibold text-red-700 shadow transition hover:bg-red-200 hover:scale-105"
+                          >
+                            Remove
+                          </button>
+                        </div>
                       </div>
                     </article>
                   ))}
@@ -310,6 +353,34 @@ export default function CartPageClient() {
         </section>
       </main>
       <Footer />
+
+      {/* Remove confirmation modal */}
+      {confirmRemoveId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl border border-gray-100">
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Remove Item?</h3>
+            <p className="text-sm text-gray-500 mb-6">
+              Are you sure you want to remove this item from your cart?
+            </p>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setConfirmRemoveId(null)}
+                className="flex-1 rounded-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmRemove}
+                className="flex-1 rounded-full bg-gradient-to-r from-red-500 to-rose-500 px-4 py-2.5 text-sm font-semibold text-white shadow transition hover:scale-105 hover:shadow-md"
+              >
+                Yes, Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

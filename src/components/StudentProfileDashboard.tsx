@@ -13,6 +13,7 @@ import {
   Phone,
   Printer,
   Share2,
+  Trash2,
   TriangleAlert,
   Users,
   Video,
@@ -631,6 +632,18 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
       .finally(() => setWishlistLoading(false));
   }, [activeTab]);
 
+  const handleRemoveWishlistItem = async (item: { id: string; title: string; price: string; imageUrl: string; contentType: string; professionalName: string; slug: string }) => {
+    try {
+      await fetch("/api/student/wishlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(item),
+      });
+      setWishlistItems((prev) => prev.filter((w) => w.id !== item.id));
+      window.dispatchEvent(new Event("wishlist-updated"));
+    } catch { /* ignore */ }
+  };
+
   useEffect(() => {
     if (activeTab !== "following") return;
     setFollowingLoading(true);
@@ -835,7 +848,15 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                 ) : (
                   <div className="grid gap-1.5 sm:gap-2 lg:gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                     {wishlistItems.map((item) => (
-                      <div key={item.id} className="rounded-lg sm:rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-2 sm:p-3 lg:p-4 flex flex-col gap-1 sm:gap-2">
+                      <div key={item.id} className="relative rounded-lg sm:rounded-xl border border-[#dbe8e4] bg-[#f8fbfa] p-2 sm:p-3 lg:p-4 flex flex-col gap-1 sm:gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveWishlistItem(item)}
+                          className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-white shadow hover:bg-red-50 transition hover:scale-110"
+                          aria-label="Remove from wishlist"
+                        >
+                          <Trash2 className="h-3.5 w-3.5 text-red-500" />
+                        </button>
                         {item.imageUrl && (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={item.imageUrl} alt={item.title} className="h-16 sm:h-20 lg:h-28 w-full object-cover rounded-md sm:rounded-lg" />

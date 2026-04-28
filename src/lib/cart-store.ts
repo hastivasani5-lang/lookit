@@ -9,6 +9,7 @@ export type CartItem = {
   duration?: string;
   sourceUrl?: string;
   contentType: "book" | "video" | "course" | "lecture";
+  quantity?: number;
 };
 
 const CART_STORAGE_KEY = "lookit-cart-items";
@@ -58,10 +59,28 @@ export function getCartItems() {
 
 export function addCartItem(item: CartItem) {
   const currentItems = readStorage();
-  const nextItems = currentItems.some((currentItem) => currentItem.id === item.id)
-    ? currentItems
-    : [item, ...currentItems];
+  const existing = currentItems.find((currentItem) => currentItem.id === item.id);
+  const nextItems = existing
+    ? currentItems.map((currentItem) =>
+        currentItem.id === item.id
+          ? { ...currentItem, quantity: (currentItem.quantity ?? 1) + 1 }
+          : currentItem,
+      )
+    : [{ ...item, quantity: 1 }, ...currentItems];
 
+  writeStorage(nextItems);
+  window.dispatchEvent(new Event("cart-updated"));
+  return nextItems;
+}
+
+export function updateCartItemQuantity(itemId: string, quantity: number) {
+  const currentItems = readStorage();
+  const nextItems =
+    quantity <= 0
+      ? currentItems.filter((item) => item.id !== itemId)
+      : currentItems.map((item) =>
+          item.id === itemId ? { ...item, quantity } : item,
+        );
   writeStorage(nextItems);
   window.dispatchEvent(new Event("cart-updated"));
   return nextItems;

@@ -4,12 +4,11 @@ import Link from "next/link";
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
+import Script from "next/script";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getCartItems, removeCartItem, updateCartItemQuantity, clearCartItems, type CartItem } from "@/lib/cart-store";
-
-const RAZORPAY_PAYMENT_LINK = "https://razorpay.me/@jenildineshbhaigadhiya";
 
 function parsePrice(value: string) {
   const cleaned = value.replace(/[^\d.]/g, "");
@@ -109,45 +108,94 @@ export default function CartPageClient() {
       return;
     }
 
-    window.open(RAZORPAY_PAYMENT_LINK, "_blank", "noopener,noreferrer");
-
     setIsProcessingPayment(true);
 
     try {
-      const response = await fetch("/api/payments/checkout", {
+      // Step 1: Create Razorpay order
+      const orderResponse = await fetch("/api/payments/razorpay-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          amount: totalAmount,
           items: cartItems,
-          cardName,
-          cardNumber,
-          expiry,
-          cvv,
         }),
       });
 
-      const payload = (await response.json().catch(() => ({}))) as { message?: string };
-      if (!response.ok) {
-        setPaymentSuccess(false);
-        setPaymentError(payload.message || "Unable to process payment.");
+      if (!orderResponse.ok) {
+        const error = await orderResponse.json().catch(() => ({}));
+        setPaymentError(error.message || "Failed to create payment order.");
+        setIsProcessingPayment(false);
         return;
       }
 
-      setPaymentSuccessMessage(payload.message || "Successful");
-      setPaymentSuccess(true);
-      // Clear cart after successful payment
-      clearCartItems();
-      setCartItems([]);
-    } catch {
+      const orderData = await orderResponse.json();
+
+      // Step 2: Open Razorpay checkout
+      const options = {
+        key: orderData.keyId,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "Lookit",
+        description: `Purchase ${cartItems.length} item(s)`,
+        order_id: orderData.orderId,
+        handler: async (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
+          try {
+            // Step 3: Verify payment and save to database
+            const verifyResponse = await fetch("/api/payments/checkout", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                items: cartItems,
+                cardName,
+                cardNumber,
+                expiry,
+                cvv,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpayOrderId: response.razorpay_order_id,
+                razorpaySignature: response.razorpay_signature,
+              }),
+            });
+
+            const payload = (await verifyResponse.json().catch(() => ({}))) as { message?: string };
+            if (!verifyResponse.ok) {
+              setPaymentSuccess(false);
+              setPaymentError(payload.message || "Payment verification failed.");
+              return;
+            }
+
+            setPaymentSuccessMessage(payload.message || "Payment successful!");
+            setPaymentSuccess(true);
+            clearCartItems();
+            setCartItems([]);
+          } catch (error) {
+            setPaymentSuccess(false);
+            setPaymentError("Payment verification failed.");
+          } finally {
+            setIsProcessingPayment(false);
+          }
+        },
+        prefill: {
+          name: session?.user?.name || "",
+          email: session?.user?.email || "",
+        },
+        theme: {
+          color: "#059669",
+        },
+      };
+
+      // @ts-ignore - Razorpay is loaded via script
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (error) {
       setPaymentSuccess(false);
       setPaymentError("Unable to process payment.");
-    } finally {
       setIsProcessingPayment(false);
     }
   };
 
   return (
     <>
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <Navbar />
       <main className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-2 pb-16 pt-10 md:px-8 lg:px-10">
           <section className="w-full max-w-screen-2xl mx-auto px-2 md:px-8">

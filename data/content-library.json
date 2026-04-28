@@ -243,6 +243,20 @@
         }
       ],
       "watchedVideos": []
+    },
+    "e6c13fda-009a-41bf-aa8f-5129962e3901": {
+      "purchasedBooks": [
+        {
+          "id": "purchased-book-1777349543261-26xk97",
+          "purchasedAt": "2026-04-28T04:12:23.261Z",
+          "contentId": "book-1776829461467-3k2x4p",
+          "title": "Frontend design",
+          "source": "jenil",
+          "amount": "₹70.00",
+          "accessUrl": ""
+        }
+      ],
+      "watchedVideos": []
     }
   }
 }

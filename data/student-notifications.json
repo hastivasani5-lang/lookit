@@ -1,5 +1,21 @@
 [
   {
+    "id": "baaa6945-e746-430e-986c-b450306f38e7",
+    "studentId": "e6c13fda-009a-41bf-aa8f-5129962e3901",
+    "type": "purchase_confirmation",
+    "message": "Purchase successful! You bought \"Full stck devlopment\", \"Frontend design\" for ₹120.00. Transaction ID: TXN-1777349543259-77V5N",
+    "read": true,
+    "createdAt": "2026-04-28T04:12:23.262Z"
+  },
+  {
+    "id": "6517c0f3-6a66-4d90-b0a5-058ce2a61cb8",
+    "studentId": "42d3d5d9-e80d-4f0e-9db0-aa949fcfb800",
+    "type": "announcement",
+    "message": "You missed your work goal on 2026-04-23 — you worked 0.06 hrs but your goal was 8 hrs.",
+    "read": false,
+    "createdAt": "2026-04-24T13:08:25.551Z"
+  },
+  {
     "id": "0426a3cf-22bb-48e4-92f2-0c5d4386f091",
     "studentId": "6ef3d354-6ea1-44fe-8877-8ac9eb2adc46",
     "type": "announcement",

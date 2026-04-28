@@ -416,15 +416,15 @@ export default function DetailsPage() {
                   <span className="text-5xl mb-4">🌐</span>
                   <p className="font-semibold text-gray-700 text-lg">Related Resources</p>
                   <p className="text-sm mt-2 max-w-md text-gray-500">
-                    Access related content and resources for this book through our partner websites.
+                    Search for related content and resources for this book on Google.
                   </p>
                   <a
-                    href={contentUrl || "https://www.google.com"}
+                    href={`https://www.google.com/search?q=${encodeURIComponent(item.title)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-6 inline-flex h-[44px] items-center rounded-full bg-[#17c28a] px-7 text-[14px] font-semibold text-white transition hover:bg-[#11ab78]"
                   >
-                    🔗 Open Related Website
+                    🔗 Search on Google
                   </a>
                 </div>
               )}

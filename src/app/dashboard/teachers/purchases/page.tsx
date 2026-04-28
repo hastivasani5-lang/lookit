@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { Award, Bell, BookOpen, Calendar, CheckCircle, Clock3, RefreshCcw, Users, Video, X, XCircle } from "lucide-react";
-import { useSession, signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 import DashboardSidebar from "@/components/DashboardSidebar";
@@ -104,12 +104,6 @@ export default function TeacherPurchasesPage() {
     } catch { /* ignore */ }
     finally { setBookingsLoading(false); }
   };
-
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    }
-  }, [status, router]);
 
   useEffect(() => {
     void loadPurchases();

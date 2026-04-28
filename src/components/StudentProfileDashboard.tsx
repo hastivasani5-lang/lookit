@@ -857,9 +857,12 @@ export default function StudentProfileDashboard({ user, library }: StudentProfil
                         >
                           <Trash2 className="h-3.5 w-3.5 text-red-500" />
                         </button>
-                        {item.imageUrl && (
+                        {item.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={item.imageUrl} alt={item.title} className="h-16 sm:h-20 lg:h-28 w-full object-cover rounded-md sm:rounded-lg" />
+                          <img src={item.imageUrl} alt={item.title} className="h-16 sm:h-20 lg:h-28 w-full object-cover rounded-md sm:rounded-lg" onError={(e) => { (e.target as HTMLImageElement).src = item.contentType === "book" ? "/books.png" : "/offer-video.png"; }} />
+                        ) : (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={item.contentType === "book" ? "/books.png" : "/offer-video.png"} alt={item.title} className="h-16 sm:h-20 lg:h-28 w-full object-cover rounded-md sm:rounded-lg" />
                         )}
                         <p className="font-semibold text-[#1f2937] line-clamp-2 text-xs sm:text-sm lg:text-base">{item.title}</p>
                         {item.professionalName && <p className="text-xs text-gray-500">By {item.professionalName}</p>}

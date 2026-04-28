@@ -22,7 +22,7 @@ type ProductGridProps = {
 const itemsPerPage = 6;
 
 function placeholderImageFor(contentType: ContentTab) {
-  return contentType === "book" ? "/instructor.avif" : "/instructor.avif";
+  return contentType === "book" ? "/books.png" : "/offer-video.png";
 }
 
 const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange, onCategoriesChange, filters }: ProductGridProps) => {
@@ -269,6 +269,10 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange, onCategoriesChange
                     alt={item.title}
                     className="h-40 w-full object-contain"
                     loading="lazy"
+                    onError={(e) => {
+                      const img = e.target as HTMLImageElement;
+                      img.src = placeholderImageFor(item.contentType);
+                    }}
                   />
                   {isStudent && (
                     <button

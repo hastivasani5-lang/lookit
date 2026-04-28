@@ -121,6 +121,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   const [bookImageLinkInput, setBookImageLinkInput] = useState("");
   const [bookLinkInput, setBookLinkInput] = useState("");
   const [bookFormError, setBookFormError] = useState("");
+  const [bookImageError, setBookImageError] = useState("");
   const [bookInstructorInput, setBookInstructorInput] = useState("");
   const [bookModeInput, setBookModeInput] = useState<"online" | "offline">("online");
   const [bookDescriptionInput, setBookDescriptionInput] = useState("");
@@ -131,6 +132,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   const [isVideoFormOpen, setIsVideoFormOpen] = useState(false);
   const [youtubeLinkInput, setYoutubeLinkInput] = useState("");
   const [youtubeLinkError, setYoutubeLinkError] = useState("");
+  const [videoImageError, setVideoImageError] = useState("");
   const [videoMrpInput, setVideoMrpInput] = useState("");
   const [pendingVideoFiles, setPendingVideoFiles] = useState<File[]>([]);
   const [videoInstructorInput, setVideoInstructorInput] = useState("");
@@ -253,36 +255,79 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
   }, [user.id]);
 
   const featuredContent = useMemo(() => {
-    const allCourses = featuredPage === 2
-      ? coursePageTwo.map((c) => ({ title: c.title, tag: c.tag, academy: c.academy, lessons: "Video", price: "₹39.00", rating: "4.7" }))
-      : featuredPage === 3
-        ? coursePageThree.map((c) => ({ title: c.title, tag: c.tag, academy: c.academy, lessons: c.lessons, price: "₹59.00", rating: "4.8" }))
-        : coursePageOne.map((c) => ({ title: c.title, tag: c.tag, academy: c.academy, lessons: c.lessons, price: "₹49.00", rating: "4.5" }));
+    // Combine all books and videos
+    const allContent = [
+      ...addedBooks.map((book) => ({
+        id: book.id,
+        title: book.name,
+        category: book.category,
+        price: `₹${book.mrp}`,
+        type: "book" as const,
+        rating: "4.5",
+      })),
+      ...addedVideos.map((video) => ({
+        id: video.id,
+        title: video.name,
+        category: video.category || "Video",
+        price: `₹${video.mrp || "0.00"}`,
+        type: "video" as const,
+        rating: "4.5",
+      })),
+    ];
+
+    // Paginate: 6 items per page
+    const itemsPerPage = 6;
+    const startIndex = (featuredPage - 1) * itemsPerPage;
+    const paginatedContent = allContent.slice(startIndex, startIndex + itemsPerPage);
+
+    if (allContent.length === 0) {
+      return (
+        <div className="px-5 py-8 text-center text-slate-500">
+          <p className="text-sm">No books or videos added yet.</p>
+          <p className="mt-1 text-xs text-slate-400">Go to the "Add" section to create your first course.</p>
+        </div>
+      );
+    }
 
     return (
-      <div className="divide-y divide-slate-100 rounded-2xl border border-slate-100 bg-white overflow-hidden">
-        {allCourses.map((course, index) => (
-          <div key={`${course.title}-${index}`} className="flex items-center gap-4 px-4 py-3 hover:bg-[#f6fefb] transition">
+      <div className="divide-y divide-slate-100">
+        {paginatedContent.map((item, index) => (
+          <div key={item.id} className="flex items-center gap-4 px-5 py-4 hover:bg-[#f6fefb] transition">
             <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#1ec28e]/10 text-[#1ec28e] text-sm font-bold">
-              {index + 1}
+              {startIndex + index + 1}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-slate-900">{course.title}</p>
-              <p className="mt-0.5 text-xs text-slate-500">{course.academy} · {course.lessons}</p>
+              <p className="truncate text-sm font-semibold text-slate-900">{item.title}</p>
+              <p className="mt-0.5 text-xs text-slate-500">{item.category} · {item.type === "book" ? "📚 Book" : "🎬 Video"}</p>
             </div>
             <div className="flex shrink-0 items-center gap-3">
-              <span className="hidden rounded-full bg-[#1ec28e]/10 px-2.5 py-0.5 text-xs font-medium text-[#1ec28e] sm:inline">{course.tag}</span>
+              <span className="hidden rounded-full bg-[#1ec28e]/10 px-2.5 py-0.5 text-xs font-medium text-[#1ec28e] sm:inline">
+                {item.type === "book" ? "Book" : "Video"}
+              </span>
               <span className="flex items-center gap-1 text-xs text-amber-500">
                 <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                {course.rating}
+                {item.rating}
               </span>
-              <span className="text-sm font-bold text-[#1ec28e]">{course.price}</span>
+              <span className="text-sm font-bold text-[#1ec28e]">{item.price}</span>
             </div>
           </div>
         ))}
       </div>
     );
-  }, [featuredPage]);
+  }, [featuredPage, addedBooks, addedVideos]);
+
+  const totalPages = useMemo(() => {
+    const allContent = [...addedBooks, ...addedVideos];
+    const itemsPerPage = 6;
+    return Math.max(1, Math.ceil(allContent.length / itemsPerPage));
+  }, [addedBooks, addedVideos]);
+
+  // Reset featured page if it exceeds total pages
+  useEffect(() => {
+    if (featuredPage > totalPages) {
+      setFeaturedPage(1);
+    }
+  }, [totalPages, featuredPage, setFeaturedPage]);
 
   const handleProfileSave = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -626,16 +671,17 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     const trimmedBookImageLink = bookImageLinkInput.trim();
     let resolvedBookImageUrl = "";
 
-    if (trimmedBookImageLink) {
-      if (!parseHttpUrl(trimmedBookImageLink)) {
-        setBookFormError("Please provide a valid image link.");
-        return;
-      }
-      resolvedBookImageUrl = trimmedBookImageLink;
-    } else {
-      setBookFormError("Please provide a book image link (file upload is not supported on live).");
+    if (!trimmedBookImageLink) {
+      setBookImageError("Book image is required.");
       return;
     }
+
+    if (!parseHttpUrl(trimmedBookImageLink)) {
+      setBookImageError("Please provide a valid image link.");
+      return;
+    }
+
+    resolvedBookImageUrl = trimmedBookImageLink;
 
     if (bookTypeInput === "paid" && (!Number.isFinite(parsedMrp) || parsedMrp <= 0)) {
       setBookFormError("Please enter a valid price amount.");
@@ -643,6 +689,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
     }
 
     setBookFormError("");
+    setBookImageError("");
 
     const localBooks = files.map((file, index) => ({
       id: `book-${Date.now()}-${index}`,
@@ -717,6 +764,11 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       return;
     }
 
+    if (!trimmedBookImageLink) {
+      setBookImageError("Book image is required.");
+      return;
+    }
+
     if (bookTypeInput === "paid" && (!trimmedBookMrp || !Number.isFinite(parsedMrp) || parsedMrp <= 0)) {
       setBookFormError("Please enter a valid price amount.");
       return;
@@ -727,12 +779,13 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
       return;
     }
 
-    if (trimmedBookImageLink && !parseHttpUrl(trimmedBookImageLink)) {
-      setBookFormError("Please provide a valid image link.");
+    if (!parseHttpUrl(trimmedBookImageLink)) {
+      setBookImageError("Please provide a valid image link.");
       return;
     }
 
     setBookFormError("");
+    setBookImageError("");
 
     try {
       const response = await fetch("/api/profile/library", {
@@ -1468,6 +1521,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                 bookImageLinkInput={bookImageLinkInput} setBookImageLinkInput={setBookImageLinkInput}
                 bookLinkInput={bookLinkInput} setBookLinkInput={setBookLinkInput}
                 bookFormError={bookFormError}
+                bookImageError={bookImageError} setBookImageError={setBookImageError}
                 bookInstructorInput={bookInstructorInput} setBookInstructorInput={setBookInstructorInput}
                 bookModeInput={bookModeInput} setBookModeInput={setBookModeInput}
                 bookDescriptionInput={bookDescriptionInput} setBookDescriptionInput={setBookDescriptionInput}
@@ -1549,6 +1603,7 @@ export default function ProfessionalDashboard({ user }: ProfessionalDashboardPro
                 featuredPage={featuredPage}
                 setFeaturedPage={setFeaturedPage}
                 featuredContent={featuredContent}
+                totalPages={totalPages}
                 setActiveSection={setActiveSection}
               />
             )}

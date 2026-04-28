@@ -20,6 +20,7 @@ type OverviewSectionProps = {
   featuredPage: FeaturedPage;
   setFeaturedPage: (page: FeaturedPage) => void;
   featuredContent: React.ReactNode;
+  totalPages: number;
   setActiveSection: (section: DashboardSection) => void;
 };
 
@@ -37,6 +38,7 @@ export default function OverviewSection({
   featuredPage,
   setFeaturedPage,
   featuredContent,
+  totalPages,
   setActiveSection,
 }: OverviewSectionProps) {
   return (
@@ -204,7 +206,7 @@ export default function OverviewSection({
             <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-slate-100">
               <h3 className="text-base font-bold text-slate-900">Featured Courses</h3>
               <div className="flex items-center gap-1 rounded-xl bg-slate-50 p-1 border border-slate-100">
-                {[1, 2, 3].map((pageNumber) => (
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
                   <button
                     key={pageNumber}
                     onClick={() => setFeaturedPage(pageNumber as FeaturedPage)}

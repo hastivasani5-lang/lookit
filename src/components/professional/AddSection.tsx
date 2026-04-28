@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Edit2, Eye, Heart, Play, Trash2, Calendar } from "lucide-react";
 import type { AddContentTab, AddedBook, AddedVideo } from "@/components/professional/DashboardTypes";
 
@@ -28,6 +29,8 @@ type AddSectionProps = {
   bookLinkInput: string;
   setBookLinkInput: (v: string) => void;
   bookFormError: string;
+  bookImageError: string;
+  setBookImageError: (v: string) => void;
   bookInstructorInput: string;
   setBookInstructorInput: (v: string) => void;
   bookModeInput: "online" | "offline";
@@ -87,6 +90,7 @@ export default function AddSection({
   bookImageLinkInput, setBookImageLinkInput,
   bookLinkInput, setBookLinkInput,
   bookFormError,
+  bookImageError, setBookImageError,
   bookInstructorInput, setBookInstructorInput,
   bookModeInput, setBookModeInput,
   bookDescriptionInput, setBookDescriptionInput,
@@ -112,6 +116,7 @@ export default function AddSection({
   handleDeleteBookWithConfirm, handleDeleteVideoWithConfirm,
   handleToggleLikeBook, handleToggleLikeVideo,
 }: AddSectionProps) {
+  const router = useRouter();
   const user = { name: userName };
 
   // ── Upcoming Class state ──────────────────────────────────────────
@@ -457,11 +462,19 @@ export default function AddSection({
                             <input
                               type="url"
                               value={bookImageLinkInput}
-                              onChange={(event) => setBookImageLinkInput(event.target.value)}
+                              onChange={(event) => {
+                                setBookImageLinkInput(event.target.value);
+                                if (event.target.value.trim()) {
+                                  setBookImageError("");
+                                }
+                              }}
                               placeholder="https://example.com/book-cover.jpg"
                               className="w-full h-10 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1ec28e] focus:ring-1 focus:ring-[#1ec28e]"
                             />
                             <p className="mt-1 text-xs text-slate-400">Paste a direct image URL for the book cover</p>
+                            {bookImageError && (
+                              <p className="mt-1 text-xs font-medium text-red-600">{bookImageError}</p>
+                            )}
                           </div>
 
                           {/* Level and Price */}
@@ -600,14 +613,14 @@ export default function AddSection({
                       <p className="rounded-2xl bg-[#f7faf8] px-4 py-3 text-sm text-slate-500">No books uploaded yet.</p>
                     ) : (
                       <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm">
+                        <table className="w-full">
                           <thead>
                             <tr className="border-b border-slate-200">
-                              <th className="px-4 py-3 font-semibold text-slate-900">COURSES</th>
-                              <th className="px-4 py-3 font-semibold text-slate-900">CATEGORY</th>
-                              <th className="px-4 py-3 font-semibold text-slate-900">FEES</th>
-                              <th className="px-4 py-3 font-semibold text-slate-900">STATUS</th>
-                              <th className="px-4 py-3 font-semibold text-slate-900">ACTION</th>
+                              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide">COURSES</th>
+                              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide">CATEGORY</th>
+                              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide">FEES</th>
+                              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide">STATUS</th>
+                              <th className="px-4 py-3 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide">ACTION</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -615,26 +628,28 @@ export default function AddSection({
                               <tr key={book.id} className="border-b border-slate-100 hover:bg-slate-50 transition">
                                 <td className="px-4 py-4">
                                   <div className="flex items-center gap-3">
-                                    <img src={book.imageUrl} alt={book.name} className="h-12 w-12 rounded-lg object-cover" />
+                                    <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center shrink-0">
+                                      <span className="text-xs font-bold text-emerald-700">📚</span>
+                                    </div>
                                     <div className="min-w-0">
-                                      <p className="truncate font-medium text-slate-900">{book.name}</p>
-                                      <p className="text-xs text-slate-500">{book.sizeLabel}</p>
+                                      <p className="font-medium text-slate-900 text-sm truncate">{book.name}</p>
+                                      <p className="text-xs text-slate-500">External</p>
                                     </div>
                                   </div>
                                 </td>
-                                <td className="px-4 py-4 text-slate-600">{book.category}</td>
-                                <td className="px-4 py-4 font-semibold text-slate-900">₹{book.mrp}</td>
+                                <td className="px-4 py-4 text-sm text-slate-700">{book.category}</td>
+                                <td className="px-4 py-4 text-sm font-medium text-slate-900">₹{book.mrp}</td>
                                 <td className="px-4 py-4">
-                                  <span className="inline-flex rounded-full bg-[#effaf6] px-3 py-1 text-xs font-semibold text-[#1ec28e]">
+                                  <span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
                                     Published
                                   </span>
                                 </td>
                                 <td className="px-4 py-4">
-                                  <div className="flex items-center gap-2">
+                                  <div className="flex items-center justify-center gap-2">
                                     <button 
                                       type="button"
                                       onClick={() => handleEditBook(book)}
-                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-200 transition"
                                       title="Edit book"
                                     >
                                       <Edit2 className="h-4 w-4 text-slate-600" />
@@ -642,7 +657,7 @@ export default function AddSection({
                                     <button 
                                       type="button"
                                       onClick={() => handleDeleteBookWithConfirm(book.id)}
-                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-200 transition"
                                       title="Delete book"
                                     >
                                       <Trash2 className="h-4 w-4 text-slate-600" />
@@ -650,18 +665,19 @@ export default function AddSection({
                                     <button 
                                       type="button"
                                       onClick={() => handleToggleLikeBook(book.id)}
-                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-200 transition"
                                       title={likedBookIds.has(book.id) ? "Unlike book" : "Like book"}
                                     >
                                       <Heart className={`h-4 w-4 ${likedBookIds.has(book.id) ? 'fill-red-500 text-red-500' : 'text-slate-600'}`} />
                                     </button>
-                                    <Link
-                                      href={`/dashboard/teachers/books/${book.id}`}
-                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
+                                    <button 
+                                      type="button"
+                                      onClick={() => router.push(`/dashboard/teachers/books/${book.id}`)}
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-200 transition"
                                       title="View book"
                                     >
                                       <Eye className="h-4 w-4 text-slate-600" />
-                                    </Link>
+                                    </button>
                                   </div>
                                 </td>
                               </tr>
@@ -1010,14 +1026,14 @@ export default function AddSection({
                       <p className="rounded-2xl bg-[#f7faf8] px-4 py-3 text-sm text-slate-500">No videos uploaded yet.</p>
                     ) : (
                       <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm">
+                        <table className="w-full">
                           <thead>
                             <tr className="border-b border-slate-200">
-                              <th className="px-4 py-3 font-semibold text-slate-900">COURSES</th>
-                              <th className="px-4 py-3 font-semibold text-slate-900">CATEGORY</th>
-                              <th className="px-4 py-3 font-semibold text-slate-900">FEES</th>
-                              <th className="px-4 py-3 font-semibold text-slate-900">STATUS</th>
-                              <th className="px-4 py-3 font-semibold text-slate-900">ACTION</th>
+                              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide">COURSES</th>
+                              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide">CATEGORY</th>
+                              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide">FEES</th>
+                              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide">STATUS</th>
+                              <th className="px-4 py-3 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide">ACTION</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -1025,34 +1041,28 @@ export default function AddSection({
                               <tr key={video.id} className="border-b border-slate-100 hover:bg-slate-50 transition">
                                 <td className="px-4 py-4">
                                   <div className="flex items-center gap-3">
-                                    <div className="h-12 w-12 rounded-lg bg-black overflow-hidden flex-shrink-0">
-                                      {video.source === "youtube" ? (
-                                        <img src={`https://img.youtube.com/vi/${video.url.split('embed/')[1]?.split('"')[0] || 'dQw4w9WgXcQ'}/default.jpg`} alt={video.name} className="h-full w-full object-cover" />
-                                      ) : (
-                                        <div className="h-full w-full bg-slate-800 flex items-center justify-center">
-                                          <Play className="h-6 w-6 text-white" />
-                                        </div>
-                                      )}
+                                    <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center shrink-0">
+                                      <Play className="h-4 w-4 text-blue-700 fill-blue-700" />
                                     </div>
                                     <div className="min-w-0">
-                                      <p className="truncate font-medium text-slate-900">{video.name}</p>
-                                      <p className="text-xs text-slate-500">{video.sizeLabel}</p>
+                                      <p className="font-medium text-slate-900 text-sm truncate">{video.name}</p>
+                                      <p className="text-xs text-slate-500">External</p>
                                     </div>
                                   </div>
                                 </td>
-                                <td className="px-4 py-4 text-slate-600">{video.category || "Uncategorized"}</td>
-                                <td className="px-4 py-4 font-semibold text-slate-900">₹{video.mrp || "0.00"}</td>
+                                <td className="px-4 py-4 text-sm text-slate-700">{video.sizeLabel}</td>
+                                <td className="px-4 py-4 text-sm font-medium text-slate-900">₹{video.mrp || "0.00"}</td>
                                 <td className="px-4 py-4">
-                                  <span className="inline-flex rounded-full bg-[#effaf6] px-3 py-1 text-xs font-semibold text-[#1ec28e]">
+                                  <span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
                                     Published
                                   </span>
                                 </td>
                                 <td className="px-4 py-4">
-                                  <div className="flex items-center gap-2">
+                                  <div className="flex items-center justify-center gap-2">
                                     <button 
                                       type="button"
                                       onClick={() => handleEditVideo(video)}
-                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-200 transition"
                                       title="Edit video"
                                     >
                                       <Edit2 className="h-4 w-4 text-slate-600" />
@@ -1060,7 +1070,7 @@ export default function AddSection({
                                     <button 
                                       type="button"
                                       onClick={() => handleDeleteVideoWithConfirm(video.id)}
-                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-200 transition"
                                       title="Delete video"
                                     >
                                       <Trash2 className="h-4 w-4 text-slate-600" />
@@ -1068,18 +1078,19 @@ export default function AddSection({
                                     <button 
                                       type="button"
                                       onClick={() => handleToggleLikeVideo(video.id)}
-                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-200 transition"
                                       title={likedVideoIds.has(video.id) ? "Unlike video" : "Like video"}
                                     >
                                       <Heart className={`h-4 w-4 ${likedVideoIds.has(video.id) ? 'fill-red-500 text-red-500' : 'text-slate-600'}`} />
                                     </button>
-                                    <Link
-                                      href={`/dashboard/teachers/videos/${video.id}`}
-                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 transition"
+                                    <button 
+                                      type="button"
+                                      onClick={() => router.push(`/dashboard/teachers/videos/${video.id}`)}
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-200 transition"
                                       title="View video"
                                     >
                                       <Eye className="h-4 w-4 text-slate-600" />
-                                    </Link>
+                                    </button>
                                   </div>
                                 </td>
                               </tr>

@@ -150,14 +150,16 @@ export default function TeacherBookDetailsPage() {
                 {/* Cover image */}
                 <div className="overflow-hidden rounded-2xl bg-white shadow-sm border border-slate-100">
                   <div className="relative h-56 w-full bg-slate-100">
-                    {book.imageUrl ? (
-                      <Image src={editing ? (form.imageUrl || book.imageUrl) : book.imageUrl}
-                        alt={book.name} fill className="object-cover" />
-                    ) : (
-                      <div className="flex h-full items-center justify-center">
-                        <BookOpen className="h-16 w-16 text-slate-300" />
-                      </div>
-                    )}
+                    <Image 
+                      src={editing ? (form.imageUrl || book.imageUrl || "/books.png") : (book.imageUrl || "/books.png")}
+                      alt={book.name} 
+                      fill 
+                      className="object-cover" 
+                      onError={(e) => {
+                        const img = e.target as HTMLImageElement;
+                        img.src = "/books.png";
+                      }}
+                    />
                     {/* Status badge */}
                     <span className="absolute left-3 top-3 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-3 py-1 text-xs font-bold text-white shadow">
                       Published

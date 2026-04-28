@@ -160,10 +160,8 @@ export default function CategoryPage() {
                   {item.contentType === "video" && item.sourceType === "youtube" && item.sourceUrl
                     ? <YouTubeThumbnail url={item.sourceUrl} />
                     : item.imageUrl
-                    ? <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                    : <div className="w-full h-full flex items-center justify-center">
-                        {item.contentType === "book" ? <BookOpen size={40} className="text-[#1ec28e]/40" /> : <Video size={40} className="text-[#1ec28e]/40" />}
-                      </div>
+                    ? <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onError={(e) => { (e.target as HTMLImageElement).src = item.contentType === "book" ? "/books.png" : "/offer-video.png"; }} />
+                    : <img src={item.contentType === "book" ? "/books.png" : "/offer-video.png"} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   }
                   <span className={`absolute top-3 left-3 px-2.5 py-1 text-xs font-bold rounded-lg text-white ${item.contentType === "book" ? "bg-[#1ec28e]" : "bg-red-500"}`}>
                     {item.contentType === "book" ? "Book" : "Video"}
@@ -195,8 +193,8 @@ export default function CategoryPage() {
                   {item.contentType === "video" && item.sourceType === "youtube" && item.sourceUrl
                     ? <YouTubeThumbnail url={item.sourceUrl} />
                     : item.imageUrl
-                    ? <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                    : item.contentType === "book" ? <BookOpen size={24} className="text-[#1ec28e]/60" /> : <Video size={24} className="text-[#1ec28e]/60" />
+                    ? <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = item.contentType === "book" ? "/books.png" : "/offer-video.png"; }} />
+                    : <img src={item.contentType === "book" ? "/books.png" : "/offer-video.png"} alt={item.title} className="w-full h-full object-cover" />
                   }
                 </div>
                 <div className="flex-1 min-w-0">

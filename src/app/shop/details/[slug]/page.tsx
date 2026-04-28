@@ -133,7 +133,11 @@ export default function DetailsPage() {
   const canAccess = isFree || hasPurchased;
 
   const heroLabel = useMemo(() => item?.title || "Shop Details", [item]);
-  const imageSrc = item?.imageUrl || "/instructor.avif";
+  const imageSrc = useMemo(() => {
+    if (item?.imageUrl) return item.imageUrl;
+    // Use content-type specific placeholder
+    return item?.contentType === "video" ? "/offer-video.png" : "/books.png";
+  }, [item]);
 
   const parsedPrice = useMemo(() => {
     if (!item) return null;

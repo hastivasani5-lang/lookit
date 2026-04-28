@@ -65,16 +65,63 @@ export default function CartPageClient() {
     setPaymentError("");
     setPaymentSuccess(false);
 
-    if (!cardName.trim() || !cardNumber.trim() || !expiry.trim() || !cvv.trim() || cartItems.length === 0) {
+    if (cartItems.length === 0) {
+      setPaymentSuccess(false);
+      setPaymentError("Cart is empty.");
+      return;
+    }
+
+    // Check if all items are free
+    const allItemsFree = cartItems.every((item) => parsePrice(item.price) === 0);
+
+    if (allItemsFree) {
+      // For free items, skip payment and directly process
+      setIsProcessingPayment(true);
+      try {
+        const response = await fetch("/api/payments/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            items: cartItems,
+            cardName: "Free Item",
+            cardNumber: "0000000000000000",
+            expiry: "12/99",
+            cvv: "000",
+            isFreeCheckout: true,
+          }),
+        });
+
+        const payload = (await response.json().catch(() => ({}))) as { message?: string };
+        if (!response.ok) {
+          setPaymentSuccess(false);
+          setPaymentError(payload.message || "Unable to process free items.");
+          return;
+        }
+
+        setPaymentSuccessMessage(payload.message || "Free items added successfully!");
+        setPaymentSuccess(true);
+        clearCartItems();
+        setCartItems([]);
+      } catch {
+        setPaymentSuccess(false);
+        setPaymentError("Unable to process free items.");
+      } finally {
+        setIsProcessingPayment(false);
+      }
+      return;
+    }
+
+    // For paid items, validate card details
+    if (!cardName.trim() || !cardNumber.trim() || !expiry.trim() || !cvv.trim()) {
       setPaymentSuccess(false);
       setPaymentError("Please complete all payment details.");
       return;
     }
 
-    // Card number: must be exactly 12 digits
+    // Card number: must be exactly 16 digits
     const rawCard = cardNumber.replace(/\s/g, "");
-    if (!/^\d{12}$/.test(rawCard)) {
-      setPaymentError("Card number must be exactly 12 digits.");
+    if (!/^\d{16}$/.test(rawCard)) {
+      setPaymentError("Card number must be exactly 16 digits.");
       return;
     }
 
@@ -296,85 +343,94 @@ export default function CartPageClient() {
                     </div>
                   ) : (
                   <form onSubmit={handlePayment} className="space-y-4">
-                    {/* Card holder name */}
-                    <input
-                      type="text"
-                      value={cardName}
-                      onChange={(event) => setCardName(event.target.value)}
-                      placeholder="Card holder name"
-                      className="w-full rounded-xl border border-gray-200 px-4 py-3 text-base outline-none transition focus:border-emerald-400 bg-white/80"
-                    />
+                    {totalAmount === 0 ? (
+                      <div className="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-4 text-sm text-emerald-700">
+                        <p className="font-semibold">✓ All items are free!</p>
+                        <p className="mt-1 text-xs">Click "Checkout Free Items" to add them to your library.</p>
+                      </div>
+                    ) : (
+                      <>
+                        {/* Card holder name */}
+                        <input
+                          type="text"
+                          value={cardName}
+                          onChange={(event) => setCardName(event.target.value)}
+                          placeholder="Card holder name"
+                          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-base outline-none transition focus:border-emerald-400 bg-white/80"
+                        />
 
-                    {/* Card number — exactly 12 digits, formatted as XXXX XXXX XXXX */}
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      value={cardNumber}
-                      onChange={(event) => {
-                        const digits = event.target.value.replace(/\D/g, "").slice(0, 12);
-                        const formatted = digits.replace(/(.{4})/g, "$1 ").trim();
-                        setCardNumber(formatted);
-                      }}
-                      placeholder="XXXX XXXX XXXX"
-                      maxLength={14}
-                      className="w-full rounded-xl border border-gray-200 px-4 py-3 text-base outline-none transition focus:border-emerald-400 bg-white/80 tracking-widest"
-                    />
+                        {/* Card number — exactly 16 digits, formatted as XXXX XXXX XXXX XXXX */}
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          value={cardNumber}
+                          onChange={(event) => {
+                            const digits = event.target.value.replace(/\D/g, "").slice(0, 16);
+                            const formatted = digits.replace(/(.{4})/g, "$1 ").trim();
+                            setCardNumber(formatted);
+                          }}
+                          placeholder="XXXX XXXX XXXX XXXX"
+                          maxLength={19}
+                          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-base outline-none transition focus:border-emerald-400 bg-white/80 tracking-widest"
+                        />
 
-                    <div className="grid grid-cols-2 gap-4">
-                      {/* Expiry — MM/YY, MM = current month onwards, YY = 27 onwards */}
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        value={expiry}
-                        onChange={(event) => {
-                          let val = event.target.value.replace(/\D/g, "").slice(0, 4);
-                          if (val.length >= 3) val = val.slice(0, 2) + "/" + val.slice(2);
-                          setExpiry(val);
-                        }}
-                        onBlur={() => {
-                          // Validate on blur
-                          const parts = expiry.split("/");
-                          if (parts.length !== 2) return;
-                          const mm = parseInt(parts[0], 10);
-                          const yy = parseInt(parts[1], 10);
-                          const now = new Date();
-                          const currentMonth = now.getMonth() + 1;
-                          const currentYY = now.getFullYear() % 100;
-                          if (
-                            isNaN(mm) || isNaN(yy) ||
-                            mm < 1 || mm > 12 ||
-                            yy < 27 ||
-                            (yy === currentYY && mm < currentMonth)
-                          ) {
-                            setExpiry("");
-                          }
-                        }}
-                        placeholder="MM/YY"
-                        maxLength={5}
-                        className="w-full rounded-xl border border-gray-200 px-4 py-3 text-base outline-none transition focus:border-emerald-400 bg-white/80"
-                      />
+                        <div className="grid grid-cols-2 gap-4">
+                          {/* Expiry — MM/YY, MM = current month onwards, YY = 27 onwards */}
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            value={expiry}
+                            onChange={(event) => {
+                              let val = event.target.value.replace(/\D/g, "").slice(0, 4);
+                              if (val.length >= 3) val = val.slice(0, 2) + "/" + val.slice(2);
+                              setExpiry(val);
+                            }}
+                            onBlur={() => {
+                              // Validate on blur
+                              const parts = expiry.split("/");
+                              if (parts.length !== 2) return;
+                              const mm = parseInt(parts[0], 10);
+                              const yy = parseInt(parts[1], 10);
+                              const now = new Date();
+                              const currentMonth = now.getMonth() + 1;
+                              const currentYY = now.getFullYear() % 100;
+                              if (
+                                isNaN(mm) || isNaN(yy) ||
+                                mm < 1 || mm > 12 ||
+                                yy < 27 ||
+                                (yy === currentYY && mm < currentMonth)
+                              ) {
+                                setExpiry("");
+                              }
+                            }}
+                            placeholder="MM/YY"
+                            maxLength={5}
+                            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-base outline-none transition focus:border-emerald-400 bg-white/80"
+                          />
 
-                      {/* CVV — exactly 3 digits */}
-                      <input
-                        type="password"
-                        inputMode="numeric"
-                        value={cvv}
-                        onChange={(event) => {
-                          const digits = event.target.value.replace(/\D/g, "").slice(0, 3);
-                          setCvv(digits);
-                        }}
-                        placeholder="CVV"
-                        maxLength={3}
-                        className="w-full rounded-xl border border-gray-200 px-4 py-3 text-base outline-none transition focus:border-emerald-400 bg-white/80"
-                      />
-                    </div>
+                          {/* CVV — exactly 3 digits */}
+                          <input
+                            type="password"
+                            inputMode="numeric"
+                            value={cvv}
+                            onChange={(event) => {
+                              const digits = event.target.value.replace(/\D/g, "").slice(0, 3);
+                              setCvv(digits);
+                            }}
+                            placeholder="CVV"
+                            maxLength={3}
+                            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-base outline-none transition focus:border-emerald-400 bg-white/80"
+                          />
+                        </div>
+                      </>
+                    )}
 
                     <button
                       type="submit"
                       disabled={isProcessingPayment}
                       className="w-full rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-3 text-base font-semibold text-white shadow-md transition hover:scale-105 hover:shadow-lg disabled:opacity-60"
                     >
-                      {isProcessingPayment ? "Processing..." : "Pay Now"}
+                      {isProcessingPayment ? "Processing..." : totalAmount === 0 ? "Checkout Free Items" : "Pay Now"}
                     </button>
 
                     {paymentError ? (

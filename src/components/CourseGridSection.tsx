@@ -386,6 +386,16 @@ export default function CourseGridSection({
     return null;
   }
 
+  const getTitleLink = (course: CourseItem) => {
+    if (contentType === "books")
+      return `https://www.google.com/search?q=${encodeURIComponent(course.title)}+book&tbm=bks`;
+    if (contentType === "video-learning")
+      return `https://www.youtube.com/results?search_query=${encodeURIComponent(course.title)}`;
+    if (contentType === "apps")
+      return `https://play.google.com/store/search?q=${encodeURIComponent(course.title)}&c=apps`;
+    return `https://www.udemy.com/courses/search/?q=${encodeURIComponent(course.title)}`;
+  };
+
   const handleCourseClick = (e: React.MouseEvent, course: CourseItem, href: string) => {
     const isFree = !course.price || course.price === 0;
     if (isFree) return; // allow default link behavior
@@ -425,7 +435,16 @@ export default function CourseGridSection({
           const isFree = !course.price || course.price === 0;
 
           return (
-          <a key={i} href={courseHref} onClick={(e) => handleCourseClick(e, course, courseHref)} className="group block cursor-pointer bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100" aria-label={`Open ${course.title}`}>
+          <a key={i} href={courseHref} onClick={(e) => {
+            // Always open title link in new tab on click
+            e.preventDefault();
+            const isFreeItem = !course.price || course.price === 0;
+            if (isFreeItem) {
+              window.open(getTitleLink(course), "_blank", "noopener,noreferrer");
+            } else {
+              handleCourseClick(e, course, courseHref);
+            }
+          }} className="group block cursor-pointer bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100" aria-label={`Open ${course.title}`}>
 
             {/* IMAGE */}
             <div className="relative h-56 w-full sm:h-64 rounded-2xl overflow-hidden shadow-lg">
@@ -463,7 +482,7 @@ export default function CourseGridSection({
             {/* CONTENT */}
             <div className="mt-5 px-1 pb-4">
               {/* Title */}
-              <h3 className="text-base font-bold text-gray-900 line-clamp-1 mb-1">
+              <h3 className="text-base font-bold text-gray-900 hover:text-[#1ec28e] line-clamp-1 mb-1 transition-colors">
                 {course.title}
               </h3>
 

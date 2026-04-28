@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 
 const AboutHero = () => {
   return (
@@ -41,9 +42,9 @@ const AboutHero = () => {
           </div>
 
           {/* BUTTON */}
-          <button className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-lg font-medium transition hover:scale-105 hover:shadow-md">
+          <Link href="/about" className="inline-block bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-lg font-medium transition hover:scale-105 hover:shadow-md">
             Read More
-          </button>
+          </Link>
         </div>
 
         {/* RIGHT IMAGE */}

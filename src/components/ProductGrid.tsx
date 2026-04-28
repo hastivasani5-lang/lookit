@@ -256,11 +256,12 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange, onCategoriesChange
           {paginatedItems.map((item) => {
             const imageSrc = item.imageUrl || placeholderImageFor(item.contentType);
             const isInCart = cartItemIds.includes(item.id);
+            const isFree = item.amount === 0;
 
             return (
               <div
                 key={item.id}
-                className="group relative cursor-pointer rounded-xl border bg-white p-4 transition hover:shadow-md"
+                className={`group relative cursor-pointer rounded-xl border bg-white p-4 transition hover:shadow-md ${isFree ? "border-red-500 border-2" : ""}`}
               >
                 <div className="relative flex justify-center overflow-hidden rounded-lg bg-[#f4f4f4] p-4">
                   <img
@@ -304,7 +305,9 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange, onCategoriesChange
                     ) : null}
                   </div>
                   <div className="mt-1 flex items-center justify-center gap-2">
-                    <span className="font-semibold text-[#1ec28e]">{item.price}</span>
+                    <span className={`font-semibold px-3 py-1 rounded-full text-sm ${isFree ? "bg-red-100 text-red-600" : "text-[#1ec28e]"}`}>
+                      {isFree ? "Free" : item.price}
+                    </span>
                   </div>
                 </div>
 

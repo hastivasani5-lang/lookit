@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import SiteLogo from "@/components/SiteLogo";
 
@@ -20,16 +19,30 @@ const companyItems = ["Our Team", "Contact US", "About Us", "Services", "Blog Ne
 
 const supportItems = ["Home", "Sitemap", "Privacy Policy", "Cooky Policy", "Web User Plocy", "Terms and Services"];
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function Footer() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationError, setValidationError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleSubscribe = async () => {
     const trimmedEmail = email.trim();
 
+    // Clear previous messages
+    setValidationError("");
+    setSuccessMessage("");
+
+    // Validation: Empty email
     if (!trimmedEmail) {
-      router.push("/alert");
+      setValidationError("Please enter your email address.");
+      return;
+    }
+
+    // Validation: Invalid email format
+    if (!EMAIL_PATTERN.test(trimmedEmail)) {
+      setValidationError("Please enter a valid email address.");
       return;
     }
 
@@ -42,12 +55,34 @@ export default function Footer() {
         body: JSON.stringify({ email: trimmedEmail }),
       });
 
-      const payload = (await response.json()) as { redirectTo?: string };
-      router.push(payload.redirectTo || "/alert");
+      const payload = (await response.json()) as { redirectTo?: string; message?: string };
+
+      // Check if email is not registered
+      if (payload.redirectTo === "/alert" || !response.ok) {
+        setValidationError("This email address is not registered.");
+        return;
+      }
+
+      // Success
+      setSuccessMessage("✓ Successfully subscribed!");
+      setEmail("");
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 3000);
     } catch {
-      router.push("/alert");
+      setValidationError("Unable to process your request. Please try again.");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
+    // Clear error message when user starts typing
+    if (validationError) {
+      setValidationError("");
     }
   };
 
@@ -55,27 +90,43 @@ export default function Footer() {
     <footer className="bg-[#0b111a] px-4 pb-10 text-[#c7ced8] md:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
         <div className="-translate-y-1/2">
-          <div className="mx-auto flex w-full max-w-2xl items-center rounded-full border border-white/10 bg-white px-2 py-1.5 shadow-[0_15px_40px_rgba(2,8,23,0.35)]">
-            <input
-              type="email"
-              placeholder="Enter email address"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  void handleSubscribe();
-                }
-              }}
-              className="h-11 flex-1 rounded-full bg-transparent px-5 text-sm text-[#374151] placeholder:text-[#9ca3af] outline-none"
-            />
-            <button
-              type="button"
-              disabled={isSubmitting}
-              onClick={() => void handleSubscribe()}
-              className="h-11 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-7 text-xs font-semibold tracking-[0.12em] text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {isSubmitting ? "CHECKING..." : "SUBSCRIBE"}
-            </button>
+          <div className="mx-auto w-full max-w-2xl">
+            <div className="mx-auto flex items-center rounded-full border border-white/10 bg-white px-2 py-1.5 shadow-[0_15px_40px_rgba(2,8,23,0.35)]">
+              <input
+                type="email"
+                placeholder="Enter email address"
+                value={email}
+                onChange={(event) => handleEmailChange(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" && !isSubmitting) {
+                    void handleSubscribe();
+                  }
+                }}
+                className="h-11 flex-1 rounded-full bg-transparent px-5 text-sm text-[#374151] placeholder:text-[#9ca3af] outline-none"
+              />
+              <button
+                type="button"
+                disabled={isSubmitting}
+                onClick={() => void handleSubscribe()}
+                className="h-11 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-7 text-xs font-semibold tracking-[0.12em] text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isSubmitting ? "CHECKING..." : "SUBSCRIBE"}
+              </button>
+            </div>
+
+            {/* Validation Error Message */}
+            {validationError && (
+              <div className="mt-2 text-sm text-red-400 px-5">
+                {validationError}
+              </div>
+            )}
+
+            {/* Success Message */}
+            {successMessage && (
+              <div className="mt-2 text-sm text-emerald-400 px-5">
+                {successMessage}
+              </div>
+            )}
           </div>
         </div>
 

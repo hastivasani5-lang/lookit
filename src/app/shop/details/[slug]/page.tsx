@@ -174,59 +174,8 @@ export default function DetailsPage() {
 
   const contentUrl = item ? (item.fileUrl || item.sourceUrl || "") : "";
 
-  // PDF Viewer component
-  function PdfViewer({ url, title, sizeLabel, professionalName, contentId }: {
-    url: string; title: string; sizeLabel: string; professionalName: string; contentId: string;
-  }) {
-    const [pdfError, setPdfError] = useState(false);
-    const [checking, setChecking] = useState(true);
-
-    useEffect(() => {
-      // Check if the API endpoint has a real file
-      if (url.startsWith("/api/")) {
-        fetch(url, { method: "HEAD" })
-          .then((r) => { setPdfError(!r.ok); setChecking(false); })
-          .catch(() => { setPdfError(true); setChecking(false); });
-      } else if (url.startsWith("/uploads/")) {
-        setChecking(false); setPdfError(false);
-      } else {
-        setChecking(false); setPdfError(true);
-      }
-    }, [url]);
-
-    if (checking) {
-      return (
-        <div className="flex items-center justify-center py-16 bg-[#f8f8f8] rounded-lg">
-          <div className="w-8 h-8 border-4 border-[#17c28a] border-t-transparent rounded-full animate-spin" />
-        </div>
-      );
-    }
-
-    if (pdfError) {
-      return (
-        <div className="flex flex-col items-center justify-center py-16 text-center bg-[#f8f8f8] rounded-lg">
-          <span className="text-5xl mb-4">📄</span>
-          <p className="font-semibold text-gray-700 text-lg">PDF Preview Not Available</p>
-          <p className="text-sm mt-2 max-w-md text-gray-500">
-            This book ({sizeLabel}) was uploaded before server storage was enabled.
-            The professional needs to re-upload the PDF file.
-          </p>
-          <p className="text-xs mt-3 text-gray-400">By: {professionalName}</p>
-        </div>
-      );
-    }
-
-    return (
-      <div className="w-full rounded-lg overflow-hidden border border-[#e0e0e0]" style={{ height: "80vh" }}>
-        <iframe
-          src={url}
-          title={title}
-          className="w-full h-full"
-          style={{ border: "none" }}
-        />
-      </div>
-    );
-  }
+  // PDF Viewer component - REMOVED (no longer needed)
+  // function PdfViewer(...) { ... }
 
   if (isLoading) {
     return (
@@ -346,7 +295,7 @@ export default function DetailsPage() {
                     >
                       {item.contentType === "video"
                         ? (showContent ? "▼ Hide Video" : "▶ Watch Now")
-                        : (showContent ? "▼ Hide PDF" : "📄 Read / View PDF")}
+                        : (showContent ? "▼ Hide Resources" : "🌐 View Resources")}
                     </button>
                   ) : hasPurchased ? (
                     /* PAID + this student already purchased → direct access */
@@ -357,7 +306,7 @@ export default function DetailsPage() {
                     >
                       {item.contentType === "video"
                         ? (showContent ? "▼ Hide Video" : "▶ Watch Now")
-                        : (showContent ? "▼ Hide PDF" : "📄 Read / View PDF")}
+                        : (showContent ? "▼ Hide Resources" : "🌐 View Resources")}
                     </button>
                   ) : session?.user?.role === "student" ? (
                     /* PAID + student not yet purchased → Add to Cart */
@@ -426,12 +375,12 @@ export default function DetailsPage() {
             </div>
           </section>
 
-          {/* Inline Content Viewer */}
+          {/* Inline Content Viewer - REMOVED PDF VIEWER */}
           {showContent && canAccess && (
             <section className="mt-8 rounded-[10px] bg-white px-5 py-6 shadow-[0_14px_48px_rgba(10,26,37,0.06)] md:px-10">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-[#13253f]">
-                  {item.contentType === "video" ? "▶ Video Player" : "📄 PDF Viewer"}
+                  {item.contentType === "video" ? "▶ Video Player" : "📚 Related Resources"}
                 </h3>
                 <button
                   type="button"
@@ -462,8 +411,22 @@ export default function DetailsPage() {
                   </div>
                 )
               ) : (
-                /* Book / PDF */
-                <PdfViewer url={contentUrl} title={item.title} sizeLabel={item.sizeLabel} professionalName={item.professionalName} contentId={item.contentId} />
+                /* Book - Show related website link instead of PDF */
+                <div className="flex flex-col items-center justify-center py-16 text-center bg-[#f8f8f8] rounded-lg">
+                  <span className="text-5xl mb-4">🌐</span>
+                  <p className="font-semibold text-gray-700 text-lg">Related Resources</p>
+                  <p className="text-sm mt-2 max-w-md text-gray-500">
+                    Access related content and resources for this book through our partner websites.
+                  </p>
+                  <a
+                    href={contentUrl || "https://www.google.com"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-6 inline-flex h-[44px] items-center rounded-full bg-[#17c28a] px-7 text-[14px] font-semibold text-white transition hover:bg-[#11ab78]"
+                  >
+                    🔗 Open Related Website
+                  </a>
+                </div>
               )}
             </section>
           )}

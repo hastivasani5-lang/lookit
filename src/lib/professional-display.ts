@@ -9,6 +9,7 @@ export type PublicProfessional = {
   category: (typeof fallbackProfessionals)[number]["category"];
   language: (typeof fallbackProfessionals)[number]["language"];
   location: string;
+  locations: string[];
   zipCode: string;
   rating: number;
   reviews: number;
@@ -25,6 +26,7 @@ export function buildSeedProfessional(professional: SeedProfessional): PublicPro
     category: professional.category,
     language: professional.language,
     location: professional.location,
+    locations: [professional.location],
     zipCode: "",
     rating: professional.rating,
     reviews: professional.reviews,
@@ -61,6 +63,9 @@ export function buildPublicProfessional(user: AppUser, index = 0): PublicProfess
   const fallback = getFallbackProfile(index);
   const specialization = normalizeSpecialization(user.specialization, "Professional Specialist");
   const location = normalizeSpecialization(user.location, "Location not set");
+  const locations = Array.isArray(user.locations) && user.locations.length > 0 
+    ? user.locations.filter((loc): loc is string => typeof loc === "string" && loc.trim().length > 0)
+    : location !== "Location not set" ? [location] : [];
   const reviewsCount = Math.max(user.reviews?.length ?? 0, 0);
   const derivedRating = reviewsCount > 0 ? Math.min(5, 4 + Math.min(reviewsCount, 10) / 10) : 4.5;
 
@@ -75,6 +80,7 @@ export function buildPublicProfessional(user: AppUser, index = 0): PublicProfess
     category: inferCategory(specialization, "special-ed"),
     language: "English",
     location,
+    locations,
     zipCode,
     rating: Number(derivedRating.toFixed(1)),
     reviews: reviewsCount,

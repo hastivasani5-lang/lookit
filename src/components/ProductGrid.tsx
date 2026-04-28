@@ -261,7 +261,7 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange, onCategoriesChange
             return (
               <div
                 key={item.id}
-                className={`group relative cursor-pointer rounded-xl border bg-white p-4 transition hover:shadow-md ${isFree ? "border-red-500 border-2" : ""}`}
+                className="group relative cursor-pointer rounded-xl border bg-white p-4 transition hover:shadow-md"
               >
                 <div className="relative flex justify-center overflow-hidden rounded-lg bg-[#f4f4f4] p-4">
                   <img
@@ -312,19 +312,30 @@ const ProductGrid = ({ selectedMaxPrice, onPriceBoundsChange, onCategoriesChange
                 </div>
 
                 <div className="mt-3 grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleAddToCart(item)}
-                    className="rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 px-3 py-2 text-sm font-semibold text-white transition hover:opacity-90"
-                  >
-                    {isInCart ? "Added" : "Add Cart"}
-                  </button>
-                  <Link
-                    href={`/shop/details/${item.slug}`}
-                    className="rounded-lg border border-[#1ec28e] px-3 py-2 text-center text-sm font-semibold text-[#1ec28e] transition hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white"
-                  >
-                    View Details
-                  </Link>
+                  {isFree ? (
+                    <Link
+                      href={`/shop/details/${item.slug}`}
+                      className="col-span-2 rounded-lg border border-[#1ec28e] px-3 py-2 text-center text-sm font-semibold text-[#1ec28e] transition hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white"
+                    >
+                      View Details
+                    </Link>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => handleAddToCart(item)}
+                        className="rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 px-3 py-2 text-sm font-semibold text-white transition hover:opacity-90"
+                      >
+                        {isInCart ? "Added" : "Add Cart"}
+                      </button>
+                      <Link
+                        href={`/shop/details/${item.slug}`}
+                        className="rounded-lg border border-[#1ec28e] px-3 py-2 text-center text-sm font-semibold text-[#1ec28e] transition hover:bg-gradient-to-r from-emerald-600 to-teal-600 hover:text-white"
+                      >
+                        View Details
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             );
